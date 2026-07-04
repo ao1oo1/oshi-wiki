@@ -1,11 +1,10 @@
 <?php
 
 use App\Core\Router;
+use App\Controllers\Public\HomeController;
 
 $router = new Router();
 
-$router->get('/', function () {
-    echo 'Oshi-Wiki Framework OK';
-});
+$router->get('/', [HomeController::class, 'index']);
 
 return $router;
