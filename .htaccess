@@ -1,0 +1,2 @@
+DirectoryIndex index.php
+AddType 'text/html; charset=UTF-8' .php
