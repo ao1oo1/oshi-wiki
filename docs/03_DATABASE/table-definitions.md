@@ -443,3 +443,188 @@ AI創作支援で最も重要なテーブルの一つ。
 - culture
 - rule
 - other
+
+---
+
+## 11. worlds
+
+### 目的
+
+作品の世界観情報を管理する。
+
+時代・地理・社会制度・特殊能力・ルールなど、創作時に必要な背景情報を整理する。
+
+### 主な用途
+
+- 作品詳細の世界観表示
+- 世界観ページ
+- AI創作支援
+- 用語・場所・組織との補完
+
+### カラム定義
+
+| カラム | 型 | 必須 | 説明 |
+|---|---|---|---|
+| id | BIGINT UNSIGNED | 必須 | 主キー |
+| work_id | BIGINT UNSIGNED | 必須 | works.id |
+| title | VARCHAR(255) | 必須 | 世界観項目名 |
+| era | TEXT | 任意 | 時代 |
+| geography | TEXT | 任意 | 地理・舞台 |
+| society | TEXT | 任意 | 社会制度 |
+| rules | TEXT | 任意 | 作中ルール |
+| magic_or_ability | TEXT | 任意 | 魔法・能力・忍術など |
+| note | TEXT | 任意 | 補足 |
+| status | ENUM | 必須 | 公開状態 |
+| created_at | DATETIME | 必須 | 作成日時 |
+| updated_at | DATETIME | 必須 | 更新日時 |
+| deleted_at | DATETIME | 任意 | 論理削除日時 |
+
+---
+
+## 12. organizations
+
+### 目的
+
+作品内の組織・学校・国・チームなどを管理する。
+
+### 主な用途
+
+- 作品詳細
+- キャラクター所属情報
+- 世界観整理
+- AI創作支援
+
+### カラム定義
+
+| カラム | 型 | 必須 | 説明 |
+|---|---|---|---|
+| id | BIGINT UNSIGNED | 必須 | 主キー |
+| work_id | BIGINT UNSIGNED | 必須 | works.id |
+| name | VARCHAR(255) | 必須 | 組織名 |
+| description | TEXT | 任意 | 説明 |
+| status | ENUM | 必須 | 公開状態 |
+| created_at | DATETIME | 必須 | 作成日時 |
+| updated_at | DATETIME | 必須 | 更新日時 |
+| deleted_at | DATETIME | 任意 | 論理削除日時 |
+
+---
+
+## 13. locations
+
+### 目的
+
+作品内の場所・地域・施設・国・都市などを管理する。
+
+### 主な用途
+
+- 作品詳細
+- 世界観整理
+- 用語集
+- AI創作支援
+
+### カラム定義
+
+| カラム | 型 | 必須 | 説明 |
+|---|---|---|---|
+| id | BIGINT UNSIGNED | 必須 | 主キー |
+| work_id | BIGINT UNSIGNED | 必須 | works.id |
+| name | VARCHAR(255) | 必須 | 場所名 |
+| description | TEXT | 任意 | 説明 |
+| status | ENUM | 必須 | 公開状態 |
+| created_at | DATETIME | 必須 | 作成日時 |
+| updated_at | DATETIME | 必須 | 更新日時 |
+| deleted_at | DATETIME | 任意 | 論理削除日時 |
+
+---
+
+## 14. sources
+
+### 目的
+
+情報の根拠となる出典を管理する。
+
+Oshi-Wikiでは、情報の信頼性を高めるため、可能な限り各情報に出典を紐づける。
+
+### 主な用途
+
+- キャラクター情報の根拠
+- 口調情報の根拠
+- 呼称情報の根拠
+- 用語情報の根拠
+- 権利・引用管理
+
+### カラム定義
+
+| カラム | 型 | 必須 | 説明 |
+|---|---|---|---|
+| id | BIGINT UNSIGNED | 必須 | 主キー |
+| work_id | BIGINT UNSIGNED | 任意 | works.id |
+| source_type | VARCHAR(100) | 必須 | 出典種別 |
+| title | VARCHAR(255) | 必須 | 出典タイトル |
+| volume | VARCHAR(100) | 任意 | 巻数 |
+| episode | VARCHAR(100) | 任意 | 話数 |
+| chapter | VARCHAR(100) | 任意 | 章 |
+| page | VARCHAR(100) | 任意 | ページ |
+| url | VARCHAR(500) | 任意 | URL |
+| checked_at | DATE | 任意 | 確認日 |
+| note | TEXT | 任意 | 補足 |
+| created_at | DATETIME | 必須 | 作成日時 |
+| updated_at | DATETIME | 必須 | 更新日時 |
+
+### source_type 例
+
+- manga
+- anime
+- game
+- novel
+- official_site
+- official_book
+- official_sns
+- event
+- other
+
+---
+
+## 15. source_references
+
+### 目的
+
+出典と各データを紐づける。
+
+works、characters、speech_profiles、appellations、terms など、複数種類のデータへ出典を紐づけるための汎用参照テーブル。
+
+### 主な用途
+
+- 情報ごとの出典表示
+- 管理画面での出典確認
+- 承認時の根拠確認
+- AI出力時の根拠参照
+
+### カラム定義
+
+| カラム | 型 | 必須 | 説明 |
+|---|---|---|---|
+| id | BIGINT UNSIGNED | 必須 | 主キー |
+| source_id | BIGINT UNSIGNED | 必須 | sources.id |
+| reference_type | VARCHAR(100) | 必須 | 参照先テーブル種別 |
+| reference_id | BIGINT UNSIGNED | 必須 | 参照先ID |
+| note | TEXT | 任意 | 補足 |
+| created_at | DATETIME | 必須 | 作成日時 |
+
+### reference_type 例
+
+- work
+- character
+- speech_profile
+- appellation
+- relationship
+- term
+- world
+- organization
+- location
+
+### 設計上の注意
+
+`reference_type` と `reference_id` によるポリモーフィック関連を採用する。
+
+外部キー制約は `source_id` のみに設定し、参照先の整合性はアプリケーション側で保証する。
