@@ -16,6 +16,10 @@ spl_autoload_register(function (string $class) {
     }
 });
 
+use App\Core\Config;
+
+Config::load();
+
 $router = require __DIR__ . '/../routes/web.php';
 
 $router->dispatch($_SERVER['REQUEST_METHOD'], $_SERVER['REQUEST_URI']);
