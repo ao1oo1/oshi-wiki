@@ -14,7 +14,7 @@ function db(): PDO {
     $cfg = config();
     if ($cfg['db_driver'] === 'mysql') {
         $m = $cfg['mysql'];
-        $dsn = "mysql:host={$m['host']};dbname={$m['dbname']};charset={$m['charset']}";
+        $dsn = "mysql:host={$m['host']};port={$m['port']};dbname={$m['dbname']};charset={$m['charset']}";
         $pdo = new PDO($dsn, $m['user'], $m['password'], [
             PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
             PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
