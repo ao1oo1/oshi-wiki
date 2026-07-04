@@ -18,37 +18,35 @@ class Router
 
     public function dispatch(string $method, string $uri): void
     {
-        $path = parse_url($uri, PHP_URL_PATH) ?: '/';
+        $request = new Request();
+        $path = $request->path();
 
         $handler = $this->routes[$method][$path] ?? null;
 
         if (!$handler) {
-            http_response_code(404);
-            echo '404 Not Found';
+            Response::notFound();
             return;
         }
 
         if (is_callable($handler)) {
-            call_user_func($handler);
+            call_user_func($handler, $request);
             return;
         }
 
         [$class, $action] = $handler;
 
         if (!class_exists($class)) {
-            http_response_code(500);
-            echo 'Controller not found: ' . htmlspecialchars($class, ENT_QUOTES, 'UTF-8');
+            Response::html('Controller not found: ' . htmlspecialchars($class, ENT_QUOTES, 'UTF-8'), 500);
             return;
         }
 
         $controller = new $class();
 
         if (!method_exists($controller, $action)) {
-            http_response_code(500);
-            echo 'Action not found: ' . htmlspecialchars($action, ENT_QUOTES, 'UTF-8');
+            Response::html('Action not found: ' . htmlspecialchars($action, ENT_QUOTES, 'UTF-8'), 500);
             return;
         }
 
-        $controller->$action();
+        $controller->$action($request);
     }
 }
