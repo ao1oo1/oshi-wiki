@@ -18,6 +18,8 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'must_change_password',
+        'contributor_application_id',
         'status',
         'last_login_at',
     ];
@@ -31,6 +33,7 @@ class User extends Authenticatable
     {
         return [
             'email_verified_at' => 'datetime',
+        'must_change_password' => 'boolean',
             'password' => 'hashed',
             'is_super_admin' => 'boolean',
             'last_login_at' => 'datetime',

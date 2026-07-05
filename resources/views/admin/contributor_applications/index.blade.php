@@ -76,11 +76,28 @@
 
                                 <td>
                                     <div class="flex flex-wrap gap-2">
-                                        <form method="POST" action="{{ route('admin.contributor-applications.activate', $application) }}">
+                                        <form method="POST" action="{{ route('admin.contributor-applications.activate', $application) }}" class="js-temp-password-form">
                                             @csrf
-                                            <button type="submit" class="oshi-btn">
-                                                登用開始
-                                            </button>
+
+                                            <div class="mb-2">
+                                                <input
+                                                    type="text"
+                                                    name="temporary_password"
+                                                    class="js-temp-password-input"
+                                                    placeholder="一時パスワード"
+                                                    style="min-width:180px;"
+                                                >
+                                            </div>
+
+                                            <div class="mb-2 flex flex-wrap gap-2">
+                                                <button type="button" class="oshi-btn oshi-btn-sub js-generate-password">
+                                                    ランダム生成
+                                                </button>
+
+                                                <button type="submit" class="oshi-btn" onclick="return confirm('登用開始し、初回パスワード案内メールを送信します。よろしいですか？');">
+                                                    登用開始・メール送信
+                                                </button>
+                                            </div>
                                         </form>
 
                                         <form method="POST" action="{{ route('admin.contributor-applications.reject', $application) }}">
@@ -118,4 +135,39 @@
             </div>
         </div>
     </div>
+
+<script>
+function generateTemporaryPassword(length = 12) {
+    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789!@#$%';
+    let password = '';
+
+    if (window.crypto && window.crypto.getRandomValues) {
+        const values = new Uint32Array(length);
+        window.crypto.getRandomValues(values);
+
+        for (let i = 0; i < length; i++) {
+            password += chars[values[i] % chars.length];
+        }
+
+        return password;
+    }
+
+    for (let i = 0; i < length; i++) {
+        password += chars[Math.floor(Math.random() * chars.length)];
+    }
+
+    return password;
+}
+
+document.addEventListener('click', function (event) {
+    if (! event.target.classList.contains('js-generate-password')) {
+        return;
+    }
+
+    const form = event.target.closest('.js-temp-password-form');
+    const input = form.querySelector('.js-temp-password-input');
+
+    input.value = generateTemporaryPassword();
+});
+</script>
 </x-app-layout>

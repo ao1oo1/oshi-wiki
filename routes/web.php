@@ -93,6 +93,15 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/staff/password/initial', [\App\Http\Controllers\Staff\InitialPasswordController::class, 'edit'])
+        ->name('staff.password.initial.edit');
+
+    Route::patch('/staff/password/initial', [\App\Http\Controllers\Staff\InitialPasswordController::class, 'update'])
+        ->name('staff.password.initial.update');
+});
+
 require __DIR__.'/auth.php';
 
 Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
