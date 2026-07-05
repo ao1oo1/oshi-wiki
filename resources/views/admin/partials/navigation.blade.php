@@ -11,6 +11,10 @@
         <a href="{{ route('admin.contributor-applications.index') }}" class="{{ request()->routeIs('admin.contributor-applications.*') ? 'active' : '' }}">
             スタッフ申請
         </a>
+
+        <a href="{{ route('admin.staff-management.index') }}" class="{{ request()->routeIs('admin.staff-management.*') ? 'active' : '' }}">
+            スタッフ管理
+        </a>
     @endif
 
     <a href="{{ route('admin.works.index') }}" class="{{ request()->routeIs('admin.works.index') || request()->routeIs('admin.works.show') || request()->routeIs('admin.works.edit') ? 'active' : '' }}">

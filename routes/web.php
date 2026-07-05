@@ -50,6 +50,19 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
 
     
     
+    
+    Route::get('staff-management', [\App\Http\Controllers\Admin\StaffManagementController::class, 'index'])
+        ->name('staff-management.index');
+
+    Route::post('staff-management/bulk', [\App\Http\Controllers\Admin\StaffManagementController::class, 'bulk'])
+        ->name('staff-management.bulk');
+
+    Route::get('staff-management/{staff}/registered', [\App\Http\Controllers\Admin\StaffManagementController::class, 'registered'])
+        ->name('staff-management.registered');
+
+    Route::patch('staff-management/{staff}/notes', [\App\Http\Controllers\Admin\StaffManagementController::class, 'updateNotes'])
+        ->name('staff-management.notes');
+
     Route::get('contributor-applications', [\App\Http\Controllers\Admin\ContributorApplicationController::class, 'index'])
         ->name('contributor-applications.index');
 
