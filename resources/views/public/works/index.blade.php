@@ -163,10 +163,6 @@
                                 @endif
                             </div>
 
-                            <p style="margin-top:12px;">
-                                {{ Str::limit($work->description ?: '説明はまだ登録されていません。', 90) }}
-                            </p>
-
                             @if ($work->tags->count())
                                 <div style="margin-top:12px;">
                                     @foreach ($work->tags as $tag)

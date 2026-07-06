@@ -26,42 +26,6 @@
                 </div>
 
                 <div>
-                    <p class="text-sm text-gray-500">{{ $staff->staff_public_id }}</p>
-                    <h1 class="text-2xl font-bold text-gray-900">
-                        {{ $staff->public_username ?: $staff->name }}
-                    </h1>
-
-                    @if ($staff->profile_comment)
-                        <p class="mt-3 whitespace-pre-line text-gray-700">{{ $staff->profile_comment }}</p>
-                    @endif
-                </div>
-            </div>
-        </div>
-
-        <section class="mt-8">
-            <h2 class="mb-4 text-xl font-bold">登録した作品</h2>
-
-            @if ($works->isEmpty())
-                <p class="text-gray-500">公開できる作品はまだありません。</p>
-            @else
-                <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                    @foreach ($works as $work)
-                        <div class="rounded bg-white p-4 shadow">
-                            <h3 class="font-semibold">{{ $work->title }}</h3>
-                            @if (! empty($work->description))
-                                <p class="mt-2 line-clamp-3 text-sm text-gray-600">{{ $work->description }}</p>
-                            @endif
-                        </div>
-                    @endforeach
-                </div>
-            @endif
-        </section>
-
-        <section class="mt-8">
-            <h2 class="mb-4 text-xl font-bold">登録したキャラクター</h2>
-
-            @if ($characters->isEmpty())
-                <p class="text-gray-500">公開できるキャラクターはまだありません。</p>
             @else
                 <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                     @foreach ($characters as $character)
