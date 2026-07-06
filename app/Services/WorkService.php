@@ -61,13 +61,21 @@ class WorkService
 
     private function makeSlug(string $title): string
     {
-        $slug = Str::slug($title);
+        $base = Str::slug($title);
 
-        if ($slug !== '') {
-            return $slug;
+        if ($base === '') {
+            $base = 'work-' . now()->format('YmdHis') . '-' . Str::lower(Str::random(8));
         }
 
-        return 'work-' . now()->format('YmdHis');
+        $candidate = $base;
+        $count = 1;
+
+        while (Work::query()->where('slug', $candidate)->exists()) {
+            $candidate = $base . '-' . $count . '-' . Str::lower(Str::random(4));
+            $count++;
+        }
+
+        return $candidate;
     }
     private function applyReviewRule(array $data, bool $isUpdate = false): array
     {
