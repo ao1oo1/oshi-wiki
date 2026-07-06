@@ -14,6 +14,12 @@ class User extends Authenticatable
     use HasFactory, Notifiable;
 
     protected $fillable = [
+        'must_change_password',
+        'contributor_application_id',
+        'profile_comment',
+        'profile_icon_path',
+        'public_username',
+        'staff_public_id',
         'role_id',
         'name',
         'email',

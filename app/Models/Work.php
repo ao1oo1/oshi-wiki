@@ -13,6 +13,8 @@ class Work extends Model
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
+        'contributor_application_id',
+        'helpful_count',
         'title',
         'title_kana',
         'slug',

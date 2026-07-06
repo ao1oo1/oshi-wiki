@@ -14,6 +14,8 @@ class Character extends Model
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
+        'contributor_application_id',
+        'helpful_count',
         'work_id',
         'name',
         'name_kana',

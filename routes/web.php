@@ -177,3 +177,14 @@ Route::post('/contributor/apply', [\App\Http\Controllers\Public\ContributorAppli
 
 Route::get('/about', [\App\Http\Controllers\Public\AboutController::class, 'show'])
     ->name('public.about.show');
+
+
+// Staff profile
+Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/staff-profile', [\App\Http\Controllers\Admin\StaffProfileController::class, 'edit'])->name('staff-profile.edit');
+    Route::patch('/staff-profile', [\App\Http\Controllers\Admin\StaffProfileController::class, 'update'])->name('staff-profile.update');
+});
+
+Route::get('/staff/{staffPublicId}', [\App\Http\Controllers\Public\StaffProfileController::class, 'show'])->name('public.staff.show');
+Route::post('/helpful', [\App\Http\Controllers\Public\HelpfulVoteController::class, 'store'])->name('public.helpful.store');
+

@@ -35,4 +35,10 @@
     <a href="{{ route('public.works.index') }}" target="_blank">
         公開ページ
     </a>
+
+                <a href="{{ route('admin.staff-profile.edit') }}"
+                   class="{{ request()->routeIs('admin.staff-profile.*') ? 'active' : '' }}">
+                    プロフィール設定
+                </a>
+
 </nav>

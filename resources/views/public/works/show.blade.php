@@ -208,6 +208,13 @@
                 @endif
             </section>
         </div>
-    </main>
+    
+        @include('public.partials.helpful-button', [
+            'targetType' => 'work',
+            'targetId' => $work->id,
+            'helpfulCount' => $work->helpful_count ?? 0,
+        ])
+
+</main>
 </body>
 </html>
