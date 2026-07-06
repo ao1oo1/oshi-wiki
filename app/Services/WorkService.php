@@ -26,6 +26,10 @@ class WorkService
 
         $data = $this->applyReviewRule($data, false);
 
+        if (empty($data['slug'])) {
+            $data['slug'] = 'work-' . now()->format('YmdHis') . '-' . Str::lower(Str::random(6));
+        }
+
         if (auth()->check() && auth()->user()?->contributor_application_id && ! auth()->user()?->isSuperAdmin()) {
             $data['contributor_application_id'] = auth()->user()->contributor_application_id;
         }
