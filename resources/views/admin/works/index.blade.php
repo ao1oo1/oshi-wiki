@@ -1,3 +1,4 @@
+{{-- SUPER_ADMIN_UI_GUARD: 作品登録・CSV・テキスト入力導線は最高管理者のみ表示対象 --}}
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl">
@@ -20,8 +21,12 @@
                 </div>
 
                 <div class="flex flex-wrap gap-2">
-                    <a href="{{ route('admin.works.import.create') }}" class="oshi-btn oshi-btn-sub">作品テキスト取込</a>
-                    <a href="{{ route('admin.works.csv-import.create') }}" class="oshi-btn oshi-btn-sub">作品CSV取込</a>
+                    @if (auth()->user()?->is_super_admin)
+<a href="{{ route('admin.works.import.create') }}" class="oshi-btn oshi-btn-sub">作品テキスト取込</a>
+@endif
+                    @if (auth()->user()?->is_super_admin)
+<a href="{{ route('admin.works.csv-import.create') }}" class="oshi-btn oshi-btn-sub">作品CSV取込</a>
+@endif
                 </div>
             </div>
 
@@ -202,7 +207,9 @@
                                     <td>
                                         <div class="flex flex-wrap gap-2">
                                             <a href="{{ route('admin.works.show', $work) }}" class="oshi-btn oshi-btn-sub">詳細</a>
-                                            <a href="{{ route('admin.works.edit', $work) }}" class="oshi-btn oshi-btn-sub">編集</a>
+                                            @if (auth()->user()?->is_super_admin)
+<a href="{{ route('admin.works.edit', $work) }}" class="oshi-btn oshi-btn-sub">編集</a>
+@endif
                                         </div>
                                     </td>
                                 </tr>

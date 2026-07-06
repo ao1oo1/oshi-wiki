@@ -91,7 +91,14 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     Route::post('review-requests/reject', [\App\Http\Controllers\Admin\ReviewRequestController::class, 'reject'])
         ->name('review-requests.reject');
 
-    Route::resource('works', WorkController::class);
+    Route::resource('works', WorkController::class)
+        ->only(['index', 'show']);
+
+    // SUPER_ADMIN_WORK_WRITE_ROUTES
+    Route::middleware([\App\Http\Middleware\EnsureSuperAdmin::class])->group(function () {
+        Route::resource('works', WorkController::class)
+            ->only(['create', 'store', 'edit', 'update', 'destroy']);
+    });
 });
 
 Route::middleware('auth')->group(function () {

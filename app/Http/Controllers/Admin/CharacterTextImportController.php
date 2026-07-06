@@ -15,6 +15,8 @@ class CharacterTextImportController extends Controller
 {
     public function create(): View
     {
+        // SUPER_ADMIN_ONLY_create
+        $this->abortUnlessSuperAdmin();
         return view('admin.characters.import', [
             'works' => Work::query()->latest()->get(),
             'sampleText' => $this->sampleText(),
@@ -92,5 +94,12 @@ class CharacterTextImportController extends Controller
 幼い頃、〇〇家の養子になる。
 勉強して一流企業に入るのが夢。
 TEXT;
+    }
+
+    private function abortUnlessSuperAdmin(): void
+    {
+        if (! auth()->user()?->is_super_admin) {
+            abort(403, 'この操作は最高管理者のみ実行できます。');
+        }
     }
 }

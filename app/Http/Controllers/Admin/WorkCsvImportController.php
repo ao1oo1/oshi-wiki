@@ -13,6 +13,8 @@ class WorkCsvImportController extends Controller
 {
     public function create(): View
     {
+        // SUPER_ADMIN_ONLY_create
+        $this->abortUnlessSuperAdmin();
         return view('admin.works.csv-import');
     }
 
@@ -33,6 +35,8 @@ class WorkCsvImportController extends Controller
 
     public function sample(): Response
     {
+        // SUPER_ADMIN_ONLY_sample
+        $this->abortUnlessSuperAdmin();
         $rows = [
             [
                 'title',
@@ -86,5 +90,12 @@ class WorkCsvImportController extends Controller
         rewind($handle);
 
         return stream_get_contents($handle) ?: '';
+    }
+
+    private function abortUnlessSuperAdmin(): void
+    {
+        if (! auth()->user()?->is_super_admin) {
+            abort(403, 'この操作は最高管理者のみ実行できます。');
+        }
     }
 }

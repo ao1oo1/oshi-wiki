@@ -21,8 +21,12 @@
                 </div>
 
                 <div class="flex flex-wrap gap-2">
-                    <a href="{{ route('admin.tags.import.create') }}" class="oshi-btn oshi-btn-sub">タグテキスト取込</a>
-                    <a href="{{ route('admin.tags.csv-import.create') }}" class="oshi-btn oshi-btn-sub">タグCSV取込</a>
+                    @if (auth()->user()?->is_super_admin)
+<a href="{{ route('admin.tags.import.create') }}" class="oshi-btn oshi-btn-sub">タグテキスト取込</a>
+@endif
+                    @if (auth()->user()?->is_super_admin)
+<a href="{{ route('admin.tags.csv-import.create') }}" class="oshi-btn oshi-btn-sub">タグCSV取込</a>
+@endif
                 </div>
             </div>
 
@@ -82,7 +86,8 @@
                 </div>
             </form>
 
-            <form method="POST" action="{{ route('admin.tags.bulk-action') }}" onsubmit="return confirmTagBulkAction();">
+            @if (auth()->user()?->is_super_admin)
+<form method="POST" action="{{ route('admin.tags.bulk-action') }}" onsubmit="return confirmTagBulkAction();">
                 @csrf
 
                 <div class="mb-4 flex flex-wrap items-end gap-3 rounded bg-pink-50 p-4">
@@ -164,6 +169,7 @@
                     </table>
                 </div>
             </form>
+@endif
 
             <div class="mt-6">
                 {{ $tags->links() }}

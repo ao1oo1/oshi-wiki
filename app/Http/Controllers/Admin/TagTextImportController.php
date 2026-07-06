@@ -14,6 +14,8 @@ class TagTextImportController extends Controller
 {
     public function create(): View
     {
+        // SUPER_ADMIN_ONLY_create
+        $this->abortUnlessSuperAdmin();
         return view('admin.tags.import', [
             'sampleText' => $this->sampleText(),
         ]);
@@ -54,5 +56,12 @@ class TagTextImportController extends Controller
 説明:
 学校や学園を舞台にした作品・キャラクターに使うタグです。
 TEXT;
+    }
+
+    private function abortUnlessSuperAdmin(): void
+    {
+        if (! auth()->user()?->is_super_admin) {
+            abort(403, 'この操作は最高管理者のみ実行できます。');
+        }
     }
 }

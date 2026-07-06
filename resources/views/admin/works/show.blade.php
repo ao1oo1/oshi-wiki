@@ -18,12 +18,14 @@
                     作品一覧へ
                 </a>
 
-                <a
+                @if (auth()->user()?->is_super_admin)
+<a
                     href="{{ route('admin.works.edit', $work) }}"
                     style="display:inline-block;background:#f59e0b;color:#ffffff;padding:10px 18px;border-radius:8px;font-weight:bold;text-decoration:none;"
                 >
                     作品編集
                 </a>
+@endif
 
                 <a
                     href="{{ route('admin.characters.create', ['work_id' => $work->id]) }}"
@@ -39,7 +41,8 @@
                     関係性追加
                 </a>
 
-                <form
+                @if (auth()->user()?->is_super_admin)
+<form
                     method="POST"
                     action="{{ route('admin.works.destroy', $work) }}"
                     onsubmit="return confirm('この作品を削除しますか？紐づくキャラクター・関係性も削除されます。');"
@@ -55,6 +58,7 @@
                         この作品を削除
                     </button>
                 </form>
+@endif
             </div>
 
             @include('admin.partials.publish-help')

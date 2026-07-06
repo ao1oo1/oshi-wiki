@@ -14,6 +14,8 @@ class WorkTextImportController extends Controller
 {
     public function create(): View
     {
+        // SUPER_ADMIN_ONLY_create
+        $this->abortUnlessSuperAdmin();
         return view('admin.works.import', [
             'sampleText' => $this->sampleText(),
         ]);
@@ -63,5 +65,12 @@ class WorkTextImportController extends Controller
 作品の概要をここに入力します。
 世界観、舞台、注意事項などもまとめられます。
 TEXT;
+    }
+
+    private function abortUnlessSuperAdmin(): void
+    {
+        if (! auth()->user()?->is_super_admin) {
+            abort(403, 'この操作は最高管理者のみ実行できます。');
+        }
     }
 }

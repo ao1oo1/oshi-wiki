@@ -20,17 +20,23 @@
                 </div>
 
                 <div class="flex flex-wrap gap-2">
-                    <a href="{{ route('admin.characters.import.create') }}" class="oshi-btn oshi-btn-sub">
+                    @if (auth()->user()?->is_super_admin)
+<a href="{{ route('admin.characters.import.create') }}" class="oshi-btn oshi-btn-sub">
                         テキストから登録
                     </a>
+@endif
 
-                    <a href="{{ route('admin.characters.csv-import.create') }}" class="oshi-btn oshi-btn-sub">
+                    @if (auth()->user()?->is_super_admin)
+<a href="{{ route('admin.characters.csv-import.create') }}" class="oshi-btn oshi-btn-sub">
                         CSVで一括登録
                     </a>
+@endif
 
-                    <a href="{{ route('admin.characters.create') }}" class="oshi-btn">
+                    @if (auth()->user()?->is_super_admin)
+<a href="{{ route('admin.characters.create') }}" class="oshi-btn">
                         新規登録
                     </a>
+@endif
                 </div>
             </div>
 
@@ -86,7 +92,8 @@
                 </a>
             </form>
 
-            <form
+            @if (auth()->user()?->is_super_admin)
+<form
                 method="POST"
                 action="{{ route('admin.characters.bulk-action') }}"
                 onsubmit="return confirmBulkAction();"
@@ -215,6 +222,7 @@
                     </table>
                 </div>
             </form>
+@endif
 
             <div class="mt-6">
                 {{ $characters->links() }}

@@ -37,11 +37,15 @@ class WorkController extends Controller
 
     public function create(): View
     {
+        // SUPER_ADMIN_ONLY_create
+        $this->abortUnlessSuperAdmin();
         return view('admin.works.create');
     }
 
     public function store(StoreWorkRequest $request): RedirectResponse
     {
+        // SUPER_ADMIN_ONLY_store
+        $this->abortUnlessSuperAdmin();
         $this->service->create($request->validated());
 
         return redirect()
@@ -58,6 +62,8 @@ class WorkController extends Controller
 
     public function edit(Work $work): View
     {
+        // SUPER_ADMIN_ONLY_edit
+        $this->abortUnlessSuperAdmin();
         return view('admin.works.edit', [
             'work' => $work->load('tags'),
             'tags' => app(TagService::class)->all(),
@@ -66,6 +72,8 @@ class WorkController extends Controller
 
     public function update(UpdateWorkRequest $request, Work $work): RedirectResponse
     {
+        // SUPER_ADMIN_ONLY_update
+        $this->abortUnlessSuperAdmin();
         $this->service->update($work, $request->validated());
 
         return redirect()
@@ -75,6 +83,8 @@ class WorkController extends Controller
 
     public function destroy(Work $work): RedirectResponse
     {
+        // SUPER_ADMIN_ONLY_destroy
+        $this->abortUnlessSuperAdmin();
         abort_unless(auth()->user()?->isSuperAdmin(), 403, '削除操作は最高管理者のみ可能です。');
 
         $this->service->delete($work);
@@ -82,5 +92,12 @@ class WorkController extends Controller
         return redirect()
             ->route('admin.works.index')
             ->with('success', '作品を削除しました。');
+    }
+
+    private function abortUnlessSuperAdmin(): void
+    {
+        if (! auth()->user()?->is_super_admin) {
+            abort(403, 'この操作は最高管理者のみ実行できます。');
+        }
     }
 }

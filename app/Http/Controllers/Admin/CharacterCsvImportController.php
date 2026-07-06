@@ -14,6 +14,8 @@ class CharacterCsvImportController extends Controller
 {
     public function create(): View
     {
+        // SUPER_ADMIN_ONLY_create
+        $this->abortUnlessSuperAdmin();
         return view('admin.characters.csv-import', [
             'works' => Work::query()->latest()->get(),
         ]);
@@ -43,6 +45,8 @@ class CharacterCsvImportController extends Controller
 
     public function sample(): Response
     {
+        // SUPER_ADMIN_ONLY_sample
+        $this->abortUnlessSuperAdmin();
         $csv = $this->sampleCsv();
 
         return response($csv, 200, [
@@ -113,5 +117,12 @@ class CharacterCsvImportController extends Controller
         rewind($handle);
 
         return stream_get_contents($handle) ?: '';
+    }
+
+    private function abortUnlessSuperAdmin(): void
+    {
+        if (! auth()->user()?->is_super_admin) {
+            abort(403, 'この操作は最高管理者のみ実行できます。');
+        }
     }
 }

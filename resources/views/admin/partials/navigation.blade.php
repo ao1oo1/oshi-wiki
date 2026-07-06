@@ -21,9 +21,11 @@
         </a>
     @endif
 
-    <a href="{{ route('admin.works.index') }}" class="{{ request()->routeIs('admin.works.index') || request()->routeIs('admin.works.show') || request()->routeIs('admin.works.edit') ? 'active' : '' }}">
+    @if (auth()->user()?->is_super_admin)
+<a href="{{ route('admin.works.index') }}" class="{{ request()->routeIs('admin.works.index') || request()->routeIs('admin.works.show') || request()->routeIs('admin.works.edit') ? 'active' : '' }}">
         作品管理
     </a>
+@endif
 <a href="{{ route('admin.characters.index') }}" class="{{ request()->routeIs('admin.characters.*') ? 'active' : '' }}">
         キャラクター管理
     </a>
