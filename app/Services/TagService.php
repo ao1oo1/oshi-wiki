@@ -52,13 +52,21 @@ class TagService
 
     private function makeSlug(string $name): string
     {
-        $slug = Str::slug($name);
+        $base = Str::slug($name);
 
-        if ($slug !== '') {
-            return $slug;
+        if ($base === '') {
+            $base = 'tag-' . now()->format('YmdHis') . '-' . Str::lower(Str::random(6));
         }
 
-        return 'tag-' . now()->format('YmdHis');
+        $slug = $base;
+        $count = 2;
+
+        while ($this->repository->findBySlug($slug)) {
+            $slug = $base . '-' . $count;
+            $count++;
+        }
+
+        return $slug;
     }
     private function applyReviewRule(array $data, bool $isUpdate = false): array
     {

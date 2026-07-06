@@ -31,6 +31,11 @@ class TagRepository
             ->get();
     }
 
+    public function findBySlug(string $slug): ?Tag
+    {
+        return Tag::where('slug', $slug)->first();
+    }
+
     public function create(array $data): Tag
     {
         return Tag::create($data);
