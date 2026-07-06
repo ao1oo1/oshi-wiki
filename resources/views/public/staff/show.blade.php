@@ -8,6 +8,7 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body>
+    @include('public.partials.header')
     <main class="oshi-container py-10">
         <div class="rounded bg-white p-6 shadow">
             <div class="flex flex-col gap-5 sm:flex-row sm:items-center">

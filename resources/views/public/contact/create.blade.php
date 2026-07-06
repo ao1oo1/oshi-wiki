@@ -14,23 +14,7 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body>
-    <header class="oshi-header">
-        <div class="oshi-container oshi-header-inner">
-            <a href="{{ route('public.home') }}" class="oshi-brand">
-                <img
-                    src="{{ asset('images/oshiwiki-logo.png') }}"
-                    alt="Oshi-Wiki"
-                    class="oshi-public-logo-img"
-                >
-            </a>
-
-            <nav class="oshi-nav">
-                <a href="{{ route('public.works.index') }}">作品一覧</a>
-                <a href="{{ route('public.contact.create') }}" class="active">お問い合わせ</a>
-                <a href="{{ route('login') }}">管理ログイン</a>
-            </nav>
-        </div>
-    </header>
+    @include('public.partials.header')
 
     <main class="oshi-container">
         <section class="oshi-hero">

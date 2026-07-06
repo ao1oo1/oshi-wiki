@@ -10,20 +10,7 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body >
-    <header class="oshi-header">
-        <div class="oshi-container oshi-header-inner">
-            <a href="{{ route('public.home') }}" class="oshi-brand" style="color:#2D3748;text-decoration:none;">
-                Oshi-Wiki
-            </a>
-
-            <a
-                href="{{ route('login') }}"
-                style="display:inline-block;background:#FED7E2;color:#2D3748;padding:8px 14px;border-radius:8px;font-weight:bold;text-decoration:none;"
-            >
-                管理者ログイン
-            </a>
-        </div>
-    </header>
+    @include('public.partials.header')
 
     <main class="oshi-container">
         <div >

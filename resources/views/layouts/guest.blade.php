@@ -21,7 +21,7 @@
             <div>
                 <a href="/">
                     <img
-                    src="{{ asset('images/oshiwiki-logo.png') }}"
+                    src="{{ asset('images/oshiwiki-logo.svg') }}"
                     alt="Oshi-Wiki"
                     style="width:220px;max-width:100%;height:auto;"
                 >

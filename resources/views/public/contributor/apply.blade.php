@@ -14,17 +14,7 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body>
-    <header class="oshi-header">
-        <div class="oshi-container oshi-header-inner">
-            <a href="{{ route('public.home') }}" class="oshi-brand">
-                <img
-                    src="{{ asset('images/oshiwiki-logo.png') }}"
-                    alt="Oshi-Wiki"
-                    class="oshi-public-logo-img"
-                >
-            </a>
-        </div>
-    </header>
+    @include('public.partials.header')
 
     <main class="oshi-container">
         <section class="oshi-hero">
