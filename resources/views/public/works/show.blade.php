@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $work->title }} | <span class="oshi-brand-mark">✦</span> Oshi-Wiki</title>
+    <title>{{ $work->title }} | Oshi-Wiki</title>
     <link rel="icon" href="{{ asset('favicon.ico') }}" type="image/x-icon">
     <link rel="shortcut icon" href="{{ asset('favicon.ico') }}" type="image/x-icon">
 
@@ -12,8 +12,10 @@
 <body >
     <header class="oshi-header">
         <div class="oshi-container oshi-header-inner">
-            <a href="{{ route('public.home') }}" class="oshi-brand" style="color:#2D3748;text-decoration:none;">
-                Oshi-Wiki
+            <a href="{{ route('public.home') }}" class="flex items-center">
+                <img src="{{ asset('images/oshiwiki-logo.png') }}"
+                     alt="Oshi-Wiki"
+                     class="h-12 w-auto">
             </a>
 
             <a
@@ -25,7 +27,7 @@
         </div>
     </header>
 
-    <main class="oshi-container">
+    <main class="oshi-container space-y-8">
         <div >
             <div class="mb-6">
                 <a
@@ -36,7 +38,7 @@
                 </a>
             </div>
 
-            <section class="oshi-card">
+            <section class="oshi-card mb-8">
                 <p class="mb-2 text-sm text-gray-500">
                     {{ $work->genre ?: 'ジャンル未設定' }}
                     @if ($work->original_media)
@@ -67,38 +69,12 @@
                     </div>
                 @endif
 
-                <div class="whitespace-pre-wrap text-gray-700">
-                    {{ $work->description ?: '説明はまだ登録されていません。' }}
+                <div class="text-gray-700 leading-relaxed">
+                    {!! nl2br(e(trim($work->description ?: '説明はまだ登録されていません。'))) !!}
                 </div>
-
-                @if ($work->official_url || $work->guideline_url)
-                    <div class="mt-6 flex flex-wrap gap-3">
-                        @if ($work->official_url)
-                            <a
-                                href="{{ $work->official_url }}"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                style="display:inline-block;background:#2D3748;color:#ffffff;padding:8px 14px;border-radius:8px;font-weight:bold;text-decoration:none;"
-                            >
-                                公式サイト
-                            </a>
-                        @endif
-
-                        @if ($work->guideline_url)
-                            <a
-                                href="{{ $work->guideline_url }}"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                style="display:inline-block;background:#4B5563;color:#ffffff;padding:8px 14px;border-radius:8px;font-weight:bold;text-decoration:none;"
-                            >
-                                ガイドライン
-                            </a>
-                        @endif
-                    </div>
-                @endif
             </section>
 
-            <section class="oshi-card">
+            <section class="oshi-card mb-8">
                 <h2 class="mb-4 text-2xl font-bold">
                     キャラクター
                 </h2>
@@ -106,7 +82,7 @@
                 @if ($work->characters->count())
                     <div class="oshi-card-grid">
                         @foreach ($work->characters as $character)
-                            <article class="oshi-card">
+                            <article class="oshi-card mb-8">
                                 <p class="mb-1 text-sm text-gray-500">
                                     {{ $character->affiliation ?: '所属未設定' }}
                                 </p>
@@ -127,7 +103,7 @@
                                     @endif
 
                                     @if ($character->first_person)
-                                        <span class="ml-3">一人称：{{ $character->first_person }}</span>
+                                        <span class="">一人称：{{ $character->first_person }}</span>
                                     @endif
                                 </div>
 
@@ -161,7 +137,7 @@
                 @endif
             </section>
 
-            <section class="oshi-card">
+            <section class="oshi-card mb-8">
                 <h2 class="mb-4 text-2xl font-bold">
                     キャラクター関係性
                 </h2>

@@ -755,3 +755,23 @@ nav[role="navigation"] {
         box-shadow: 0 6px 18px rgba(45, 55, 72, .05);
     }
 }
+
+/* work detail description fix */
+.work-description,
+.work-description p,
+.oshi-work-description,
+.oshi-work-description p {
+    margin-left: 0 !important;
+    padding-left: 0 !important;
+    text-indent: 0 !important;
+    border-left: none !important;
+    background: transparent !important;
+}
+
+.work-description::before,
+.work-description p::before,
+.oshi-work-description::before,
+.oshi-work-description p::before {
+    display: none !important;
+    content: none !important;
+}
