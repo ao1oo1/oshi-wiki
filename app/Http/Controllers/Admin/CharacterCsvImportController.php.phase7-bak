@@ -14,7 +14,6 @@ class CharacterCsvImportController extends Controller
 {
     public function create(): View
     {
-        abort_unless(auth()->user()?->canManageAllAdminFeatures(), 403, 'キャラクター管理のこの操作は最高管理者のみ可能です。');
         return view('admin.characters.csv-import', [
             'works' => Work::query()->latest()->get(),
         ]);
@@ -24,7 +23,6 @@ class CharacterCsvImportController extends Controller
         ImportCharacterCsvRequest $request,
         CharacterCsvImportService $importService
     ): RedirectResponse {
-        abort_unless(auth()->user()?->canManageAllAdminFeatures(), 403, 'キャラクター管理のこの操作は最高管理者のみ可能です。');
         $result = $importService->import(
             $request->file('csv_file')->getRealPath(),
             $request->filled('work_id') ? $request->integer('work_id') : null,
@@ -45,7 +43,6 @@ class CharacterCsvImportController extends Controller
 
     public function sample(): Response
     {
-        abort_unless(auth()->user()?->canManageAllAdminFeatures(), 403, 'キャラクター管理のこの操作は最高管理者のみ可能です。');
         $csv = $this->sampleCsv();
 
         return response($csv, 200, [

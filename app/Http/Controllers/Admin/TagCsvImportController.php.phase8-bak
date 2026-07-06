@@ -13,7 +13,6 @@ class TagCsvImportController extends Controller
 {
     public function create(): View
     {
-        abort_unless(auth()->user()?->canManageAllAdminFeatures(), 403, 'タグ管理のこの操作は最高管理者のみ可能です。');
         return view('admin.tags.csv-import');
     }
 
@@ -21,7 +20,6 @@ class TagCsvImportController extends Controller
         ImportTagCsvRequest $request,
         TagCsvImportService $importService
     ): RedirectResponse {
-        abort_unless(auth()->user()?->canManageAllAdminFeatures(), 403, 'タグ管理のこの操作は最高管理者のみ可能です。');
         $result = $importService->import(
             $request->file('csv_file')->getRealPath(),
             $request->input('default_status', 'draft')
@@ -35,7 +33,6 @@ class TagCsvImportController extends Controller
 
     public function sample(): Response
     {
-        abort_unless(auth()->user()?->canManageAllAdminFeatures(), 403, 'タグ管理のこの操作は最高管理者のみ可能です。');
         $rows = [
             [
                 'name',

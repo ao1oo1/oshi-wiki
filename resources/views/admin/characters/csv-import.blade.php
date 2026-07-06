@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl">
-            CSVでキャラクター一括登録
+            CSV取り込み
         </h2>
     </x-slot>
 
@@ -23,7 +23,7 @@
             <div class="mb-6 flex flex-wrap items-center justify-between gap-3">
                 <div>
                     <h1 class="text-2xl font-bold">
-                        CSVでキャラクター一括登録
+                        CSV取り込み
                     </h1>
                     <p class="oshi-muted">
                         CSVをアップロードして、複数のキャラクターをまとめて登録できます。

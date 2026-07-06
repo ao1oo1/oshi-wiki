@@ -1,7 +1,4 @@
 <x-app-layout>
-    @php
-        $canUseCharacterImports = auth()->user()?->canManageAllAdminFeatures() ?? false;
-    @endphp
     <x-slot name="header">
         <h2 class="font-semibold text-xl">
             キャラクター詳細

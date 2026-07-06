@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl">
-            テキストからキャラクター登録
+            テキスト取り込み
         </h2>
     </x-slot>
 
@@ -12,7 +12,7 @@
             <div class="mb-6 flex flex-wrap items-center justify-between gap-3">
                 <div>
                     <h1 class="text-2xl font-bold">
-                        テキストからキャラクター登録
+                        テキスト取り込み
                     </h1>
                     <p class="oshi-muted">
                         設定テキストを貼り付けると、キャラクター情報を自動で読み取って登録します。
@@ -76,7 +76,7 @@
                 @endif
 
                 <button type="submit" class="oshi-btn">
-                    テキストから登録する
+                    テキスト取り込みする
                 </button>
             </form>
         </div>

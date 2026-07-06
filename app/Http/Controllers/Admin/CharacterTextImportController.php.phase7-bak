@@ -15,7 +15,6 @@ class CharacterTextImportController extends Controller
 {
     public function create(): View
     {
-        abort_unless(auth()->user()?->canManageAllAdminFeatures(), 403, 'キャラクター管理のこの操作は最高管理者のみ可能です。');
         return view('admin.characters.import', [
             'works' => Work::query()->latest()->get(),
             'sampleText' => $this->sampleText(),
@@ -27,7 +26,6 @@ class CharacterTextImportController extends Controller
         CharacterTextParserService $parser,
         CharacterService $characterService
     ): RedirectResponse {
-        abort_unless(auth()->user()?->canManageAllAdminFeatures(), 403, 'キャラクター管理のこの操作は最高管理者のみ可能です。');
         $parsed = $parser->parse($request->string('raw_text')->toString());
 
         $data = array_merge($parsed, [

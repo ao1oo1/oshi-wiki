@@ -24,7 +24,7 @@
                 @if ($canManageWorks)
 
 
-                    <a href="{{ route('admin.works.edit', $work) }}"
+                    <a href=\"{{ route('admin.works.edit', $work) }}\"
                     style="display:inline-block;background:#f59e0b;color:#ffffff;padding:10px 18px;border-radius:8px;font-weight:bold;text-decoration:none;"
                 >
                     作品編集
@@ -50,10 +50,6 @@
                 @if ($canManageWorks)
 
 
-                @if ($canManageWorks)
-
-
-
                 <form method="POST" action="{{ route('admin.works.destroy', $work) }}"
                     onsubmit="return confirm('この作品を削除しますか？紐づくキャラクター・関係性も削除されます。');"
                     style="display:inline-block;"
@@ -68,10 +64,6 @@
                         この作品を削除
                     </button>
                 </form>
-
-
-
-                @endif
 
 
                 @endif

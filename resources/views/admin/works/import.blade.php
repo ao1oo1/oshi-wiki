@@ -1,6 +1,6 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl">テキストから作品登録</h2>
+        <h2 class="font-semibold text-xl">テキスト取り込み</h2>
     </x-slot>
 
     <div class="p-6">
@@ -9,7 +9,7 @@
         <div class="oshi-card">
             <div class="mb-6 flex flex-wrap items-center justify-between gap-3">
                 <div>
-                    <h1 class="text-2xl font-bold">テキストから作品登録</h1>
+                    <h1 class="text-2xl font-bold">テキスト取り込み</h1>
                     <p class="oshi-muted">作品設定テキストを貼り付けて、作品情報を自動登録します。</p>
                 </div>
 
@@ -40,7 +40,7 @@
                     </div>
                 @endif
 
-                <button type="submit" class="oshi-btn">テキストから登録する</button>
+                <button type="submit" class="oshi-btn">テキスト取り込みする</button>
             </form>
         </div>
 

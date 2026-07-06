@@ -1,7 +1,4 @@
 <x-app-layout>
-    @php
-        $canUseCharacterImports = auth()->user()?->canManageAllAdminFeatures() ?? false;
-    @endphp
     <x-slot name="header">
         <h2 class="font-semibold text-xl">
             キャラクター管理
@@ -23,19 +20,13 @@
                 </div>
 
                 <div class="flex flex-wrap gap-2">
-                    @if ($canUseCharacterImports)
+                    <a href="{{ route('admin.characters.import.create') }}" class="oshi-btn oshi-btn-sub">
+                        テキスト取り込み
+                    </a>
 
-                        <a href="{{ route('admin.characters.import.create') }}" class="oshi-btn oshi-btn-sub">テキスト取り込み</a>
-
-                    @endif
-
-                    @if ($canUseCharacterImports)
-
-
-                        <a href="{{ route('admin.characters.csv-import.create') }}" class="oshi-btn oshi-btn-sub">CSV取り込み</a>
-
-
-                    @endif
+                    <a href="{{ route('admin.characters.csv-import.create') }}" class="oshi-btn oshi-btn-sub">
+                        CSV取り込み
+                    </a>
 
                     <a href="{{ route('admin.characters.create') }}" class="oshi-btn">
                         新規登録
@@ -95,10 +86,11 @@
                 </a>
             </form>
 
-            @if ($canUseCharacterImports)
-
-
-            <form method="POST" action="{{ route('admin.characters.bulk-action') }}" onsubmit="return confirmBulkAction();">
+            <form
+                method="POST"
+                action="{{ route('admin.characters.bulk-action') }}"
+                onsubmit="return confirmBulkAction();"
+            >
                 @csrf
 
                 <div class="mb-4 flex flex-wrap items-end gap-3 rounded bg-pink-50 p-4">
@@ -223,9 +215,6 @@
                     </table>
                 </div>
             </form>
-
-
-            @endif
 
             <div class="mt-6">
                 {{ $characters->links() }}

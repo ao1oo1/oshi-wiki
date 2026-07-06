@@ -25,12 +25,12 @@
                 <div class="flex flex-wrap gap-2">
                     @if ($canManageWorks)
 
-                        <a href="{{ route('admin.works.import.create') }}" class="oshi-btn oshi-btn-sub">テキスト取り込み</a>
+                        <a href=\"{{ route('admin.works.import.create') }}\" class=\"oshi-btn oshi-btn-sub\">テキスト取り込み</a>
 
                     @endif
                     @if ($canManageWorks)
 
-                        <a href="{{ route('admin.works.csv-import.create') }}" class="oshi-btn oshi-btn-sub">CSV取り込み</a>
+                        <a href=\"{{ route('admin.works.csv-import.create') }}\" class=\"oshi-btn oshi-btn-sub\">CSV取り込み</a>
 
                     @endif
                 </div>
@@ -144,10 +144,6 @@
             @if ($canManageWorks)
 
 
-            @if ($canManageWorks)
-
-
-
             <form method="POST" action="{{ route('admin.works.bulk-action') }}" onsubmit="return confirmWorkBulkAction();">
                 @csrf
 
@@ -222,7 +218,7 @@
                                             <a href="{{ route('admin.works.show', $work) }}" class="oshi-btn oshi-btn-sub">詳細</a>
                                             @if ($canManageWorks)
 
-                                                <a href="{{ route('admin.works.edit', $work) }}" class="oshi-btn oshi-btn-sub">編集</a>
+                                                <a href=\"{{ route('admin.works.edit', $work) }}\" class=\"oshi-btn oshi-btn-sub\">編集</a>
 
                                             @endif
                                         </div>
@@ -239,10 +235,6 @@
                     </table>
                 </div>
             </form>
-
-
-
-            @endif
 
 
             @endif

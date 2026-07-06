@@ -37,13 +37,11 @@ class WorkController extends Controller
 
     public function create(): View
     {
-        abort_unless(auth()->user()?->canManageAllAdminFeatures(), 403, '作品管理のこの操作は最高管理者のみ可能です。');
         return view('admin.works.create');
     }
 
     public function store(StoreWorkRequest $request): RedirectResponse
     {
-        abort_unless(auth()->user()?->canManageAllAdminFeatures(), 403, '作品管理のこの操作は最高管理者のみ可能です。');
         $this->service->create($request->validated());
 
         return redirect()
@@ -60,7 +58,6 @@ class WorkController extends Controller
 
     public function edit(Work $work): View
     {
-        abort_unless(auth()->user()?->canManageAllAdminFeatures(), 403, '作品管理のこの操作は最高管理者のみ可能です。');
         return view('admin.works.edit', [
             'work' => $work->load('tags'),
             'tags' => app(TagService::class)->all(),
@@ -69,7 +66,6 @@ class WorkController extends Controller
 
     public function update(UpdateWorkRequest $request, Work $work): RedirectResponse
     {
-        abort_unless(auth()->user()?->canManageAllAdminFeatures(), 403, '作品管理のこの操作は最高管理者のみ可能です。');
         $this->service->update($work, $request->validated());
 
         return redirect()
@@ -79,7 +75,6 @@ class WorkController extends Controller
 
     public function destroy(Work $work): RedirectResponse
     {
-        abort_unless(auth()->user()?->canManageAllAdminFeatures(), 403, '作品管理のこの操作は最高管理者のみ可能です。');
         abort_unless(auth()->user()?->isSuperAdmin(), 403, '削除操作は最高管理者のみ可能です。');
 
         $this->service->delete($work);

@@ -1,7 +1,4 @@
 <x-app-layout>
-    @php
-        $canManageTags = auth()->user()?->canManageAllAdminFeatures() ?? false;
-    @endphp
     <x-slot name="header">
         <h2 class="font-semibold text-xl">
             タグ管理
@@ -24,16 +21,8 @@
                 </div>
 
                 <div class="flex flex-wrap gap-2">
-                    @if ($canManageTags)
-
-                        <a href="{{ route('admin.tags.import.create') }}" class="oshi-btn oshi-btn-sub">テキスト取り込み</a>
-
-                    @endif
-                    @if ($canManageTags)
-
-                        <a href="{{ route('admin.tags.csv-import.create') }}" class="oshi-btn oshi-btn-sub">CSV取り込み</a>
-
-                    @endif
+                    <a href="{{ route('admin.tags.import.create') }}" class="oshi-btn oshi-btn-sub">テキスト取り込み</a>
+                    <a href="{{ route('admin.tags.csv-import.create') }}" class="oshi-btn oshi-btn-sub">CSV取り込み</a>
                 </div>
             </div>
 
@@ -92,9 +81,6 @@
                     </button>
                 </div>
             </form>
-
-            @if ($canManageTags)
-
 
             <form method="POST" action="{{ route('admin.tags.bulk-action') }}" onsubmit="return confirmTagBulkAction();">
                 @csrf
@@ -160,11 +146,9 @@
                                     </td>
 
                                     <td>
-                                        @if ($canManageTags)
-
-                                            <a href="{{ route('admin.tags.edit', $tag) }}" class="oshi-btn oshi-btn-sub">編集</a>
-
-                                        @endif
+                                        <a href="{{ route('admin.tags.edit', $tag) }}" class="oshi-btn oshi-btn-sub">
+                                            編集
+                                        </a>
                                     </td>
                                 </tr>
                             @empty
@@ -180,9 +164,6 @@
                     </table>
                 </div>
             </form>
-
-
-            @endif
 
             <div class="mt-6">
                 {{ $tags->links() }}

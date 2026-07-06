@@ -14,7 +14,6 @@ class WorkTextImportController extends Controller
 {
     public function create(): View
     {
-        abort_unless(auth()->user()?->canManageAllAdminFeatures(), 403, '作品管理のこの操作は最高管理者のみ可能です。');
         return view('admin.works.import', [
             'sampleText' => $this->sampleText(),
         ]);
@@ -25,7 +24,6 @@ class WorkTextImportController extends Controller
         WorkTextParserService $parser,
         WorkService $workService
     ): RedirectResponse {
-        abort_unless(auth()->user()?->canManageAllAdminFeatures(), 403, '作品管理のこの操作は最高管理者のみ可能です。');
         $parsed = $parser->parse($request->string('raw_text')->toString());
         $parsed['status'] = $request->input('status', $parsed['status'] ?? 'draft');
 

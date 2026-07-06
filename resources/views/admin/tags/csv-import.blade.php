@@ -1,6 +1,6 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl">CSVでタグ一括登録</h2>
+        <h2 class="font-semibold text-xl">CSV取り込み</h2>
     </x-slot>
 
     <div class="p-6">
@@ -20,7 +20,7 @@
         <div class="oshi-card">
             <div class="mb-6 flex flex-wrap items-center justify-between gap-3">
                 <div>
-                    <h1 class="text-2xl font-bold">CSVでタグ一括登録</h1>
+                    <h1 class="text-2xl font-bold">CSV取り込み</h1>
                     <p class="oshi-muted">CSVをアップロードしてタグをまとめて登録します。</p>
                 </div>
 
