@@ -3,6 +3,10 @@
         ダッシュボード
     </a>
 
+    <a href="{{ route('admin.staff-profile.edit') }}" class="{{ request()->routeIs('admin.staff-profile.*') ? 'active' : '' }}">
+        プロフィール設定
+    </a>
+
     @if (auth()->user()?->isSuperAdmin())
         <a href="{{ route('admin.review-requests.index') }}" class="{{ request()->routeIs('admin.review-requests.*') ? 'active' : '' }}">
             承認待ち

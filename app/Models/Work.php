@@ -13,6 +13,8 @@ class Work extends Model
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
+        'contributor_application_id',
+        'helpful_count',
         'title',
         'title_kana',
         'slug',
@@ -55,5 +57,14 @@ class Work extends Model
     public function isPublished(): bool
     {
         return $this->status === 'published' && $this->deleted_at === null;
+    }
+    public function contributorApplication()
+    {
+        return $this->belongsTo(\App\Models\ContributorApplication::class);
+    }
+
+    public function contributorUser()
+    {
+        return $this->hasOne(\App\Models\User::class, 'contributor_application_id', 'contributor_application_id');
     }
 }

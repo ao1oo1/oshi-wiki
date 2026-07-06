@@ -51,6 +51,13 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     
     
     
+    
+    Route::get('staff-profile', [\App\Http\Controllers\Admin\StaffProfileController::class, 'edit'])
+        ->name('staff-profile.edit');
+
+    Route::patch('staff-profile', [\App\Http\Controllers\Admin\StaffProfileController::class, 'update'])
+        ->name('staff-profile.update');
+
     Route::get('staff-management', [\App\Http\Controllers\Admin\StaffManagementController::class, 'index'])
         ->name('staff-management.index');
 
@@ -101,6 +108,13 @@ Route::middleware(['auth'])->group(function () {
     Route::patch('/staff/password/initial', [\App\Http\Controllers\Staff\InitialPasswordController::class, 'update'])
         ->name('staff.password.initial.update');
 });
+
+
+Route::get('/staff/{staffPublicId}', [\App\Http\Controllers\Public\StaffProfileController::class, 'show'])
+    ->name('public.staff.show');
+
+Route::post('/helpful', [\App\Http\Controllers\Public\HelpfulVoteController::class, 'store'])
+    ->name('public.helpful.store');
 
 require __DIR__.'/auth.php';
 

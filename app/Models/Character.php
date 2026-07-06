@@ -14,6 +14,8 @@ class Character extends Model
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
+        'contributor_application_id',
+        'helpful_count',
         'work_id',
         'name',
         'name_kana',
@@ -52,5 +54,14 @@ class Character extends Model
     public function incomingRelationships(): HasMany
     {
         return $this->hasMany(CharacterRelationship::class, 'to_character_id');
+    }
+    public function contributorApplication()
+    {
+        return $this->belongsTo(\App\Models\ContributorApplication::class);
+    }
+
+    public function contributorUser()
+    {
+        return $this->hasOne(\App\Models\User::class, 'contributor_application_id', 'contributor_application_id');
     }
 }

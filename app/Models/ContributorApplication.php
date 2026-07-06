@@ -43,4 +43,18 @@ class ContributorApplication extends Model
             default => '申請中',
         };
     }
+    public function user()
+    {
+        return $this->hasOne(\App\Models\User::class);
+    }
+
+    public function works()
+    {
+        return $this->hasMany(\App\Models\Work::class);
+    }
+
+    public function characters()
+    {
+        return $this->hasMany(\App\Models\Character::class);
+    }
 }

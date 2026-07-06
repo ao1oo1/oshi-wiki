@@ -16,6 +16,10 @@ class User extends Authenticatable
     protected $fillable = [
         'role_id',
         'name',
+        'profile_comment',
+        'profile_icon_path',
+        'public_username',
+        'staff_public_id',
         'email',
         'password',
         'must_change_password',
@@ -65,5 +69,14 @@ class User extends Authenticatable
     public function isSuperAdmin(): bool
     {
         return (bool) $this->is_super_admin;
+    }
+    public function contributorApplication()
+    {
+        return $this->belongsTo(\App\Models\ContributorApplication::class);
+    }
+
+    public function displayName(): string
+    {
+        return $this->public_username ?: $this->name;
     }
 }

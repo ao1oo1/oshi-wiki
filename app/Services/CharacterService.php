@@ -28,6 +28,10 @@ class CharacterService
         unset($data['tag_ids']);
 
         $data = $this->applyReviewRule($data, false);
+
+        if (auth()->check() && auth()->user()?->contributor_application_id && ! auth()->user()?->isSuperAdmin()) {
+            $data['contributor_application_id'] = auth()->user()->contributor_application_id;
+        }
         $data['status'] = $data['status'] ?? 'draft';
 
         $character = $this->repository->create($data);

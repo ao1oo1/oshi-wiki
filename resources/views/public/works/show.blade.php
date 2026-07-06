@@ -208,6 +208,9 @@
                 @endif
             </section>
         </div>
+    
+        @include('public.partials.contributor-card', ['contributor' => $work->contributorUser])
+        @include('public.partials.helpful-button', ['targetType' => 'work', 'target' => $work])
     </main>
 </body>
 </html>
