@@ -21,12 +21,9 @@
                 </div>
 
                 <div class="flex flex-wrap gap-2">
-                    @if (auth()->user()?->is_super_admin)
-<a href="{{ route('admin.works.import.create') }}" class="oshi-btn oshi-btn-sub">作品テキスト取込</a>
+                    <a href="{{ route('admin.works.import.create') }}" class="oshi-btn oshi-btn-sub">作品テキスト取込</a>
 @endif
-                    @if (auth()->user()?->is_super_admin)
-<a href="{{ route('admin.works.csv-import.create') }}" class="oshi-btn oshi-btn-sub">作品CSV取込</a>
-@endif
+                    <a href="{{ route('admin.works.csv-import.create') }}" class="oshi-btn oshi-btn-sub">作品CSV取込</a>
                 </div>
             </div>
 
@@ -209,7 +206,6 @@
                                             <a href="{{ route('admin.works.show', $work) }}" class="oshi-btn oshi-btn-sub">詳細</a>
                                             @if (auth()->user()?->is_super_admin)
 <a href="{{ route('admin.works.edit', $work) }}" class="oshi-btn oshi-btn-sub">編集</a>
-@endif
                                         </div>
                                     </td>
                                 </tr>

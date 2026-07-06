@@ -21,8 +21,12 @@
                 </div>
 
                 <div class="flex flex-wrap gap-2">
-                    <a href="{{ route('admin.tags.import.create') }}" class="oshi-btn oshi-btn-sub">タグテキスト取込</a>
-                    <a href="{{ route('admin.tags.csv-import.create') }}" class="oshi-btn oshi-btn-sub">タグCSV取込</a>
+                    @if (auth()->user()?->is_super_admin)
+<a href="{{ route('admin.tags.import.create') }}" class="oshi-btn oshi-btn-sub">タグテキスト取込</a>
+@endif
+                    @if (auth()->user()?->is_super_admin)
+<a href="{{ route('admin.tags.csv-import.create') }}" class="oshi-btn oshi-btn-sub">タグCSV取込</a>
+@endif
                 </div>
             </div>
 
