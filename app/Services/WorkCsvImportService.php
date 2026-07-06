@@ -2,6 +2,8 @@
 
 namespace App\Services;
 
+use Illuminate\Support\Str;
+
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 

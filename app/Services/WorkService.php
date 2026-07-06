@@ -26,6 +26,11 @@ class WorkService
 
         $data = $this->applyReviewRule($data, false);
 
+        // WORK_SERVICE_UNIQUE_SLUG_GUARD
+        if (empty($data['slug'])) {
+            $data['slug'] = 'work-' . now()->format('YmdHis') . '-' . Str::lower(Str::random(8));
+        }
+
         if (empty($data['slug'])) {
             $data['slug'] = 'work-' . now()->format('YmdHis') . '-' . Str::lower(Str::random(6));
         }
