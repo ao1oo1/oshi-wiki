@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\Role;
 use App\Models\User;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
@@ -23,6 +24,14 @@ class RegisteredUserController extends Controller
         return view('auth.register');
     }
 
+    public function createWriter(): View
+    {
+        return view('auth.register', [
+            'registerRoute' => 'writer.register.store',
+            'loginRoute' => 'writer.login',
+        ]);
+    }
+
     /**
      * Handle an incoming registration request.
      *
@@ -36,16 +45,26 @@ class RegisteredUserController extends Controller
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
+        $writerRole = Role::firstOrCreate(
+            ['name' => 'writer'],
+            [
+                'label' => '一般ユーザー',
+                'description' => 'AI執筆補助機能を利用する一般ユーザー',
+            ]
+        );
+
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            'role_id' => $writerRole->id,
+            'status' => 'active',
         ]);
 
         event(new Registered($user));
 
         Auth::login($user);
 
-        return redirect(route('dashboard', absolute: false));
+        return redirect(route('writer.dashboard', absolute: false));
     }
 }

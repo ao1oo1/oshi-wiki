@@ -19,6 +19,11 @@ class AuthenticatedSessionController extends Controller
         return view('auth.login');
     }
 
+    public function createWriter(): View
+    {
+        return view('auth.login', ['loginRoute' => 'writer.login.store']);
+    }
+
     /**
      * Handle an incoming authentication request.
      */
@@ -28,7 +33,13 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
-        return redirect()->intended(route('dashboard', absolute: false));
+        $user = $request->user();
+
+        if ($user?->canAccessAdmin()) {
+            return redirect()->intended(route('admin.dashboard', absolute: false));
+        }
+
+        return redirect()->intended(route('writer.dashboard', absolute: false));
     }
 
     /**

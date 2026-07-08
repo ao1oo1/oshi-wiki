@@ -70,13 +70,30 @@ class User extends Authenticatable
         return (bool) $this->is_super_admin;
     }
 
+    public function isWriter(): bool
+    {
+        return $this->isActive() && $this->hasRole('writer');
+    }
+
     public function isStaff(): bool
     {
-        return $this->isActive() && ! $this->isSuperAdmin();
+        return $this->isActive()
+            && ! $this->isSuperAdmin()
+            && ! $this->isWriter();
     }
 
     public function canManageAllAdminFeatures(): bool
     {
         return $this->isSuperAdmin();
+    }
+
+    public function canAccessAdmin(): bool
+    {
+        return $this->isSuperAdmin() || $this->isStaff();
+    }
+
+    public function canAccessWriter(): bool
+    {
+        return $this->isWriter();
     }
 }
