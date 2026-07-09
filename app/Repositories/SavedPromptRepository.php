@@ -10,7 +10,9 @@ class SavedPromptRepository
 {
     public function paginateForUser(User $user, int $perPage = 20, array $filters = []): LengthAwarePaginator
     {
-        return SavedPrompt::query()
+        $sort = $filters['sort'] ?? 'latest';
+
+        $query = SavedPrompt::query()
             ->with('work')
             ->forUser($user)
             ->when($filters['keyword'] ?? null, function ($query, string $keyword) {
@@ -43,8 +45,19 @@ class SavedPromptRepository
             })
             ->when($filters['status'] ?? null, function ($query, string $status) {
                 $query->where('status', $status);
-            })
-            ->latest()
+            });
+
+        match ($sort) {
+            'oldest' => $query->oldest(),
+            'updated' => $query->orderByDesc('updated_at')->orderByDesc('id'),
+            'most_used' => $query->orderByDesc('used_count')->orderByDesc('last_used_at')->orderByDesc('id'),
+            'recently_used' => $query->orderByDesc('last_used_at')->orderByDesc('used_count')->orderByDesc('id'),
+            'title_asc' => $query->orderBy('title')->orderByDesc('id'),
+            'title_desc' => $query->orderByDesc('title')->orderByDesc('id'),
+            default => $query->latest(),
+        };
+
+        return $query
             ->paginate($perPage)
             ->withQueryString();
     }

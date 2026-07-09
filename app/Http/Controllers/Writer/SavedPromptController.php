@@ -35,6 +35,7 @@ class SavedPromptController extends Controller
             'writing_style' => $request->string('writing_style')->trim()->toString(),
             'genre' => $request->string('genre')->trim()->toString(),
             'status' => $request->string('status')->trim()->toString(),
+            'sort' => $request->string('sort')->trim()->toString(),
         ];
 
         $filters = array_filter($filters, fn ($value) => $value !== null && $value !== '');

@@ -102,6 +102,21 @@
                     <option value="draft" @selected(($filters['status'] ?? '') === 'draft')>下書き</option>
                 </select>
             </div>
+
+            <div>
+                <label class="mb-2 block text-sm font-bold text-[#2D3748]">並び替え</label>
+                <select name="sort"
+                        class="w-full rounded-2xl border-[#E2E8F0] bg-white px-4 py-3 text-[#2D3748] shadow-sm focus:border-[#FED7E2] focus:ring-[#FED7E2]">
+                    @php($sort = $filters['sort'] ?? 'latest')
+                    <option value="latest" @selected($sort === 'latest')>新しい順</option>
+                    <option value="oldest" @selected($sort === 'oldest')>古い順</option>
+                    <option value="updated" @selected($sort === 'updated')>更新が新しい順</option>
+                    <option value="most_used" @selected($sort === 'most_used')>よく使う順</option>
+                    <option value="recently_used" @selected($sort === 'recently_used')>最近使った順</option>
+                    <option value="title_asc" @selected($sort === 'title_asc')>タイトル昇順</option>
+                    <option value="title_desc" @selected($sort === 'title_desc')>タイトル降順</option>
+                </select>
+            </div>
         </div>
 
         <div class="flex flex-wrap gap-3">
@@ -118,8 +133,21 @@
     </form>
 </section>
 
-<div class="mb-4 text-sm font-bold text-[#A0AEC0]">
-    表示件数：{{ $savedPrompts->total() }}件
+<div class="mb-4 flex flex-col justify-between gap-2 text-sm font-bold text-[#A0AEC0] md:flex-row md:items-center">
+    <div>表示件数：{{ $savedPrompts->total() }}件</div>
+    <div>
+        並び順：
+        @php($sortLabel = [
+            'latest' => '新しい順',
+            'oldest' => '古い順',
+            'updated' => '更新が新しい順',
+            'most_used' => 'よく使う順',
+            'recently_used' => '最近使った順',
+            'title_asc' => 'タイトル昇順',
+            'title_desc' => 'タイトル降順',
+        ][$filters['sort'] ?? 'latest'] ?? '新しい順')
+        {{ $sortLabel }}
+    </div>
 </div>
 
 <div class="overflow-hidden rounded-3xl border border-[#E2E8F0] bg-white shadow-sm">
