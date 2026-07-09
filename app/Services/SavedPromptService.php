@@ -17,9 +17,9 @@ class SavedPromptService
     ) {
     }
 
-    public function paginateForUser(User $user)
+    public function paginateForUser(User $user, array $filters = [])
     {
-        return $this->repository->paginateForUser($user);
+        return $this->repository->paginateForUser($user, 20, $filters);
     }
 
     public function countForUser(User $user): int

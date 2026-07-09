@@ -27,11 +27,26 @@ class SavedPromptController extends Controller
     {
         $user = $request->user();
 
-        return view('writer.saved_prompts.index', [
-            'savedPrompts' => $this->service->paginateForUser($user),
-            'count' => $this->service->countForUser($user),
-            'limit' => WritingAssistLimits::promptsPerUser($user),
-        ]);
+        $filters = [
+            'keyword' => $request->string('keyword')->trim()->toString(),
+            'work_source' => $request->string('work_source')->trim()->toString(),
+            'work_id' => $request->input('work_id'),
+            'writing_style' => $request->string('writing_style')->trim()->toString(),
+            'genre' => $request->string('genre')->trim()->toString(),
+            'status' => $request->string('status')->trim()->toString(),
+        ];
+
+        $filters = array_filter($filters, fn ($value) => $value !== null && $value !== '');
+
+        return view('writer.saved_prompts.index', array_merge(
+            $this->formData($request),
+            [
+                'savedPrompts' => $this->service->paginateForUser($user, $filters),
+                'count' => $this->service->countForUser($user),
+                'limit' => WritingAssistLimits::promptsPerUser($user),
+                'filters' => $filters,
+            ]
+        ));
     }
 
     public function create(Request $request): View

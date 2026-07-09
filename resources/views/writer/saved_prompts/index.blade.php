@@ -1,5 +1,9 @@
 @include('writer.original_characters._layout_start', ['title' => 'プロンプト管理'])
 
+@php
+    $filters = $filters ?? [];
+@endphp
+
 <div class="mb-8">
     <h1 class="text-3xl font-bold text-[#2D3748]">Oshi-Wiki 執筆補助</h1>
 </div>
@@ -26,6 +30,96 @@
             上限に達しています
         </span>
     @endif
+</div>
+
+<section class="mb-6 rounded-3xl border border-[#E2E8F0] bg-white p-6 shadow-sm">
+    <form method="GET" action="{{ route('writer.prompts.index') }}" class="space-y-5">
+        <div class="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+            <div>
+                <label class="mb-2 block text-sm font-bold text-[#2D3748]">キーワード</label>
+                <input type="text"
+                       name="keyword"
+                       value="{{ $filters['keyword'] ?? '' }}"
+                       class="w-full rounded-2xl border-[#E2E8F0] bg-white px-4 py-3 text-[#2D3748] shadow-sm focus:border-[#FED7E2] focus:ring-[#FED7E2]"
+                       placeholder="タイトル、用途、あらすじなど">
+            </div>
+
+            <div>
+                <label class="mb-2 block text-sm font-bold text-[#2D3748]">作品種別</label>
+                <select name="work_source"
+                        class="w-full rounded-2xl border-[#E2E8F0] bg-white px-4 py-3 text-[#2D3748] shadow-sm focus:border-[#FED7E2] focus:ring-[#FED7E2]">
+                    <option value="">すべて</option>
+                    <option value="original" @selected(($filters['work_source'] ?? '') === 'original')>オリジナル</option>
+                    <option value="v1_work" @selected(($filters['work_source'] ?? '') === 'v1_work')>登録済み作品</option>
+                </select>
+            </div>
+
+            <div>
+                <label class="mb-2 block text-sm font-bold text-[#2D3748]">作品名</label>
+                <select name="work_id"
+                        class="w-full rounded-2xl border-[#E2E8F0] bg-white px-4 py-3 text-[#2D3748] shadow-sm focus:border-[#FED7E2] focus:ring-[#FED7E2]">
+                    <option value="">すべて</option>
+                    @foreach ($works as $work)
+                        <option value="{{ $work->id }}" @selected((string) ($filters['work_id'] ?? '') === (string) $work->id)>
+                            {{ $work->title }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+
+            <div>
+                <label class="mb-2 block text-sm font-bold text-[#2D3748]">作風</label>
+                <select name="writing_style"
+                        class="w-full rounded-2xl border-[#E2E8F0] bg-white px-4 py-3 text-[#2D3748] shadow-sm focus:border-[#FED7E2] focus:ring-[#FED7E2]">
+                    <option value="">すべて</option>
+                    @foreach ($writingStyleLabels as $value => $label)
+                        <option value="{{ $value }}" @selected(($filters['writing_style'] ?? '') === $value)>
+                            {{ $label }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+
+            <div>
+                <label class="mb-2 block text-sm font-bold text-[#2D3748]">ジャンル</label>
+                <select name="genre"
+                        class="w-full rounded-2xl border-[#E2E8F0] bg-white px-4 py-3 text-[#2D3748] shadow-sm focus:border-[#FED7E2] focus:ring-[#FED7E2]">
+                    <option value="">すべて</option>
+                    @foreach ($genreLabels as $value => $label)
+                        <option value="{{ $value }}" @selected(($filters['genre'] ?? '') === $value)>
+                            {{ $label }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+
+            <div>
+                <label class="mb-2 block text-sm font-bold text-[#2D3748]">状態</label>
+                <select name="status"
+                        class="w-full rounded-2xl border-[#E2E8F0] bg-white px-4 py-3 text-[#2D3748] shadow-sm focus:border-[#FED7E2] focus:ring-[#FED7E2]">
+                    <option value="">すべて</option>
+                    <option value="active" @selected(($filters['status'] ?? '') === 'active')>有効</option>
+                    <option value="draft" @selected(($filters['status'] ?? '') === 'draft')>下書き</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="flex flex-wrap gap-3">
+            <button type="submit"
+                    class="rounded-2xl bg-[#FED7E2] px-6 py-3 text-base font-bold text-[#2D3748] shadow-sm hover:opacity-90">
+                検索する
+            </button>
+
+            <a href="{{ route('writer.prompts.index') }}"
+               class="rounded-2xl border border-[#CBD5E0] bg-white px-6 py-3 text-base font-bold text-[#2D3748] hover:bg-[#F7FAFC]">
+                リセット
+            </a>
+        </div>
+    </form>
+</section>
+
+<div class="mb-4 text-sm font-bold text-[#A0AEC0]">
+    表示件数：{{ $savedPrompts->total() }}件
 </div>
 
 <div class="overflow-hidden rounded-3xl border border-[#E2E8F0] bg-white shadow-sm">
@@ -76,8 +170,8 @@
             @empty
                 <tr>
                     <td colspan="6" class="px-6 py-16 text-center">
-                        <p class="text-lg font-bold text-[#2D3748]">まだプロンプトが保存されていません。</p>
-                        <p class="mt-2 text-sm font-bold text-[#A0AEC0]">条件を入力して、AIに貼り付けるプロンプトを作成できます。</p>
+                        <p class="text-lg font-bold text-[#2D3748]">条件に一致するプロンプトがありません。</p>
+                        <p class="mt-2 text-sm font-bold text-[#A0AEC0]">検索条件を変更するか、新規作成してください。</p>
                     </td>
                 </tr>
             @endforelse
