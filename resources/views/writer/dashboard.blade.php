@@ -1,11 +1,63 @@
 @include('writer.original_characters._layout_start', ['title' => 'ダッシュボード'])
 
+@php
+    $contactFormUrl = \Illuminate\Support\Facades\Route::has('contact.create')
+        ? route('contact.create')
+        : (
+            \Illuminate\Support\Facades\Route::has('public.contact')
+                ? route('public.contact')
+                : (
+                    \Illuminate\Support\Facades\Route::has('contact')
+                        ? route('contact')
+                        : url('/contact')
+                )
+        );
+@endphp
+
 <div class="mb-8">
     <h1 class="text-3xl font-bold text-[#2D3748]">Oshi-Wiki 執筆補助</h1>
 </div>
 
 <div class="mb-8 rounded-2xl bg-[#FED7E2] px-6 py-5">
     <h2 class="text-2xl font-bold text-[#2D3748]">ダッシュボード</h2>
+</div>
+
+<div class="mb-8 grid gap-6 xl:grid-cols-3">
+    <section class="rounded-3xl border border-[#E2E8F0] bg-white p-6 shadow-sm">
+        <p class="text-sm font-bold text-[#A0AEC0]">Guide</p>
+        <h3 class="mt-2 text-xl font-bold text-[#2D3748]">はじめての方へ</h3>
+        <p class="mt-3 text-sm font-bold leading-7 text-[#4A5568]">
+            オリジナルキャラクター登録から、プロンプトをコピーしてAIに貼り付けるまでの流れを確認できます。
+        </p>
+        <a href="{{ route('writer.guide') }}"
+           class="mt-5 inline-flex rounded-2xl bg-[#FED7E2] px-5 py-3 text-sm font-bold text-[#2D3748] hover:opacity-90">
+            使い方ガイドを見る
+        </a>
+    </section>
+
+    <section class="rounded-3xl border border-[#E2E8F0] bg-white p-6 shadow-sm">
+        <p class="text-sm font-bold text-[#A0AEC0]">Request</p>
+        <h3 class="mt-2 text-xl font-bold text-[#2D3748]">データ登録リクエスト</h3>
+        <p class="mt-3 text-sm font-bold leading-7 text-[#4A5568]">
+            登録してほしい作品・ジャンル・キャラクターがある場合は、お問い合わせフォームからお知らせください。
+        </p>
+        <a href="{{ $contactFormUrl }}"
+           class="mt-5 inline-flex rounded-2xl bg-[#FED7E2] px-5 py-3 text-sm font-bold text-[#2D3748] hover:opacity-90">
+            お問い合わせフォームへ
+        </a>
+    </section>
+
+    <section class="rounded-3xl border border-[#E2E8F0] bg-white p-6 shadow-sm">
+        <p class="text-sm font-bold text-[#A0AEC0]">Contributor</p>
+        <h3 class="mt-2 text-xl font-bold text-[#2D3748]">コントリビュータ募集</h3>
+        <p class="mt-3 text-sm font-bold leading-7 text-[#4A5568]">
+            Oshi-Wikiでは、作品やキャラクターデータの登録に協力してくださるコントリビュータを募集しています。応募希望の方はお問い合わせフォームよりご連絡ください。
+        </p>
+        <a href="{{ $contactFormUrl }}"
+           class="mt-5 inline-flex rounded-2xl bg-[#FED7E2] px-5 py-3 text-sm font-bold text-[#2D3748] hover:opacity-90">
+            お問い合わせフォームへ
+        </a>
+    </section>
 </div>
 
 <div class="mb-8">
