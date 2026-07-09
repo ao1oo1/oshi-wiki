@@ -29,6 +29,14 @@
             編集
         </a>
 
+        <form method="POST" action="{{ route('writer.prompts.duplicate', $savedPrompt) }}">
+            @csrf
+            <button type="submit"
+                    class="rounded-2xl border border-[#CBD5E0] bg-white px-6 py-3 font-bold text-[#2D3748] hover:bg-[#F7FAFC]">
+                複製
+            </button>
+        </form>
+
         <a href="{{ route('writer.prompts.index') }}"
            class="rounded-2xl border border-[#CBD5E0] bg-white px-6 py-3 font-bold text-[#2D3748] hover:bg-[#F7FAFC]">
             一覧へ戻る

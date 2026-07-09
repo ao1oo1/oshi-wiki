@@ -279,8 +279,16 @@
     </div>
 
     <div class="flex flex-wrap items-center gap-3">
-        <button type="submit" class="rounded-2xl bg-[#FED7E2] px-6 py-3 text-base font-bold text-[#2D3748] shadow-sm hover:opacity-90">
+        <button type="submit"
+                onclick="setPromptStatus('active')"
+                class="rounded-2xl bg-[#FED7E2] px-6 py-3 text-base font-bold text-[#2D3748] shadow-sm hover:opacity-90">
             保存する
+        </button>
+
+        <button type="submit"
+                onclick="setPromptStatus('draft')"
+                class="rounded-2xl border border-[#CBD5E0] bg-white px-6 py-3 text-base font-bold text-[#2D3748] hover:bg-[#F7FAFC]">
+            下書きで保存
         </button>
 
         <a href="{{ route('writer.prompts.index') }}" class="rounded-2xl border border-[#CBD5E0] bg-white px-6 py-3 text-base font-bold text-[#2D3748] hover:bg-[#F7FAFC]">
@@ -347,6 +355,14 @@
                 genreOtherWrap.classList.toggle('hidden', genre.value !== 'other');
             }
         }
+
+        window.setPromptStatus = function (status) {
+            const statusSelect = document.querySelector('select[name="status"]');
+
+            if (statusSelect) {
+                statusSelect.value = status;
+            }
+        };
 
         workRef?.addEventListener('change', updateOfficialCharacters);
         writingStyle?.addEventListener('change', updateOtherFields);

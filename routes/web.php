@@ -24,6 +24,9 @@ Route::middleware(['auth', 'writer.user'])->prefix('writer')->name('writer.')->g
 
     Route::resource('original-characters', \App\Http\Controllers\Writer\OriginalCharacterController::class);
     Route::resource('original-character-relationships', \App\Http\Controllers\Writer\OriginalCharacterRelationshipController::class);
+    Route::post('prompts/{prompt}/duplicate', [\App\Http\Controllers\Writer\SavedPromptController::class, 'duplicate'])
+        ->name('prompts.duplicate');
+
     Route::resource('prompts', \App\Http\Controllers\Writer\SavedPromptController::class);
 });
 

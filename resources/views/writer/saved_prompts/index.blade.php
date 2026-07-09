@@ -62,6 +62,14 @@
                                class="rounded-xl bg-[#FED7E2] px-4 py-2 font-bold text-[#2D3748] hover:opacity-90">
                                 編集
                             </a>
+
+                            <form method="POST" action="{{ route('writer.prompts.duplicate', $prompt) }}">
+                                @csrf
+                                <button type="submit"
+                                        class="rounded-xl border border-[#CBD5E0] bg-white px-4 py-2 font-bold text-[#2D3748] hover:bg-[#F7FAFC]">
+                                    複製
+                                </button>
+                            </form>
                         </div>
                     </td>
                 </tr>

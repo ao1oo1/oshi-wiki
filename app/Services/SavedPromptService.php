@@ -2,8 +2,6 @@
 
 namespace App\Services;
 
-use App\Models\Character;
-use App\Models\OriginalCharacter;
 use App\Models\SavedPrompt;
 use App\Models\User;
 use App\Models\Work;
@@ -14,7 +12,8 @@ use Illuminate\Validation\ValidationException;
 class SavedPromptService
 {
     public function __construct(
-        private readonly SavedPromptRepository $repository
+        private readonly SavedPromptRepository $repository,
+        private readonly PromptCharacterContextBuilder $contextBuilder
     ) {
     }
 
@@ -38,7 +37,7 @@ class SavedPromptService
             ]);
         }
 
-        $payload = $this->normalizePromptData($user, $data);
+        $payload = $this->normalizePromptData($data);
         $payload['user_id'] = $user->id;
         $payload['status'] = $payload['status'] ?? 'active';
         $payload['category'] = $payload['category'] ?? 'scene';
@@ -49,7 +48,7 @@ class SavedPromptService
 
     public function update(User $user, SavedPrompt $savedPrompt, array $data): bool
     {
-        $payload = $this->normalizePromptData($user, $data);
+        $payload = $this->normalizePromptData($data);
         $payload['status'] = $payload['status'] ?? 'active';
         $payload['category'] = $payload['category'] ?? 'scene';
         $payload['prompt_body'] = $this->buildPromptBody($user, $payload);
@@ -62,7 +61,7 @@ class SavedPromptService
         return $this->repository->delete($savedPrompt);
     }
 
-    private function normalizePromptData(User $user, array $data): array
+    private function normalizePromptData(array $data): array
     {
         $workRef = (string) ($data['work_ref'] ?? 'original');
 
@@ -96,11 +95,12 @@ class SavedPromptService
     private function buildPromptBody(User $user, array $data): string
     {
         $workName = 'オリジナル';
+
         if (($data['work_source'] ?? null) === SavedPrompt::WORK_SOURCE_V1 && ! empty($data['work_id'])) {
             $workName = Work::query()->find($data['work_id'])?->title ?? '選択作品';
         }
 
-        $characterLines = $this->buildCharacterLines($user, $data['selected_character_refs'] ?? []);
+        $context = $this->contextBuilder->build($user, $data['selected_character_refs'] ?? []);
 
         $style = $this->labelFrom(
             SavedPrompt::writingStyleLabels(),
@@ -120,8 +120,11 @@ class SavedPromptService
             '【作品】',
             $workName,
             '',
-            '【登場人物】',
-            $characterLines ?: '指定なし',
+            '【登場人物詳細】',
+            $context['characters'] ?: '指定なし',
+            '',
+            '【関係性】',
+            $context['relationships'] ?: '指定なし',
             '',
             '【作風】',
             $style ?: '指定なし',
@@ -146,53 +149,16 @@ class SavedPromptService
             '',
             '【出力条件】',
             '・上記の設定を守ってください。',
-            '・登場人物の口調や関係性に注意してください。',
+            '・登場人物の一人称、口調、性格、関係性を反映してください。',
+            '・登録情報にない設定は断定しないでください。',
             '・作品名が「オリジナル」の場合は、既存作品の固有設定を前提にしないでください。',
-            '・不足している情報は断定せず、自然な範囲で補ってください。',
+            '・不足している情報は、自然な範囲で補ってください。',
         ];
 
         if (! empty($data['notes'])) {
             $lines[] = '';
             $lines[] = '【備考】';
             $lines[] = $data['notes'];
-        }
-
-        return implode("\n", $lines);
-    }
-
-    private function buildCharacterLines(User $user, array $refs): string
-    {
-        $lines = [];
-
-        foreach ($refs as $ref) {
-            [$source, $id] = explode(':', $ref, 2);
-            $id = (int) $id;
-
-            if ($source === 'original') {
-                $character = OriginalCharacter::query()->find($id);
-
-                if (! $character) {
-                    continue;
-                }
-
-                if (! $user->isSuperAdmin() && $character->user_id !== $user->id) {
-                    continue;
-                }
-
-                $lines[] = '- オリジナルキャラクター：' . $character->name;
-                continue;
-            }
-
-            if ($source === 'v1_character') {
-                $character = Character::query()->with('work')->find($id);
-
-                if (! $character) {
-                    continue;
-                }
-
-                $workTitle = $character->work?->title;
-                $lines[] = '- 作品キャラクター：' . ($workTitle ? $workTitle . ' ＞ ' : '') . $character->name;
-            }
         }
 
         return implode("\n", $lines);

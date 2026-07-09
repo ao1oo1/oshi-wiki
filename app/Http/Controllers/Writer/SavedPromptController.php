@@ -81,6 +81,22 @@ class SavedPromptController extends Controller
             ->with('success', 'プロンプトを更新しました。');
     }
 
+
+    public function duplicate(Request $request, SavedPrompt $prompt): RedirectResponse
+    {
+        $this->authorizeOwner($request, $prompt);
+
+        $copy = $prompt->replicate();
+        $copy->user_id = $request->user()->id;
+        $copy->title = $prompt->title . ' のコピー';
+        $copy->status = 'draft';
+        $copy->save();
+
+        return redirect()
+            ->route('writer.prompts.edit', $copy)
+            ->with('success', 'プロンプトを複製しました。必要に応じて内容を編集してください。');
+    }
+
     public function destroy(Request $request, SavedPrompt $prompt): RedirectResponse
     {
         $this->authorizeOwner($request, $prompt);
