@@ -17,6 +17,18 @@
     $contributorUrl = $contactFormUrl . (str_contains($contactFormUrl, '?') ? '&' : '?') . 'type=contributor';
 @endphp
 
+@php
+    $limitLabel = function (int $count, ?int $limit): string {
+        $countLabel = number_format($count);
+
+        if ($limit === null) {
+            return $countLabel . ' <span class="text-3xl md:text-4xl font-bold text-[#718096]">/ 制限なし</span>';
+        }
+
+        return $countLabel . ' <span class="text-3xl md:text-4xl font-bold text-[#718096]">/ ' . number_format($limit) . '</span>';
+    };
+@endphp
+
 <div class="mb-8">
     <h1 class="text-3xl font-bold text-[#2D3748]">Oshi-Wiki 執筆補助</h1>
 </div>
@@ -66,14 +78,14 @@
 <div class="mb-8">
     <p class="text-lg font-bold text-[#2D3748]">登録状況</p>
     <p class="mt-2 text-sm font-bold text-[#A0AEC0]">
-        オリジナルキャラクター、関係性、プロンプト管理の登録状況を確認できます。
+        オリジナルキャラクター、関係性、プロンプト管理の登録状況と上限を確認できます。
     </p>
 </div>
 
 <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
     <section class="rounded-3xl border border-[#E2E8F0] bg-white p-6 shadow-sm">
         <p class="text-sm font-bold text-[#A0AEC0]">オリジナルキャラクター</p>
-        <div class="mt-4 text-5xl font-bold text-[#2D3748]">{{ number_format($originalCharacterCount) }}</div>
+        <div class="mt-4 text-4xl md:text-5xl font-bold leading-none text-[#2D3748]">{!! $limitLabel($originalCharacterCount, $originalCharacterLimit) !!}</div>
         <a href="{{ route('writer.original-characters.index') }}"
            class="mt-5 inline-block text-base font-bold text-blue-600 hover:underline">
             オリジナルキャラクター管理へ
@@ -82,7 +94,7 @@
 
     <section class="rounded-3xl border border-[#E2E8F0] bg-white p-6 shadow-sm">
         <p class="text-sm font-bold text-[#A0AEC0]">関係性</p>
-        <div class="mt-4 text-5xl font-bold text-[#2D3748]">{{ number_format($relationshipCount) }}</div>
+        <div class="mt-4 text-4xl md:text-5xl font-bold leading-none text-[#2D3748]">{!! $limitLabel($relationshipCount, $relationshipLimit) !!}</div>
         <a href="{{ route('writer.original-character-relationships.index') }}"
            class="mt-5 inline-block text-base font-bold text-blue-600 hover:underline">
             関係性管理へ
@@ -91,7 +103,7 @@
 
     <section class="rounded-3xl border border-[#E2E8F0] bg-white p-6 shadow-sm">
         <p class="text-sm font-bold text-[#A0AEC0]">プロンプト管理</p>
-        <div class="mt-4 text-5xl font-bold text-[#2D3748]">{{ number_format($promptCount) }}</div>
+        <div class="mt-4 text-4xl md:text-5xl font-bold leading-none text-[#2D3748]">{!! $limitLabel($promptCount, $promptLimit) !!}</div>
         <a href="{{ route('writer.prompts.index') }}"
            class="mt-5 inline-block text-base font-bold text-blue-600 hover:underline">
             プロンプト管理へ
