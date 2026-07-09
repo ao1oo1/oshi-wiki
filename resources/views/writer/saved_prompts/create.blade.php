@@ -1,5 +1,7 @@
 @include('writer.original_characters._layout_start', ['title' => 'プロンプト新規作成'])
 
+<div class="writer-form-ui">
+
 <div class="mb-8">
     <h1 class="text-3xl font-bold text-[#2D3748]">Oshi-Wiki 執筆補助</h1>
 </div>
@@ -15,8 +17,9 @@
     </p>
 </div>
 
-<form id="prompt-builder-form" method="POST" action="{{ route('writer.prompts.store') }}">
+<form data-form-screen-card-added="true" class="rounded-3xl border border-[#E2E8F0] bg-white p-6 shadow-sm md:p-8 space-y-6" id="prompt-builder-form" method="POST" action="{{ route('writer.prompts.store') }}">
     @include('writer.saved_prompts._form')
 </form>
 
+</div>
 @include('writer.original_characters._layout_end')

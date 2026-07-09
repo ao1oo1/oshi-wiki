@@ -1,5 +1,7 @@
 @include('writer.original_characters._layout_start', ['title' => '関係性新規登録'])
 
+<div class="writer-form-ui">
+
 <div class="mb-8">
     <h1 class="text-3xl font-bold text-[#2D3748]">Oshi-Wiki 執筆補助</h1>
 </div>
@@ -15,8 +17,9 @@
     </p>
 </div>
 
-<form method="POST" action="{{ route('writer.original-character-relationships.store') }}" class="rounded-3xl border border-[#E2E8F0] bg-white p-6 shadow-sm md:p-8">
+<form data-form-screen-card-added="true" class="rounded-3xl border border-[#E2E8F0] bg-white p-6 shadow-sm md:p-8 space-y-6" method="POST" action="{{ route('writer.original-character-relationships.store') }}" class="rounded-3xl border border-[#E2E8F0] bg-white p-6 shadow-sm md:p-8">
     @include('writer.original_character_relationships._form')
 </form>
 
+</div>
 @include('writer.original_characters._layout_end')

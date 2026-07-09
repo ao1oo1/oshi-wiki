@@ -1,3 +1,156 @@
+@php
+    $currentWriterUser = auth()->user();
+
+    $writerCharacterLimit = $currentWriterUser
+        ? \App\Support\WritingAssistLimits::originalCharactersPerUser($currentWriterUser)
+        : null;
+
+    $writerRelationshipLimit = $currentWriterUser
+        ? \App\Support\WritingAssistLimits::relationshipsPerUser($currentWriterUser)
+        : null;
+
+    $writerPromptLimit = $currentWriterUser
+        ? \App\Support\WritingAssistLimits::promptsPerUser($currentWriterUser)
+        : null;
+
+    $writerCharacterCount = $currentWriterUser
+        ? \App\Models\OriginalCharacter::query()->where('user_id', $currentWriterUser->id)->count()
+        : 0;
+
+    $writerRelationshipCount = $currentWriterUser
+        ? \App\Models\OriginalCharacterRelationship::query()->where('user_id', $currentWriterUser->id)->count()
+        : 0;
+
+    $writerPromptCount = $currentWriterUser
+        ? \App\Models\SavedPrompt::query()->where('user_id', $currentWriterUser->id)->count()
+        : 0;
+
+    $writerUsageStats = [
+        [
+            'label' => 'キャラクター',
+            'count' => $writerCharacterCount,
+            'limit' => $writerCharacterLimit,
+        ],
+        [
+            'label' => '関係性',
+            'count' => $writerRelationshipCount,
+            'limit' => $writerRelationshipLimit,
+        ],
+        [
+            'label' => 'プロンプト',
+            'count' => $writerPromptCount,
+            'limit' => $writerPromptLimit,
+        ],
+    ];
+
+    $writerUsageLabel = function (int $count, ?int $limit): string {
+        return $limit === null ? number_format($count) . ' / 制限なし' : number_format($count) . ' / ' . number_format($limit);
+    };
+
+    $writerUsagePercent = function (int $count, ?int $limit): int {
+        if ($limit === null || $limit <= 0) {
+            return 0;
+        }
+
+        return min(100, (int) floor(($count / $limit) * 100));
+    };
+@endphp
+
+@once
+    <style>
+        /*
+         * Writer form common UI
+         * 入力フォーム画面の見た目をOshi-Wikiの管理画面デザインに統一する。
+         */
+        .writer-form-ui form {
+            width: 100%;
+        }
+
+        .writer-form-ui label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+            font-weight: 700;
+            color: #2D3748;
+        }
+
+        .writer-form-ui input[type="text"],
+        .writer-form-ui input[type="email"],
+        .writer-form-ui input[type="number"],
+        .writer-form-ui input[type="url"],
+        .writer-form-ui input[type="date"],
+        .writer-form-ui input[type="datetime-local"],
+        .writer-form-ui input[type="password"],
+        .writer-form-ui select,
+        .writer-form-ui textarea {
+            width: 100%;
+            border-radius: 1rem;
+            border: 1px solid #CBD5E0;
+            background-color: #FFFFFF;
+            color: #2D3748;
+            font-weight: 700;
+            box-shadow: none;
+        }
+
+        .writer-form-ui input[type="text"]:focus,
+        .writer-form-ui input[type="email"]:focus,
+        .writer-form-ui input[type="number"]:focus,
+        .writer-form-ui input[type="url"]:focus,
+        .writer-form-ui input[type="date"]:focus,
+        .writer-form-ui input[type="datetime-local"]:focus,
+        .writer-form-ui input[type="password"]:focus,
+        .writer-form-ui select:focus,
+        .writer-form-ui textarea:focus {
+            border-color: #FED7E2;
+            box-shadow: 0 0 0 3px rgba(254, 215, 226, 0.75);
+            outline: none;
+        }
+
+        .writer-form-ui textarea {
+            min-height: 9rem;
+            line-height: 1.75;
+        }
+
+        .writer-form-ui input::placeholder,
+        .writer-form-ui textarea::placeholder {
+            color: #A0AEC0;
+            font-weight: 700;
+        }
+
+        .writer-form-ui input[type="checkbox"],
+        .writer-form-ui input[type="radio"] {
+            border-color: #CBD5E0;
+            color: #FED7E2;
+        }
+
+        .writer-form-ui input[type="checkbox"]:focus,
+        .writer-form-ui input[type="radio"]:focus {
+            box-shadow: 0 0 0 3px rgba(254, 215, 226, 0.75);
+        }
+
+        .writer-form-ui .form-help,
+        .writer-form-ui .help-text,
+        .writer-form-ui small {
+            color: #A0AEC0;
+            font-size: 0.875rem;
+            font-weight: 700;
+            line-height: 1.75;
+        }
+
+        .writer-form-ui .text-red-600,
+        .writer-form-ui .text-red-500 {
+            font-weight: 700;
+        }
+
+        .writer-form-ui button,
+        .writer-form-ui a {
+            transition: opacity 0.15s ease, background-color 0.15s ease, border-color 0.15s ease;
+        }
+    </style>
+@endonce
+
+
+
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>

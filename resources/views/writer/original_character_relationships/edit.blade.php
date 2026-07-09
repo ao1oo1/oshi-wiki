@@ -1,5 +1,7 @@
 @include('writer.original_characters._layout_start', ['title' => '関係性編集'])
 
+<div class="writer-form-ui">
+
 <div class="mb-8">
     <h1 class="text-3xl font-bold text-[#2D3748]">Oshi-Wiki 執筆補助</h1>
 </div>
@@ -12,9 +14,10 @@
     <h3 class="text-2xl font-bold text-[#2D3748]">編集</h3>
 </div>
 
-<form method="POST" action="{{ route('writer.original-character-relationships.update', $relationship) }}" class="rounded-3xl border border-[#E2E8F0] bg-white p-6 shadow-sm md:p-8">
+<form data-form-screen-card-added="true" class="rounded-3xl border border-[#E2E8F0] bg-white p-6 shadow-sm md:p-8 space-y-6" method="POST" action="{{ route('writer.original-character-relationships.update', $relationship) }}" class="rounded-3xl border border-[#E2E8F0] bg-white p-6 shadow-sm md:p-8">
     @method('PATCH')
     @include('writer.original_character_relationships._form')
 </form>
 
+</div>
 @include('writer.original_characters._layout_end')
