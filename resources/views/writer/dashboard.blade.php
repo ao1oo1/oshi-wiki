@@ -49,7 +49,7 @@
             <section class="rounded-lg border border-[#E2E8F0] bg-white p-5">
                 <h2 class="font-bold">プロンプト</h2>
                 <p class="mt-2 text-sm text-[#718096]">最大50件まで保存できます。</p>
-                <p class="mt-4 text-sm text-[#A0AEC0]">Phase 6以降で実装予定</p>
+                <a href="{{ route('writer.prompts.index') }}" class="mt-4 inline-block rounded bg-[#FED7E2] px-4 py-2 text-sm font-bold text-[#2D3748]">管理する</a>
             </section>
         </div>
     </main>

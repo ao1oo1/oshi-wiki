@@ -24,6 +24,7 @@ Route::middleware(['auth', 'writer.user'])->prefix('writer')->name('writer.')->g
 
     Route::resource('original-characters', \App\Http\Controllers\Writer\OriginalCharacterController::class);
     Route::resource('original-character-relationships', \App\Http\Controllers\Writer\OriginalCharacterRelationshipController::class);
+    Route::resource('prompts', \App\Http\Controllers\Writer\SavedPromptController::class);
 });
 
 Route::middleware(['auth', 'admin.user'])->prefix('admin')->name('admin.')->group(function () {

@@ -41,10 +41,10 @@
                         関係性
                     </a>
 
-                    <div class="block rounded-2xl px-5 py-4 text-[#A0AEC0]">
-                        プロンプト
-                        <span class="ml-2 text-xs">準備中</span>
-                    </div>
+                    <a href="{{ route('writer.prompts.index') }}"
+                       class="block rounded-2xl px-5 py-4 {{ request()->routeIs('writer.prompts.*') ? 'bg-[#FED7E2] text-[#2D3748]' : 'text-[#2D3748] hover:bg-[#FFF1F5]' }}">
+                        保存プロンプト
+                    </a>
 
                     @if (auth()->user()?->canAccessAdmin())
                         <a href="{{ route('admin.dashboard') }}" class="block rounded-2xl px-5 py-4 text-[#2D3748] hover:bg-[#FFF1F5]">
