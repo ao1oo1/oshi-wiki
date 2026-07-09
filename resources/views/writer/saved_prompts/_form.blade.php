@@ -453,11 +453,19 @@
 
             const formData = new FormData(form);
 
+            // 編集画面では保存用に _method=PUT が含まれるため、
+            // プレビューAPI送信時だけ削除する。
+            // これを残すと Laravel が PUT /writer/prompts/preview と解釈し、
+            // JSONではなくHTMLエラーを返すことがある。
+            formData.delete('_method');
+
             try {
                 const response = await fetch('{{ route('writer.prompts.preview') }}', {
                     method: 'POST',
+                    credentials: 'same-origin',
                     headers: {
                         'Accept': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest',
                         'X-CSRF-TOKEN': '{{ csrf_token() }}'
                     },
                     body: formData
