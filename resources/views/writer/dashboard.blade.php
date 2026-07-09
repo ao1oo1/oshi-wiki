@@ -30,7 +30,7 @@
         <p class="text-sm font-bold text-[#A0AEC0]">Guide</p>
         <h3 class="mt-2 text-xl font-bold text-[#2D3748]">はじめての方へ</h3>
         <p class="mt-3 text-sm font-bold leading-7 text-[#4A5568]">
-            オリジナルキャラクター登録から、プロンプトをコピーしてAIに貼り付けるまでの流れを確認できます。
+            オリジナルキャラクター登録から、プロンプトをコピーしてChatGPTなどのAIに貼り付けるまでの流れを確認できます。
         </p>
         <a href="{{ route('writer.guide') }}"
            class="mt-5 inline-flex rounded-2xl bg-[#FED7E2] px-5 py-3 text-sm font-bold text-[#2D3748] hover:opacity-90">
