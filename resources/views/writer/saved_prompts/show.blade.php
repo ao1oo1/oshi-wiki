@@ -90,6 +90,16 @@
                         </span>
                     </dd>
                 </div>
+
+                <div>
+                    <dt class="text-xs font-bold text-[#A0AEC0]">利用回数</dt>
+                    <dd id="used-count" class="mt-1 font-bold text-[#2D3748]">{{ number_format($savedPrompt->used_count ?? 0) }}回</dd>
+                </div>
+
+                <div>
+                    <dt class="text-xs font-bold text-[#A0AEC0]">最終利用日時</dt>
+                    <dd id="last-used-at" class="mt-1 text-sm leading-7 text-[#4A5568]">{{ $savedPrompt->lastUsedLabel() }}</dd>
+                </div>
             </dl>
         </section>
 
@@ -210,6 +220,31 @@
         textarea.setSelectionRange(0, 999999);
     }
 
+    function recordPromptUsage() {
+        fetch('{{ route('writer.prompts.record-usage', $savedPrompt) }}', {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            }
+        })
+            .then((response) => response.json())
+            .then((data) => {
+                const usedCount = document.getElementById('used-count');
+                const lastUsedAt = document.getElementById('last-used-at');
+
+                if (usedCount && data.used_count !== undefined) {
+                    usedCount.textContent = `${Number(data.used_count).toLocaleString()}回`;
+                }
+
+                if (lastUsedAt && data.last_used_at) {
+                    lastUsedAt.textContent = data.last_used_at;
+                }
+            })
+            .catch(() => {});
+    }
+
     function copyPromptBody() {
         const textarea = promptTextarea();
 
@@ -222,10 +257,12 @@
         if (navigator.clipboard && window.isSecureContext) {
             navigator.clipboard.writeText(text).then(() => {
                 showCopyMessage();
+                recordPromptUsage();
             }).catch(() => {
                 selectPromptBody();
                 document.execCommand('copy');
                 showCopyMessage();
+                recordPromptUsage();
             });
 
             return;
@@ -234,6 +271,7 @@
         selectPromptBody();
         document.execCommand('copy');
         showCopyMessage();
+        recordPromptUsage();
     }
 </script>
 

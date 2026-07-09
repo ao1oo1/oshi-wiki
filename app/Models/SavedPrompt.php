@@ -38,12 +38,15 @@ class SavedPrompt extends Model
         'prompt_body',
         'notes',
         'status',
+        'used_count',
+        'last_used_at',
     ];
 
     protected function casts(): array
     {
         return [
             'selected_character_refs' => 'array',
+            'last_used_at' => 'datetime',
             'deleted_at' => 'datetime',
         ];
     }
@@ -135,5 +138,12 @@ class SavedPrompt extends Model
         }
 
         return 'オリジナル';
+    }
+
+    public function lastUsedLabel(): string
+    {
+        return $this->last_used_at
+            ? $this->last_used_at->format('Y/m/d H:i')
+            : '未使用';
     }
 }

@@ -131,6 +131,7 @@
                 <th class="px-6 py-4">作風</th>
                 <th class="px-6 py-4">ジャンル</th>
                 <th class="px-6 py-4">状態</th>
+                <th class="px-6 py-4">利用</th>
                 <th class="px-6 py-4">操作</th>
             </tr>
         </thead>
@@ -145,6 +146,10 @@
                         <span class="rounded-full bg-[#FFF1F5] px-3 py-1 text-xs font-bold text-[#2D3748]">
                             {{ $prompt->status === 'active' ? '有効' : '下書き' }}
                         </span>
+                    </td>
+                    <td class="px-6 py-5">
+                        <div class="font-bold text-[#2D3748]">{{ number_format($prompt->used_count ?? 0) }}回</div>
+                        <div class="mt-1 text-xs font-bold text-[#A0AEC0]">{{ $prompt->lastUsedLabel() }}</div>
                     </td>
                     <td class="px-6 py-5">
                         <div class="flex flex-wrap gap-2">
@@ -169,7 +174,7 @@
                 </tr>
             @empty
                 <tr>
-                    <td colspan="6" class="px-6 py-16 text-center">
+                    <td colspan="7" class="px-6 py-16 text-center">
                         <p class="text-lg font-bold text-[#2D3748]">条件に一致するプロンプトがありません。</p>
                         <p class="mt-2 text-sm font-bold text-[#A0AEC0]">検索条件を変更するか、新規作成してください。</p>
                     </td>

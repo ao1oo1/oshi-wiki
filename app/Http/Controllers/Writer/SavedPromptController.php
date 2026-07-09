@@ -11,6 +11,7 @@ use App\Models\SavedPrompt;
 use App\Models\Work;
 use App\Services\SavedPromptService;
 use App\Support\WritingAssistLimits;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Schema;
@@ -105,11 +106,26 @@ class SavedPromptController extends Controller
         $copy->user_id = $request->user()->id;
         $copy->title = $prompt->title . ' のコピー';
         $copy->status = 'draft';
+        $copy->used_count = 0;
+        $copy->last_used_at = null;
         $copy->save();
 
         return redirect()
             ->route('writer.prompts.edit', $copy)
             ->with('success', 'プロンプトを複製しました。必要に応じて内容を編集してください。');
+    }
+
+    public function recordUsage(Request $request, SavedPrompt $prompt): JsonResponse
+    {
+        $this->authorizeOwner($request, $prompt);
+
+        $this->service->recordUsage($prompt);
+
+        return response()->json([
+            'message' => '利用履歴を更新しました。',
+            'used_count' => $prompt->used_count,
+            'last_used_at' => $prompt->lastUsedLabel(),
+        ]);
     }
 
     public function destroy(Request $request, SavedPrompt $prompt): RedirectResponse

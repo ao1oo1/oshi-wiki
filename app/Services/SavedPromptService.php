@@ -61,6 +61,14 @@ class SavedPromptService
         return $this->repository->delete($savedPrompt);
     }
 
+    public function recordUsage(SavedPrompt $savedPrompt): bool
+    {
+        $savedPrompt->used_count = (int) $savedPrompt->used_count + 1;
+        $savedPrompt->last_used_at = now();
+
+        return $savedPrompt->save();
+    }
+
     private function normalizePromptData(array $data): array
     {
         $workRef = (string) ($data['work_ref'] ?? 'original');

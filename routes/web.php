@@ -27,6 +27,9 @@ Route::middleware(['auth', 'writer.user'])->prefix('writer')->name('writer.')->g
     Route::post('prompts/{prompt}/duplicate', [\App\Http\Controllers\Writer\SavedPromptController::class, 'duplicate'])
         ->name('prompts.duplicate');
 
+    Route::post('prompts/{prompt}/record-usage', [\App\Http\Controllers\Writer\SavedPromptController::class, 'recordUsage'])
+        ->name('prompts.record-usage');
+
     Route::resource('prompts', \App\Http\Controllers\Writer\SavedPromptController::class);
 });
 
