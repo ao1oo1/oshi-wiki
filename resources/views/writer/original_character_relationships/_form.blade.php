@@ -155,7 +155,7 @@
             <p class="text-sm font-bold text-[#A0AEC0]">STEP 3</p>
             <h2 class="mt-1 text-2xl font-bold text-[#2D3748]">印象・備考</h2>
             <p class="mt-2 text-sm font-bold leading-7 text-[#718096]">
-                印象や気持ち、プロンプトに反映したい補足を入力します。
+                印象や気持ち、プロンプトに反映したい補足を入力します。時系列の出来事は次の年表データに入力します。
             </p>
         </div>
 
@@ -173,6 +173,75 @@
                           name="notes"
                           placeholder="その他、関係性について補足したい内容">{{ $oldValue('notes') }}</textarea>
             </div>
+        </div>
+    </section>
+
+    <section class="rounded-3xl border border-[#E2E8F0] bg-white p-6 shadow-sm md:p-8">
+        <div class="mb-6">
+            <p class="text-sm font-bold text-[#A0AEC0]">STEP 4</p>
+            <h2 class="mt-1 text-2xl font-bold text-[#2D3748]">年表データ</h2>
+            <p class="mt-2 text-sm font-bold leading-7 text-[#718096]">
+                関係性に関わる出来事を、時期と内容のセットで登録できます。最大10件まで登録できます。
+            </p>
+        </div>
+
+        @php
+            $timelineItems = old('timeline_items', $relationship?->timeline_items ?? []);
+
+            if (! is_array($timelineItems)) {
+                $timelineItems = [];
+            }
+
+            for ($i = count($timelineItems); $i < 10; $i++) {
+                $timelineItems[$i] = [
+                    'period' => '',
+                    'content' => '',
+                ];
+            }
+
+            $timelineItems = array_slice($timelineItems, 0, 10);
+        @endphp
+
+        <div class="space-y-4">
+            <div class="grid gap-3 md:grid-cols-[220px_1fr]">
+                <p class="text-sm font-bold text-[#A0AEC0]">時期</p>
+                <p class="text-sm font-bold text-[#A0AEC0]">内容</p>
+            </div>
+
+            @foreach ($timelineItems as $index => $item)
+                <div class="grid gap-3 rounded-2xl bg-[#F7FAFC] p-4 md:grid-cols-[220px_1fr]">
+                    <div>
+                        <label for="timeline_period_{{ $index }}" class="sr-only">
+                            年表 {{ $index + 1 }} 時期
+                        </label>
+                        <input id="timeline_period_{{ $index }}"
+                               type="text"
+                               name="timeline_items[{{ $index }}][period]"
+                               value="{{ $item['period'] ?? '' }}"
+                               placeholder="{{ $index === 0 ? '例：5歳の頃' : '時期' }}">
+                    </div>
+
+                    <div>
+                        <label for="timeline_content_{{ $index }}" class="sr-only">
+                            年表 {{ $index + 1 }} 内容
+                        </label>
+                        <input id="timeline_content_{{ $index }}"
+                               type="text"
+                               name="timeline_items[{{ $index }}][content]"
+                               value="{{ $item['content'] ?? '' }}"
+                               placeholder="{{ $index === 0 ? '例：出会う' : '内容' }}">
+                    </div>
+                </div>
+            @endforeach
+        </div>
+
+        <div class="mt-5 rounded-2xl bg-[#FFF1F5] p-5">
+            <p class="text-sm font-bold text-[#2D3748]">入力例</p>
+            <ul class="mt-3 space-y-2 text-sm font-bold leading-7 text-[#4A5568]">
+                <li>・時期：5歳の頃　内容：出会う</li>
+                <li>・時期：中学生の頃　内容：一度離れる</li>
+                <li>・時期：物語開始時　内容：再会する</li>
+            </ul>
         </div>
     </section>
 

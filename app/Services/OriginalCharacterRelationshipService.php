@@ -30,6 +30,8 @@ class OriginalCharacterRelationshipService
 
     public function createForUser(User $user, array $data): OriginalCharacterRelationship
     {
+        $data = $this->normalizeTimelineItems($data);
+
         $limit = WritingAssistLimits::relationshipsPerUser($user);
 
         if ($limit !== null && $this->repository->countForUser($user) >= $limit) {
@@ -51,6 +53,8 @@ class OriginalCharacterRelationshipService
 
     public function updateForUser(User $user, OriginalCharacterRelationship $relationship, array $data): bool
     {
+        $data = $this->normalizeTimelineItems($data);
+
         $resolved = $this->resolveRelationshipCharacters($user, $data);
 
         $payload = array_merge($data, $resolved);
@@ -144,4 +148,43 @@ class OriginalCharacterRelationshipService
             $field => 'キャラクターの種別が不正です。',
         ]);
     }
+
+    private function normalizeTimelineItems(array $data): array
+    {
+        $items = $data['timeline_items'] ?? [];
+
+        if (! is_array($items)) {
+            $data['timeline_items'] = [];
+            return $data;
+        }
+
+        $normalized = [];
+
+        foreach ($items as $item) {
+            if (! is_array($item)) {
+                continue;
+            }
+
+            $period = trim((string) ($item['period'] ?? ''));
+            $content = trim((string) ($item['content'] ?? ''));
+
+            if ($period === '' && $content === '') {
+                continue;
+            }
+
+            $normalized[] = [
+                'period' => $period,
+                'content' => $content,
+            ];
+
+            if (count($normalized) >= 10) {
+                break;
+            }
+        }
+
+        $data['timeline_items'] = $normalized;
+
+        return $data;
+    }
+
 }

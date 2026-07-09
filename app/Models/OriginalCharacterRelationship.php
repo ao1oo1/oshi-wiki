@@ -30,8 +30,14 @@ class OriginalCharacterRelationship extends Model
         'relationship_type',
         'impression',
         'notes',
+        'timeline_items',
         'status',
     ];
+
+    protected $casts = [
+        'timeline_items' => 'array',
+    ];
+
 
     protected function casts(): array
     {
