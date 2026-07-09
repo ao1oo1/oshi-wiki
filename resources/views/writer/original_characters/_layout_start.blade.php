@@ -111,6 +111,11 @@
             line-height: 1.75;
         }
 
+        .writer-form-ui #prompt-preview {
+            min-height: 680px !important;
+            resize: vertical;
+        }
+
         .writer-form-ui input::placeholder,
         .writer-form-ui textarea::placeholder {
             color: #A0AEC0;

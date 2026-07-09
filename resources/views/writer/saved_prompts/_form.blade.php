@@ -325,7 +325,7 @@
 
     <textarea id="prompt-preview"
               readonly
-              class="mt-5 min-h-[420px] w-full rounded-2xl border-[#CBD5E0] bg-[#F7FAFC] p-5 font-mono text-sm leading-7 text-[#2D3748]"></textarea>
+              class="mt-5 min-h-[680px] w-full rounded-2xl border-[#CBD5E0] bg-[#F7FAFC] p-5 font-mono text-sm leading-7 text-[#2D3748]"></textarea>
 </section>
 
 <div class="flex flex-col gap-3 rounded-3xl border border-[#E2E8F0] bg-white p-6 shadow-sm md:flex-row md:items-center md:justify-between">
