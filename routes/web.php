@@ -21,6 +21,9 @@ Route::get('/dashboard', function () {
 Route::middleware(['auth', 'writer.user'])->prefix('writer')->name('writer.')->group(function () {
     Route::get('dashboard', \App\Http\Controllers\Writer\DashboardController::class)
         ->name('dashboard');
+
+    Route::resource('original-characters', \App\Http\Controllers\Writer\OriginalCharacterController::class);
+    Route::resource('original-character-relationships', \App\Http\Controllers\Writer\OriginalCharacterRelationshipController::class);
 });
 
 Route::middleware(['auth', 'admin.user'])->prefix('admin')->name('admin.')->group(function () {

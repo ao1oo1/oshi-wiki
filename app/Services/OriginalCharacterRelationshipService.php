@@ -1,0 +1,147 @@
+<?php
+
+namespace App\Services;
+
+use App\Models\Character;
+use App\Models\OriginalCharacter;
+use App\Models\OriginalCharacterRelationship;
+use App\Models\User;
+use App\Repositories\OriginalCharacterRelationshipRepository;
+use App\Support\WritingAssistLimits;
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Validation\ValidationException;
+
+class OriginalCharacterRelationshipService
+{
+    public function __construct(
+        private readonly OriginalCharacterRelationshipRepository $repository
+    ) {
+    }
+
+    public function paginateForUser(User $user)
+    {
+        return $this->repository->paginateForUser($user);
+    }
+
+    public function countForUser(User $user): int
+    {
+        return $this->repository->countForUser($user);
+    }
+
+    public function createForUser(User $user, array $data): OriginalCharacterRelationship
+    {
+        $limit = WritingAssistLimits::relationshipsPerUser($user);
+
+        if ($limit !== null && $this->repository->countForUser($user) >= $limit) {
+            throw ValidationException::withMessages([
+                'limit' => "関係性は最大{$limit}件まで登録できます。",
+            ]);
+        }
+
+        $resolved = $this->resolveRelationshipCharacters($user, $data);
+
+        $payload = array_merge($data, $resolved);
+        unset($payload['from_character_ref'], $payload['to_character_ref']);
+
+        $payload['user_id'] = $user->id;
+        $payload['status'] = $payload['status'] ?? 'active';
+
+        return $this->repository->create($payload);
+    }
+
+    public function updateForUser(User $user, OriginalCharacterRelationship $relationship, array $data): bool
+    {
+        $resolved = $this->resolveRelationshipCharacters($user, $data);
+
+        $payload = array_merge($data, $resolved);
+        unset($payload['from_character_ref'], $payload['to_character_ref']);
+
+        return $this->repository->update($relationship, $payload);
+    }
+
+    public function delete(OriginalCharacterRelationship $relationship): bool
+    {
+        return $this->repository->delete($relationship);
+    }
+
+    private function resolveRelationshipCharacters(User $user, array $data): array
+    {
+        $from = $this->resolveCharacterRef($user, (string) ($data['from_character_ref'] ?? ''), 'from_character_ref');
+        $to = $this->resolveCharacterRef($user, (string) ($data['to_character_ref'] ?? ''), 'to_character_ref');
+
+        if ($from['source'] === $to['source'] && $from['id'] === $to['id']) {
+            throw ValidationException::withMessages([
+                'to_character_ref' => '同じキャラクター同士の関係性は登録できません。',
+            ]);
+        }
+
+        return [
+            'from_character_source' => $from['source'],
+            'to_character_source' => $to['source'],
+
+            'from_original_character_id' => $from['source'] === OriginalCharacterRelationship::SOURCE_ORIGINAL ? $from['id'] : null,
+            'to_original_character_id' => $to['source'] === OriginalCharacterRelationship::SOURCE_ORIGINAL ? $to['id'] : null,
+
+            'from_character_id' => $from['source'] === OriginalCharacterRelationship::SOURCE_V1_CHARACTER ? $from['id'] : null,
+            'to_character_id' => $to['source'] === OriginalCharacterRelationship::SOURCE_V1_CHARACTER ? $to['id'] : null,
+        ];
+    }
+
+    private function resolveCharacterRef(User $user, string $ref, string $field): array
+    {
+        if (! str_contains($ref, ':')) {
+            throw ValidationException::withMessages([
+                $field => 'キャラクターを選択してください。',
+            ]);
+        }
+
+        [$source, $id] = explode(':', $ref, 2);
+        $id = (int) $id;
+
+        if ($source === OriginalCharacterRelationship::SOURCE_ORIGINAL) {
+            $character = OriginalCharacter::query()->find($id);
+
+            if (! $character) {
+                throw ValidationException::withMessages([
+                    $field => 'オリジナルキャラクターが見つかりません。',
+                ]);
+            }
+
+            if (! $user->isSuperAdmin() && $character->user_id !== $user->id) {
+                throw ValidationException::withMessages([
+                    $field => '自分のオリジナルキャラクターのみ選択できます。',
+                ]);
+            }
+
+            return [
+                'source' => OriginalCharacterRelationship::SOURCE_ORIGINAL,
+                'id' => $character->id,
+            ];
+        }
+
+        if ($source === OriginalCharacterRelationship::SOURCE_V1_CHARACTER) {
+            $query = Character::query()->where('id', $id);
+
+            if (! $user->isSuperAdmin() && Schema::hasColumn('characters', 'status')) {
+                $query->whereIn('status', ['published', 'active']);
+            }
+
+            $character = $query->first();
+
+            if (! $character) {
+                throw ValidationException::withMessages([
+                    $field => '作品キャラクターが見つかりません。',
+                ]);
+            }
+
+            return [
+                'source' => OriginalCharacterRelationship::SOURCE_V1_CHARACTER,
+                'id' => $character->id,
+            ];
+        }
+
+        throw ValidationException::withMessages([
+            $field => 'キャラクターの種別が不正です。',
+        ]);
+    }
+}

@@ -36,10 +36,10 @@
                         オリジナルキャラクター
                     </a>
 
-                    <div class="block rounded-2xl px-5 py-4 text-[#A0AEC0]">
+                    <a href="{{ route('writer.original-character-relationships.index') }}"
+                       class="block rounded-2xl px-5 py-4 {{ request()->routeIs('writer.original-character-relationships.*') ? 'bg-[#FED7E2] text-[#2D3748]' : 'text-[#2D3748] hover:bg-[#FFF1F5]' }}">
                         関係性
-                        <span class="ml-2 text-xs">準備中</span>
-                    </div>
+                    </a>
 
                     <div class="block rounded-2xl px-5 py-4 text-[#A0AEC0]">
                         プロンプト

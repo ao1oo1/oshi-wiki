@@ -2,8 +2,6 @@
 
 use App\Http\Middleware\EnsureAdminUser;
 use App\Http\Middleware\EnsureWriterUser;
-use App\Http\Middleware\EnsureAdminUser;
-use App\Http\Middleware\EnsureWriterUser;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;

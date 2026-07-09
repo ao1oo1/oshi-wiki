@@ -12,13 +12,31 @@ return new class extends Migration
             return;
         }
 
+        $values = ['name' => 'writer'];
+
+        if (Schema::hasColumn('roles', 'label')) {
+            $values['label'] = '一般ユーザー';
+        }
+
+        if (Schema::hasColumn('roles', 'display_name')) {
+            $values['display_name'] = '一般ユーザー';
+        }
+
+        if (Schema::hasColumn('roles', 'description')) {
+            $values['description'] = 'AI執筆補助機能を利用する一般ユーザー';
+        }
+
+        if (Schema::hasColumn('roles', 'updated_at')) {
+            $values['updated_at'] = now();
+        }
+
+        if (Schema::hasColumn('roles', 'created_at')) {
+            $values['created_at'] = DB::raw('COALESCE(created_at, NOW())');
+        }
+
         DB::table('roles')->updateOrInsert(
             ['name' => 'writer'],
-            [
-                'label' => '一般ユーザー',
-                'description' => 'AI執筆補助機能を利用する一般ユーザー',
-                'updated_at' => now(),
-            ]
+            $values
         );
     }
 

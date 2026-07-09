@@ -10,15 +10,12 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Validation\Rules;
-use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 
 class RegisteredUserController extends Controller
 {
-    /**
-     * Display the registration view.
-     */
     public function create(): View
     {
         return view('auth.register');
@@ -32,11 +29,6 @@ class RegisteredUserController extends Controller
         ]);
     }
 
-    /**
-     * Handle an incoming registration request.
-     *
-     * @throws ValidationException
-     */
     public function store(Request $request): RedirectResponse
     {
         $request->validate([
@@ -45,13 +37,26 @@ class RegisteredUserController extends Controller
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
-        $writerRole = Role::firstOrCreate(
-            ['name' => 'writer'],
-            [
-                'label' => '一般ユーザー',
-                'description' => 'AI執筆補助機能を利用する一般ユーザー',
-            ]
-        );
+        $writerRole = Role::where('name', 'writer')->first();
+
+        if (! $writerRole) {
+            $writerRole = new Role();
+            $writerRole->name = 'writer';
+
+            if (Schema::hasColumn('roles', 'label')) {
+                $writerRole->label = '一般ユーザー';
+            }
+
+            if (Schema::hasColumn('roles', 'display_name')) {
+                $writerRole->display_name = '一般ユーザー';
+            }
+
+            if (Schema::hasColumn('roles', 'description')) {
+                $writerRole->description = 'AI執筆補助機能を利用する一般ユーザー';
+            }
+
+            $writerRole->save();
+        }
 
         $user = User::create([
             'name' => $request->name,

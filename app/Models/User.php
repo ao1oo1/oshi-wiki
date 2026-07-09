@@ -65,6 +65,7 @@ class User extends Authenticatable
             ->where('permission_key', $permissionKey)
             ->exists() ?? false;
     }
+
     public function isSuperAdmin(): bool
     {
         return (bool) $this->is_super_admin;
@@ -94,6 +95,6 @@ class User extends Authenticatable
 
     public function canAccessWriter(): bool
     {
-        return $this->isWriter();
+        return $this->isSuperAdmin() || $this->isWriter();
     }
 }
