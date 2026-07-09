@@ -1,23 +1,28 @@
 @include('writer.original_characters._layout_start', ['title' => 'オリジナルキャラクター編集'])
 
+@php
+    $character = $character ?? $originalCharacter ?? null;
+@endphp
+
 <div class="writer-form-ui">
+    <div class="mb-8">
+        <h1 class="text-3xl font-bold text-[#2D3748]">オリジナルキャラクター編集</h1>
+        <p class="mt-3 text-sm font-bold text-[#A0AEC0]">
+            登録済みのオリジナルキャラクター情報を編集します。
+        </p>
+    </div>
 
-<div class="mb-8">
-    <h1 class="text-3xl font-bold text-[#2D3748]">Oshi-Wiki 執筆補助</h1>
+    @if (! $character)
+        <div class="rounded-3xl border border-red-200 bg-white p-8 text-red-600">
+            キャラクターデータが見つかりません。
+        </div>
+    @else
+        <form method="POST" action="{{ route('writer.original-characters.update', $character) }}" class="space-y-8">
+            @csrf
+            @method('PUT')
+            @include('writer.original_characters._form', ['character' => $character])
+        </form>
+    @endif
 </div>
 
-<div class="mb-8 rounded-2xl bg-[#FED7E2] px-6 py-5">
-    <h2 class="text-2xl font-bold text-[#2D3748]">オリジナルキャラクター</h2>
-</div>
-
-<div class="mb-6">
-    <h3 class="text-2xl font-bold text-[#2D3748]">編集</h3>
-</div>
-
-<form data-form-screen-card-added="true" class="rounded-3xl border border-[#E2E8F0] bg-white p-6 shadow-sm md:p-8 space-y-6" method="POST" action="{{ route('writer.original-characters.update', $originalCharacter) }}" class="rounded-3xl border border-[#E2E8F0] bg-white p-6 shadow-sm md:p-8">
-    @method('PATCH')
-    @include('writer.original_characters._form')
-</form>
-
-</div>
 @include('writer.original_characters._layout_end')
