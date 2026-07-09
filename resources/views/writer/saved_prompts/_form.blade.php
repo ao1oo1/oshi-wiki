@@ -272,23 +272,62 @@
         </div>
     </section>
 
+    <section class="rounded-3xl border border-[#E2E8F0] bg-white p-6 shadow-sm md:p-8">
+        <div class="mb-5 flex flex-col justify-between gap-4 md:flex-row md:items-center">
+            <div>
+                <p class="text-sm font-bold text-[#A0AEC0]">Preview</p>
+                <h3 class="mt-1 text-2xl font-bold text-[#2D3748]">プロンプトプレビュー</h3>
+                <p class="mt-2 text-sm leading-7 text-[#718096]">
+                    保存前に、実際に生成されるプロンプト本文を確認できます。
+                </p>
+            </div>
+
+            <div class="flex flex-wrap gap-2">
+                <button type="button"
+                        id="preview-button"
+                        class="rounded-2xl bg-[#FED7E2] px-6 py-3 text-base font-bold text-[#2D3748] shadow-sm hover:opacity-90">
+                    プレビュー生成
+                </button>
+
+                <button type="button"
+                        id="preview-copy-button"
+                        class="rounded-2xl border border-[#CBD5E0] bg-white px-6 py-3 text-base font-bold text-[#2D3748] hover:bg-[#F7FAFC]">
+                    プレビューをコピー
+                </button>
+            </div>
+        </div>
+
+        <div id="preview-message" class="mb-4 hidden rounded-2xl border border-green-200 bg-green-50 px-5 py-4 text-sm font-bold text-green-700">
+            プレビューを生成しました。
+        </div>
+
+        <div id="preview-error" class="mb-4 hidden rounded-2xl border border-red-200 bg-red-50 px-5 py-4 text-sm font-bold text-red-700">
+        </div>
+
+        <textarea id="prompt-preview"
+                  readonly
+                  rows="22"
+                  class="w-full rounded-2xl border-[#E2E8F0] bg-[#F7FAFC] px-5 py-4 text-sm leading-7 text-[#2D3748] shadow-inner"
+                  placeholder="「プレビュー生成」を押すと、ここにプロンプト本文が表示されます。"></textarea>
+    </section>
+
     <input type="hidden" name="category" value="scene">
 
     <div class="rounded-3xl bg-[#FFF1F5] px-6 py-5 text-sm font-bold leading-7 text-[#4A5568]">
-        保存すると、選択した作品・登場人物・作風・ジャンル・あらすじ・起承転結をもとに、AIへ貼り付けるプロンプト本文が自動生成されます。
+        作成・保存すると、選択した作品・登場人物・作風・ジャンル・あらすじ・起承転結をもとに、AIへ貼り付けるプロンプト本文が自動生成されます。
     </div>
 
     <div class="flex flex-wrap items-center gap-3">
         <button type="submit"
                 onclick="setPromptStatus('active')"
                 class="rounded-2xl bg-[#FED7E2] px-6 py-3 text-base font-bold text-[#2D3748] shadow-sm hover:opacity-90">
-            保存する
+            作成・保存する
         </button>
 
         <button type="submit"
                 onclick="setPromptStatus('draft')"
                 class="rounded-2xl border border-[#CBD5E0] bg-white px-6 py-3 text-base font-bold text-[#2D3748] hover:bg-[#F7FAFC]">
-            下書きで保存
+            下書きにする
         </button>
 
         <a href="{{ route('writer.prompts.index') }}" class="rounded-2xl border border-[#CBD5E0] bg-white px-6 py-3 text-base font-bold text-[#2D3748] hover:bg-[#F7FAFC]">
@@ -299,6 +338,7 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
+        const form = document.getElementById('prompt-builder-form');
         const workRef = document.getElementById('work-ref');
         const officialOptions = Array.from(document.querySelectorAll('.official-character-option'));
         const officialEmpty = document.getElementById('official-character-empty');
@@ -309,6 +349,12 @@
 
         const genre = document.getElementById('genre');
         const genreOtherWrap = document.getElementById('genre-other-wrap');
+
+        const previewButton = document.getElementById('preview-button');
+        const previewCopyButton = document.getElementById('preview-copy-button');
+        const previewTextarea = document.getElementById('prompt-preview');
+        const previewMessage = document.getElementById('preview-message');
+        const previewError = document.getElementById('preview-error');
 
         function selectedWorkId() {
             if (!workRef || !workRef.value.startsWith('work:')) {
@@ -328,7 +374,7 @@
 
                 option.classList.toggle('hidden', !shouldShow);
 
-                if (!shouldShow && checkbox && !checkbox.checked) {
+                if (!shouldShow && checkbox && checkbox.checked) {
                     checkbox.checked = false;
                 }
 
@@ -356,8 +402,133 @@
             }
         }
 
+        function showPreviewMessage(text) {
+            if (!previewMessage) {
+                return;
+            }
+
+            previewMessage.textContent = text;
+            previewMessage.classList.remove('hidden');
+
+            setTimeout(() => {
+                previewMessage.classList.add('hidden');
+            }, 2500);
+        }
+
+        function showPreviewError(text) {
+            if (!previewError) {
+                return;
+            }
+
+            previewError.textContent = text;
+            previewError.classList.remove('hidden');
+        }
+
+        function hidePreviewError() {
+            if (!previewError) {
+                return;
+            }
+
+            previewError.classList.add('hidden');
+            previewError.textContent = '';
+        }
+
+        async function generatePreview() {
+            if (!form) {
+                showPreviewError('プレビュー用フォームが見つかりません。画面を再読み込みしてください。');
+                return;
+            }
+
+            if (!previewTextarea) {
+                showPreviewError('プレビュー表示欄が見つかりません。画面を再読み込みしてください。');
+                return;
+            }
+
+            hidePreviewError();
+
+            if (previewButton) {
+                previewButton.disabled = true;
+                previewButton.textContent = '生成中...';
+            }
+
+            const formData = new FormData(form);
+
+            try {
+                const response = await fetch('{{ route('writer.prompts.preview') }}', {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: formData
+                });
+
+                const rawText = await response.text();
+                let data = {};
+
+                try {
+                    data = rawText ? JSON.parse(rawText) : {};
+                } catch (error) {
+                    showPreviewError('JSON以外のレスポンスが返りました。ログを確認してください。');
+                    return;
+                }
+
+                if (!response.ok) {
+                    const messages = data.errors
+                        ? Object.values(data.errors).flat().join(' / ')
+                        : (data.message || `プレビュー生成に失敗しました。HTTP ${response.status}`);
+
+                    showPreviewError(messages);
+                    return;
+                }
+
+                const promptBody = data.prompt_body ?? '';
+
+                previewTextarea.value = promptBody;
+                previewTextarea.textContent = promptBody;
+
+                if (data.length !== undefined && Number(data.length) === 0) {
+                    showPreviewError('プレビューAPIは成功しましたが、本文が0文字です。');
+                    return;
+                }
+
+                if (!promptBody) {
+                    showPreviewError('プレビューAPIは成功しましたが、prompt_body が空です。');
+                    return;
+                }
+
+                showPreviewMessage('プレビューを生成しました。');
+            } catch (error) {
+                showPreviewError('通信に失敗しました。開発サーバーが起動しているか確認してください。');
+            } finally {
+                if (previewButton) {
+                    previewButton.disabled = false;
+                    previewButton.textContent = 'プレビュー生成';
+                }
+            }
+        }
+
+        async function copyPreview() {
+            if (!previewTextarea || !previewTextarea.value) {
+                showPreviewError('コピーするプレビューがありません。先にプレビュー生成をしてください。');
+                return;
+            }
+
+            hidePreviewError();
+
+            try {
+                await navigator.clipboard.writeText(previewTextarea.value);
+                showPreviewMessage('プレビュー本文をコピーしました。');
+            } catch (error) {
+                previewTextarea.focus();
+                previewTextarea.select();
+                document.execCommand('copy');
+                showPreviewMessage('プレビュー本文をコピーしました。');
+            }
+        }
+
         window.setPromptStatus = function (status) {
-            const statusSelect = document.querySelector('select[name="status"]');
+            const statusSelect = form?.querySelector('select[name="status"]');
 
             if (statusSelect) {
                 statusSelect.value = status;
@@ -367,6 +538,8 @@
         workRef?.addEventListener('change', updateOfficialCharacters);
         writingStyle?.addEventListener('change', updateOtherFields);
         genre?.addEventListener('change', updateOtherFields);
+        previewButton?.addEventListener('click', generatePreview);
+        previewCopyButton?.addEventListener('click', copyPreview);
 
         updateOfficialCharacters();
         updateOtherFields();

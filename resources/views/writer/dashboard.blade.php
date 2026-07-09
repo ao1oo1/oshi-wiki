@@ -12,6 +12,9 @@
                         : url('/contact')
                 )
         );
+
+    $dataRequestUrl = $contactFormUrl . (str_contains($contactFormUrl, '?') ? '&' : '?') . 'type=data_request';
+    $contributorUrl = $contactFormUrl . (str_contains($contactFormUrl, '?') ? '&' : '?') . 'type=contributor';
 @endphp
 
 <div class="mb-8">
@@ -39,9 +42,9 @@
         <p class="text-sm font-bold text-[#A0AEC0]">Request</p>
         <h3 class="mt-2 text-xl font-bold text-[#2D3748]">データ登録リクエスト</h3>
         <p class="mt-3 text-sm font-bold leading-7 text-[#4A5568]">
-            登録してほしい作品・ジャンル・キャラクターがある場合は、お問い合わせフォームからお知らせください。
+            登録してほしい作品・ジャンル・キャラクターがある場合は、お問い合わせフォームからお知らせください。内容確認後、追加候補として検討します。
         </p>
-        <a href="{{ $contactFormUrl }}"
+        <a href="{{ $dataRequestUrl }}"
            class="mt-5 inline-flex rounded-2xl bg-[#FED7E2] px-5 py-3 text-sm font-bold text-[#2D3748] hover:opacity-90">
             お問い合わせフォームへ
         </a>
@@ -51,9 +54,9 @@
         <p class="text-sm font-bold text-[#A0AEC0]">Contributor</p>
         <h3 class="mt-2 text-xl font-bold text-[#2D3748]">コントリビュータ募集</h3>
         <p class="mt-3 text-sm font-bold leading-7 text-[#4A5568]">
-            Oshi-Wikiでは、作品やキャラクターデータの登録に協力してくださるコントリビュータを募集しています。応募希望の方はお問い合わせフォームよりご連絡ください。
+            Oshi-Wikiでは、作品やキャラクターデータの登録に協力してくださるコントリビュータを募集しています。応募希望の方は、お問い合わせフォームから「コントリビュータ応募」と分かる内容でご連絡ください。
         </p>
-        <a href="{{ $contactFormUrl }}"
+        <a href="{{ $contributorUrl }}"
            class="mt-5 inline-flex rounded-2xl bg-[#FED7E2] px-5 py-3 text-sm font-bold text-[#2D3748] hover:opacity-90">
             お問い合わせフォームへ
         </a>

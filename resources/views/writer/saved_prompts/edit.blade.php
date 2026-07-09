@@ -12,7 +12,7 @@
     <h3 class="text-2xl font-bold text-[#2D3748]">編集</h3>
 </div>
 
-<form method="POST" action="{{ route('writer.prompts.update', $savedPrompt) }}">
+<form id="prompt-builder-form" method="POST" action="{{ route('writer.prompts.update', $savedPrompt) }}">
     @method('PATCH')
     @include('writer.saved_prompts._form')
 </form>

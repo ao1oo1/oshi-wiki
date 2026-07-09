@@ -61,6 +61,13 @@ class SavedPromptService
         return $this->repository->delete($savedPrompt);
     }
 
+    public function previewForUser(User $user, array $data): string
+    {
+        $payload = $this->normalizePromptData($data);
+
+        return $this->buildPromptBody($user, $payload);
+    }
+
     public function recordUsage(SavedPrompt $savedPrompt): bool
     {
         $savedPrompt->used_count = (int) $savedPrompt->used_count + 1;
@@ -122,6 +129,13 @@ class SavedPromptService
             $data['genre_other'] ?? null
         );
 
+        $synopsis = $this->safeText($data['synopsis'] ?? null);
+        $plotOpening = $this->safeText($data['plot_opening'] ?? null);
+        $plotDevelopment = $this->safeText($data['plot_development'] ?? null);
+        $plotTurn = $this->safeText($data['plot_turn'] ?? null);
+        $plotConclusion = $this->safeText($data['plot_conclusion'] ?? null);
+        $notes = $this->safeText($data['notes'] ?? null);
+
         $lines = [
             '以下の条件をもとに、小説本文の作成に使うためのプロンプトを作成してください。',
             '',
@@ -141,19 +155,19 @@ class SavedPromptService
             $genre ?: '指定なし',
             '',
             '【あらすじ】',
-            $data['synopsis'] ?: '指定なし',
+            $synopsis ?: '指定なし',
             '',
             '【起】',
-            $data['plot_opening'] ?: '指定なし',
+            $plotOpening ?: '指定なし',
             '',
             '【承】',
-            $data['plot_development'] ?: '指定なし',
+            $plotDevelopment ?: '指定なし',
             '',
             '【転】',
-            $data['plot_turn'] ?: '指定なし',
+            $plotTurn ?: '指定なし',
             '',
             '【結】',
-            $data['plot_conclusion'] ?: '指定なし',
+            $plotConclusion ?: '指定なし',
             '',
             '【出力条件】',
             '・上記の設定を守ってください。',
@@ -163,10 +177,10 @@ class SavedPromptService
             '・不足している情報は、自然な範囲で補ってください。',
         ];
 
-        if (! empty($data['notes'])) {
+        if ($notes !== '') {
             $lines[] = '';
             $lines[] = '【備考】';
-            $lines[] = $data['notes'];
+            $lines[] = $notes;
         }
 
         return implode("\n", $lines);
@@ -179,5 +193,10 @@ class SavedPromptService
         }
 
         return $labels[$value] ?? '';
+    }
+
+    private function safeText(mixed $value): string
+    {
+        return trim((string) ($value ?? ''));
     }
 }

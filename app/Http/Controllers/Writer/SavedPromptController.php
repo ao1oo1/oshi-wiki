@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Writer;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Writer\SavedPrompt\PreviewSavedPromptRequest;
 use App\Http\Requests\Writer\SavedPrompt\StoreSavedPromptRequest;
 use App\Http\Requests\Writer\SavedPrompt\UpdateSavedPromptRequest;
 use App\Models\Character;
@@ -66,6 +67,19 @@ class SavedPromptController extends Controller
         return redirect()
             ->route('writer.prompts.show', $savedPrompt)
             ->with('success', 'プロンプトを作成しました。');
+    }
+
+    public function preview(PreviewSavedPromptRequest $request): JsonResponse
+    {
+        $promptBody = $this->service->previewForUser(
+            $request->user(),
+            $request->validated()
+        );
+
+        return response()->json([
+            'prompt_body' => $promptBody,
+            'length' => mb_strlen($promptBody),
+        ]);
     }
 
     public function show(Request $request, SavedPrompt $prompt): View

@@ -22,8 +22,14 @@ Route::middleware(['auth', 'writer.user'])->prefix('writer')->name('writer.')->g
     Route::get('dashboard', \App\Http\Controllers\Writer\DashboardController::class)
         ->name('dashboard');
 
+    Route::get('guide', \App\Http\Controllers\Writer\GuideController::class)
+        ->name('guide');
+
     Route::resource('original-characters', \App\Http\Controllers\Writer\OriginalCharacterController::class);
     Route::resource('original-character-relationships', \App\Http\Controllers\Writer\OriginalCharacterRelationshipController::class);
+    Route::post('prompts/preview', [\App\Http\Controllers\Writer\SavedPromptController::class, 'preview'])
+        ->name('prompts.preview');
+
     Route::post('prompts/{prompt}/duplicate', [\App\Http\Controllers\Writer\SavedPromptController::class, 'duplicate'])
         ->name('prompts.duplicate');
 

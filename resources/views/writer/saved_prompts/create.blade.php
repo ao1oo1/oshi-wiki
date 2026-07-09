@@ -15,7 +15,7 @@
     </p>
 </div>
 
-<form method="POST" action="{{ route('writer.prompts.store') }}">
+<form id="prompt-builder-form" method="POST" action="{{ route('writer.prompts.store') }}">
     @include('writer.saved_prompts._form')
 </form>
 
