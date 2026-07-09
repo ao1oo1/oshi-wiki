@@ -5,7 +5,7 @@
 </div>
 
 <div class="mb-8 rounded-2xl bg-[#FED7E2] px-6 py-5">
-    <h2 class="text-2xl font-bold text-[#2D3748]">保存プロンプト</h2>
+    <h2 class="text-2xl font-bold text-[#2D3748]">プロンプト管理</h2>
 </div>
 
 <div class="mb-6">

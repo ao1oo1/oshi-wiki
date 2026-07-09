@@ -43,7 +43,7 @@
 
                     <a href="{{ route('writer.prompts.index') }}"
                        class="block rounded-2xl px-5 py-4 {{ request()->routeIs('writer.prompts.*') ? 'bg-[#FED7E2] text-[#2D3748]' : 'text-[#2D3748] hover:bg-[#FFF1F5]' }}">
-                        保存プロンプト
+                        プロンプト管理
                     </a>
 
                     @if (auth()->user()?->canAccessAdmin())

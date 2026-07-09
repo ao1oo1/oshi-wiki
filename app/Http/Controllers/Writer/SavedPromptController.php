@@ -48,7 +48,7 @@ class SavedPromptController extends Controller
 
         return redirect()
             ->route('writer.prompts.show', $savedPrompt)
-            ->with('success', 'プロンプトを保存しました。');
+            ->with('success', 'プロンプトを作成しました。');
     }
 
     public function show(Request $request, SavedPrompt $prompt): View

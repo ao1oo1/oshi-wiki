@@ -1,16 +1,16 @@
-@include('writer.original_characters._layout_start', ['title' => '保存プロンプト'])
+@include('writer.original_characters._layout_start', ['title' => 'プロンプト管理'])
 
 <div class="mb-8">
     <h1 class="text-3xl font-bold text-[#2D3748]">Oshi-Wiki 執筆補助</h1>
 </div>
 
 <div class="mb-8 rounded-2xl bg-[#FED7E2] px-6 py-5">
-    <h2 class="text-2xl font-bold text-[#2D3748]">保存プロンプト</h2>
+    <h2 class="text-2xl font-bold text-[#2D3748]">プロンプト管理</h2>
 </div>
 
 <div class="mb-6 flex flex-col justify-between gap-4 md:flex-row md:items-center">
     <div>
-        <p class="text-lg font-bold text-[#2D3748]">保存済みプロンプト</p>
+        <p class="text-lg font-bold text-[#2D3748]">作成済みプロンプト</p>
         <p class="mt-2 text-sm font-bold text-[#A0AEC0]">
             登録数：{{ $count }} / {{ $limit === null ? '制限なし' : $limit }}
         </p>
