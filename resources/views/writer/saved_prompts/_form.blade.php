@@ -1,413 +1,482 @@
-@csrf
-
 @php
-    $inputClass = 'w-full rounded-2xl border-[#E2E8F0] bg-white px-4 py-3 text-[#2D3748] shadow-sm focus:border-[#FED7E2] focus:ring-[#FED7E2]';
-    $labelClass = 'mb-2 block text-base font-bold text-[#2D3748]';
-    $textareaClass = 'w-full rounded-2xl border-[#E2E8F0] bg-white px-4 py-3 text-[#2D3748] shadow-sm focus:border-[#FED7E2] focus:ring-[#FED7E2]';
+    $prompt = $prompt ?? $savedPrompt ?? null;
 
-    $savedPrompt = $savedPrompt ?? null;
+    $oldValue = function (string $key, $default = '') use ($prompt) {
+        return old($key, $prompt?->{$key} ?? $default);
+    };
+
+    $works = $works ?? collect();
+
+    $characters = $characters
+        ?? $originalCharacters
+        ?? $characterItems
+        ?? collect();
+
+    $officialCharacters = $officialCharacters ?? collect();
+
+    $selectedCharacterRefs = old('selected_character_refs', $prompt?->selected_character_refs ?? []);
+
+    if (! is_array($selectedCharacterRefs)) {
+        $selectedCharacterRefs = [];
+    }
 
     $workRef = old('work_ref');
-    if (! $workRef && $savedPrompt) {
-        $workRef = $savedPrompt->work_source === \App\Models\SavedPrompt::WORK_SOURCE_V1
-            ? 'work:' . $savedPrompt->work_id
-            : 'original';
+
+    if (! $workRef && $prompt) {
+        if (($prompt->work_source ?? null) === 'v1_work' && $prompt->work_id) {
+            $workRef = 'work:' . $prompt->work_id;
+        } else {
+            $workRef = 'original';
+        }
     }
+
     $workRef = $workRef ?: 'original';
 
-    $selectedRefs = old('selected_character_refs', $savedPrompt->selected_character_refs ?? []);
+    $writingStyle = old('writing_style', $prompt?->writing_style ?? '');
+    $genre = old('genre', $prompt?->genre ?? '');
+    $status = old('status', $prompt?->status ?? 'active');
 
-    $selectedStyle = old('writing_style', $savedPrompt->writing_style ?? 'dream_novel');
-    $selectedGenre = old('genre', $savedPrompt->genre ?? 'love_comedy');
+    $writingStyleLabels = \App\Models\SavedPrompt::writingStyleLabels();
+    $genreLabels = \App\Models\SavedPrompt::genreLabels();
+
+    $includeTimeline = (bool) old('include_relationship_timeline', $prompt?->include_relationship_timeline ?? false);
+
+    $officialCharacterPayload = $officialCharacters
+        ->map(function ($character) {
+            $workId = $character->work_id ?? $character->work?->id ?? null;
+
+            return [
+                'id' => $character->id,
+                'name' => $character->name,
+                'work_id' => $workId ? (string) $workId : '',
+                'work_title' => $character->work?->title ?? '作品未設定',
+                'ref' => 'v1_character:' . $character->id,
+            ];
+        })
+        ->filter(fn ($character) => $character['work_id'] !== '')
+        ->values();
 @endphp
 
-<div class="space-y-8">
-    <section class="rounded-3xl border border-[#E2E8F0] bg-white p-6 shadow-sm md:p-8">
-        <div class="mb-6">
-            <p class="text-sm font-bold text-[#A0AEC0]">STEP 1</p>
-            <h3 class="mt-1 text-2xl font-bold text-[#2D3748]">基本情報</h3>
-            <p class="mt-2 text-sm leading-7 text-[#718096]">
-                保存するプロンプトのタイトルと、どの作品向けに作るかを選択します。
-            </p>
-        </div>
+@if ($errors->any())
+    <div class="rounded-2xl border border-red-200 bg-red-50 p-5 text-sm font-bold text-red-600">
+        <p>入力内容を確認してください。</p>
+        <ul class="mt-3 list-disc space-y-1 pl-5">
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
 
-        <div class="grid gap-6 md:grid-cols-2">
-            <div>
-                <label class="{{ $labelClass }}">タイトル <span class="text-red-500">*</span></label>
-                <input type="text"
-                       name="title"
-                       value="{{ old('title', $savedPrompt->title ?? '') }}"
-                       class="{{ $inputClass }}"
-                       placeholder="例：会話シーン作成用"
-                       required>
-            </div>
+<input type="hidden" name="status" id="prompt-status-input" value="{{ $status }}">
 
-            <div>
-                <label class="{{ $labelClass }}">状態</label>
-                <select name="status" class="{{ $inputClass }}">
-                    @php($status = old('status', $savedPrompt->status ?? 'active'))
-                    <option value="active" @selected($status === 'active')>有効</option>
-                    <option value="draft" @selected($status === 'draft')>下書き</option>
-                </select>
-            </div>
-
-            <div>
-                <label class="{{ $labelClass }}">作品名 <span class="text-red-500">*</span></label>
-                <select id="work-ref" name="work_ref" class="{{ $inputClass }}" required>
-                    <option value="original" @selected($workRef === 'original')>オリジナル</option>
-
-                    @if ($works->isNotEmpty())
-                        <optgroup label="登録済み作品">
-                            @foreach ($works as $work)
-                                <option value="work:{{ $work->id }}" @selected($workRef === 'work:' . $work->id)>
-                                    {{ $work->title }}
-                                </option>
-                            @endforeach
-                        </optgroup>
-                    @endif
-                </select>
-                <p class="mt-2 text-sm font-bold text-[#A0AEC0]">
-                    v1で登録した作品、またはオリジナルを選択できます。
-                </p>
-            </div>
-
-            <div>
-                <label class="{{ $labelClass }}">用途</label>
-                <input type="text"
-                       name="purpose"
-                       value="{{ old('purpose', $savedPrompt->purpose ?? '') }}"
-                       class="{{ $inputClass }}"
-                       placeholder="例：会話シーンを書くとき">
-            </div>
-        </div>
-    </section>
-
-    <section class="rounded-3xl border border-[#E2E8F0] bg-white p-6 shadow-sm md:p-8">
-        <div class="mb-6">
-            <p class="text-sm font-bold text-[#A0AEC0]">STEP 2</p>
-            <h3 class="mt-1 text-2xl font-bold text-[#2D3748]">登場人物</h3>
-            <p class="mt-2 text-sm leading-7 text-[#718096]">
-                プロンプトに入れたいキャラクターを選択します。選んだキャラクターの登録情報が、生成されるプロンプト本文に自動で反映されます。
-            </p>
-        </div>
-
-        <div class="grid gap-6 xl:grid-cols-2">
-            <div class="rounded-3xl bg-[#FFF8FA] p-5">
-                <h4 class="text-lg font-bold text-[#2D3748]">オリジナルキャラクター</h4>
-                <p class="mt-1 text-sm font-bold text-[#A0AEC0]">v2で登録したキャラクター</p>
-
-                <div class="mt-5 max-h-96 space-y-3 overflow-y-auto pr-1">
-                    @forelse ($originalCharacters as $character)
-                        @php($ref = 'original:' . $character->id)
-                        <label class="flex cursor-pointer items-start gap-3 rounded-2xl border border-[#E2E8F0] bg-white p-4 hover:bg-[#FFF1F5]">
-                            <input type="checkbox"
-                                   name="selected_character_refs[]"
-                                   value="{{ $ref }}"
-                                   class="mt-1 rounded border-[#CBD5E0] text-[#FED7E2] focus:ring-[#FED7E2]"
-                                   @checked(in_array($ref, $selectedRefs, true))>
-                            <span>
-                                <span class="block font-bold text-[#2D3748]">{{ $character->name }}</span>
-                                <span class="mt-1 block text-xs font-bold text-[#A0AEC0]">
-                                    {{ $character->first_person ? '一人称：' . $character->first_person : '登録情報をプロンプトに反映' }}
-                                </span>
-                            </span>
-                        </label>
-                    @empty
-                        <div class="rounded-2xl border border-dashed border-[#CBD5E0] bg-white p-5 text-sm font-bold text-[#A0AEC0]">
-                            オリジナルキャラクターが未登録です。
-                        </div>
-                    @endforelse
-                </div>
-            </div>
-
-            <div class="rounded-3xl bg-[#F7FAFC] p-5">
-                <div class="flex flex-col justify-between gap-2 md:flex-row md:items-end">
-                    <div>
-                        <h4 class="text-lg font-bold text-[#2D3748]">作品キャラクター</h4>
-                        <p class="mt-1 text-sm font-bold text-[#A0AEC0]">
-                            作品名で選んだ作品のキャラクターのみ表示されます。
-                        </p>
-                    </div>
-                    <p id="official-character-count" class="text-sm font-bold text-[#A0AEC0]"></p>
-                </div>
-
-                <div id="official-character-empty" class="mt-5 hidden rounded-2xl border border-dashed border-[#CBD5E0] bg-white p-5 text-sm font-bold text-[#A0AEC0]">
-                    作品を選択すると、その作品に登録されているキャラクターが表示されます。
-                </div>
-
-                <div class="mt-5 max-h-96 space-y-3 overflow-y-auto pr-1">
-                    @foreach ($officialCharacters as $character)
-                        @php($ref = 'v1_character:' . $character->id)
-                        <label class="official-character-option flex cursor-pointer items-start gap-3 rounded-2xl border border-[#E2E8F0] bg-white p-4 hover:bg-[#FFF1F5]"
-                               data-work-id="{{ $character->work_id }}">
-                            <input type="checkbox"
-                                   name="selected_character_refs[]"
-                                   value="{{ $ref }}"
-                                   class="mt-1 rounded border-[#CBD5E0] text-[#FED7E2] focus:ring-[#FED7E2]"
-                                   @checked(in_array($ref, $selectedRefs, true))>
-                            <span>
-                                <span class="block font-bold text-[#2D3748]">{{ $character->name }}</span>
-                                <span class="mt-1 block text-xs font-bold text-[#A0AEC0]">
-                                    {{ $character->work?->title ?: '作品未設定' }}
-                                </span>
-                            </span>
-                        </label>
-                    @endforeach
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section class="rounded-3xl border border-[#E2E8F0] bg-white p-6 shadow-sm md:p-8">
-        <div class="mb-6">
-            <p class="text-sm font-bold text-[#A0AEC0]">STEP 3</p>
-            <h3 class="mt-1 text-2xl font-bold text-[#2D3748]">作風・ジャンル</h3>
-            <p class="mt-2 text-sm leading-7 text-[#718096]">
-                小説の雰囲気を指定します。「その他」を選んだ場合のみ、自由入力欄が使えます。
-            </p>
-        </div>
-
-        <div class="grid gap-6 md:grid-cols-2">
-            <div>
-                <label class="{{ $labelClass }}">作風 <span class="text-red-500">*</span></label>
-                <select id="writing-style" name="writing_style" class="{{ $inputClass }}" required>
-                    @foreach ($writingStyleLabels as $value => $label)
-                        <option value="{{ $value }}" @selected($selectedStyle === $value)>
-                            {{ $label }}
-                        </option>
-                    @endforeach
-                </select>
-            </div>
-
-            <div id="writing-style-other-wrap">
-                <label class="{{ $labelClass }}">作風：その他</label>
-                <input type="text"
-                       name="writing_style_other"
-                       value="{{ old('writing_style_other', $savedPrompt->writing_style_other ?? '') }}"
-                       class="{{ $inputClass }}"
-                       placeholder="例：童話風、脚本風、三人称文芸調">
-            </div>
-
-            <div>
-                <label class="{{ $labelClass }}">ジャンル <span class="text-red-500">*</span></label>
-                <select id="genre" name="genre" class="{{ $inputClass }}" required>
-                    @foreach ($genreLabels as $value => $label)
-                        <option value="{{ $value }}" @selected($selectedGenre === $value)>
-                            {{ $label }}
-                        </option>
-                    @endforeach
-                </select>
-            </div>
-
-            <div id="genre-other-wrap">
-                <label class="{{ $labelClass }}">ジャンル：その他</label>
-                <input type="text"
-                       name="genre_other"
-                       value="{{ old('genre_other', $savedPrompt->genre_other ?? '') }}"
-                       class="{{ $inputClass }}"
-                       placeholder="例：友情、成長、ミステリーラブ">
-            </div>
-        </div>
-    </section>
-
-    <section class="rounded-3xl border border-[#E2E8F0] bg-white p-6 shadow-sm md:p-8">
-        <div class="mb-6">
-            <p class="text-sm font-bold text-[#A0AEC0]">STEP 4</p>
-            <h3 class="mt-1 text-2xl font-bold text-[#2D3748]">あらすじ・起承転結</h3>
-            <p class="mt-2 text-sm leading-7 text-[#718096]">
-                任意入力です。空欄のまま保存した場合は、プロンプト本文では「指定なし」として扱われます。
-            </p>
-        </div>
-
-        <div class="grid gap-6">
-            <div>
-                <label class="{{ $labelClass }}">あらすじ</label>
-                <textarea name="synopsis"
-                          rows="5"
-                          class="{{ $textareaClass }}"
-                          placeholder="物語全体の流れや場面の前提">{{ old('synopsis', $savedPrompt->synopsis ?? '') }}</textarea>
-            </div>
-
-            <div class="grid gap-6 md:grid-cols-2">
-                <div>
-                    <label class="{{ $labelClass }}">起</label>
-                    <textarea name="plot_opening"
-                              rows="5"
-                              class="{{ $textareaClass }}"
-                              placeholder="物語の始まり">{{ old('plot_opening', $savedPrompt->plot_opening ?? '') }}</textarea>
-                </div>
-
-                <div>
-                    <label class="{{ $labelClass }}">承</label>
-                    <textarea name="plot_development"
-                              rows="5"
-                              class="{{ $textareaClass }}"
-                              placeholder="展開・深まり">{{ old('plot_development', $savedPrompt->plot_development ?? '') }}</textarea>
-                </div>
-
-                <div>
-                    <label class="{{ $labelClass }}">転</label>
-                    <textarea name="plot_turn"
-                              rows="5"
-                              class="{{ $textareaClass }}"
-                              placeholder="変化・山場">{{ old('plot_turn', $savedPrompt->plot_turn ?? '') }}</textarea>
-                </div>
-
-                <div>
-                    <label class="{{ $labelClass }}">結</label>
-                    <textarea name="plot_conclusion"
-                              rows="5"
-                              class="{{ $textareaClass }}"
-                              placeholder="締め・余韻">{{ old('plot_conclusion', $savedPrompt->plot_conclusion ?? '') }}</textarea>
-                </div>
-            </div>
-
-            <div>
-                <label class="{{ $labelClass }}">備考</label>
-                <textarea name="notes"
-                          rows="5"
-                          class="{{ $textareaClass }}"
-                          placeholder="避けたい表現、補足、出力条件など">{{ old('notes', $savedPrompt->notes ?? '') }}</textarea>
-            </div>
-        </div>
-    </section>
-
-    <section class="rounded-3xl border border-[#E2E8F0] bg-white p-6 shadow-sm md:p-8">
-        <div class="mb-5 flex flex-col justify-between gap-4 md:flex-row md:items-center">
-            <div>
-                <p class="text-sm font-bold text-[#A0AEC0]">Preview</p>
-                <h3 class="mt-1 text-2xl font-bold text-[#2D3748]">プロンプトプレビュー</h3>
-                <p class="mt-2 text-sm leading-7 text-[#718096]">
-                    保存前に、実際に生成されるプロンプト本文を確認できます。
-                </p>
-            </div>
-
-            <div class="flex flex-wrap gap-2">
-                <button type="button"
-                        id="preview-button"
-                        class="rounded-2xl bg-[#FED7E2] px-6 py-3 text-base font-bold text-[#2D3748] shadow-sm hover:opacity-90">
-                    プレビュー生成
-                </button>
-
-                <button type="button"
-                        id="preview-copy-button"
-                        class="rounded-2xl border border-[#CBD5E0] bg-white px-6 py-3 text-base font-bold text-[#2D3748] hover:bg-[#F7FAFC]">
-                    プレビューをコピー
-                </button>
-            </div>
-        </div>
-
-        <div id="preview-message" class="mb-4 hidden rounded-2xl border border-green-200 bg-green-50 px-5 py-4 text-sm font-bold text-green-700">
-            プレビューを生成しました。
-        </div>
-
-        <div id="preview-error" class="mb-4 hidden rounded-2xl border border-red-200 bg-red-50 px-5 py-4 text-sm font-bold text-red-700">
-        </div>
-
-        <textarea id="prompt-preview"
-                  readonly
-                  rows="22"
-                  class="w-full rounded-2xl border-[#E2E8F0] bg-[#F7FAFC] px-5 py-4 text-sm leading-7 text-[#2D3748] shadow-inner"
-                  placeholder="「プレビュー生成」を押すと、ここにプロンプト本文が表示されます。"></textarea>
-    </section>
-
-    <input type="hidden" name="category" value="scene">
-
-    <div class="rounded-3xl bg-[#FFF1F5] px-6 py-5 text-sm font-bold leading-7 text-[#4A5568]">
-        作成・保存すると、選択した作品・登場人物・作風・ジャンル・あらすじ・起承転結をもとに、AIへ貼り付けるプロンプト本文が自動生成されます。
+<section class="rounded-3xl border border-[#E2E8F0] bg-white p-6 shadow-sm md:p-8">
+    <div class="mb-6">
+        <p class="text-sm font-bold text-[#A0AEC0]">STEP 1</p>
+        <h2 class="mt-1 text-2xl font-bold text-[#2D3748]">基本情報</h2>
+        <p class="mt-2 text-sm font-bold leading-7 text-[#718096]">
+            プロンプトの管理名と、対象にする作品を設定します。
+        </p>
     </div>
 
-    <div class="flex flex-wrap items-center gap-3">
-        <button type="submit"
-                onclick="setPromptStatus('active')"
-                class="rounded-2xl bg-[#FED7E2] px-6 py-3 text-base font-bold text-[#2D3748] shadow-sm hover:opacity-90">
-            作成・保存する
+    <div class="grid gap-5 md:grid-cols-2">
+        <div>
+            <label for="title">タイトル <span class="text-red-500">必須</span></label>
+            <input id="title"
+                   type="text"
+                   name="title"
+                   value="{{ $oldValue('title') }}"
+                   placeholder="例：日常シーン用プロンプト"
+                   required>
+        </div>
+
+        <div>
+            <label for="work_ref">作品</label>
+            <select id="work_ref" name="work_ref">
+                <option value="original" @selected($workRef === 'original')>オリジナル</option>
+
+                @foreach ($works as $work)
+                    <option value="work:{{ $work->id }}" @selected($workRef === 'work:' . $work->id)>
+                        {{ $work->title }}
+                    </option>
+                @endforeach
+            </select>
+        </div>
+
+        <div class="md:col-span-2">
+            <label for="purpose">用途・目的</label>
+            <textarea id="purpose"
+                      name="purpose"
+                      placeholder="例：キャラクター同士の日常会話を書くためのプロンプト">{{ $oldValue('purpose') }}</textarea>
+        </div>
+    </div>
+</section>
+
+<section class="rounded-3xl border border-[#E2E8F0] bg-white p-6 shadow-sm md:p-8">
+    <div class="mb-6">
+        <p class="text-sm font-bold text-[#A0AEC0]">STEP 2</p>
+        <h2 class="mt-1 text-2xl font-bold text-[#2D3748]">登場人物</h2>
+        <p class="mt-2 text-sm font-bold leading-7 text-[#718096]">
+            プロンプトに反映する登場人物を選択します。作品キャラクターは、選択した作品に応じて表示されます。
+        </p>
+    </div>
+
+    <div class="grid gap-6 xl:grid-cols-2">
+        <div class="rounded-3xl bg-[#F7FAFC] p-5">
+            <h3 class="font-bold text-[#2D3748]">オリジナルキャラクター</h3>
+            <p class="mt-2 text-sm font-bold leading-7 text-[#A0AEC0]">
+                自分で登録したキャラクターです。
+            </p>
+
+            <div class="mt-4 max-h-[360px] space-y-3 overflow-y-auto pr-2">
+                @forelse ($characters as $character)
+                    @php
+                        $ref = 'original:' . $character->id;
+                    @endphp
+
+                    <label class="flex items-start gap-3 rounded-2xl bg-white p-4">
+                        <input type="checkbox"
+                               name="selected_character_refs[]"
+                               value="{{ $ref }}"
+                               class="mt-1"
+                               @checked(in_array($ref, $selectedCharacterRefs, true))>
+                        <span>
+                            <span class="block font-bold text-[#2D3748]">{{ $character->name }}</span>
+                            @if ($character->affiliation || $character->age)
+                                <span class="mt-1 block text-xs font-bold text-[#A0AEC0]">
+                                    {{ collect([$character->age, $character->affiliation])->filter()->implode(' / ') }}
+                                </span>
+                            @endif
+                        </span>
+                    </label>
+                @empty
+                    <div class="rounded-2xl bg-white p-5 text-sm font-bold text-[#A0AEC0]">
+                        オリジナルキャラクターがまだ登録されていません。
+                    </div>
+                @endforelse
+            </div>
+        </div>
+
+        <div class="rounded-3xl bg-[#F7FAFC] p-5">
+            <h3 class="font-bold text-[#2D3748]">作品キャラクター</h3>
+            <p class="mt-2 text-sm font-bold leading-7 text-[#A0AEC0]">
+                選択した作品に登録されているキャラクターだけを表示します。
+            </p>
+
+            <div class="mt-4 rounded-2xl bg-white p-4 text-sm font-bold text-[#A0AEC0]" id="official-character-empty-message">
+                作品を選択すると、登録済みキャラクターが表示されます。
+            </div>
+
+            <div class="mt-4 max-h-[360px] space-y-3 overflow-y-auto pr-2" id="official-character-list"></div>
+
+            <script type="application/json" id="official-character-payload">
+                {!! json_encode($officialCharacterPayload, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) !!}
+            </script>
+        </div>
+    </div>
+
+    <div class="mt-6 rounded-2xl bg-[#FFF1F5] p-5">
+        <label class="flex items-start gap-3">
+            <input type="checkbox"
+                   name="include_relationship_timeline"
+                   value="1"
+                   class="mt-1"
+                   @checked($includeTimeline)>
+            <span>
+                <span class="block font-bold text-[#2D3748]">関係性の年表データもプロンプトに反映する</span>
+                <span class="mt-1 block text-sm font-bold leading-7 text-[#718096]">
+                    チェックすると、選択した登場人物同士に登録されている年表データもプロンプト本文に含めます。
+                </span>
+            </span>
+        </label>
+    </div>
+</section>
+
+<section class="rounded-3xl border border-[#E2E8F0] bg-white p-6 shadow-sm md:p-8">
+    <div class="mb-6">
+        <p class="text-sm font-bold text-[#A0AEC0]">STEP 3</p>
+        <h2 class="mt-1 text-2xl font-bold text-[#2D3748]">作風・ジャンル</h2>
+        <p class="mt-2 text-sm font-bold leading-7 text-[#718096]">
+            AIに依頼したい文章の雰囲気を設定します。
+        </p>
+    </div>
+
+    <div class="grid gap-5 md:grid-cols-2">
+        <div>
+            <label for="writing_style">作風</label>
+            <select id="writing_style" name="writing_style">
+                <option value="">指定なし</option>
+                @foreach ($writingStyleLabels as $key => $label)
+                    <option value="{{ $key }}" @selected($writingStyle === $key)>{{ $label }}</option>
+                @endforeach
+            </select>
+        </div>
+
+        <div id="writing-style-other-wrap" style="display: {{ $writingStyle === 'other' ? 'block' : 'none' }};">
+            <label for="writing_style_other">作風 その他</label>
+            <input id="writing_style_other"
+                   type="text"
+                   name="writing_style_other"
+                   value="{{ $oldValue('writing_style_other') }}"
+                   placeholder="例：切ない純文学風">
+        </div>
+
+        <div>
+            <label for="genre">ジャンル</label>
+            <select id="genre" name="genre">
+                <option value="">指定なし</option>
+                @foreach ($genreLabels as $key => $label)
+                    <option value="{{ $key }}" @selected($genre === $key)>{{ $label }}</option>
+                @endforeach
+            </select>
+        </div>
+
+        <div id="genre-other-wrap" style="display: {{ $genre === 'other' ? 'block' : 'none' }};">
+            <label for="genre_other">ジャンル その他</label>
+            <input id="genre_other"
+                   type="text"
+                   name="genre_other"
+                   value="{{ $oldValue('genre_other') }}"
+                   placeholder="例：主従関係、成長物語など">
+        </div>
+    </div>
+</section>
+
+<section class="rounded-3xl border border-[#E2E8F0] bg-white p-6 shadow-sm md:p-8">
+    <div class="mb-6">
+        <p class="text-sm font-bold text-[#A0AEC0]">STEP 4</p>
+        <h2 class="mt-1 text-2xl font-bold text-[#2D3748]">あらすじ・構成</h2>
+        <p class="mt-2 text-sm font-bold leading-7 text-[#718096]">
+            書きたい内容や流れを入力します。起承転結は空欄でも保存できます。
+        </p>
+    </div>
+
+    <div class="space-y-5">
+        <div>
+            <label for="synopsis">あらすじ</label>
+            <textarea id="synopsis"
+                      name="synopsis"
+                      placeholder="どんな話を書きたいかを入力してください">{{ $oldValue('synopsis') }}</textarea>
+        </div>
+
+        <div class="grid gap-5 md:grid-cols-2">
+            <div>
+                <label for="plot_opening">起</label>
+                <textarea id="plot_opening"
+                          name="plot_opening"
+                          placeholder="導入・出会い・始まり">{{ $oldValue('plot_opening') }}</textarea>
+            </div>
+
+            <div>
+                <label for="plot_development">承</label>
+                <textarea id="plot_development"
+                          name="plot_development"
+                          placeholder="関係の進展・出来事">{{ $oldValue('plot_development') }}</textarea>
+            </div>
+
+            <div>
+                <label for="plot_turn">転</label>
+                <textarea id="plot_turn"
+                          name="plot_turn"
+                          placeholder="転機・衝突・変化">{{ $oldValue('plot_turn') }}</textarea>
+            </div>
+
+            <div>
+                <label for="plot_conclusion">結</label>
+                <textarea id="plot_conclusion"
+                          name="plot_conclusion"
+                          placeholder="結末・余韻">{{ $oldValue('plot_conclusion') }}</textarea>
+            </div>
+        </div>
+
+        <div>
+            <label for="notes">備考</label>
+            <textarea id="notes"
+                      name="notes"
+                      placeholder="AIに追加で守ってほしいこと、NG、補足など">{{ $oldValue('notes') }}</textarea>
+        </div>
+    </div>
+</section>
+
+<section class="rounded-3xl border border-[#E2E8F0] bg-white p-6 shadow-sm md:p-8">
+    <div class="mb-6">
+        <p class="text-sm font-bold text-[#A0AEC0]">STEP 5</p>
+        <h2 class="mt-1 text-2xl font-bold text-[#2D3748]">プレビュー</h2>
+        <p class="mt-2 text-sm font-bold leading-7 text-[#718096]">
+            保存前に、実際に生成されるプロンプト本文を確認できます。
+        </p>
+    </div>
+
+    <div class="flex flex-wrap gap-3">
+        <button type="button"
+                id="preview-button"
+                class="inline-flex items-center justify-center rounded-2xl bg-[#FED7E2] px-5 py-3 text-sm font-bold text-[#2D3748] hover:opacity-90">
+            プレビュー生成
         </button>
 
+        <button type="button"
+                id="preview-copy-button"
+                class="inline-flex items-center justify-center rounded-2xl border border-[#CBD5E0] bg-white px-5 py-3 text-sm font-bold text-[#2D3748] hover:bg-[#F7FAFC]">
+            プレビューをコピー
+        </button>
+    </div>
+
+    <p id="preview-message" class="mt-4 hidden rounded-2xl bg-[#FFF1F5] px-5 py-3 text-sm font-bold text-[#2D3748]"></p>
+
+    <textarea id="prompt-preview"
+              readonly
+              class="mt-5 min-h-[420px] w-full rounded-2xl border-[#CBD5E0] bg-[#F7FAFC] p-5 font-mono text-sm leading-7 text-[#2D3748]"></textarea>
+</section>
+
+<div class="flex flex-col gap-3 rounded-3xl border border-[#E2E8F0] bg-white p-6 shadow-sm md:flex-row md:items-center md:justify-between">
+    <p class="text-sm font-bold text-[#718096]">
+        下書き保存もできます。完成したら「作成・保存する」で有効状態にしてください。
+    </p>
+
+    <div class="flex flex-col gap-3 md:flex-row">
+        <a href="{{ route('writer.prompts.index') }}"
+           class="inline-flex items-center justify-center rounded-2xl border border-[#CBD5E0] bg-white px-6 py-3 font-bold text-[#2D3748] hover:bg-[#F7FAFC]">
+            一覧へ戻る
+        </a>
+
         <button type="submit"
-                onclick="setPromptStatus('draft')"
-                class="rounded-2xl border border-[#CBD5E0] bg-white px-6 py-3 text-base font-bold text-[#2D3748] hover:bg-[#F7FAFC]">
+                onclick="document.getElementById('prompt-status-input').value='draft';"
+                class="inline-flex items-center justify-center rounded-2xl border border-[#CBD5E0] bg-white px-6 py-3 font-bold text-[#2D3748] hover:bg-[#F7FAFC]">
             下書きにする
         </button>
 
-        <a href="{{ route('writer.prompts.index') }}" class="rounded-2xl border border-[#CBD5E0] bg-white px-6 py-3 text-base font-bold text-[#2D3748] hover:bg-[#F7FAFC]">
-            一覧へ戻る
-        </a>
+        <button type="submit"
+                onclick="document.getElementById('prompt-status-input').value='active';"
+                class="inline-flex items-center justify-center rounded-2xl bg-[#FED7E2] px-6 py-3 font-bold text-[#2D3748] hover:opacity-90">
+            作成・保存する
+        </button>
     </div>
 </div>
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        const form = document.getElementById('prompt-builder-form');
-        const workRef = document.getElementById('work-ref');
-        const officialOptions = Array.from(document.querySelectorAll('.official-character-option'));
-        const officialEmpty = document.getElementById('official-character-empty');
-        const officialCount = document.getElementById('official-character-count');
-
-        const writingStyle = document.getElementById('writing-style');
+        const workSelect = document.getElementById('work_ref');
+        const officialCharacterList = document.getElementById('official-character-list');
+        const officialCharacterPayloadElement = document.getElementById('official-character-payload');
+        const writingStyleSelect = document.getElementById('writing_style');
         const writingStyleOtherWrap = document.getElementById('writing-style-other-wrap');
-
-        const genre = document.getElementById('genre');
+        const genreSelect = document.getElementById('genre');
         const genreOtherWrap = document.getElementById('genre-other-wrap');
-
         const previewButton = document.getElementById('preview-button');
         const previewCopyButton = document.getElementById('preview-copy-button');
         const previewTextarea = document.getElementById('prompt-preview');
         const previewMessage = document.getElementById('preview-message');
-        const previewError = document.getElementById('preview-error');
+        const form = document.getElementById('saved-prompt-form');
 
         function selectedWorkId() {
-            if (!workRef || !workRef.value.startsWith('work:')) {
-                return null;
+            if (!workSelect || !workSelect.value.startsWith('work:')) {
+                return '';
             }
 
-            return workRef.value.replace('work:', '');
+            return workSelect.value.replace('work:', '');
         }
 
-        function updateOfficialCharacters() {
+        function officialCharacters() {
+            if (!officialCharacterPayloadElement) {
+                return [];
+            }
+
+            try {
+                return JSON.parse(officialCharacterPayloadElement.textContent || '[]');
+            } catch (error) {
+                return [];
+            }
+        }
+
+        function selectedOfficialRefs() {
+            return Array.from(document.querySelectorAll('#official-character-list input[name="selected_character_refs[]"]:checked'))
+                .map((input) => input.value);
+        }
+
+        function escapeHtml(value) {
+            return String(value ?? '')
+                .replaceAll('&', '&amp;')
+                .replaceAll('<', '&lt;')
+                .replaceAll('>', '&gt;')
+                .replaceAll('"', '&quot;')
+                .replaceAll("'", '&#039;');
+        }
+
+        function refreshOfficialCharacters() {
             const currentWorkId = selectedWorkId();
-            let visibleCount = 0;
+            const emptyMessage = document.getElementById('official-character-empty-message');
 
-            officialOptions.forEach((option) => {
-                const checkbox = option.querySelector('input[type="checkbox"]');
-                const shouldShow = currentWorkId !== null && option.dataset.workId === currentWorkId;
+            if (!officialCharacterList) {
+                return;
+            }
 
-                option.classList.toggle('hidden', !shouldShow);
+            const previouslySelectedRefs = selectedOfficialRefs();
 
-                if (!shouldShow && checkbox && checkbox.checked) {
-                    checkbox.checked = false;
+            officialCharacterList.innerHTML = '';
+
+            if (currentWorkId === '') {
+                if (emptyMessage) {
+                    emptyMessage.textContent = '作品を選択すると、登録済みキャラクターが表示されます。';
+                    emptyMessage.classList.remove('hidden');
                 }
 
-                if (shouldShow) {
-                    visibleCount += 1;
+                return;
+            }
+
+            const characters = officialCharacters()
+                .filter((character) => String(character.work_id) === String(currentWorkId));
+
+            if (characters.length === 0) {
+                if (emptyMessage) {
+                    emptyMessage.textContent = 'この作品に登録されているキャラクターはありません。';
+                    emptyMessage.classList.remove('hidden');
                 }
+
+                return;
+            }
+
+            if (emptyMessage) {
+                emptyMessage.classList.add('hidden');
+            }
+
+            characters.forEach((character) => {
+                const label = document.createElement('label');
+                label.className = 'flex items-start gap-3 rounded-2xl bg-white p-4';
+
+                const checked = previouslySelectedRefs.includes(character.ref) ? 'checked' : '';
+
+                label.innerHTML = `
+                    <input type="checkbox"
+                           name="selected_character_refs[]"
+                           value="${escapeHtml(character.ref)}"
+                           class="mt-1 official-character-checkbox"
+                           ${checked}>
+                    <span>
+                        <span class="block font-bold text-[#2D3748]">${escapeHtml(character.name)}</span>
+                        <span class="mt-1 block text-xs font-bold text-[#A0AEC0]">${escapeHtml(character.work_title)}</span>
+                    </span>
+                `;
+
+                officialCharacterList.appendChild(label);
             });
+        }
 
-            if (officialEmpty) {
-                officialEmpty.classList.toggle('hidden', visibleCount > 0);
+        function refreshOtherFields() {
+            if (writingStyleOtherWrap && writingStyleSelect) {
+                writingStyleOtherWrap.style.display = writingStyleSelect.value === 'other' ? 'block' : 'none';
             }
 
-            if (officialCount) {
-                officialCount.textContent = visibleCount > 0 ? `${visibleCount}件表示中` : '';
+            if (genreOtherWrap && genreSelect) {
+                genreOtherWrap.style.display = genreSelect.value === 'other' ? 'block' : 'none';
             }
         }
 
-        function updateOtherFields() {
-            if (writingStyleOtherWrap && writingStyle) {
-                writingStyleOtherWrap.classList.toggle('hidden', writingStyle.value !== 'other');
-            }
-
-            if (genreOtherWrap && genre) {
-                genreOtherWrap.classList.toggle('hidden', genre.value !== 'other');
-            }
-        }
-
-        function showPreviewMessage(text) {
+        function showPreviewMessage(message) {
             if (!previewMessage) {
                 return;
             }
 
-            previewMessage.textContent = text;
+            previewMessage.textContent = message;
             previewMessage.classList.remove('hidden');
 
             setTimeout(() => {
@@ -415,49 +484,16 @@
             }, 2500);
         }
 
-        function showPreviewError(text) {
-            if (!previewError) {
-                return;
-            }
-
-            previewError.textContent = text;
-            previewError.classList.remove('hidden');
-        }
-
-        function hidePreviewError() {
-            if (!previewError) {
-                return;
-            }
-
-            previewError.classList.add('hidden');
-            previewError.textContent = '';
-        }
-
         async function generatePreview() {
-            if (!form) {
-                showPreviewError('プレビュー用フォームが見つかりません。画面を再読み込みしてください。');
+            if (!form || !previewTextarea) {
                 return;
-            }
-
-            if (!previewTextarea) {
-                showPreviewError('プレビュー表示欄が見つかりません。画面を再読み込みしてください。');
-                return;
-            }
-
-            hidePreviewError();
-
-            if (previewButton) {
-                previewButton.disabled = true;
-                previewButton.textContent = '生成中...';
             }
 
             const formData = new FormData(form);
-
-            // 編集画面では保存用に _method=PUT が含まれるため、
-            // プレビューAPI送信時だけ削除する。
-            // これを残すと Laravel が PUT /writer/prompts/preview と解釈し、
-            // JSONではなくHTMLエラーを返すことがある。
             formData.delete('_method');
+
+            previewButton.disabled = true;
+            previewButton.classList.add('opacity-50');
 
             try {
                 const response = await fetch('{{ route('writer.prompts.preview') }}', {
@@ -471,85 +507,49 @@
                     body: formData
                 });
 
-                const rawText = await response.text();
-                let data = {};
-
-                try {
-                    data = rawText ? JSON.parse(rawText) : {};
-                } catch (error) {
-                    showPreviewError('JSON以外のレスポンスが返りました。ログを確認してください。');
-                    return;
-                }
+                const data = await response.json();
 
                 if (!response.ok) {
-                    const messages = data.errors
-                        ? Object.values(data.errors).flat().join(' / ')
-                        : (data.message || `プレビュー生成に失敗しました。HTTP ${response.status}`);
-
-                    showPreviewError(messages);
+                    previewTextarea.value = '';
+                    showPreviewMessage(data.message || 'プレビュー生成に失敗しました。入力内容を確認してください。');
                     return;
                 }
 
-                const promptBody = data.prompt_body ?? '';
-
-                previewTextarea.value = promptBody;
-                previewTextarea.textContent = promptBody;
-
-                if (data.length !== undefined && Number(data.length) === 0) {
-                    showPreviewError('プレビューAPIは成功しましたが、本文が0文字です。');
-                    return;
-                }
-
-                if (!promptBody) {
-                    showPreviewError('プレビューAPIは成功しましたが、prompt_body が空です。');
-                    return;
-                }
-
-                showPreviewMessage('プレビューを生成しました。');
+                previewTextarea.value = data.prompt_body || '';
+                showPreviewMessage(`プレビューを生成しました。${data.length || previewTextarea.value.length}文字`);
             } catch (error) {
-                showPreviewError('通信に失敗しました。開発サーバーが起動しているか確認してください。');
+                previewTextarea.value = '';
+                showPreviewMessage('プレビュー生成に失敗しました。');
             } finally {
-                if (previewButton) {
-                    previewButton.disabled = false;
-                    previewButton.textContent = 'プレビュー生成';
-                }
+                previewButton.disabled = false;
+                previewButton.classList.remove('opacity-50');
             }
         }
 
         async function copyPreview() {
             if (!previewTextarea || !previewTextarea.value) {
-                showPreviewError('コピーするプレビューがありません。先にプレビュー生成をしてください。');
+                showPreviewMessage('コピーするプレビューがありません。');
                 return;
             }
 
-            hidePreviewError();
-
             try {
                 await navigator.clipboard.writeText(previewTextarea.value);
-                showPreviewMessage('プレビュー本文をコピーしました。');
             } catch (error) {
                 previewTextarea.focus();
                 previewTextarea.select();
                 document.execCommand('copy');
-                showPreviewMessage('プレビュー本文をコピーしました。');
             }
+
+            showPreviewMessage('プレビューをコピーしました。');
         }
 
-        window.setPromptStatus = function (status) {
-            const statusSelect = form?.querySelector('select[name="status"]');
-
-            if (statusSelect) {
-                statusSelect.value = status;
-            }
-        };
-
-        workRef?.addEventListener('change', updateOfficialCharacters);
-        writingStyle?.addEventListener('change', updateOtherFields);
-        genre?.addEventListener('change', updateOtherFields);
+        workSelect?.addEventListener('change', refreshOfficialCharacters);
+        writingStyleSelect?.addEventListener('change', refreshOtherFields);
+        genreSelect?.addEventListener('change', refreshOtherFields);
         previewButton?.addEventListener('click', generatePreview);
         previewCopyButton?.addEventListener('click', copyPreview);
 
-        updateOfficialCharacters();
-        updateOtherFields();
+        refreshOfficialCharacters();
+        refreshOtherFields();
     });
 </script>
