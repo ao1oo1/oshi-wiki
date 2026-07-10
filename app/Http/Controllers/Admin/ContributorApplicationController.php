@@ -42,6 +42,20 @@ class ContributorApplicationController extends Controller
         $user = null;
         $resetUrl = null;
 
+        $existingUser = User::query()
+            ->where('email', $contributorApplication->email)
+            ->where(function ($query) use ($contributorApplication) {
+                $query->whereNull('contributor_application_id')
+                    ->orWhere('contributor_application_id', '!=', $contributorApplication->id);
+            })
+            ->first();
+
+        if ($existingUser) {
+            return back()->withErrors([
+                'email' => 'このメールアドレスはすでに最高管理者・管理スタッフ・一般執筆ユーザーのいずれかで使用されています。別のメールアドレスで申請し直してください。',
+            ]);
+        }
+
         DB::transaction(function () use ($contributorApplication, &$user, &$resetUrl): void {
             $staffRole = Role::query()->firstOrCreate(
                 ['name' => User::ROLE_STAFF],
