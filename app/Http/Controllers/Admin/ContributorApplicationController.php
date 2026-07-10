@@ -117,9 +117,23 @@ class ContributorApplicationController extends Controller
     {
         $this->authorizeSuperAdmin();
 
-        $contributorApplication->delete();
+        DB::transaction(function () use ($contributorApplication): void {
+            User::query()
+                ->where('contributor_application_id', $contributorApplication->id)
+                ->whereNull('deleted_at')
+                ->get()
+                ->each(function (User $user): void {
+                    $user->forceFill([
+                        'status' => 'inactive',
+                        'email' => 'deleted-' . now()->format('YmdHis') . '-' . $user->email,
+                        'deleted_at' => now(),
+                    ])->save();
+                });
 
-        return back()->with('success', '申請に削除フラグを付けました。');
+            $contributorApplication->delete();
+        });
+
+        return back()->with('success', '申請に削除フラグを付け、紐づくスタッフユーザーも停止しました。');
     }
 
     private function generateTemporaryPassword(): string
