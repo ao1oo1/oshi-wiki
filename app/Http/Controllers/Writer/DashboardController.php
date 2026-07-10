@@ -8,6 +8,7 @@ use App\Models\OriginalCharacterRelationship;
 use App\Models\SavedPrompt;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
+use App\Support\WritingAssistLimits;
 
 class DashboardController extends Controller
 {
@@ -38,6 +39,9 @@ class DashboardController extends Controller
             'draftPromptCount' => $draftPromptCount,
             'totalUsedCount' => $totalUsedCount,
             'recentPrompts' => $recentPrompts,
+            'originalCharacterLimit' => WritingAssistLimits::originalCharactersPerUser($user),
+            'relationshipLimit' => WritingAssistLimits::relationshipsPerUser($user),
+            'promptLimit' => WritingAssistLimits::promptsPerUser($user),
         ]);
     }
 }

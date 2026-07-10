@@ -41,6 +41,44 @@
     </div>
 </section>
 
+<section class="mb-8 rounded-3xl border border-[#E2E8F0] bg-white p-6 shadow-sm md:p-8">
+    <div class="grid gap-6 xl:grid-cols-[260px_1fr] xl:items-start">
+        <div>
+            <p class="text-sm font-bold text-[#A0AEC0]">Limit</p>
+            <h3 class="mt-2 text-2xl font-bold text-[#2D3748]">登録上限について</h3>
+        </div>
+
+        <div>
+            <p class="text-sm font-bold leading-7 text-[#4A5568]">
+                一般会員は、執筆補助で登録できるデータ数に上限があります。
+                各画面やサイドバーに「10 / 50」のような形式で、現在の登録数と上限数を表示しています。
+            </p>
+
+            <div class="mt-5 grid gap-4 md:grid-cols-3">
+                <div class="rounded-2xl bg-[#F7FAFC] p-5">
+                    <p class="text-xs font-bold text-[#A0AEC0]">オリジナルキャラクター</p>
+                    <p class="mt-2 text-2xl font-bold text-[#2D3748]">最大30件</p>
+                </div>
+
+                <div class="rounded-2xl bg-[#F7FAFC] p-5">
+                    <p class="text-xs font-bold text-[#A0AEC0]">関係性</p>
+                    <p class="mt-2 text-2xl font-bold text-[#2D3748]">最大100件</p>
+                </div>
+
+                <div class="rounded-2xl bg-[#F7FAFC] p-5">
+                    <p class="text-xs font-bold text-[#A0AEC0]">プロンプト管理</p>
+                    <p class="mt-2 text-2xl font-bold text-[#2D3748]">最大50件</p>
+                </div>
+            </div>
+
+            <p class="mt-5 text-sm font-bold leading-7 text-[#718096]">
+                例：プロンプト管理が「10 / 50」と表示されている場合、50件まで登録できるうち10件を使用中という意味です。
+                最高管理者は上限なしで利用できます。
+            </p>
+        </div>
+    </div>
+</section>
+
 <section class="mb-8 grid gap-6 md:grid-cols-2 xl:grid-cols-5">
     <div class="rounded-3xl border border-[#E2E8F0] bg-white p-6 shadow-sm">
         <p class="text-sm font-bold text-[#A0AEC0]">STEP 1</p>

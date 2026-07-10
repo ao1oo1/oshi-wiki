@@ -1,24 +1,12 @@
 <x-guest-layout>
     <div class="mb-8 text-center">
-        <h1 class="text-2xl font-bold text-[#2D3748]">執筆補助ツールログイン</h1>
+        <h1 class="text-2xl font-bold text-[#2D3748]">管理者ログイン</h1>
         <p class="mt-3 text-sm font-bold leading-7 text-[#A0AEC0]">
-            執筆補助ツール会員としてログインできます。
+            管理者・スタッフ用のログイン画面です。
         </p>
     </div>
 
-    <div class="mb-8 grid grid-cols-2 gap-3">
-        <a href="{{ route('writer.login') }}"
-           class="flex min-h-[58px] items-center justify-center whitespace-nowrap rounded-2xl bg-[#FED7E2] px-3 py-3 text-center text-[12px] font-bold text-[#2D3748] hover:opacity-90 sm:text-[13px] md:text-sm">
-            執筆補助ツール会員
-        </a>
-
-        <a href="{{ route('writer.register') }}"
-           class="flex min-h-[58px] items-center justify-center whitespace-nowrap rounded-2xl border border-[#CBD5E0] bg-white px-3 py-3 text-center text-[12px] font-bold text-[#2D3748] hover:bg-[#F7FAFC] sm:text-[13px] md:text-sm">
-            新規登録
-        </a>
-    </div>
-
-    <form method="POST" action="{{ route('writer.login') }}">
+    <form method="POST" action="{{ route('admin.login.store') }}">
         @csrf
 
         <div>
@@ -65,9 +53,9 @@
         </div>
 
         <div class="mt-5 text-center">
-            <a href="{{ route('admin.login') }}"
+            <a href="{{ route('writer.login') }}"
                class="text-xs font-bold text-[#A0AEC0] underline underline-offset-4 hover:text-[#2D3748]">
-                管理者ログインはこちら
+                執筆補助ツールログインはこちら
             </a>
         </div>
     </form>

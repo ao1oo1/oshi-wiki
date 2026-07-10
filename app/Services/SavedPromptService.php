@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\SavedPrompt;
+use App\Models\OriginalCharacterRelationship;
 use App\Models\User;
 use App\Models\Work;
 use App\Repositories\SavedPromptRepository;
@@ -102,6 +103,8 @@ class SavedPromptService
             fn ($value) => is_string($value) && str_contains($value, ':')
         ));
 
+        $data['include_relationship_timeline'] = (bool) ($data['include_relationship_timeline'] ?? false);
+
         unset($data['work_ref']);
 
         return $data;
@@ -115,7 +118,11 @@ class SavedPromptService
             $workName = Work::query()->find($data['work_id'])?->title ?? '選択作品';
         }
 
-        $context = $this->contextBuilder->build($user, $data['selected_character_refs'] ?? []);
+        $context = $this->contextBuilder->build(
+            $user,
+            $data['selected_character_refs'] ?? [],
+            (bool) ($data['include_relationship_timeline'] ?? false)
+        );
 
         $style = $this->labelFrom(
             SavedPrompt::writingStyleLabels(),
@@ -146,7 +153,12 @@ class SavedPromptService
             $context['characters'] ?: '指定なし',
             '',
             '【関係性】',
-            $context['relationships'] ?: '指定なし',
+            $this->buildRelationshipsText(
+                $user,
+                $context['relationships'] ?? '',
+                $data['selected_character_refs'] ?? [],
+                (bool) ($data['include_relationship_timeline'] ?? false)
+            ) ?: '指定なし',
             '',
             '【作風】',
             $style ?: '指定なし',
@@ -199,4 +211,92 @@ class SavedPromptService
     {
         return trim((string) ($value ?? ''));
     }
+
+    private function buildRelationshipsText(User $user, string $relationshipText, array $characterRefs, bool $includeTimeline): string
+    {
+        $relationshipText = trim($relationshipText);
+
+        if (! $includeTimeline) {
+            return $relationshipText;
+        }
+
+        $selected = $this->parseCharacterRefs($characterRefs);
+
+        if ($selected === []) {
+            return $relationshipText;
+        }
+
+        $timelineLines = [];
+
+        $relationships = OriginalCharacterRelationship::query()
+            ->where('user_id', $user->id)
+            ->get();
+
+        foreach ($relationships as $relationship) {
+            $fromKey = $this->relationshipEndpointKey(
+                (string) ($relationship->from_character_source ?? 'original'),
+                $relationship->from_original_character_id,
+                $relationship->from_character_id
+            );
+
+            $toKey = $this->relationshipEndpointKey(
+                (string) ($relationship->to_character_source ?? 'original'),
+                $relationship->to_original_character_id,
+                $relationship->to_character_id
+            );
+
+            if (! in_array($fromKey, $selected, true) || ! in_array($toKey, $selected, true)) {
+                continue;
+            }
+
+            $items = collect($relationship->timeline_items ?? [])
+                ->filter(fn ($item) => is_array($item) && ((trim((string)($item['period'] ?? '')) !== '') || (trim((string)($item['content'] ?? '')) !== '')))
+                ->values();
+
+            if ($items->isEmpty()) {
+                continue;
+            }
+
+            $fromName = method_exists($relationship, 'fromDisplayName')
+                ? $relationship->fromDisplayName()
+                : 'From';
+
+            $toName = method_exists($relationship, 'toDisplayName')
+                ? $relationship->toDisplayName()
+                : 'To';
+
+            $timelineLines[] = "{$fromName} → {$toName} の年表：";
+
+            foreach ($items as $item) {
+                $period = trim((string) ($item['period'] ?? ''));
+                $content = trim((string) ($item['content'] ?? ''));
+
+                $timelineLines[] = '・' . ($period !== '' ? $period : '時期未入力') . '：' . ($content !== '' ? $content : '内容未入力');
+            }
+        }
+
+        if ($timelineLines === []) {
+            return $relationshipText;
+        }
+
+        return trim($relationshipText . "\n\n【関係性年表】\n" . implode("\n", $timelineLines));
+    }
+
+    private function parseCharacterRefs(array $characterRefs): array
+    {
+        return array_values(array_filter(
+            array_map(fn ($ref) => is_string($ref) ? trim($ref) : '', $characterRefs),
+            fn ($ref) => $ref !== '' && str_contains($ref, ':')
+        ));
+    }
+
+    private function relationshipEndpointKey(string $source, ?int $originalCharacterId, ?int $officialCharacterId): string
+    {
+        if ($source === OriginalCharacterRelationship::SOURCE_V1_CHARACTER || $source === 'v1_character') {
+            return 'v1_character:' . $officialCharacterId;
+        }
+
+        return 'original:' . $originalCharacterId;
+    }
+
 }

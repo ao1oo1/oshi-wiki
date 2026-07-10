@@ -27,6 +27,39 @@
     $status = old('status', $relationship?->status ?? 'active');
     $characters = $characters ?? collect();
     $officialCharacters = $officialCharacters ?? collect();
+
+    $timelineItems = old('timeline_items', $relationship?->timeline_items ?? []);
+
+    if (! is_array($timelineItems)) {
+        $timelineItems = [];
+    }
+
+    $timelineItems = array_values($timelineItems);
+
+    $filledTimelineCount = collect($timelineItems)
+        ->filter(function ($item) {
+            return is_array($item)
+                && (
+                    trim((string)($item['period'] ?? '')) !== ''
+                    || trim((string)($item['content'] ?? '')) !== ''
+                );
+        })
+        ->count();
+
+    /*
+     * 新規登録時：必ず3行だけ表示
+     * 編集時：保存済みが4件以上あれば保存済み件数分を表示
+     */
+    $initialTimelineCount = min(10, max(3, $filledTimelineCount));
+
+    for ($i = count($timelineItems); $i < $initialTimelineCount; $i++) {
+        $timelineItems[$i] = [
+            'period' => '',
+            'content' => '',
+        ];
+    }
+
+    $timelineItems = array_slice($timelineItems, 0, $initialTimelineCount);
 @endphp
 
 @if ($errors->any())
@@ -181,35 +214,20 @@
             <p class="text-sm font-bold text-[#A0AEC0]">STEP 4</p>
             <h2 class="mt-1 text-2xl font-bold text-[#2D3748]">年表データ</h2>
             <p class="mt-2 text-sm font-bold leading-7 text-[#718096]">
-                関係性に関わる出来事を、時期と内容のセットで登録できます。最大10件まで登録できます。
+                関係性に関わる出来事を、時期と内容のセットで登録できます。最初は3行表示し、「行を追加」で最大10行まで増やせます。
             </p>
         </div>
 
-        @php
-            $timelineItems = old('timeline_items', $relationship?->timeline_items ?? []);
-
-            if (! is_array($timelineItems)) {
-                $timelineItems = [];
-            }
-
-            for ($i = count($timelineItems); $i < 10; $i++) {
-                $timelineItems[$i] = [
-                    'period' => '',
-                    'content' => '',
-                ];
-            }
-
-            $timelineItems = array_slice($timelineItems, 0, 10);
-        @endphp
-
-        <div class="space-y-4">
-            <div class="grid gap-3 md:grid-cols-[220px_1fr]">
+        <div class="space-y-4" id="relationship-timeline-list" data-current-count="{{ $initialTimelineCount }}" data-max-count="10">
+            <div class="grid gap-3 md:grid-cols-[220px_1fr_90px]">
                 <p class="text-sm font-bold text-[#A0AEC0]">時期</p>
                 <p class="text-sm font-bold text-[#A0AEC0]">内容</p>
+                <p class="text-sm font-bold text-[#A0AEC0]">操作</p>
             </div>
 
             @foreach ($timelineItems as $index => $item)
-                <div class="grid gap-3 rounded-2xl bg-[#F7FAFC] p-4 md:grid-cols-[220px_1fr]">
+                <div class="relationship-timeline-row grid gap-3 rounded-2xl bg-[#F7FAFC] p-4 md:grid-cols-[220px_1fr_90px]"
+                     data-timeline-index="{{ $index }}">
                     <div>
                         <label for="timeline_period_{{ $index }}" class="sr-only">
                             年表 {{ $index + 1 }} 時期
@@ -231,8 +249,27 @@
                                value="{{ $item['content'] ?? '' }}"
                                placeholder="{{ $index === 0 ? '例：出会う' : '内容' }}">
                     </div>
+
+                    <div class="flex items-center md:justify-end">
+                        <button type="button"
+                                class="relationship-timeline-clear rounded-2xl border border-[#CBD5E0] bg-white px-4 py-3 text-sm font-bold text-[#4A5568] hover:bg-[#F7FAFC]">
+                            クリア
+                        </button>
+                    </div>
                 </div>
             @endforeach
+        </div>
+
+        <div class="mt-5 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+            <p id="relationship-timeline-count" class="text-sm font-bold text-[#A0AEC0]">
+                {{ $initialTimelineCount }} / 10 行表示中
+            </p>
+
+            <button type="button"
+                    id="relationship-timeline-add"
+                    class="inline-flex items-center justify-center rounded-2xl bg-[#FED7E2] px-5 py-3 text-sm font-bold text-[#2D3748] hover:opacity-90">
+                行を追加
+            </button>
         </div>
 
         <div class="mt-5 rounded-2xl bg-[#FFF1F5] p-5">
@@ -263,3 +300,105 @@
         </div>
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const list = document.getElementById('relationship-timeline-list');
+        const addButton = document.getElementById('relationship-timeline-add');
+        const countLabel = document.getElementById('relationship-timeline-count');
+
+        if (!list || !addButton) {
+            return;
+        }
+
+        const maxCount = Number(list.dataset.maxCount || 10);
+        let currentCount = Number(list.dataset.currentCount || 3);
+
+        function updateUi() {
+            if (countLabel) {
+                countLabel.textContent = `${currentCount} / ${maxCount} 行表示中`;
+            }
+
+            const disabled = currentCount >= maxCount;
+            addButton.disabled = disabled;
+            addButton.classList.toggle('opacity-50', disabled);
+            addButton.classList.toggle('cursor-not-allowed', disabled);
+        }
+
+        function attachClearEvent(row) {
+            const clearButton = row.querySelector('.relationship-timeline-clear');
+
+            clearButton?.addEventListener('click', function () {
+                row.querySelectorAll('input').forEach((input) => {
+                    input.value = '';
+                });
+            });
+        }
+
+        function createTimelineRow(index) {
+            const row = document.createElement('div');
+            row.className = 'relationship-timeline-row grid gap-3 rounded-2xl bg-[#F7FAFC] p-4 md:grid-cols-[220px_1fr_90px]';
+            row.dataset.timelineIndex = String(index);
+
+            row.innerHTML = `
+                <div>
+                    <label for="timeline_period_${index}" class="sr-only">
+                        年表 ${index + 1} 時期
+                    </label>
+                    <input id="timeline_period_${index}"
+                           type="text"
+                           name="timeline_items[${index}][period]"
+                           value=""
+                           placeholder="時期">
+                </div>
+
+                <div>
+                    <label for="timeline_content_${index}" class="sr-only">
+                        年表 ${index + 1} 内容
+                    </label>
+                    <input id="timeline_content_${index}"
+                           type="text"
+                           name="timeline_items[${index}][content]"
+                           value=""
+                           placeholder="内容">
+                </div>
+
+                <div class="flex items-center md:justify-end">
+                    <button type="button"
+                            class="relationship-timeline-clear rounded-2xl border border-[#CBD5E0] bg-white px-4 py-3 text-sm font-bold text-[#4A5568] hover:bg-[#F7FAFC]">
+                        クリア
+                    </button>
+                </div>
+            `;
+
+            attachClearEvent(row);
+
+            return row;
+        }
+
+        document.querySelectorAll('.relationship-timeline-row').forEach((row) => {
+            attachClearEvent(row);
+        });
+
+        addButton.addEventListener('click', function () {
+            if (currentCount >= maxCount) {
+                updateUi();
+                return;
+            }
+
+            const row = createTimelineRow(currentCount);
+            list.appendChild(row);
+
+            currentCount += 1;
+
+            const firstInput = row.querySelector('input');
+            if (firstInput) {
+                firstInput.focus();
+            }
+
+            updateUi();
+        });
+
+        updateUi();
+    });
+</script>

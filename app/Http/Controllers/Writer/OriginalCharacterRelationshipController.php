@@ -114,4 +114,19 @@ class OriginalCharacterRelationshipController extends Controller
 
         abort_unless($user?->isSuperAdmin() || $relationship->user_id === $user?->id, 403);
     }
+
+    public function duplicate(Request $request, OriginalCharacterRelationship $originalCharacterRelationship)
+    {
+        $this->authorizeOwner($request, $originalCharacterRelationship);
+
+        $copy = $originalCharacterRelationship->replicate();
+
+        $copy->user_id = $request->user()->id;
+        $copy->save();
+
+        return redirect()
+            ->route('writer.original-character-relationships.edit', $copy)
+            ->with('success', '関係性を複製しました。内容を確認して保存してください。');
+    }
+
 }

@@ -23,6 +23,7 @@ class SavedPrompt extends Model
         'work_source',
         'work_id',
         'selected_character_refs',
+        'include_relationship_timeline',
 
         'writing_style',
         'writing_style_other',

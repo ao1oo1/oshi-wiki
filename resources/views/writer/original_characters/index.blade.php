@@ -16,6 +16,14 @@
     $characterTotal = method_exists($characterItems, 'total')
         ? $characterItems->total()
         : $characterItems->count();
+
+    $characterLimit = auth()->user()
+        ? \App\Support\WritingAssistLimits::originalCharactersPerUser(auth()->user())
+        : null;
+
+    $characterLimitLabel = $characterLimit === null
+        ? number_format($characterTotal) . ' / 制限なし'
+        : number_format($characterTotal) . ' / ' . number_format($characterLimit);
 @endphp
 
 <div class="mb-8">
@@ -38,7 +46,7 @@
     <section class="rounded-3xl border border-[#E2E8F0] bg-white p-6 shadow-sm">
         <p class="text-sm font-bold text-[#A0AEC0]">登録件数</p>
         <div class="mt-3 text-4xl font-bold text-[#2D3748]">
-            {{ number_format($characterTotal) }}
+            {{ $characterLimitLabel }}
         </div>
     </section>
 

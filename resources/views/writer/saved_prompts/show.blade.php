@@ -68,6 +68,12 @@
                 {{ $prompt->genreLabel() ?: 'ジャンル指定なし' }}
             </span>
 
+            @if ($prompt->include_relationship_timeline)
+                <span class="rounded-full bg-[#FFF1F5] px-3 py-1 text-xs font-bold text-[#2D3748]">
+                    年表データ反映
+                </span>
+            @endif
+
             @if (($prompt->status ?? 'active') === 'draft')
                 <span class="rounded-full bg-[#EDF2F7] px-3 py-1 text-xs font-bold text-[#4A5568]">
                     下書き
@@ -136,6 +142,13 @@
                 <p class="text-xs font-bold text-[#A0AEC0]">ステータス</p>
                 <p class="mt-2 font-bold text-[#2D3748]">
                     {{ ($prompt->status ?? 'active') === 'draft' ? '下書き' : '有効' }}
+                </p>
+            </div>
+
+            <div class="rounded-2xl bg-[#F7FAFC] p-5">
+                <p class="text-xs font-bold text-[#A0AEC0]">関係性年表</p>
+                <p class="mt-2 font-bold text-[#2D3748]">
+                    {{ $prompt->include_relationship_timeline ? 'プロンプトに反映する' : '反映しない' }}
                 </p>
             </div>
 

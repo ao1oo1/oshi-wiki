@@ -23,6 +23,7 @@ class StoreSavedPromptRequest extends FormRequest
 
             'work_ref' => ['required', 'string', 'max:100'],
             'selected_character_refs' => ['nullable', 'array'],
+            'include_relationship_timeline' => ['nullable', 'boolean'],
             'selected_character_refs.*' => ['string', 'max:100'],
 
             'writing_style' => ['required', Rule::in(array_keys(SavedPrompt::writingStyleLabels()))],

@@ -27,6 +27,9 @@ class StoreOriginalCharacterRelationshipRequest extends FormRequest
             'impression' => ['nullable', 'string', $this->maxRule($longNoteMax)],
             'notes' => ['nullable', 'string', $this->maxRule($noteMax)],
             'status' => ['nullable', Rule::in(['active', 'draft'])],
+            'timeline_items' => ['nullable', 'array', 'max:10'],
+            'timeline_items.*.period' => ['nullable', 'string', 'max:255'],
+            'timeline_items.*.content' => ['nullable', 'string', 'max:1000'],
         ];
     }
 

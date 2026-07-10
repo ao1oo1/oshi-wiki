@@ -17,6 +17,8 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\View\View;
+use Illuminate\Support\Facades\Log;
+use Throwable;
 
 class SavedPromptController extends Controller
 {
@@ -54,6 +56,11 @@ class SavedPromptController extends Controller
 
     public function create(Request $request): View
     {
+        $officialCharacters = Character::query()
+            ->with('work')
+            ->orderBy('name')
+            ->get();
+
         return view('writer.saved_prompts.create', $this->formData($request));
     }
 
@@ -71,15 +78,28 @@ class SavedPromptController extends Controller
 
     public function preview(PreviewSavedPromptRequest $request): JsonResponse
     {
-        $promptBody = $this->service->previewForUser(
-            $request->user(),
-            $request->validated()
-        );
+        try {
+            $promptBody = $this->service->previewForUser(
+                $request->user(),
+                $request->validated()
+            );
 
-        return response()->json([
-            'prompt_body' => $promptBody,
-            'length' => mb_strlen($promptBody),
-        ]);
+            return response()->json([
+                'prompt_body' => $promptBody,
+                'length' => mb_strlen($promptBody),
+            ]);
+        } catch (Throwable $exception) {
+            Log::error('Prompt preview failed', [
+                'user_id' => $request->user()?->id,
+                'message' => $exception->getMessage(),
+                'exception' => $exception,
+            ]);
+
+            return response()->json([
+                'message' => 'プレビュー生成中にエラーが発生しました。',
+                'detail' => $exception->getMessage(),
+            ], 500);
+        }
     }
 
     public function show(Request $request, SavedPrompt $prompt): View
@@ -93,6 +113,11 @@ class SavedPromptController extends Controller
 
     public function edit(Request $request, SavedPrompt $prompt): View
     {
+        $officialCharacters = Character::query()
+            ->with('work')
+            ->orderBy('name')
+            ->get();
+
         $this->authorizeOwner($request, $prompt);
 
         return view('writer.saved_prompts.edit', array_merge(
@@ -167,9 +192,6 @@ class SavedPromptController extends Controller
 
         $officialCharacters = Character::query()
             ->with('work')
-            ->when(! $user?->isSuperAdmin() && Schema::hasColumn('characters', 'status'), function ($query) {
-                $query->whereIn('status', ['published', 'active']);
-            })
             ->orderBy('name')
             ->get();
 
