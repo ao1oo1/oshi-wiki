@@ -35,6 +35,13 @@
             <x-input-error :messages="$errors->get('password')" class="mt-2" />
         </div>
 
+        <div class="mt-4 text-right">
+            <a href="{{ route('password.request') }}"
+               class="text-xs font-bold text-[#A0AEC0] underline underline-offset-4 hover:text-[#2D3748]">
+                パスワードを忘れた方はこちら
+            </a>
+        </div>
+
         <div class="mt-4 block">
             <label for="remember_me" class="inline-flex items-center">
                 <input id="remember_me"
