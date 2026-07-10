@@ -2,10 +2,10 @@
     <form method="POST" action="{{ route('password.store') }}">
         @csrf
 
-        <!-- 新しいパスワード Reset Token -->
+        <!-- パスワード再設定トークン -->
         <input type="hidden" name="token" value="{{ $request->route('token') }}">
 
-        <!-- メールアドレス Address -->
+        <!-- メールアドレス -->
         <div>
             <x-input-label for="email" :value="__('メールアドレス')" />
             <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email', $request->email)" required autofocus autocomplete="username" />
@@ -19,9 +19,9 @@
             <x-input-error :messages="$errors->get('password')" class="mt-2" />
         </div>
 
-        <!-- Confirm 新しいパスワード -->
+        <!-- 新しいパスワード確認 -->
         <div class="mt-4">
-            <x-input-label for="password_confirmation" :value="__('Confirm 新しいパスワード')" />
+            <x-input-label for="password_confirmation" value="新しいパスワード（確認）" />
 
             <x-text-input id="password_confirmation" class="block mt-1 w-full"
                                 type="password"
@@ -32,7 +32,7 @@
 
         <div class="flex items-center justify-end mt-4">
             <x-primary-button>
-                {{ __('Reset 新しいパスワード') }}
+                パスワードを再設定する
             </x-primary-button>
         </div>
     </form>
