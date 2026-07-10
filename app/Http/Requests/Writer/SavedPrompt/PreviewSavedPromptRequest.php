@@ -9,7 +9,6 @@ class PreviewSavedPromptRequest extends StoreSavedPromptRequest
         $rules = parent::rules();
 
         $rules['title'] = ['nullable', 'string', 'max:255'];
-        $rules['work_ref'] = ['required', 'string', 'max:100'];
         $rules['writing_style'] = ['required', 'string', 'max:50'];
         $rules['genre'] = ['required', 'string', 'max:50'];
 

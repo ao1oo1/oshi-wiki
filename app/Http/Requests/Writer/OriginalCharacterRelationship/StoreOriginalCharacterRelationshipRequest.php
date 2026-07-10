@@ -19,8 +19,8 @@ class StoreOriginalCharacterRelationshipRequest extends FormRequest
         $longNoteMax = WritingAssistLimits::longNoteMaxLength($this->user());
 
         return [
-            'from_character_ref' => ['required', 'string', 'max:100'],
-            'to_character_ref' => ['required', 'string', 'different:from_character_ref', 'max:100'],
+            'from_character_ref' => ['required', 'string', 'max:100', 'regex:/^original:\\d+$/'],
+            'to_character_ref' => ['required', 'string', 'different:from_character_ref', 'max:100', 'regex:/^original:\\d+$/'],
 
             'called_name' => ['nullable', 'string', 'max:255'],
             'relationship_type' => ['nullable', 'string', 'max:255'],

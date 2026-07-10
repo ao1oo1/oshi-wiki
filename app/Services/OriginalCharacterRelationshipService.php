@@ -2,13 +2,11 @@
 
 namespace App\Services;
 
-use App\Models\Character;
 use App\Models\OriginalCharacter;
 use App\Models\OriginalCharacterRelationship;
 use App\Models\User;
 use App\Repositories\OriginalCharacterRelationshipRepository;
 use App\Support\WritingAssistLimits;
-use Illuminate\Support\Facades\Schema;
 use Illuminate\Validation\ValidationException;
 
 class OriginalCharacterRelationshipService
@@ -73,80 +71,49 @@ class OriginalCharacterRelationshipService
         $from = $this->resolveCharacterRef($user, (string) ($data['from_character_ref'] ?? ''), 'from_character_ref');
         $to = $this->resolveCharacterRef($user, (string) ($data['to_character_ref'] ?? ''), 'to_character_ref');
 
-        if ($from['source'] === $to['source'] && $from['id'] === $to['id']) {
+        if ($from['id'] === $to['id']) {
             throw ValidationException::withMessages([
                 'to_character_ref' => '同じキャラクター同士の関係性は登録できません。',
             ]);
         }
 
         return [
-            'from_character_source' => $from['source'],
-            'to_character_source' => $to['source'],
+            'from_character_source' => OriginalCharacterRelationship::SOURCE_ORIGINAL,
+            'to_character_source' => OriginalCharacterRelationship::SOURCE_ORIGINAL,
 
-            'from_original_character_id' => $from['source'] === OriginalCharacterRelationship::SOURCE_ORIGINAL ? $from['id'] : null,
-            'to_original_character_id' => $to['source'] === OriginalCharacterRelationship::SOURCE_ORIGINAL ? $to['id'] : null,
+            'from_original_character_id' => $from['id'],
+            'to_original_character_id' => $to['id'],
 
-            'from_character_id' => $from['source'] === OriginalCharacterRelationship::SOURCE_V1_CHARACTER ? $from['id'] : null,
-            'to_character_id' => $to['source'] === OriginalCharacterRelationship::SOURCE_V1_CHARACTER ? $to['id'] : null,
+            'from_character_id' => null,
+            'to_character_id' => null,
         ];
     }
 
     private function resolveCharacterRef(User $user, string $ref, string $field): array
     {
-        if (! str_contains($ref, ':')) {
+        if (! preg_match('/^original:\d+$/', $ref)) {
             throw ValidationException::withMessages([
-                $field => 'キャラクターを選択してください。',
+                $field => '自分で登録したオリジナルキャラクターを選択してください。',
             ]);
         }
 
-        [$source, $id] = explode(':', $ref, 2);
+        [, $id] = explode(':', $ref, 2);
         $id = (int) $id;
 
-        if ($source === OriginalCharacterRelationship::SOURCE_ORIGINAL) {
-            $character = OriginalCharacter::query()->find($id);
+        $character = OriginalCharacter::query()
+            ->where('user_id', $user->id)
+            ->find($id);
 
-            if (! $character) {
-                throw ValidationException::withMessages([
-                    $field => 'オリジナルキャラクターが見つかりません。',
-                ]);
-            }
-
-            if (! $user->isSuperAdmin() && $character->user_id !== $user->id) {
-                throw ValidationException::withMessages([
-                    $field => '自分のオリジナルキャラクターのみ選択できます。',
-                ]);
-            }
-
-            return [
-                'source' => OriginalCharacterRelationship::SOURCE_ORIGINAL,
-                'id' => $character->id,
-            ];
+        if (! $character) {
+            throw ValidationException::withMessages([
+                $field => 'オリジナルキャラクターが見つかりません。',
+            ]);
         }
 
-        if ($source === OriginalCharacterRelationship::SOURCE_V1_CHARACTER) {
-            $query = Character::query()->where('id', $id);
-
-            if (! $user->isSuperAdmin() && Schema::hasColumn('characters', 'status')) {
-                $query->whereIn('status', ['published', 'active']);
-            }
-
-            $character = $query->first();
-
-            if (! $character) {
-                throw ValidationException::withMessages([
-                    $field => '作品キャラクターが見つかりません。',
-                ]);
-            }
-
-            return [
-                'source' => OriginalCharacterRelationship::SOURCE_V1_CHARACTER,
-                'id' => $character->id,
-            ];
-        }
-
-        throw ValidationException::withMessages([
-            $field => 'キャラクターの種別が不正です。',
-        ]);
+        return [
+            'source' => OriginalCharacterRelationship::SOURCE_ORIGINAL,
+            'id' => $character->id,
+        ];
     }
 
     private function normalizeTimelineItems(array $data): array
@@ -186,5 +153,4 @@ class OriginalCharacterRelationshipService
 
         return $data;
     }
-
 }

@@ -95,6 +95,6 @@ class User extends Authenticatable
 
     public function canAccessWriter(): bool
     {
-        return $this->isSuperAdmin() || $this->isWriter();
+        return $this->isWriter();
     }
 }

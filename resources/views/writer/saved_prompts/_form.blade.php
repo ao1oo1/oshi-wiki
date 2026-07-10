@@ -5,32 +5,17 @@
         return old($key, $prompt?->{$key} ?? $default);
     };
 
-    $works = $works ?? collect();
-
     $characters = $characters
         ?? $originalCharacters
         ?? $characterItems
         ?? collect();
-
-    $officialCharacters = $officialCharacters ?? collect();
 
     $selectedCharacterRefs = old('selected_character_refs', $prompt?->selected_character_refs ?? []);
 
     if (! is_array($selectedCharacterRefs)) {
         $selectedCharacterRefs = [];
     }
-
-    $workRef = old('work_ref');
-
-    if (! $workRef && $prompt) {
-        if (($prompt->work_source ?? null) === 'v1_work' && $prompt->work_id) {
-            $workRef = 'work:' . $prompt->work_id;
-        } else {
-            $workRef = 'original';
-        }
-    }
-
-    $workRef = $workRef ?: 'original';
+    $workRef = 'original';
 
     $writingStyle = old('writing_style', $prompt?->writing_style ?? '');
     $genre = old('genre', $prompt?->genre ?? '');
@@ -40,21 +25,6 @@
     $genreLabels = \App\Models\SavedPrompt::genreLabels();
 
     $includeTimeline = (bool) old('include_relationship_timeline', $prompt?->include_relationship_timeline ?? false);
-
-    $officialCharacterPayload = $officialCharacters
-        ->map(function ($character) {
-            $workId = $character->work_id ?? $character->work?->id ?? null;
-
-            return [
-                'id' => $character->id,
-                'name' => $character->name,
-                'work_id' => $workId ? (string) $workId : '',
-                'work_title' => $character->work?->title ?? '作品未設定',
-                'ref' => 'v1_character:' . $character->id,
-            ];
-        })
-        ->filter(fn ($character) => $character['work_id'] !== '')
-        ->values();
 @endphp
 
 @if ($errors->any())
@@ -75,7 +45,7 @@
         <p class="text-sm font-bold text-[#A0AEC0]">STEP 1</p>
         <h2 class="mt-1 text-2xl font-bold text-[#2D3748]">基本情報</h2>
         <p class="mt-2 text-sm font-bold leading-7 text-[#718096]">
-            プロンプトの管理名と、対象にする作品を設定します。
+            プロンプトの管理名と用途を設定します。
         </p>
     </div>
 
@@ -89,19 +59,7 @@
                    placeholder="例：日常シーン用プロンプト"
                    required>
         </div>
-
-        <div>
-            <label for="work_ref">作品</label>
-            <select id="work_ref" name="work_ref">
-                <option value="original" @selected($workRef === 'original')>オリジナル</option>
-
-                @foreach ($works as $work)
-                    <option value="work:{{ $work->id }}" @selected($workRef === 'work:' . $work->id)>
-                        {{ $work->title }}
-                    </option>
-                @endforeach
-            </select>
-        </div>
+        <input type="hidden" name="work_ref" id="work_ref" value="original">
 
         <div class="md:col-span-2">
             <label for="purpose">用途・目的</label>
@@ -117,7 +75,7 @@
         <p class="text-sm font-bold text-[#A0AEC0]">STEP 2</p>
         <h2 class="mt-1 text-2xl font-bold text-[#2D3748]">登場人物</h2>
         <p class="mt-2 text-sm font-bold leading-7 text-[#718096]">
-            プロンプトに反映する登場人物を選択します。作品キャラクターは、選択した作品に応じて表示されます。
+            プロンプトに反映する登場人物を選択します。自分で登録したオリジナルキャラクターを選択します。
         </p>
     </div>
 
@@ -155,23 +113,6 @@
                     </div>
                 @endforelse
             </div>
-        </div>
-
-        <div class="rounded-3xl bg-[#F7FAFC] p-5">
-            <h3 class="font-bold text-[#2D3748]">作品キャラクター</h3>
-            <p class="mt-2 text-sm font-bold leading-7 text-[#A0AEC0]">
-                選択した作品に登録されているキャラクターだけを表示します。
-            </p>
-
-            <div class="mt-4 rounded-2xl bg-white p-4 text-sm font-bold text-[#A0AEC0]" id="official-character-empty-message">
-                作品を選択すると、登録済みキャラクターが表示されます。
-            </div>
-
-            <div class="mt-4 max-h-[360px] space-y-3 overflow-y-auto pr-2" id="official-character-list"></div>
-
-            <script type="application/json" id="official-character-payload">
-                {!! json_encode($officialCharacterPayload, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) !!}
-            </script>
         </div>
     </div>
 
@@ -356,8 +297,6 @@
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         const workSelect = document.getElementById('work_ref');
-        const officialCharacterList = document.getElementById('official-character-list');
-        const officialCharacterPayloadElement = document.getElementById('official-character-payload');
         const writingStyleSelect = document.getElementById('writing_style');
         const writingStyleOtherWrap = document.getElementById('writing-style-other-wrap');
         const genreSelect = document.getElementById('genre');
@@ -368,31 +307,6 @@
         const previewMessage = document.getElementById('preview-message');
         const form = document.getElementById('saved-prompt-form');
 
-        function selectedWorkId() {
-            if (!workSelect || !workSelect.value.startsWith('work:')) {
-                return '';
-            }
-
-            return workSelect.value.replace('work:', '');
-        }
-
-        function officialCharacters() {
-            if (!officialCharacterPayloadElement) {
-                return [];
-            }
-
-            try {
-                return JSON.parse(officialCharacterPayloadElement.textContent || '[]');
-            } catch (error) {
-                return [];
-            }
-        }
-
-        function selectedOfficialRefs() {
-            return Array.from(document.querySelectorAll('#official-character-list input[name="selected_character_refs[]"]:checked'))
-                .map((input) => input.value);
-        }
-
         function escapeHtml(value) {
             return String(value ?? '')
                 .replaceAll('&', '&amp;')
@@ -401,66 +315,6 @@
                 .replaceAll('"', '&quot;')
                 .replaceAll("'", '&#039;');
         }
-
-        function refreshOfficialCharacters() {
-            const currentWorkId = selectedWorkId();
-            const emptyMessage = document.getElementById('official-character-empty-message');
-
-            if (!officialCharacterList) {
-                return;
-            }
-
-            const previouslySelectedRefs = selectedOfficialRefs();
-
-            officialCharacterList.innerHTML = '';
-
-            if (currentWorkId === '') {
-                if (emptyMessage) {
-                    emptyMessage.textContent = '作品を選択すると、登録済みキャラクターが表示されます。';
-                    emptyMessage.classList.remove('hidden');
-                }
-
-                return;
-            }
-
-            const characters = officialCharacters()
-                .filter((character) => String(character.work_id) === String(currentWorkId));
-
-            if (characters.length === 0) {
-                if (emptyMessage) {
-                    emptyMessage.textContent = 'この作品に登録されているキャラクターはありません。';
-                    emptyMessage.classList.remove('hidden');
-                }
-
-                return;
-            }
-
-            if (emptyMessage) {
-                emptyMessage.classList.add('hidden');
-            }
-
-            characters.forEach((character) => {
-                const label = document.createElement('label');
-                label.className = 'flex items-start gap-3 rounded-2xl bg-white p-4';
-
-                const checked = previouslySelectedRefs.includes(character.ref) ? 'checked' : '';
-
-                label.innerHTML = `
-                    <input type="checkbox"
-                           name="selected_character_refs[]"
-                           value="${escapeHtml(character.ref)}"
-                           class="mt-1 official-character-checkbox"
-                           ${checked}>
-                    <span>
-                        <span class="block font-bold text-[#2D3748]">${escapeHtml(character.name)}</span>
-                        <span class="mt-1 block text-xs font-bold text-[#A0AEC0]">${escapeHtml(character.work_title)}</span>
-                    </span>
-                `;
-
-                officialCharacterList.appendChild(label);
-            });
-        }
-
         function refreshOtherFields() {
             if (writingStyleOtherWrap && writingStyleSelect) {
                 writingStyleOtherWrap.style.display = writingStyleSelect.value === 'other' ? 'block' : 'none';
@@ -542,14 +396,10 @@
 
             showPreviewMessage('プレビューをコピーしました。');
         }
-
-        workSelect?.addEventListener('change', refreshOfficialCharacters);
         writingStyleSelect?.addEventListener('change', refreshOtherFields);
         genreSelect?.addEventListener('change', refreshOtherFields);
         previewButton?.addEventListener('click', generatePreview);
         previewCopyButton?.addEventListener('click', copyPreview);
-
-        refreshOfficialCharacters();
         refreshOtherFields();
     });
 </script>

@@ -24,8 +24,6 @@
     $writingStyleLabels = \App\Models\SavedPrompt::writingStyleLabels();
     $genreLabels = \App\Models\SavedPrompt::genreLabels();
 
-    $worksForSelect = $works ?? collect();
-
     $promptLimit = auth()->user()
         ? \App\Support\WritingAssistLimits::promptsPerUser(auth()->user())
         : null;
@@ -41,99 +39,6 @@
 
 <div class="mb-8">
     <div class="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
-        <div>
-            <h1 class="text-3xl font-bold text-[#2D3748]">プロンプト管理</h1>
-            <p class="mt-3 text-sm font-bold text-[#A0AEC0]">
-                作成したプロンプトを検索・整理・複製できます。
-            </p>
-        </div>
-
-        <a href="{{ route('writer.prompts.create') }}"
-           class="inline-flex items-center justify-center rounded-2xl bg-[#FED7E2] px-6 py-3 font-bold text-[#2D3748] hover:opacity-90">
-            新規作成
-        </a>
-    </div>
-</div>
-
-<div class="mb-8 grid gap-6 md:grid-cols-3">
-    <section class="rounded-3xl border border-[#E2E8F0] bg-white p-6 shadow-sm">
-        <p class="text-sm font-bold text-[#A0AEC0]">登録件数</p>
-        <div class="mt-3 text-4xl font-bold text-[#2D3748]">{{ $promptLimitLabel }}</div>
-    </section>
-
-    <section class="rounded-3xl border border-[#E2E8F0] bg-white p-6 shadow-sm">
-        <p class="text-sm font-bold text-[#A0AEC0]">現在の並び順</p>
-        <div class="mt-3 text-2xl font-bold text-[#2D3748]">{{ $sortLabels[$currentSort] ?? '新しい順' }}</div>
-    </section>
-
-    <section class="rounded-3xl border border-[#E2E8F0] bg-white p-6 shadow-sm">
-        <p class="text-sm font-bold text-[#A0AEC0]">表示中</p>
-        <div class="mt-3 text-2xl font-bold text-[#2D3748]">
-            {{ number_format($savedPrompts->count()) }}件
-        </div>
-    </section>
-</div>
-
-<section class="mb-8 rounded-3xl border border-[#E2E8F0] bg-white p-6 shadow-sm">
-    <form method="GET" action="{{ route('writer.prompts.index') }}" class="space-y-5">
-        <div class="grid gap-4 xl:grid-cols-4">
-            <div class="xl:col-span-2">
-                <label class="mb-2 block text-sm font-bold text-[#2D3748]">キーワード</label>
-                <input type="text"
-                       name="keyword"
-                       value="{{ $filters['keyword'] ?? '' }}"
-                       placeholder="タイトル・あらすじ・本文・備考で検索"
-                       class="w-full rounded-2xl border-[#CBD5E0] text-[#2D3748] focus:border-[#FED7E2] focus:ring-[#FED7E2]">
-            </div>
-
-            <div>
-                <label class="mb-2 block text-sm font-bold text-[#2D3748]">ステータス</label>
-                <select name="status"
-                        class="w-full rounded-2xl border-[#CBD5E0] text-[#2D3748] focus:border-[#FED7E2] focus:ring-[#FED7E2]">
-                    @foreach ($statusLabels as $value => $label)
-                        <option value="{{ $value }}" @selected(($filters['status'] ?? '') === $value)>
-                            {{ $label }}
-                        </option>
-                    @endforeach
-                </select>
-            </div>
-
-            <div>
-                <label class="mb-2 block text-sm font-bold text-[#2D3748]">並び替え</label>
-                <select name="sort"
-                        class="w-full rounded-2xl border-[#CBD5E0] text-[#2D3748] focus:border-[#FED7E2] focus:ring-[#FED7E2]">
-                    @foreach ($sortLabels as $value => $label)
-                        <option value="{{ $value }}" @selected(($filters['sort'] ?? 'latest') === $value)>
-                            {{ $label }}
-                        </option>
-                    @endforeach
-                </select>
-            </div>
-        </div>
-
-        <div class="grid gap-4 xl:grid-cols-4">
-            <div>
-                <label class="mb-2 block text-sm font-bold text-[#2D3748]">作品種別</label>
-                <select name="work_source"
-                        class="w-full rounded-2xl border-[#CBD5E0] text-[#2D3748] focus:border-[#FED7E2] focus:ring-[#FED7E2]">
-                    <option value="">すべて</option>
-                    <option value="original" @selected(($filters['work_source'] ?? '') === 'original')>オリジナル</option>
-                    <option value="v1_work" @selected(($filters['work_source'] ?? '') === 'v1_work')>登録作品</option>
-                </select>
-            </div>
-
-            <div>
-                <label class="mb-2 block text-sm font-bold text-[#2D3748]">作品</label>
-                <select name="work_id"
-                        class="w-full rounded-2xl border-[#CBD5E0] text-[#2D3748] focus:border-[#FED7E2] focus:ring-[#FED7E2]">
-                    <option value="">すべて</option>
-                    @foreach ($worksForSelect as $work)
-                        <option value="{{ $work->id }}" @selected((string)($filters['work_id'] ?? '') === (string)$work->id)>
-                            {{ $work->title }}
-                        </option>
-                    @endforeach
-                </select>
-            </div>
 
             <div>
                 <label class="mb-2 block text-sm font-bold text-[#2D3748]">作風</label>

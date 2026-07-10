@@ -8,25 +8,18 @@
     $fromRef = old('from_character_ref');
     $toRef = old('to_character_ref');
 
-    if (! $fromRef && $relationship) {
-        if (($relationship->from_character_source ?? null) === 'v1_character' && $relationship->from_character_id) {
-            $fromRef = 'v1_character:' . $relationship->from_character_id;
-        } elseif ($relationship->from_original_character_id) {
+    if (! $fromRef && $relationship) { elseif ($relationship->from_original_character_id) {
             $fromRef = 'original:' . $relationship->from_original_character_id;
         }
     }
 
-    if (! $toRef && $relationship) {
-        if (($relationship->to_character_source ?? null) === 'v1_character' && $relationship->to_character_id) {
-            $toRef = 'v1_character:' . $relationship->to_character_id;
-        } elseif ($relationship->to_original_character_id) {
+    if (! $toRef && $relationship) { elseif ($relationship->to_original_character_id) {
             $toRef = 'original:' . $relationship->to_original_character_id;
         }
     }
 
     $status = old('status', $relationship?->status ?? 'active');
     $characters = $characters ?? collect();
-    $officialCharacters = $officialCharacters ?? collect();
 
     $timelineItems = old('timeline_items', $relationship?->timeline_items ?? []);
 
@@ -79,7 +72,7 @@
             <p class="text-sm font-bold text-[#A0AEC0]">STEP 1</p>
             <h2 class="mt-1 text-2xl font-bold text-[#2D3748]">関係を作るキャラクターを選ぶ</h2>
             <p class="mt-2 text-sm font-bold leading-7 text-[#718096]">
-                「誰から誰へ」の関係性かを選びます。オリジナルキャラクターと、Oshi-Wikiに登録済みの作品キャラクターを組み合わせられます。
+                「誰から誰へ」の関係性かを選びます。オリジナルキャラクターと、Oshi-Wikiに登録済みのオリジナルキャラクターを組み合わせられます。
             </p>
         </div>
 
@@ -97,12 +90,7 @@
                         @endforeach
                     </optgroup>
 
-                    <optgroup label="作品キャラクター">
-                        @foreach ($officialCharacters as $character)
-                            <option value="v1_character:{{ $character->id }}" @selected($fromRef === 'v1_character:' . $character->id)>
-                                {{ $character->name }}
-                            </option>
-                        @endforeach
+                    <optgroup label="オリジナルキャラクター">
                     </optgroup>
                 </select>
                 <p class="mt-2 text-xs font-bold leading-6 text-[#A0AEC0]">
@@ -123,12 +111,7 @@
                         @endforeach
                     </optgroup>
 
-                    <optgroup label="作品キャラクター">
-                        @foreach ($officialCharacters as $character)
-                            <option value="v1_character:{{ $character->id }}" @selected($toRef === 'v1_character:' . $character->id)>
-                                {{ $character->name }}
-                            </option>
-                        @endforeach
+                    <optgroup label="オリジナルキャラクター">
                     </optgroup>
                 </select>
                 <p class="mt-2 text-xs font-bold leading-6 text-[#A0AEC0]">

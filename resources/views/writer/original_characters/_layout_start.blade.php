@@ -210,7 +210,7 @@
                     </a>
 
                     @if (auth()->user()?->canAccessAdmin())
-                        <a href="{{ route('admin.dashboard') }}" class="block rounded-2xl px-5 py-4 text-[#2D3748] hover:bg-[#FFF1F5]">
+                        <a href="{{ route('writer.dashboard') }}" class="block rounded-2xl px-5 py-4 text-[#2D3748] hover:bg-[#FFF1F5]">
                             管理画面へ
                         </a>
                     @endif

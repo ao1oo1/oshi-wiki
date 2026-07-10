@@ -93,6 +93,6 @@ class OriginalCharacterController extends Controller
     {
         $user = $request->user();
 
-        abort_unless($user?->isSuperAdmin() || $originalCharacter->user_id === $user?->id, 403);
+        abort_unless($originalCharacter->user_id === $user?->id, 403);
     }
 }

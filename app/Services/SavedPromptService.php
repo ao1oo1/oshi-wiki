@@ -2,10 +2,9 @@
 
 namespace App\Services;
 
-use App\Models\SavedPrompt;
 use App\Models\OriginalCharacterRelationship;
+use App\Models\SavedPrompt;
 use App\Models\User;
-use App\Models\Work;
 use App\Repositories\SavedPromptRepository;
 use App\Support\WritingAssistLimits;
 use Illuminate\Validation\ValidationException;
@@ -79,28 +78,12 @@ class SavedPromptService
 
     private function normalizePromptData(array $data): array
     {
-        $workRef = (string) ($data['work_ref'] ?? 'original');
-
         $data['work_source'] = SavedPrompt::WORK_SOURCE_ORIGINAL;
         $data['work_id'] = null;
 
-        if (str_starts_with($workRef, 'work:')) {
-            $workId = (int) str_replace('work:', '', $workRef);
-            $work = Work::query()->find($workId);
-
-            if (! $work) {
-                throw ValidationException::withMessages([
-                    'work_ref' => '選択された作品が見つかりません。',
-                ]);
-            }
-
-            $data['work_source'] = SavedPrompt::WORK_SOURCE_V1;
-            $data['work_id'] = $work->id;
-        }
-
         $data['selected_character_refs'] = array_values(array_filter(
             $data['selected_character_refs'] ?? [],
-            fn ($value) => is_string($value) && str_contains($value, ':')
+            fn ($value) => is_string($value) && preg_match('/^original:\d+$/', $value)
         ));
 
         $data['include_relationship_timeline'] = (bool) ($data['include_relationship_timeline'] ?? false);
@@ -114,14 +97,9 @@ class SavedPromptService
     {
         $workName = 'オリジナル';
 
-        if (($data['work_source'] ?? null) === SavedPrompt::WORK_SOURCE_V1 && ! empty($data['work_id'])) {
-            $workName = Work::query()->find($data['work_id'])?->title ?? '選択作品';
-        }
-
         $context = $this->contextBuilder->build(
             $user,
-            $data['selected_character_refs'] ?? [],
-            (bool) ($data['include_relationship_timeline'] ?? false)
+            $data['selected_character_refs'] ?? []
         );
 
         $style = $this->labelFrom(
@@ -185,7 +163,7 @@ class SavedPromptService
             '・上記の設定を守ってください。',
             '・登場人物の一人称、口調、性格、関係性を反映してください。',
             '・登録情報にない設定は断定しないでください。',
-            '・作品名が「オリジナル」の場合は、既存作品の固有設定を前提にしないでください。',
+            '・既存作品の固有設定を前提にしないでください。',
             '・不足している情報は、自然な範囲で補ってください。',
         ];
 
@@ -230,20 +208,12 @@ class SavedPromptService
 
         $relationships = OriginalCharacterRelationship::query()
             ->where('user_id', $user->id)
+            ->with(['fromCharacter', 'toCharacter'])
             ->get();
 
         foreach ($relationships as $relationship) {
-            $fromKey = $this->relationshipEndpointKey(
-                (string) ($relationship->from_character_source ?? 'original'),
-                $relationship->from_original_character_id,
-                $relationship->from_character_id
-            );
-
-            $toKey = $this->relationshipEndpointKey(
-                (string) ($relationship->to_character_source ?? 'original'),
-                $relationship->to_original_character_id,
-                $relationship->to_character_id
-            );
+            $fromKey = 'original:' . $relationship->from_original_character_id;
+            $toKey = 'original:' . $relationship->to_original_character_id;
 
             if (! in_array($fromKey, $selected, true) || ! in_array($toKey, $selected, true)) {
                 continue;
@@ -257,13 +227,8 @@ class SavedPromptService
                 continue;
             }
 
-            $fromName = method_exists($relationship, 'fromDisplayName')
-                ? $relationship->fromDisplayName()
-                : 'From';
-
-            $toName = method_exists($relationship, 'toDisplayName')
-                ? $relationship->toDisplayName()
-                : 'To';
+            $fromName = $relationship->fromDisplayName();
+            $toName = $relationship->toDisplayName();
 
             $timelineLines[] = "{$fromName} → {$toName} の年表：";
 
@@ -286,17 +251,7 @@ class SavedPromptService
     {
         return array_values(array_filter(
             array_map(fn ($ref) => is_string($ref) ? trim($ref) : '', $characterRefs),
-            fn ($ref) => $ref !== '' && str_contains($ref, ':')
+            fn ($ref) => preg_match('/^original:\d+$/', $ref)
         ));
     }
-
-    private function relationshipEndpointKey(string $source, ?int $originalCharacterId, ?int $officialCharacterId): string
-    {
-        if ($source === OriginalCharacterRelationship::SOURCE_V1_CHARACTER || $source === 'v1_character') {
-            return 'v1_character:' . $officialCharacterId;
-        }
-
-        return 'original:' . $originalCharacterId;
-    }
-
 }

@@ -12,7 +12,6 @@ class SavedPrompt extends Model
     use SoftDeletes;
 
     public const WORK_SOURCE_ORIGINAL = 'original';
-    public const WORK_SOURCE_V1 = 'v1_work';
 
     protected $fillable = [
         'user_id',
@@ -57,17 +56,8 @@ class SavedPrompt extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function work(): BelongsTo
-    {
-        return $this->belongsTo(Work::class);
-    }
-
     public function scopeForUser(Builder $query, User $user): Builder
     {
-        if ($user->isSuperAdmin()) {
-            return $query;
-        }
-
         return $query->where('user_id', $user->id);
     }
 
@@ -134,10 +124,6 @@ class SavedPrompt extends Model
 
     public function workLabel(): string
     {
-        if ($this->work_source === self::WORK_SOURCE_V1) {
-            return $this->work?->title ?? '作品未設定';
-        }
-
         return 'オリジナル';
     }
 

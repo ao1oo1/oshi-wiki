@@ -30,7 +30,11 @@
                 </p>
             @endauth
 
-            @include('admin.partials.navigation')
+            @if (auth()->check() && request()->routeIs('admin.*') && auth()->user()?->canAccessAdmin())
+                @include('admin.partials.navigation')
+            @elseif (auth()->check() && request()->routeIs('writer.*') && auth()->user()?->isWriter())
+                @include('writer.partials.navigation')
+            @endif
 
             <form method="POST" action="{{ route('logout') }}">
                 @csrf

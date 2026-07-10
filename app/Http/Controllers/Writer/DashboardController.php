@@ -18,7 +18,7 @@ class DashboardController extends Controller
 
         $originalCharacterQuery = OriginalCharacter::query()->forUser($user);
         $relationshipQuery = OriginalCharacterRelationship::query()->forUser($user);
-        $promptQuery = SavedPrompt::query()->with('work')->forUser($user);
+        $promptQuery = SavedPrompt::query()->forUser($user);
 
         $promptCount = (clone $promptQuery)->count();
         $activePromptCount = (clone $promptQuery)->where('status', 'active')->count();

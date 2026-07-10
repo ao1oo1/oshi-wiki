@@ -10,7 +10,9 @@ class EnsureWriterUser
 {
     public function handle(Request $request, Closure $next): Response
     {
-        abort_unless($request->user()?->canAccessWriter(), 403);
+        if (! $request->user()?->isWriter()) {
+            abort(403);
+        }
 
         return $next($request);
     }

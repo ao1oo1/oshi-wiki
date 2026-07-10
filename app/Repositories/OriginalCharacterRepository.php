@@ -2,12 +2,10 @@
 
 namespace App\Repositories;
 
-use App\Models\Character;
 use App\Models\OriginalCharacter;
 use App\Models\User;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Support\Facades\Schema;
 
 class OriginalCharacterRepository
 {
@@ -36,26 +34,6 @@ class OriginalCharacterRepository
             ->forUser($user)
             ->orderBy('name')
             ->get();
-    }
-
-    public function allOfficialCharactersForUser(User $user): Collection
-    {
-        $query = Character::query()
-            ->select('characters.*')
-            ->orderBy('characters.name');
-
-        if (Schema::hasTable('works') && Schema::hasColumn('characters', 'work_id')) {
-            $query
-                ->leftJoin('works', 'characters.work_id', '=', 'works.id')
-                ->addSelect('works.title as work_title')
-                ->orderBy('works.title');
-        }
-
-        if (! $user->isSuperAdmin() && Schema::hasColumn('characters', 'status')) {
-            $query->whereIn('characters.status', ['published', 'active']);
-        }
-
-        return $query->get();
     }
 
     public function create(array $data): OriginalCharacter

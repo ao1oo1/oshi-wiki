@@ -38,7 +38,6 @@ class OriginalCharacterRelationshipController extends Controller
 
         return view('writer.original_character_relationships.create', [
             'characters' => $this->characterRepository->allForUser($user),
-            'officialCharacters' => $this->characterRepository->allOfficialCharactersForUser($user),
             'limit' => WritingAssistLimits::relationshipsPerUser($user),
         ]);
     }
@@ -63,8 +62,6 @@ class OriginalCharacterRelationshipController extends Controller
             'relationship' => $originalCharacterRelationship->load([
                 'fromCharacter',
                 'toCharacter',
-                'fromOfficialCharacter.work',
-                'toOfficialCharacter.work',
             ]),
         ]);
     }
@@ -78,7 +75,6 @@ class OriginalCharacterRelationshipController extends Controller
         return view('writer.original_character_relationships.edit', [
             'relationship' => $originalCharacterRelationship,
             'characters' => $this->characterRepository->allForUser($user),
-            'officialCharacters' => $this->characterRepository->allOfficialCharactersForUser($user),
         ]);
     }
 
@@ -112,7 +108,7 @@ class OriginalCharacterRelationshipController extends Controller
     {
         $user = $request->user();
 
-        abort_unless($user?->isSuperAdmin() || $relationship->user_id === $user?->id, 403);
+        abort_unless($relationship->user_id === $user?->id, 403);
     }
 
     public function duplicate(Request $request, OriginalCharacterRelationship $originalCharacterRelationship)

@@ -20,11 +20,9 @@ class StoreSavedPromptRequest extends FormRequest
             'title' => ['required', 'string', 'max:255'],
             'category' => ['nullable', Rule::in(array_keys(SavedPrompt::categoryLabels()))],
             'purpose' => ['nullable', 'string', 'max:255'],
-
-            'work_ref' => ['required', 'string', 'max:100'],
             'selected_character_refs' => ['nullable', 'array'],
             'include_relationship_timeline' => ['nullable', 'boolean'],
-            'selected_character_refs.*' => ['string', 'max:100'],
+            'selected_character_refs.*' => ['string', 'max:100', 'regex:/^original:\\d+$/'],
 
             'writing_style' => ['required', Rule::in(array_keys(SavedPrompt::writingStyleLabels()))],
             'writing_style_other' => ['nullable', 'string', 'max:255'],

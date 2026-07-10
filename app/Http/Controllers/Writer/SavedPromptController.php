@@ -6,16 +6,13 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Writer\SavedPrompt\PreviewSavedPromptRequest;
 use App\Http\Requests\Writer\SavedPrompt\StoreSavedPromptRequest;
 use App\Http\Requests\Writer\SavedPrompt\UpdateSavedPromptRequest;
-use App\Models\Character;
 use App\Models\OriginalCharacter;
 use App\Models\SavedPrompt;
-use App\Models\Work;
 use App\Services\SavedPromptService;
 use App\Support\WritingAssistLimits;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Schema;
 use Illuminate\View\View;
 use Illuminate\Support\Facades\Log;
 use Throwable;
@@ -33,8 +30,6 @@ class SavedPromptController extends Controller
 
         $filters = [
             'keyword' => $request->string('keyword')->trim()->toString(),
-            'work_source' => $request->string('work_source')->trim()->toString(),
-            'work_id' => $request->input('work_id'),
             'writing_style' => $request->string('writing_style')->trim()->toString(),
             'genre' => $request->string('genre')->trim()->toString(),
             'status' => $request->string('status')->trim()->toString(),
@@ -56,10 +51,6 @@ class SavedPromptController extends Controller
 
     public function create(Request $request): View
     {
-        $officialCharacters = Character::query()
-            ->with('work')
-            ->orderBy('name')
-            ->get();
 
         return view('writer.saved_prompts.create', $this->formData($request));
     }
@@ -107,22 +98,18 @@ class SavedPromptController extends Controller
         $this->authorizeOwner($request, $prompt);
 
         return view('writer.saved_prompts.show', [
-            'savedPrompt' => $prompt->load('work'),
+            'savedPrompt' => $prompt,
         ]);
     }
 
     public function edit(Request $request, SavedPrompt $prompt): View
     {
-        $officialCharacters = Character::query()
-            ->with('work')
-            ->orderBy('name')
-            ->get();
 
         $this->authorizeOwner($request, $prompt);
 
         return view('writer.saved_prompts.edit', array_merge(
             $this->formData($request),
-            ['savedPrompt' => $prompt->load('work')]
+            ['savedPrompt' => $prompt]
         ));
     }
 
@@ -183,17 +170,6 @@ class SavedPromptController extends Controller
     {
         $user = $request->user();
 
-        $works = Work::query()
-            ->when(! $user?->isSuperAdmin() && Schema::hasColumn('works', 'status'), function ($query) {
-                $query->whereIn('status', ['published', 'active']);
-            })
-            ->orderBy('title')
-            ->get();
-
-        $officialCharacters = Character::query()
-            ->with('work')
-            ->orderBy('name')
-            ->get();
 
         $originalCharacters = OriginalCharacter::query()
             ->forUser($user)
@@ -201,8 +177,6 @@ class SavedPromptController extends Controller
             ->get();
 
         return [
-            'works' => $works,
-            'officialCharacters' => $officialCharacters,
             'originalCharacters' => $originalCharacters,
             'categoryLabels' => SavedPrompt::categoryLabels(),
             'writingStyleLabels' => SavedPrompt::writingStyleLabels(),
@@ -215,6 +189,6 @@ class SavedPromptController extends Controller
     {
         $user = $request->user();
 
-        abort_unless($user?->isSuperAdmin() || $savedPrompt->user_id === $user?->id, 403);
+        abort_unless($savedPrompt->user_id === $user?->id, 403);
     }
 }

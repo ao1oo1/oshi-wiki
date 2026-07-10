@@ -14,8 +14,7 @@ class OriginalCharacterRelationshipRepository
             ->with([
                 'fromCharacter',
                 'toCharacter',
-                'fromOfficialCharacter.work',
-                'toOfficialCharacter.work',
+
             ])
             ->forUser($user)
             ->latest()
