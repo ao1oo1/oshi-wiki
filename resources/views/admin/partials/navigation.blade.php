@@ -26,7 +26,7 @@
 <a href="{{ route('admin.tags.index') }}" class="{{ request()->routeIs('admin.tags.index') || request()->routeIs('admin.tags.edit') ? 'active' : '' }}">
         タグ管理
     </a>
-@if (auth()->user()?->is_super_admin)
+@if (auth()->user()?->isSuperAdmin())
         <a href="{{ route('admin.contact-messages.index') }}" class="{{ request()->routeIs('admin.contact-messages.*') ? 'active' : '' }}">
             お問い合わせ受信箱
         </a>

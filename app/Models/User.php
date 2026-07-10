@@ -54,6 +54,10 @@ class User extends Authenticatable
         return $this->status === 'active';
     }
 
+    public const ROLE_STAFF = 'staff';
+
+    public const ROLE_WRITER = 'writer';
+
     public function hasRole(string $roleName): bool
     {
         return $this->role?->name === $roleName;
@@ -61,6 +65,10 @@ class User extends Authenticatable
 
     public function hasPermission(string $permissionKey): bool
     {
+        if ($this->isSuperAdmin()) {
+            return true;
+        }
+
         return $this->role?->permissions()
             ->where('permission_key', $permissionKey)
             ->exists() ?? false;
@@ -73,14 +81,16 @@ class User extends Authenticatable
 
     public function isWriter(): bool
     {
-        return $this->isActive() && $this->hasRole('writer');
+        return $this->isActive()
+            && ! $this->isSuperAdmin()
+            && $this->hasRole(self::ROLE_WRITER);
     }
 
     public function isStaff(): bool
     {
         return $this->isActive()
             && ! $this->isSuperAdmin()
-            && ! $this->isWriter();
+            && $this->hasRole(self::ROLE_STAFF);
     }
 
     public function canManageAllAdminFeatures(): bool
