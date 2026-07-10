@@ -46,6 +46,12 @@ class AdminAuthenticatedSessionController extends Controller
             ]);
         }
 
-        return redirect()->intended(route('dashboard'));
+        if ($user->must_change_password) {
+            return redirect()
+                ->route('profile.edit')
+                ->with('status', '初回ログインのため、新しいパスワードを設定してください。');
+        }
+
+        return redirect()->intended(route('admin.dashboard', absolute: false));
     }
 }

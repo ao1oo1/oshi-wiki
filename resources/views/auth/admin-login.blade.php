@@ -2,11 +2,11 @@
     <div class="mb-8 text-center">
         <h1 class="text-2xl font-bold text-[#2D3748]">管理者ログイン</h1>
         <p class="mt-3 text-sm font-bold leading-7 text-[#A0AEC0]">
-            管理者・スタッフ用のログイン画面です。
+            管理者・スタッフ用のログイン画面です。<br>スタッフ登用メールに記載された仮パスワードでもログインできます。
         </p>
     </div>
 
-    <form method="POST" action="{{ route('admin.login.store') }}">
+    <x-auth-session-status class="mb-4" :status="session('status')" />    <form method="POST" action="{{ route('admin.login.store') }}">
         @csrf
 
         <div>

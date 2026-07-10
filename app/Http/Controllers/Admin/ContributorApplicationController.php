@@ -10,7 +10,6 @@ use App\Notifications\StaffOnboardingNotification;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
 
@@ -39,11 +38,9 @@ class ContributorApplicationController extends Controller
     {
         $this->authorizeSuperAdmin();
 
-        $user = null;
-        $resetUrl = null;
-
         $existingUser = User::query()
             ->where('email', $contributorApplication->email)
+            ->whereNull('deleted_at')
             ->where(function ($query) use ($contributorApplication) {
                 $query->whereNull('contributor_application_id')
                     ->orWhere('contributor_application_id', '!=', $contributorApplication->id);
@@ -56,7 +53,10 @@ class ContributorApplicationController extends Controller
             ]);
         }
 
-        DB::transaction(function () use ($contributorApplication, &$user, &$resetUrl): void {
+        $temporaryPassword = $this->generateTemporaryPassword();
+        $user = null;
+
+        DB::transaction(function () use ($contributorApplication, $temporaryPassword, &$user): void {
             $staffRole = Role::query()->firstOrCreate(
                 ['name' => User::ROLE_STAFF],
                 [
@@ -78,7 +78,7 @@ class ContributorApplicationController extends Controller
                 'contributor_application_id' => $contributorApplication->id,
                 'must_change_password' => true,
                 'email_verified_at' => $user->email_verified_at ?: now(),
-                'password' => $user->password ?: Hash::make(Str::random(48)),
+                'password' => Hash::make($temporaryPassword),
             ])->save();
 
             if (empty($user->staff_public_id)) {
@@ -91,18 +91,15 @@ class ContributorApplicationController extends Controller
                 'status' => 'active',
                 'started_at' => $contributorApplication->started_at ?: now(),
             ]);
-
-            $token = Password::broker()->createToken($user);
-
-            $resetUrl = url(route('password.reset', [
-                'token' => $token,
-                'email' => $user->email,
-            ], false));
         });
 
-        $user->notify(new StaffOnboardingNotification($resetUrl));
+        $user->notify(new StaffOnboardingNotification(
+            loginUrl: route('admin.login'),
+            email: $user->email,
+            temporaryPassword: $temporaryPassword
+        ));
 
-        return back()->with('success', '登用開始にしました。スタッフ宛に初回パスワード設定メールを送信しました。');
+        return back()->with('success', '登用開始にしました。スタッフ宛に仮パスワードと管理スタッフ用ログインURLを送信しました。');
     }
 
     public function reject(ContributorApplication $contributorApplication): RedirectResponse
@@ -123,5 +120,10 @@ class ContributorApplicationController extends Controller
         $contributorApplication->delete();
 
         return back()->with('success', '申請に削除フラグを付けました。');
+    }
+
+    private function generateTemporaryPassword(): string
+    {
+        return 'Oshi-' . Str::random(12) . '-2026';
     }
 }

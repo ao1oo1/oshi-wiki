@@ -2,6 +2,7 @@
 
 use App\Http\Middleware\EnsureAdminUser;
 use App\Http\Middleware\EnsureWriterUser;
+use App\Http\Middleware\EnsurePasswordChanged;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -17,6 +18,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'admin.user' => EnsureAdminUser::class,
             'writer.user' => EnsureWriterUser::class,
+            'password.changed' => EnsurePasswordChanged::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

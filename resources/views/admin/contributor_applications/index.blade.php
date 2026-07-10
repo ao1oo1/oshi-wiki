@@ -14,7 +14,7 @@
                     情報入力スタッフ申請
                 </h1>
                 <p class="oshi-muted">
-                    最高管理者のみ確認できます。公開リンクはメニューには掲載していません。
+                    最高管理者のみ確認できます。公開リンクはメニューには掲載していません。                </p>                <p class="mt-2 text-sm text-[#2D3748]">                    登用開始を押すと、申請者宛に管理スタッフ用ログインURLと仮パスワードを送信します。初回ログイン後、スタッフ本人が新しいパスワードを設定します。
                 </p>
             </div>
 
@@ -76,7 +76,7 @@
 
                                 <td>
                                     <div class="flex flex-wrap gap-2">
-                                        <form method="POST" action="{{ route('admin.contributor-applications.activate', $application) }}">
+                                        <form method="POST" action="{{ route('admin.contributor-applications.activate', $application) }}" onsubmit="return confirm('登用開始すると、申請者宛に仮パスワードを送信します。よろしいですか？');">
                                             @csrf
                                             <button type="submit" class="oshi-btn">
                                                 登用開始

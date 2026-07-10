@@ -8,7 +8,9 @@ use Illuminate\Notifications\Notification;
 class StaffOnboardingNotification extends Notification
 {
     public function __construct(
-        private readonly string $resetUrl
+        private readonly string $loginUrl,
+        private readonly string $email,
+        private readonly string $temporaryPassword
     ) {
     }
 
@@ -23,10 +25,13 @@ class StaffOnboardingNotification extends Notification
             ->subject('【Oshi-Wiki】スタッフ登用開始のお知らせ')
             ->greeting('Oshi-Wikiスタッフ登用開始のお知らせです。')
             ->line('スタッフ申請を確認し、情報入力スタッフとしての登用を開始しました。')
-            ->line('以下のボタンから初回パスワードを設定してください。')
-            ->action('初回パスワードを設定する', $this->resetUrl)
-            ->line('パスワード設定後、管理画面にログインして情報入力を開始できます。')
-            ->line('このリンクの有効期限は60分です。')
+            ->line('以下のログイン情報で、管理スタッフ用ログイン画面からログインしてください。')
+            ->line('メールアドレス：' . $this->email)
+            ->line('仮パスワード：' . $this->temporaryPassword)
+            ->action('管理スタッフ用ログイン画面を開く', $this->loginUrl)
+            ->line('初回ログイン後、パスワード変更画面へ移動します。')
+            ->line('ご自身で新しいパスワードを設定したあと、再度ログインしてください。')
+            ->line('仮パスワードは第三者に共有しないでください。')
             ->line('このメールに心当たりがない場合は、メールを破棄してください。');
     }
 }

@@ -42,7 +42,7 @@ Route::middleware(['auth', 'writer.user'])->prefix('writer')->name('writer.')->g
     Route::resource('prompts', \App\Http\Controllers\Writer\SavedPromptController::class);
 });
 
-Route::middleware(['auth', 'admin.user'])->prefix('admin')->name('admin.')->group(function () {
+Route::middleware(['auth', 'admin.user', 'password.changed'])->prefix('admin')->name('admin.')->group(function () {
     
     Route::post('works/bulk-action', \App\Http\Controllers\Admin\WorkBulkActionController::class)
         ->name('works.bulk-action');
@@ -112,7 +112,7 @@ Route::middleware('auth')->group(function () {
 
 require __DIR__.'/auth.php';
 
-Route::middleware(['auth', 'admin.user'])->prefix('admin')->name('admin.')->group(function () {
+Route::middleware(['auth', 'admin.user', 'password.changed'])->prefix('admin')->name('admin.')->group(function () {
     
     Route::get('characters/import', [\App\Http\Controllers\Admin\CharacterTextImportController::class, 'create'])
         ->name('characters.import.create');
@@ -137,7 +137,7 @@ Route::middleware(['auth', 'admin.user'])->prefix('admin')->name('admin.')->grou
     Route::resource('characters', \App\Http\Controllers\Admin\CharacterController::class);
 });
 
-Route::middleware(['auth', 'admin.user'])->prefix('admin')->name('admin.')->group(function () {
+Route::middleware(['auth', 'admin.user', 'password.changed'])->prefix('admin')->name('admin.')->group(function () {
     
     Route::post('character-relationships/bulk-action', \App\Http\Controllers\Admin\CharacterRelationshipBulkActionController::class)
         ->name('character-relationships.bulk-action');
@@ -146,12 +146,12 @@ Route::middleware(['auth', 'admin.user'])->prefix('admin')->name('admin.')->grou
         ->except(['show']);
 });
 
-Route::middleware(['auth', 'admin.user'])->prefix('admin')->name('admin.')->group(function () {
+Route::middleware(['auth', 'admin.user', 'password.changed'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/', \App\Http\Controllers\Admin\DashboardController::class)
         ->name('dashboard');
 });
 
-Route::middleware(['auth', 'admin.user'])->prefix('admin')->name('admin.')->group(function () {
+Route::middleware(['auth', 'admin.user', 'password.changed'])->prefix('admin')->name('admin.')->group(function () {
     
     Route::get('contact-messages', [\App\Http\Controllers\Admin\ContactMessageController::class, 'index'])
         ->name('contact-messages.index');
@@ -210,7 +210,7 @@ Route::get('/about', [\App\Http\Controllers\Public\AboutController::class, 'show
 
 
 // Staff profile
-Route::middleware(['auth', 'admin.user'])->prefix('admin')->name('admin.')->group(function () {
+Route::middleware(['auth', 'admin.user', 'password.changed'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/staff-profile', [\App\Http\Controllers\Admin\StaffProfileController::class, 'edit'])->name('staff-profile.edit');
     Route::patch('/staff-profile', [\App\Http\Controllers\Admin\StaffProfileController::class, 'update'])->name('staff-profile.update');
 });

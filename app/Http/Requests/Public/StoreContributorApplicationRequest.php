@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Public;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreContributorApplicationRequest extends FormRequest
 {
@@ -15,8 +16,23 @@ class StoreContributorApplicationRequest extends FormRequest
     {
         return [
             'username' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'email', 'max:255'],
+            'email' => [
+                'required',
+                'email',
+                'max:255',
+                Rule::unique('users', 'email')->whereNull('deleted_at'),
+                Rule::unique('contributor_applications', 'email')
+                    ->whereNull('deleted_at')
+                    ->whereIn('status', ['pending', 'active']),
+            ],
             'discord_id' => ['nullable', 'string', 'max:255'],
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'email.unique' => 'このメールアドレスはすでに登録または申請されています。別のメールアドレスで申請してください。',
         ];
     }
 

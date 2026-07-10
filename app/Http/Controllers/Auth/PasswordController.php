@@ -20,9 +20,23 @@ class PasswordController extends Controller
             'password' => ['required', Password::defaults(), 'confirmed'],
         ]);
 
+        $mustChangePassword = (bool) $request->user()->must_change_password;
+
         $request->user()->update([
             'password' => Hash::make($validated['password']),
+            'must_change_password' => false,
         ]);
+
+        if ($mustChangePassword) {
+            Auth::guard('web')->logout();
+
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+
+            return redirect()
+                ->route('admin.login')
+                ->with('status', 'パスワードを設定しました。新しいパスワードで再度ログインしてください。');
+        }
 
         return back()->with('status', 'password-updated');
     }
