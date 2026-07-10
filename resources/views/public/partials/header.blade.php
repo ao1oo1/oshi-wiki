@@ -52,10 +52,10 @@
             @endif
 
             <a
-                href="{{ route('login') }}"
+                href="{{ route('writer.login') }}"
                 class="{{ request()->routeIs('login') ? 'is-active' : '' }}"
             >
-                管理ログイン
+                ログイン
             </a>
         </nav>
     </div>

@@ -9,10 +9,40 @@ Route::get('/', function () {
 });
 
 Route::get('/dashboard', function () {
-    return redirect()->route('admin.dashboard');
+    $user = request()->user();
+
+    if ($user?->canAccessAdmin()) {
+        return redirect()->route('admin.dashboard');
+    }
+
+    return redirect()->route('writer.dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
-Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
+Route::middleware(['auth', 'writer.user'])->prefix('writer')->name('writer.')->group(function () {
+    Route::get('dashboard', \App\Http\Controllers\Writer\DashboardController::class)
+        ->name('dashboard');
+
+    Route::get('guide', \App\Http\Controllers\Writer\GuideController::class)
+        ->name('guide');
+
+    Route::resource('original-characters', \App\Http\Controllers\Writer\OriginalCharacterController::class);
+    Route::post('original-character-relationships/{originalCharacterRelationship}/duplicate', [\App\Http\Controllers\Writer\OriginalCharacterRelationshipController::class, 'duplicate'])
+        ->name('original-character-relationships.duplicate');
+
+    Route::resource('original-character-relationships', \App\Http\Controllers\Writer\OriginalCharacterRelationshipController::class);
+    Route::post('prompts/preview', [\App\Http\Controllers\Writer\SavedPromptController::class, 'preview'])
+        ->name('prompts.preview');
+
+    Route::post('prompts/{prompt}/duplicate', [\App\Http\Controllers\Writer\SavedPromptController::class, 'duplicate'])
+        ->name('prompts.duplicate');
+
+    Route::post('prompts/{prompt}/record-usage', [\App\Http\Controllers\Writer\SavedPromptController::class, 'recordUsage'])
+        ->name('prompts.record-usage');
+
+    Route::resource('prompts', \App\Http\Controllers\Writer\SavedPromptController::class);
+});
+
+Route::middleware(['auth', 'admin.user'])->prefix('admin')->name('admin.')->group(function () {
     
     Route::post('works/bulk-action', \App\Http\Controllers\Admin\WorkBulkActionController::class)
         ->name('works.bulk-action');
@@ -82,7 +112,7 @@ Route::middleware('auth')->group(function () {
 
 require __DIR__.'/auth.php';
 
-Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
+Route::middleware(['auth', 'admin.user'])->prefix('admin')->name('admin.')->group(function () {
     
     Route::get('characters/import', [\App\Http\Controllers\Admin\CharacterTextImportController::class, 'create'])
         ->name('characters.import.create');
@@ -107,7 +137,7 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     Route::resource('characters', \App\Http\Controllers\Admin\CharacterController::class);
 });
 
-Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
+Route::middleware(['auth', 'admin.user'])->prefix('admin')->name('admin.')->group(function () {
     
     Route::post('character-relationships/bulk-action', \App\Http\Controllers\Admin\CharacterRelationshipBulkActionController::class)
         ->name('character-relationships.bulk-action');
@@ -116,12 +146,12 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
         ->except(['show']);
 });
 
-Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
+Route::middleware(['auth', 'admin.user'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/', \App\Http\Controllers\Admin\DashboardController::class)
         ->name('dashboard');
 });
 
-Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
+Route::middleware(['auth', 'admin.user'])->prefix('admin')->name('admin.')->group(function () {
     
     Route::get('contact-messages', [\App\Http\Controllers\Admin\ContactMessageController::class, 'index'])
         ->name('contact-messages.index');
@@ -180,7 +210,7 @@ Route::get('/about', [\App\Http\Controllers\Public\AboutController::class, 'show
 
 
 // Staff profile
-Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
+Route::middleware(['auth', 'admin.user'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/staff-profile', [\App\Http\Controllers\Admin\StaffProfileController::class, 'edit'])->name('staff-profile.edit');
     Route::patch('/staff-profile', [\App\Http\Controllers\Admin\StaffProfileController::class, 'update'])->name('staff-profile.update');
 });

@@ -1,3 +1,12 @@
+@php
+    $contactType = request('type');
+    $contactTypeLabel = match ($contactType) {
+        'data_request' => 'データ登録リクエスト',
+        'contributor' => 'コントリビュータ応募',
+        default => null,
+    };
+@endphp
+
 <!DOCTYPE html>
 <html lang="ja">
 <head>
