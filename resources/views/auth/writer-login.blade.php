@@ -22,7 +22,7 @@
         @csrf
 
         <div>
-            <x-input-label for="email" value="Email" />
+            <x-input-label for="email" value="メールアドレス" />
             <x-text-input id="email"
                           class="mt-1 block w-full"
                           type="email"
@@ -35,7 +35,7 @@
         </div>
 
         <div class="mt-4">
-            <x-input-label for="password" value="Password" />
+            <x-input-label for="password" value="パスワード" />
 
             <x-text-input id="password"
                           class="mt-1 block w-full"
@@ -67,7 +67,7 @@
         <div class="mt-6 flex items-center justify-end gap-4">
             <button type="submit"
                     class="inline-flex items-center rounded-2xl bg-[#2D3748] px-8 py-3 text-sm font-bold tracking-widest text-white hover:opacity-90">
-                LOG IN
+                ログイン
             </button>
         </div>
 

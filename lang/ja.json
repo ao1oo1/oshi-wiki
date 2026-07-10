@@ -1,0 +1,14 @@
+{
+    "Email": "メールアドレス",
+    "Password": "パスワード",
+    "Confirm Password": "パスワード（確認）",
+    "Name": "ユーザー名",
+    "Register": "登録する",
+    "Log in": "ログイン",
+    "Log Out": "ログアウト",
+    "Reset Password": "パスワードを再設定する",
+    "Email Password Reset Link": "パスワード再設定メールを送信する",
+    "Resend Verification Email": "確認メールを再送する",
+    "Already registered?": "すでに登録済みの方はこちら",
+    "Confirm": "確認する"
+}
