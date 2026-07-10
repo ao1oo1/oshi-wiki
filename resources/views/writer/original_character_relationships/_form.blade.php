@@ -72,7 +72,7 @@
             <p class="text-sm font-bold text-[#A0AEC0]">STEP 1</p>
             <h2 class="mt-1 text-2xl font-bold text-[#2D3748]">関係を作るキャラクターを選ぶ</h2>
             <p class="mt-2 text-sm font-bold leading-7 text-[#718096]">
-                「誰から誰へ」の関係性かを選びます。オリジナルキャラクターと、Oshi-Wikiに登録済みのオリジナルキャラクターを組み合わせられます。
+                「誰から誰へ」の関係性かを選びます。自分で登録したオリジナルキャラクター同士を組み合わせられます。
             </p>
         </div>
 

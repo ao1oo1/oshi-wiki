@@ -18,7 +18,7 @@
     <div class="mb-8">
         <h1 class="text-3xl font-bold text-[#2D3748]">プロンプト新規作成</h1>
         <p class="mt-3 text-sm font-bold text-[#A0AEC0]">
-            作品・登場人物・作風・あらすじを指定して、AIに渡すためのプロンプトを作成します。
+            登場人物・作風・ジャンル・あらすじを指定して、AIに渡すためのプロンプトを作成します。
         </p>
     </div>
 

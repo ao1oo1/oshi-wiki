@@ -157,7 +157,7 @@
                 <thead class="bg-[#F7FAFC] text-[#A0AEC0]">
                     <tr>
                         <th class="px-5 py-4">タイトル</th>
-                                                <th class="px-5 py-4">利用</th>
+                        <th class="px-5 py-4">利用</th>
                         <th class="px-5 py-4">操作</th>
                     </tr>
                 </thead>
