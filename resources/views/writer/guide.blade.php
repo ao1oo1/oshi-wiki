@@ -100,7 +100,7 @@
         <p class="text-sm font-bold text-[#A0AEC0]">STEP 3</p>
         <h3 class="mt-2 text-lg font-bold text-[#2D3748]">条件入力</h3>
         <p class="mt-3 text-sm font-bold leading-7 text-[#4A5568]">
-            作品、登場人物、作風、ジャンル、あらすじを選びます。
+            登場人物、作風、ジャンル、あらすじを入力します。
         </p>
     </div>
 
@@ -201,15 +201,14 @@
 
             <div>
                 <p class="text-sm font-bold leading-7 text-[#4A5568]">
-                    プロンプト管理から、作品名、登場人物、作風、ジャンル、あらすじ、起承転結を入力します。
+                    プロンプト管理から、登場人物、作風、ジャンル、あらすじ、起承転結を入力します。
                     登場人物には、自分で登録したオリジナルキャラクターを選択できます。
                 </p>
 
                 <div class="mt-5 rounded-2xl bg-[#F7FAFC] p-5">
                     <p class="text-sm font-bold text-[#2D3748]">選べる内容</p>
                     <ul class="mt-3 grid gap-2 text-sm font-bold text-[#4A5568] md:grid-cols-2">
-                        <li>・作品名</li>
-                        <li>・登場人物</li>
+                                                <li>・登場人物</li>
                         <li>・作風</li>
                         <li>・ジャンル</li>
                         <li>・あらすじ</li>
@@ -261,7 +260,7 @@
                     <p class="text-sm font-bold text-[#2D3748]">注意</p>
                     <ul class="mt-3 space-y-2 text-sm font-bold leading-7 text-[#4A5568]">
                         <li>・AIの出力は必ず確認してください。</li>
-                        <li>・公式設定や登録情報と異なる内容が出る場合があります。</li>
+                        <li>・登録情報と異なる内容が出る場合があります。</li>
                         <li>・公開する文章は、各作品のガイドラインやマナーに沿って扱ってください。</li>
                     </ul>
                 </div>

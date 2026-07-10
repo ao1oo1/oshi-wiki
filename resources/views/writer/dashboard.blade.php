@@ -1,4 +1,4 @@
-@include('writer.original_characters._layout_start', ['title' => 'ダッシュボード'])
+@include('writer.original_characters._layout_start', ['title' => 'マイページ'])
 
 @php
     $contactFormUrl = \Illuminate\Support\Facades\Route::has('contact.create')
@@ -27,6 +27,10 @@
 
         return $countLabel . ' <span class="text-3xl md:text-4xl font-bold text-[#718096]">/ ' . number_format($limit) . '</span>';
     };
+
+    $hasReachedCharacterLimit = $originalCharacterLimit !== null && $originalCharacterCount >= $originalCharacterLimit;
+    $hasReachedRelationshipLimit = $relationshipLimit !== null && $relationshipCount >= $relationshipLimit;
+    $hasReachedPromptLimit = $promptLimit !== null && $promptCount >= $promptLimit;
 @endphp
 
 <div class="mb-8">
@@ -34,7 +38,7 @@
 </div>
 
 <div class="mb-8 rounded-2xl bg-[#FED7E2] px-6 py-5">
-    <h2 class="text-2xl font-bold text-[#2D3748]">ダッシュボード</h2>
+    <h2 class="text-2xl font-bold text-[#2D3748]">マイページ</h2>
 </div>
 
 <div class="mb-8 grid gap-6 xl:grid-cols-3">
@@ -136,10 +140,16 @@
                 <p class="mt-1 text-sm font-bold text-[#A0AEC0]">コピー利用または更新が新しい順に表示します。</p>
             </div>
 
-            <a href="{{ route('writer.prompts.create') }}"
-               class="inline-flex items-center justify-center rounded-2xl bg-[#FED7E2] px-5 py-3 text-sm font-bold text-[#2D3748] hover:opacity-90">
-                新規作成
-            </a>
+            @if ($hasReachedPromptLimit)
+                <div class="inline-flex cursor-not-allowed items-center justify-center rounded-2xl bg-[#EDF2F7] px-5 py-3 text-sm font-bold text-[#A0AEC0]">
+                    上限に達しています
+                </div>
+            @else
+                <a href="{{ route('writer.prompts.create') }}"
+                   class="inline-flex items-center justify-center rounded-2xl bg-[#FED7E2] px-5 py-3 text-sm font-bold text-[#2D3748] hover:opacity-90">
+                    新規作成
+                </a>
+            @endif
         </div>
 
         <div class="overflow-hidden rounded-2xl border border-[#E2E8F0]">
@@ -147,8 +157,7 @@
                 <thead class="bg-[#F7FAFC] text-[#A0AEC0]">
                     <tr>
                         <th class="px-5 py-4">タイトル</th>
-                        <th class="px-5 py-4">作品</th>
-                        <th class="px-5 py-4">利用</th>
+                                                <th class="px-5 py-4">利用</th>
                         <th class="px-5 py-4">操作</th>
                     </tr>
                 </thead>
@@ -156,7 +165,6 @@
                     @forelse ($recentPrompts as $prompt)
                         <tr class="border-t border-[#E2E8F0]">
                             <td class="px-5 py-4 font-bold">{{ $prompt->title }}</td>
-                            <td class="px-5 py-4">{{ $prompt->workLabel() }}</td>
                             <td class="px-5 py-4">
                                 <div class="font-bold">{{ number_format($prompt->used_count ?? 0) }}回</div>
                                 <div class="mt-1 text-xs font-bold text-[#A0AEC0]">{{ $prompt->lastUsedLabel() }}</div>
@@ -170,7 +178,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="4" class="px-5 py-12 text-center">
+                            <td colspan="3" class="px-5 py-12 text-center">
                                 <p class="text-base font-bold text-[#2D3748]">まだプロンプトがありません。</p>
                                 <p class="mt-2 text-sm font-bold text-[#A0AEC0]">新規作成からプロンプトを作成してください。</p>
                             </td>
@@ -186,20 +194,38 @@
             <h3 class="text-xl font-bold text-[#2D3748]">ショートカット</h3>
 
             <div class="mt-5 space-y-3">
-                <a href="{{ route('writer.original-characters.create') }}"
-                   class="block rounded-2xl bg-[#FFF1F5] px-5 py-4 font-bold text-[#2D3748] hover:bg-[#FED7E2]">
-                    オリジナルキャラクターを登録
-                </a>
+                @if ($hasReachedCharacterLimit)
+                    <div class="cursor-not-allowed rounded-2xl bg-[#EDF2F7] px-5 py-4 font-bold text-[#A0AEC0]">
+                        キャラクター上限に達しています
+                    </div>
+                @else
+                    <a href="{{ route('writer.original-characters.create') }}"
+                       class="block rounded-2xl bg-[#FFF1F5] px-5 py-4 font-bold text-[#2D3748] hover:bg-[#FED7E2]">
+                        オリジナルキャラクターを登録
+                    </a>
+                @endif
 
-                <a href="{{ route('writer.original-character-relationships.create') }}"
-                   class="block rounded-2xl bg-[#FFF1F5] px-5 py-4 font-bold text-[#2D3748] hover:bg-[#FED7E2]">
-                    関係性を登録
-                </a>
+                @if ($hasReachedRelationshipLimit)
+                    <div class="cursor-not-allowed rounded-2xl bg-[#EDF2F7] px-5 py-4 font-bold text-[#A0AEC0]">
+                        関係性上限に達しています
+                    </div>
+                @else
+                    <a href="{{ route('writer.original-character-relationships.create') }}"
+                       class="block rounded-2xl bg-[#FFF1F5] px-5 py-4 font-bold text-[#2D3748] hover:bg-[#FED7E2]">
+                        関係性を登録
+                    </a>
+                @endif
 
-                <a href="{{ route('writer.prompts.create') }}"
-                   class="block rounded-2xl bg-[#FFF1F5] px-5 py-4 font-bold text-[#2D3748] hover:bg-[#FED7E2]">
-                    プロンプトを作成
-                </a>
+                @if ($hasReachedPromptLimit)
+                    <div class="cursor-not-allowed rounded-2xl bg-[#EDF2F7] px-5 py-4 font-bold text-[#A0AEC0]">
+                        プロンプト上限に達しています
+                    </div>
+                @else
+                    <a href="{{ route('writer.prompts.create') }}"
+                       class="block rounded-2xl bg-[#FFF1F5] px-5 py-4 font-bold text-[#2D3748] hover:bg-[#FED7E2]">
+                        プロンプトを作成
+                    </a>
+                @endif
             </div>
         </section>
 
@@ -209,7 +235,7 @@
             <ol class="mt-5 space-y-3 text-sm font-bold leading-7 text-[#4A5568]">
                 <li>1. オリジナルキャラクターを登録します。</li>
                 <li>2. 必要に応じて関係性を登録します。</li>
-                <li>3. プロンプト管理で作品・登場人物・作風を選びます。</li>
+                <li>3. プロンプト管理で登場人物・作風・ジャンル・あらすじを入力します。</li>
                 <li>4. 生成された本文をコピーしてAIに貼り付けます。</li>
             </ol>
         </section>
