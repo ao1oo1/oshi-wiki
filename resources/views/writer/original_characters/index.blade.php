@@ -21,9 +21,14 @@
         ? \App\Support\WritingAssistLimits::originalCharactersPerUser(auth()->user())
         : null;
 
+    $characterRegisteredCount = $count ?? $characterTotal;
+
     $characterLimitLabel = $characterLimit === null
-        ? number_format($characterTotal) . ' / 制限なし'
-        : number_format($characterTotal) . ' / ' . number_format($characterLimit);
+        ? number_format($characterRegisteredCount) . ' / 制限なし'
+        : number_format($characterRegisteredCount) . ' / ' . number_format($characterLimit);
+
+    $hasReachedCharacterLimit = $characterLimit !== null
+        && $characterRegisteredCount >= $characterLimit;
 @endphp
 
 <div class="mb-8">
@@ -35,12 +40,27 @@
             </p>
         </div>
 
-        <a href="{{ route('writer.original-characters.create') }}"
-           class="inline-flex items-center justify-center rounded-2xl bg-[#FED7E2] px-6 py-3 font-bold text-[#2D3748] hover:opacity-90">
-            新規登録
-        </a>
+        @if ($hasReachedCharacterLimit)
+            <div class="inline-flex cursor-not-allowed items-center justify-center rounded-2xl bg-[#EDF2F7] px-6 py-3 font-bold text-[#A0AEC0]">
+                上限に達しています
+            </div>
+        @else
+            <a href="{{ route('writer.original-characters.create') }}"
+               class="inline-flex items-center justify-center rounded-2xl bg-[#FED7E2] px-6 py-3 font-bold text-[#2D3748] hover:opacity-90">
+                新規登録
+            </a>
+        @endif
     </div>
 </div>
+
+@if ($hasReachedCharacterLimit)
+    <section class="mb-8 rounded-3xl border border-[#FED7E2] bg-[#FFF1F5] p-6 shadow-sm">
+        <p class="font-bold text-[#2D3748]">オリジナルキャラクターの登録上限に達しています。</p>
+        <p class="mt-2 text-sm font-bold leading-7 text-[#718096]">
+            新しく登録する場合は、不要なキャラクターを削除してください。
+        </p>
+    </section>
+@endif
 
 <div class="mb-8 grid gap-6 md:grid-cols-3">
     <section class="rounded-3xl border border-[#E2E8F0] bg-white p-6 shadow-sm">
@@ -205,10 +225,16 @@
             </p>
 
             <div class="mt-6 flex flex-col justify-center gap-3 md:flex-row">
-                <a href="{{ route('writer.original-characters.create') }}"
-                   class="inline-flex items-center justify-center rounded-2xl bg-[#FED7E2] px-6 py-3 font-bold text-[#2D3748] hover:opacity-90">
-                    オリジナルキャラクターを登録する
-                </a>
+                @if ($hasReachedCharacterLimit)
+                    <div class="inline-flex cursor-not-allowed items-center justify-center rounded-2xl bg-[#EDF2F7] px-6 py-3 font-bold text-[#A0AEC0]">
+                        上限に達しています
+                    </div>
+                @else
+                    <a href="{{ route('writer.original-characters.create') }}"
+                       class="inline-flex items-center justify-center rounded-2xl bg-[#FED7E2] px-6 py-3 font-bold text-[#2D3748] hover:opacity-90">
+                        オリジナルキャラクターを登録する
+                    </a>
+                @endif
 
                 <a href="{{ route('writer.guide') }}"
                    class="inline-flex items-center justify-center rounded-2xl border border-[#CBD5E0] bg-white px-6 py-3 font-bold text-[#2D3748] hover:bg-[#F7FAFC]">
