@@ -1,7 +1,3 @@
-html {
-    font-size: 80%;
-}
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -1152,3 +1148,68 @@ header[role="banner"] {
     margin-left: -12.5%;
 }
 
+
+/* Admin layout safety reset */
+.oshi-admin-body,
+.oshi-admin-layout,
+.oshi-admin-sidebar,
+.oshi-admin-main,
+.oshi-admin-main *,
+.oshi-admin-nav,
+.oshi-admin-nav * {
+    zoom: 1 !important;
+    transform: none !important;
+}
+
+
+/* Public header compact override */
+.oshi-public-header .oshi-public-header-inner {
+    gap: 44px !important;
+    padding: 26px 58px !important;
+}
+
+.oshi-public-header .oshi-public-logo img,
+.oshi-public-header .oshi-brand-logo {
+    width: auto !important;
+    height: 90px !important;
+    max-width: none !important;
+}
+
+.oshi-public-header .oshi-public-nav {
+    gap: 18px !important;
+}
+
+.oshi-public-header .oshi-public-nav a {
+    min-height: 42px !important;
+    padding: 10px 19px !important;
+    font-size: 16px !important;
+}
+
+@media (max-width: 1024px) {
+    .oshi-public-header .oshi-public-header-inner {
+        gap: 19px !important;
+        padding: 19px 26px !important;
+    }
+
+    .oshi-public-header .oshi-public-logo img,
+    .oshi-public-header .oshi-brand-logo {
+        height: 67px !important;
+    }
+}
+
+@media (max-width: 640px) {
+    .oshi-public-header .oshi-public-header-inner {
+        padding: 16px 14px !important;
+    }
+
+    .oshi-public-header .oshi-public-logo img,
+    .oshi-public-header .oshi-brand-logo {
+        height: 46px !important;
+    }
+
+    .oshi-public-header .oshi-public-nav a {
+        font-size: 13px !important;
+        min-height: 34px !important;
+        padding: 8px 12px !important;
+    }
+}
