@@ -33,7 +33,10 @@ class CharacterController extends Controller
                 $selectedTagId ? (int) $selectedTagId : null
             ),
             'works' => Work::query()->latest()->get(),
-            'tags' => app(TagService::class)->all(),
+            'tags' => \App\Models\Tag::query()
+                ->where('type', 'character')
+                ->orderBy('name')
+                ->get(),
             'selectedWorkId' => $selectedWorkId,
             'selectedTagId' => $selectedTagId,
             'keyword' => $keyword,
@@ -45,7 +48,10 @@ class CharacterController extends Controller
         return view('admin.characters.create', [
             'works' => Work::query()->latest()->get(),
             'selectedWorkId' => request('work_id'),
-            'tags' => app(TagService::class)->all(),
+            'tags' => \App\Models\Tag::query()
+                ->where('type', 'character')
+                ->orderBy('name')
+                ->get(),
         ]);
     }
 
@@ -80,7 +86,10 @@ class CharacterController extends Controller
         return view('admin.characters.edit', [
             'character' => $character->load('tags'),
             'works' => Work::query()->latest()->get(),
-            'tags' => app(TagService::class)->all(),
+            'tags' => \App\Models\Tag::query()
+                ->where('type', 'character')
+                ->orderBy('name')
+                ->get(),
         ]);
     }
 
