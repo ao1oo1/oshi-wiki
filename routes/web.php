@@ -51,6 +51,15 @@ Route::middleware(['auth', 'admin.user', 'password.changed'])->prefix('admin')->
     Route::get('works/export/csv', \App\Http\Controllers\Admin\WorkCsvExportController::class)
         ->name('works.csv-export');
 
+    Route::get('trash', [\App\Http\Controllers\Admin\TrashController::class, 'index'])
+        ->name('trash.index');
+
+    Route::post('trash/bulk-destroy', [\App\Http\Controllers\Admin\TrashController::class, 'bulkDestroy'])
+        ->name('trash.bulk-destroy');
+
+    Route::delete('trash/{type}/{id}', [\App\Http\Controllers\Admin\TrashController::class, 'destroy'])
+        ->name('trash.destroy');
+
     Route::get('works/import', [\App\Http\Controllers\Admin\WorkTextImportController::class, 'create'])
         ->name('works.import.create');
 

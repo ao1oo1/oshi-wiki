@@ -23,7 +23,11 @@
                 <a href="{{ route('admin.contact-messages.index') }}">お問い合わせ</a>
             @endif
 
-            <a href="{{ route('admin.staff-profile.edit') }}">プロフィール</a>
+                        @if (auth()->user()?->canManageAllAdminFeatures())
+                <a href="{{ route('admin.trash.index') }}">ゴミ箱</a>
+            @endif
+
+<a href="{{ route('admin.staff-profile.edit') }}">プロフィール</a>
 
             <form method="POST" action="{{ route('logout') }}">
                 @csrf

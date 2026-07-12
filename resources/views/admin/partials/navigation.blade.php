@@ -36,7 +36,14 @@
         公開ページ
     </a>
 
-                <a href="{{ route('admin.staff-profile.edit') }}"
+                            @if (auth()->user()?->canManageAllAdminFeatures())
+                <a href="{{ route('admin.trash.index') }}"
+                   class="{{ request()->routeIs('admin.trash.*') ? 'active' : '' }}">
+                    ゴミ箱
+                </a>
+            @endif
+
+<a href="{{ route('admin.staff-profile.edit') }}"
                    class="{{ request()->routeIs('admin.staff-profile.*') ? 'active' : '' }}">
                     プロフィール設定
                 </a>
