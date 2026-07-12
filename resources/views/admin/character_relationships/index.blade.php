@@ -38,7 +38,11 @@
                     <a href="{{ route('admin.character-relationships.csv-import.create') }}" class="oshi-btn oshi-btn-sub">
                         CSV取り込み
                     </a>
-                @endif
+                
+                    <a href="{{ route('admin.character-relationships.csv-export', request()->query()) }}" class="oshi-btn oshi-btn-sub">
+                        CSVエクスポート
+                    </a>
+@endif
 </div>
 
             <form method="GET" action="{{ route('admin.character-relationships.index') }}" class="mb-6 flex flex-wrap items-end gap-3">

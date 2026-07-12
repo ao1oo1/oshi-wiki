@@ -48,6 +48,9 @@ Route::middleware(['auth', 'admin.user', 'password.changed'])->prefix('admin')->
         ->name('works.bulk-action');
 
     
+    Route::get('works/export/csv', \App\Http\Controllers\Admin\WorkCsvExportController::class)
+        ->name('works.csv-export');
+
     Route::get('works/import', [\App\Http\Controllers\Admin\WorkTextImportController::class, 'create'])
         ->name('works.import.create');
 
@@ -62,6 +65,9 @@ Route::middleware(['auth', 'admin.user', 'password.changed'])->prefix('admin')->
 
     Route::get('works/import/csv/sample', [\App\Http\Controllers\Admin\WorkCsvImportController::class, 'sample'])
         ->name('works.csv-import.sample');
+
+    Route::get('tags/export/csv', \App\Http\Controllers\Admin\TagCsvExportController::class)
+        ->name('tags.csv-export');
 
     Route::get('tags/import', [\App\Http\Controllers\Admin\TagTextImportController::class, 'create'])
         ->name('tags.import.create');
@@ -142,6 +148,9 @@ Route::middleware(['auth', 'admin.user', 'password.changed'])->prefix('admin')->
 
 Route::middleware(['auth', 'admin.user', 'password.changed'])->prefix('admin')->name('admin.')->group(function () {
     
+    Route::get('character-relationships/export/csv', \App\Http\Controllers\Admin\CharacterRelationshipCsvExportController::class)
+        ->name('character-relationships.csv-export');
+
     Route::get('character-relationships/import/csv', [\App\Http\Controllers\Admin\CharacterRelationshipCsvImportController::class, 'create'])
         ->name('character-relationships.csv-import.create');
 

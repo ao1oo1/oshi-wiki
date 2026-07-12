@@ -31,7 +31,13 @@
 
                         <a href="{{ route('admin.works.csv-import.create') }}" class="oshi-btn oshi-btn-sub">CSV取り込み</a>
 
-                    @endif
+                    
+                        @if (auth()->user()?->canManageAllAdminFeatures())
+                            <a href="{{ route('admin.works.csv-export', request()->query()) }}" class="oshi-btn oshi-btn-sub">
+                                CSVエクスポート
+                            </a>
+                        @endif
+@endif
                 </div>
             </div>
 

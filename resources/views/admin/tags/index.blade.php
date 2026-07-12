@@ -33,7 +33,13 @@
 
                         <a href="{{ route('admin.tags.csv-import.create') }}" class="oshi-btn oshi-btn-sub">CSV取り込み</a>
 
-                    @endif
+                    
+                        @if (auth()->user()?->canManageAllAdminFeatures())
+                            <a href="{{ route('admin.tags.csv-export', request()->query()) }}" class="oshi-btn oshi-btn-sub">
+                                CSVエクスポート
+                            </a>
+                        @endif
+@endif
                 </div>
             </div>
 
@@ -97,6 +103,47 @@
 
             @if ($canManageTags)
 
+
+            
+            <form method="GET" action="{{ route('admin.tags.index') }}" class="mb-6 rounded-3xl border border-[#E2E8F0] bg-[#F7FAFC] p-5">
+                <div class="grid gap-4 md:grid-cols-[220px_1fr_auto_auto] md:items-end">
+                    <div>
+                        <label for="type" class="mb-1 block text-sm font-bold text-[#4A5568]">
+                            種類
+                        </label>
+                        <select id="type" name="type" class="w-full rounded-2xl border border-[#CBD5E0] bg-white px-4 py-3">
+                            <option value="">すべて</option>
+                            @foreach (($tagTypes ?? collect()) as $tagType)
+                                <option value="{{ $tagType }}" @selected(($selectedType ?? request('type')) === $tagType)>
+                                    {{ $tagType }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div>
+                        <label for="keyword" class="mb-1 block text-sm font-bold text-[#4A5568]">
+                            検索ワード
+                        </label>
+                        <input
+                            id="keyword"
+                            type="text"
+                            name="keyword"
+                            value="{{ $keyword ?? request('keyword') }}"
+                            placeholder="タグ名・slug・説明などで検索"
+                            class="w-full rounded-2xl border border-[#CBD5E0] bg-white px-4 py-3"
+                        >
+                    </div>
+
+                    <button type="submit" class="oshi-btn">
+                        検索
+                    </button>
+
+                    <a href="{{ route('admin.tags.index') }}" class="oshi-btn oshi-btn-sub text-center">
+                        クリア
+                    </a>
+                </div>
+            </form>
 
             <form method="POST" action="{{ route('admin.tags.bulk-action') }}" onsubmit="return confirmTagBulkAction();">
                 @csrf

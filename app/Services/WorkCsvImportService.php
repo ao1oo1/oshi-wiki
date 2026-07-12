@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\Work;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 
@@ -34,6 +35,8 @@ class WorkCsvImportService
         }
 
         $imported = 0;
+        $created = 0;
+        $updated = 0;
         $skipped = 0;
         $errors = [];
         $rowNumber = 1;
@@ -56,6 +59,8 @@ class WorkCsvImportService
 
             $data = $this->normalizeData($data);
             $data['status'] = $data['status'] ?: $defaultStatus;
+
+            $workId = $this->intOrNull($data['work_id'] ?? ($data['id'] ?? null));
 
             $workData = [
                 'title' => $data['title'] ?? null,
@@ -84,13 +89,24 @@ class WorkCsvImportService
                 continue;
             }
 
-            $this->workService->create($validator->validated());
+            $existingWork = $workId
+                ? Work::query()->whereKey($workId)->first()
+                : null;
+
+            if ($existingWork) {
+                $existingWork->update($validator->validated());
+                $updated++;
+            } else {
+                $this->workService->create($validator->validated());
+                $created++;
+            }
+
             $imported++;
         }
 
         fclose($handle);
 
-        return compact('imported', 'skipped', 'errors');
+        return compact('imported', 'created', 'updated', 'skipped', 'errors');
     }
 
     private function normalizeHeader(array $header): array
@@ -129,5 +145,16 @@ class WorkCsvImportService
         return count($row) < $count
             ? array_pad($row, $count, null)
             : array_slice($row, 0, $count);
+    }
+
+    private function intOrNull(mixed $value): ?int
+    {
+        $value = trim((string) $value);
+
+        if ($value === '' || ! ctype_digit($value)) {
+            return null;
+        }
+
+        return (int) $value;
     }
 }

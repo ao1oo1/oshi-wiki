@@ -19,6 +19,8 @@ class CharacterRelationshipCsvImportService
         if ($content === false) {
             return [
                 'imported' => 0,
+                'created' => 0,
+                'updated' => 0,
                 'skipped' => 0,
                 'errors' => ['CSVファイルを読み込めませんでした。'],
             ];
@@ -38,6 +40,8 @@ class CharacterRelationshipCsvImportService
 
             return [
                 'imported' => 0,
+                'created' => 0,
+                'updated' => 0,
                 'skipped' => 0,
                 'errors' => ['CSVのヘッダー行を読み込めませんでした。'],
             ];
@@ -58,12 +62,16 @@ class CharacterRelationshipCsvImportService
 
             return [
                 'imported' => 0,
+                'created' => 0,
+                'updated' => 0,
                 'skipped' => 0,
                 'errors' => ['必須ヘッダーが不足しています: ' . implode(', ', $missingHeaders)],
             ];
         }
 
         $imported = 0;
+        $created = 0;
+        $updated = 0;
         $skipped = 0;
         $errors = [];
         $lineNumber = 1;
@@ -74,6 +82,8 @@ class CharacterRelationshipCsvImportService
             $defaultWorkId,
             $defaultStatus,
             &$imported,
+            &$created,
+            &$updated,
             &$skipped,
             &$errors,
             &$lineNumber
@@ -94,7 +104,12 @@ class CharacterRelationshipCsvImportService
                     continue;
                 }
 
-                $workId = $defaultWorkId ?: $this->intOrNull($data['work_id'] ?? null);
+                $relationshipId = $this->intOrNull($data['relationship_id'] ?? ($data['id'] ?? null));
+
+                // CSV内の work_id を優先し、空の場合だけ画面で選択した作品IDを使う
+                $csvWorkId = $this->intOrNull($data['work_id'] ?? null);
+                $workId = $csvWorkId ?: $defaultWorkId;
+
                 $fromCharacterId = $this->intOrNull($data['from_character_id'] ?? null);
                 $toCharacterId = $this->intOrNull($data['to_character_id'] ?? null);
 
@@ -150,7 +165,7 @@ class CharacterRelationshipCsvImportService
                     continue;
                 }
 
-                CharacterRelationship::query()->create([
+                $payload = [
                     'work_id' => $workId,
                     'from_character_id' => $fromCharacterId,
                     'to_character_id' => $toCharacterId,
@@ -159,7 +174,31 @@ class CharacterRelationshipCsvImportService
                     'impression' => $this->nullableText($data['impression'] ?? null),
                     'notes' => $this->nullableText($data['notes'] ?? null),
                     'status' => $status,
-                ]);
+                ];
+
+                if (array_key_exists('review_status', $data)) {
+                    $payload['review_status'] = $this->nullableText($data['review_status']);
+                }
+
+                if (array_key_exists('reviewed_at', $data)) {
+                    $payload['reviewed_at'] = $this->nullableText($data['reviewed_at']);
+                }
+
+                if (array_key_exists('reviewed_by', $data)) {
+                    $payload['reviewed_by'] = $this->intOrNull($data['reviewed_by']);
+                }
+
+                $existingRelationship = $relationshipId
+                    ? CharacterRelationship::query()->whereKey($relationshipId)->first()
+                    : null;
+
+                if ($existingRelationship) {
+                    $existingRelationship->update($payload);
+                    $updated++;
+                } else {
+                    CharacterRelationship::query()->create($payload);
+                    $created++;
+                }
 
                 $imported++;
             }
@@ -169,6 +208,8 @@ class CharacterRelationshipCsvImportService
 
         return [
             'imported' => $imported,
+            'created' => $created,
+            'updated' => $updated,
             'skipped' => $skipped,
             'errors' => $errors,
         ];

@@ -34,31 +34,103 @@ class CharacterCsvExportController extends Controller
         // Excelで文字化けしにくいようにBOMを付ける
         fwrite($handle, "\xEF\xBB\xBF");
 
-        fputcsv($handle, [
-            'character_id',
-            'character_name',
-            'work_id',
-        ]);
+        $headers = $this->headers();
+
+        fputcsv($handle, $headers);
 
         $query = Character::query()
-            ->with('work')
+            ->with(['work'])
             ->orderBy('id');
+
+        if (method_exists(Character::class, 'tags')) {
+            $query->with('tags');
+        }
 
         $this->applyFilters($query, $request);
 
-        $query->chunk(500, function ($characters) use ($handle) {
+        $query->chunk(500, function ($characters) use ($handle, $headers) {
             foreach ($characters as $character) {
-                fputcsv($handle, [
-                    $character->id,
-                    $character->name,
-                    $character->work_id,
-                ]);
+                fputcsv($handle, $this->row($character, $headers));
             }
         });
 
         rewind($handle);
 
         return stream_get_contents($handle) ?: '';
+    }
+
+    private function headers(): array
+    {
+        $headers = [
+            'character_id',
+            'work_id',
+            'character_name',
+            'name_kana',
+            'age',
+            'affiliation',
+            'grade_class',
+            'first_person',
+            'tone',
+            'tone_examples',
+            'personality',
+            'appearance',
+            'background',
+            'status',
+            'review_status',
+            'reviewed_at',
+            'reviewed_by',
+            'created_at',
+            'updated_at',
+            'tag_ids',
+            'tag_names',
+        ];
+
+        return array_values(array_filter($headers, function (string $header): bool {
+            return match ($header) {
+                'character_id', 'character_name', 'tag_ids', 'tag_names' => true,
+                default => Schema::hasColumn('characters', $header),
+            };
+        }));
+    }
+
+    private function row(Character $character, array $headers): array
+    {
+        $row = [];
+
+        foreach ($headers as $header) {
+            $row[] = match ($header) {
+                'character_id' => $character->id,
+                'character_name' => $character->name,
+                'tag_ids' => $this->tagIds($character),
+                'tag_names' => $this->tagNames($character),
+                'created_at', 'updated_at', 'reviewed_at' => optional($character->{$header})->format('Y-m-d H:i:s'),
+                default => $character->{$header} ?? '',
+            };
+        }
+
+        return $row;
+    }
+
+    private function tagIds(Character $character): string
+    {
+        if (! method_exists($character, 'tags') || ! $character->relationLoaded('tags')) {
+            return '';
+        }
+
+        return $character->tags
+            ->pluck('id')
+            ->implode(',');
+    }
+
+    private function tagNames(Character $character): string
+    {
+        if (! method_exists($character, 'tags') || ! $character->relationLoaded('tags')) {
+            return '';
+        }
+
+        return $character->tags
+            ->pluck('name')
+            ->implode(',');
     }
 
     private function applyFilters(Builder $query, Request $request): void
@@ -93,6 +165,8 @@ class CharacterCsvExportController extends Controller
                     'personality',
                     'appearance',
                     'background',
+                    'status',
+                    'review_status',
                 ];
 
                 foreach ($columns as $column) {
@@ -104,6 +178,12 @@ class CharacterCsvExportController extends Controller
                 $keywordQuery->orWhereHas('work', function (Builder $workQuery) use ($keyword) {
                     $workQuery->where('title', 'like', '%' . $keyword . '%');
                 });
+
+                if (method_exists(Character::class, 'tags')) {
+                    $keywordQuery->orWhereHas('tags', function (Builder $tagQuery) use ($keyword) {
+                        $tagQuery->where('tags.name', 'like', '%' . $keyword . '%');
+                    });
+                }
             });
         }
     }

@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\Tag;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 
@@ -34,6 +35,8 @@ class TagCsvImportService
         }
 
         $imported = 0;
+        $created = 0;
+        $updated = 0;
         $skipped = 0;
         $errors = [];
         $rowNumber = 1;
@@ -57,6 +60,8 @@ class TagCsvImportService
             $data = $this->normalizeData($data);
             $data['status'] = $data['status'] ?: $defaultStatus;
 
+            $tagId = $this->intOrNull($data['tag_id'] ?? ($data['id'] ?? null));
+
             $tagData = [
                 'name' => $data['name'] ?? null,
                 'type' => $data['type'] ?? 'general',
@@ -76,13 +81,24 @@ class TagCsvImportService
                 continue;
             }
 
-            $this->tagService->create($validator->validated());
+            $existingTag = $tagId
+                ? Tag::query()->whereKey($tagId)->first()
+                : null;
+
+            if ($existingTag) {
+                $existingTag->update($validator->validated());
+                $updated++;
+            } else {
+                $this->tagService->create($validator->validated());
+                $created++;
+            }
+
             $imported++;
         }
 
         fclose($handle);
 
-        return compact('imported', 'skipped', 'errors');
+        return compact('imported', 'created', 'updated', 'skipped', 'errors');
     }
 
     private function normalizeHeader(array $header): array
@@ -121,5 +137,16 @@ class TagCsvImportService
         return count($row) < $count
             ? array_pad($row, $count, null)
             : array_slice($row, 0, $count);
+    }
+
+    private function intOrNull(mixed $value): ?int
+    {
+        $value = trim((string) $value);
+
+        if ($value === '' || ! ctype_digit($value)) {
+            return null;
+        }
+
+        return (int) $value;
     }
 }

@@ -9,6 +9,7 @@ use App\Models\Tag;
 use App\Services\TagService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
+use Illuminate\Support\Facades\Schema;
 
 class TagController extends Controller
 {
@@ -19,10 +20,44 @@ class TagController extends Controller
 
     public function index(): View
     {
-        $keyword = request('keyword');
+        $selectedType = request('type');
+        $keyword = trim((string) request('keyword', ''));
+
+        $query = \App\Models\Tag::query()
+            ->latest();
+
+        if ($selectedType !== null && $selectedType !== '') {
+            $query->where('type', $selectedType);
+        }
+
+        if ($keyword !== '') {
+            $query->where(function ($keywordQuery) use ($keyword) {
+                foreach (Schema::getColumnListing('tags') as $column) {
+                    if (in_array($column, ['id', 'created_at', 'updated_at', 'deleted_at'], true)) {
+                        continue;
+                    }
+
+                    $keywordQuery->orWhere($column, 'like', '%' . $keyword . '%');
+                }
+            });
+        }
+
+        $tags = $query
+            ->paginate(20)
+            ->withQueryString();
+
+        $tagTypes = \App\Models\Tag::query()
+            ->select('type')
+            ->whereNotNull('type')
+            ->where('type', '!=', '')
+            ->distinct()
+            ->orderBy('type')
+            ->pluck('type');
 
         return view('admin.tags.index', [
-            'tags' => $this->service->paginate(20, $keyword),
+            'tags' => $tags,
+            'tagTypes' => $tagTypes,
+            'selectedType' => $selectedType,
             'keyword' => $keyword,
         ]);
     }

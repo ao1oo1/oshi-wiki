@@ -2,151 +2,223 @@
 
 namespace App\Services;
 
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Validation\ValidationException;
+use App\Models\Character;
+use App\Models\Work;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Str;
 
 class CharacterCsvImportService
 {
-    public function __construct(
-        private CharacterService $characterService
-    ) {
-    }
+    private const ALLOWED_STATUSES = ['draft', 'published', 'private'];
 
-    public function import(string $filePath, ?int $defaultWorkId = null, string $defaultStatus = 'draft'): array
+    /**
+     * CSV取り込み
+     *
+     * - character_id / id が既存キャラクターIDと一致する場合は更新
+     * - character_id / id が空、または一致する既存データがない場合は新規登録
+     * - 新規登録時はCSVのIDを使わず、DBのAUTO_INCREMENTに任せる
+     */
+    public function import(string $path, ?int $defaultWorkId, string $defaultStatus = 'draft'): array
     {
-        $handle = fopen($filePath, 'rb');
+        $content = file_get_contents($path);
 
-        if ($handle === false) {
-            throw ValidationException::withMessages([
-                'csv_file' => 'CSVファイルを開けませんでした。',
-            ]);
+        if ($content === false) {
+            return [
+                'imported' => 0,
+                'updated' => 0,
+                'created' => 0,
+                'skipped' => 0,
+                'errors' => ['CSVファイルを読み込めませんでした。'],
+            ];
         }
+
+        $content = preg_replace('/^\xEF\xBB\xBF/', '', $content) ?? $content;
+        $content = mb_convert_encoding($content, 'UTF-8', 'UTF-8,SJIS-win,CP932');
+
+        $handle = fopen('php://temp', 'r+b');
+        fwrite($handle, $content);
+        rewind($handle);
 
         $header = fgetcsv($handle);
 
-        if ($header === false) {
+        if (! is_array($header)) {
             fclose($handle);
 
-            throw ValidationException::withMessages([
-                'csv_file' => 'CSVファイルが空です。',
-            ]);
+            return [
+                'imported' => 0,
+                'updated' => 0,
+                'created' => 0,
+                'skipped' => 0,
+                'errors' => ['CSVのヘッダー行を読み込めませんでした。'],
+            ];
         }
 
-        $header = $this->normalizeHeader($header);
+        $header = array_map(fn ($value) => $this->normalizeHeader((string) $value), $header);
 
-        $requiredColumns = ['name'];
-        $missingColumns = array_diff($requiredColumns, $header);
+        $missingHeaders = [];
 
-        if (! empty($missingColumns)) {
+        if (! in_array('work_id', $header, true)) {
+            $missingHeaders[] = 'work_id';
+        }
+
+        // エクスポートCSVは character_name、従来サンプルCSVは name のため両方許可する
+        if (! in_array('name', $header, true) && ! in_array('character_name', $header, true)) {
+            $missingHeaders[] = 'name または character_name';
+        }
+
+        if ($missingHeaders !== []) {
             fclose($handle);
 
-            throw ValidationException::withMessages([
-                'csv_file' => 'CSVに必須列がありません：' . implode(', ', $missingColumns),
-            ]);
+            return [
+                'imported' => 0,
+                'updated' => 0,
+                'created' => 0,
+                'skipped' => 0,
+                'errors' => ['必須ヘッダーが不足しています: ' . implode(', ', $missingHeaders)],
+            ];
         }
 
         $imported = 0;
+        $updated = 0;
+        $created = 0;
         $skipped = 0;
         $errors = [];
-        $rowNumber = 1;
+        $lineNumber = 1;
 
-        while (($row = fgetcsv($handle)) !== false) {
-            $rowNumber++;
+        DB::transaction(function () use (
+            $handle,
+            $header,
+            $defaultWorkId,
+            $defaultStatus,
+            &$imported,
+            &$updated,
+            &$created,
+            &$skipped,
+            &$errors,
+            &$lineNumber
+        ) {
+            while (($row = fgetcsv($handle)) !== false) {
+                $lineNumber++;
 
-            if ($this->isEmptyRow($row)) {
-                $skipped++;
-                continue;
+                if ($this->isEmptyRow($row)) {
+                    $skipped++;
+                    continue;
+                }
+
+                $row = array_pad($row, count($header), '');
+                $data = array_combine($header, array_slice($row, 0, count($header)));
+
+                if (! is_array($data)) {
+                    $errors[] = "{$lineNumber}行目: CSV行の読み込みに失敗しました。";
+                    continue;
+                }
+
+                $characterId = $this->intOrNull($data['character_id'] ?? ($data['id'] ?? null));
+
+                // CSV内の work_id を優先し、空の場合だけ画面で選択した作品IDを使う
+                $csvWorkId = $this->intOrNull($data['work_id'] ?? null);
+                $workId = $csvWorkId ?: $defaultWorkId;
+
+                if (! $workId) {
+                    $errors[] = "{$lineNumber}行目: work_id は必須です。";
+                    continue;
+                }
+
+                if (! Work::query()->whereKey($workId)->exists()) {
+                    $errors[] = "{$lineNumber}行目: 指定された work_id の作品が存在しません。";
+                    continue;
+                }
+
+                $name = $this->clean($data['name'] ?? ($data['character_name'] ?? ''));
+
+                if ($name === '') {
+                    $errors[] = "{$lineNumber}行目: name は必須です。";
+                    continue;
+                }
+
+                $status = $this->clean($data['status'] ?? '') ?: $defaultStatus;
+
+                if (! in_array($status, self::ALLOWED_STATUSES, true)) {
+                    $errors[] = "{$lineNumber}行目: status は draft / published / private のいずれかを指定してください。";
+                    continue;
+                }
+
+                $payload = $this->payload($data, $workId, $name, $status);
+
+                $character = $characterId
+                    ? Character::query()->whereKey($characterId)->first()
+                    : null;
+
+                if ($character) {
+                    $character->update($payload);
+                    $updated++;
+                } else {
+                    Character::query()->create($payload);
+                    $created++;
+                }
+
+                $imported++;
             }
-
-            $row = $this->fixRowLength($row, count($header));
-            $data = array_combine($header, $row);
-
-            if ($data === false) {
-                $errors[] = "{$rowNumber}行目：列数が一致しません。";
-                continue;
-            }
-
-            $data = $this->normalizeData($data);
-
-            $workId = $data['work_id'] ?? null;
-            $workId = $workId !== null && $workId !== '' ? (int) $workId : $defaultWorkId;
-
-            $status = $data['status'] ?? null;
-            $status = $status ?: $defaultStatus;
-
-            $characterData = [
-                'work_id' => $workId,
-                'name' => $data['name'] ?? null,
-                'name_kana' => $data['name_kana'] ?? null,
-                'age' => $data['age'] ?? null,
-                'affiliation' => $data['affiliation'] ?? null,
-                'grade_class' => $data['grade_class'] ?? null,
-                'first_person' => $data['first_person'] ?? null,
-                'tone' => $data['tone'] ?? null,
-                'tone_examples' => $data['tone_examples'] ?? null,
-                'personality' => $data['personality'] ?? null,
-                'appearance' => $data['appearance'] ?? null,
-                'background' => $data['background'] ?? null,
-                'status' => $status,
-            ];
-
-            $validator = Validator::make($characterData, [
-                'work_id' => ['required', 'exists:works,id'],
-                'name' => ['required', 'string', 'max:255'],
-                'name_kana' => ['nullable', 'string', 'max:255'],
-                'age' => ['nullable', 'string', 'max:255'],
-                'affiliation' => ['nullable', 'string', 'max:255'],
-                'grade_class' => ['nullable', 'string', 'max:255'],
-                'first_person' => ['nullable', 'string', 'max:255'],
-                'tone' => ['nullable', 'string'],
-                'tone_examples' => ['nullable', 'string'],
-                'personality' => ['nullable', 'string'],
-                'appearance' => ['nullable', 'string'],
-                'background' => ['nullable', 'string'],
-                'status' => ['required', 'in:draft,published,private'],
-            ], [], [
-                'work_id' => '作品',
-                'name' => '名前',
-                'status' => '状態',
-            ]);
-
-            if ($validator->fails()) {
-                $errors[] = "{$rowNumber}行目：" . implode(' / ', $validator->errors()->all());
-                continue;
-            }
-
-            $this->characterService->create($validator->validated());
-            $imported++;
-        }
+        });
 
         fclose($handle);
 
         return [
             'imported' => $imported,
+            'updated' => $updated,
+            'created' => $created,
             'skipped' => $skipped,
             'errors' => $errors,
         ];
     }
 
-    private function normalizeHeader(array $header): array
+    private function payload(array $data, int $workId, string $name, string $status): array
     {
-        return array_map(function ($value) {
-            $value = (string) $value;
-            $value = preg_replace('/^\xEF\xBB\xBF/', '', $value);
-            return trim($value);
-        }, $header);
-    }
+        $payload = [
+            'work_id' => $workId,
+            'name' => $name,
+            'status' => $status,
+        ];
 
-    private function normalizeData(array $data): array
-    {
-        $normalized = [];
+        $columns = [
+            'name_kana',
+            'age',
+            'affiliation',
+            'grade_class',
+            'first_person',
+            'tone',
+            'tone_examples',
+            'personality',
+            'appearance',
+            'background',
+            'review_status',
+            'reviewed_at',
+            'reviewed_by',
+        ];
 
-        foreach ($data as $key => $value) {
-            $value = is_string($value) ? trim($value) : $value;
-            $normalized[$key] = $value === '' ? null : $value;
+        foreach ($columns as $column) {
+            if (! Schema::hasColumn('characters', $column)) {
+                continue;
+            }
+
+            if (! array_key_exists($column, $data)) {
+                continue;
+            }
+
+            $payload[$column] = $this->nullableText($data[$column]);
         }
 
-        return $normalized;
+        return $payload;
+    }
+
+    private function normalizeHeader(string $value): string
+    {
+        return Str::of($value)
+            ->trim()
+            ->lower()
+            ->replace([' ', '-'], '_')
+            ->toString();
     }
 
     private function isEmptyRow(array $row): bool
@@ -160,16 +232,26 @@ class CharacterCsvImportService
         return true;
     }
 
-    private function fixRowLength(array $row, int $count): array
+    private function clean(mixed $value): string
     {
-        if (count($row) < $count) {
-            return array_pad($row, $count, null);
+        return trim((string) $value);
+    }
+
+    private function nullableText(mixed $value): ?string
+    {
+        $value = $this->clean($value);
+
+        return $value === '' ? null : $value;
+    }
+
+    private function intOrNull(mixed $value): ?int
+    {
+        $value = $this->clean($value);
+
+        if ($value === '' || ! ctype_digit($value)) {
+            return null;
         }
 
-        if (count($row) > $count) {
-            return array_slice($row, 0, $count);
-        }
-
-        return $row;
+        return (int) $value;
     }
 }

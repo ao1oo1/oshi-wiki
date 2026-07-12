@@ -31,7 +31,10 @@ class CharacterCsvImportController extends Controller
             $request->input('default_status', 'draft')
         );
 
-        $message = "CSVから{$result['imported']}件のキャラクターを登録しました。";
+        $created = $result['created'] ?? $result['imported'];
+        $updated = $result['updated'] ?? 0;
+
+        $message = "CSVから{$created}件のキャラクターを新規登録し、{$updated}件を更新しました。";
 
         if ($result['skipped'] > 0) {
             $message .= " 空行{$result['skipped']}件をスキップしました。";
@@ -58,6 +61,7 @@ class CharacterCsvImportController extends Controller
     {
         $rows = [
             [
+                'character_id',
                 'work_id',
                 'name',
                 'name_kana',
@@ -74,6 +78,7 @@ class CharacterCsvImportController extends Controller
             ],
             [
                 '',
+                '',
                 '苗字　名前',
                 'ミョウジ　ナマエ',
                 '20歳',
@@ -88,6 +93,7 @@ class CharacterCsvImportController extends Controller
                 'published',
             ],
             [
+                '',
                 '',
                 '山田　太郎',
                 'ヤマダ　タロウ',
