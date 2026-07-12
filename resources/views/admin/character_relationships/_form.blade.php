@@ -66,7 +66,7 @@
 </div>
 
 <div class="mb-4">
-    <label for="called_name" class="mb-1 block font-medium">呼ばれ方</label>
+    <label for="called_name" class="mb-1 block font-medium">呼び方</label>
     <input
         id="called_name"
         type="text"
