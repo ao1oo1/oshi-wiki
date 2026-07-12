@@ -46,22 +46,14 @@
         }
 
         .logo {
-            margin-bottom: 28px;
-            font-weight: 900;
-            font-size: clamp(28px, 5vw, 44px);
-            letter-spacing: 0.02em;
+            margin-bottom: 34px;
         }
 
-        .book {
-            width: 70px;
-            height: 70px;
-            margin: 0 auto 16px;
-            border-radius: 22px;
-            background: var(--main);
-            display: grid;
-            place-items: center;
-            font-size: 36px;
-            box-shadow: inset 0 0 0 2px rgba(45, 55, 72, 0.08);
+        .logo img {
+            display: block;
+            width: min(360px, 82vw);
+            height: auto;
+            margin: 0 auto;
         }
 
         .badge {
@@ -113,8 +105,9 @@
 <body>
     <main class="wrap">
         <section class="card">
-            <div class="book">📖</div>
-            <div class="logo">Oshi-Wiki</div>
+            <div class="logo">
+                <img src="{{ asset('images/oshiwiki-logo.png') }}" alt="Oshi-Wiki">
+            </div>
 
             <div class="badge">ただいま準備中です</div>
 
