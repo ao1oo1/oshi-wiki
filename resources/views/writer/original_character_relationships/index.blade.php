@@ -113,30 +113,6 @@
         <article class="rounded-3xl border border-[#E2E8F0] bg-white p-6 shadow-sm">
             <div class="flex flex-col gap-5 xl:flex-row xl:items-start xl:justify-between">
                 <div class="min-w-0 flex-1">
-                    <div class="mb-4 flex flex-wrap items-center gap-2">
-                        <span class="rounded-full bg-[#FFF1F5] px-3 py-1 text-xs font-bold text-[#2D3748]">
-                            {{ method_exists($relationship, 'fromSourceLabel') ? $relationship->fromSourceLabel() : 'From' }}
-                        </span>
-
-                        <span class="rounded-full bg-[#F7FAFC] px-3 py-1 text-xs font-bold text-[#4A5568]">
-                            →
-                        </span>
-
-                        <span class="rounded-full bg-[#FFF1F5] px-3 py-1 text-xs font-bold text-[#2D3748]">
-                            {{ method_exists($relationship, 'toSourceLabel') ? $relationship->toSourceLabel() : 'To' }}
-                        </span>
-
-                        @if (($relationship->status ?? 'active') === 'active')
-                            <span class="rounded-full bg-[#FED7E2] px-3 py-1 text-xs font-bold text-[#2D3748]">
-                                有効
-                            </span>
-                        @else
-                            <span class="rounded-full bg-[#EDF2F7] px-3 py-1 text-xs font-bold text-[#4A5568]">
-                                {{ $relationship->status }}
-                            </span>
-                        @endif
-                    </div>
-
                     <div class="rounded-3xl bg-[#F7FAFC] p-5">
                         <div class="grid gap-5 md:grid-cols-[1fr_auto_1fr] md:items-center">
                             <div>
@@ -175,20 +151,6 @@
                             <p class="mt-1 text-[#2D3748]">{{ $relationship->updated_at?->format('Y/m/d H:i') }}</p>
                         </div>
                     </div>
-
-                    @if ($relationship->impression)
-                        <p class="mt-4 line-clamp-2 text-sm font-bold leading-7 text-[#4A5568]">
-                            {{ $relationship->impression }}
-                        </p>
-                    @elseif ($relationship->notes)
-                        <p class="mt-4 line-clamp-2 text-sm font-bold leading-7 text-[#4A5568]">
-                            {{ $relationship->notes }}
-                        </p>
-                    @else
-                        <p class="mt-4 text-sm font-bold text-[#A0AEC0]">
-                            印象・備考は未入力です。
-                        </p>
-                    @endif
                 </div>
 
                 <div class="flex shrink-0 flex-wrap gap-2 xl:w-52 xl:flex-col">

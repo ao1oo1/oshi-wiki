@@ -1959,3 +1959,355 @@ Alpine.start();
 })();
 /* STEP5U_RELATIONSHIP_FLASH_DUPLICATE_FINAL_END */
 
+
+/* STEP6A_WRITER_MOBILE_UI_START */
+(function () {
+    function isMobile() {
+        return window.matchMedia('(max-width: 767.98px)').matches;
+    }
+
+    function isWriterPage() {
+        const path = window.location.pathname.replace(/\/$/, '');
+        return path === '/writer' || path.startsWith('/writer/');
+    }
+
+    function textOf(element) {
+        return (element?.textContent || '').replace(/\s+/g, ' ').trim();
+    }
+
+    function cloneCell(cell) {
+        const wrap = document.createElement('div');
+
+        if (!cell) {
+            wrap.textContent = '未設定';
+            return wrap;
+        }
+
+        Array.from(cell.childNodes).forEach((node) => {
+            wrap.appendChild(node.cloneNode(true));
+        });
+
+        if (!textOf(wrap) && !wrap.querySelector('a, button, form, input, select, textarea')) {
+            wrap.textContent = '未設定';
+        }
+
+        return wrap;
+    }
+
+    function makeRow(label, content, role) {
+        const row = document.createElement('div');
+        row.className = 'oshi-writer-mobile-card-row';
+
+        if (role) {
+            row.classList.add('is-' + role);
+        }
+
+        const labelEl = document.createElement('div');
+        labelEl.className = 'oshi-writer-mobile-card-label';
+        labelEl.textContent = label;
+
+        const valueEl = document.createElement('div');
+        valueEl.className = 'oshi-writer-mobile-card-value';
+
+        if (content instanceof HTMLElement) {
+            valueEl.appendChild(content);
+        } else {
+            valueEl.textContent = content || '未設定';
+        }
+
+        row.appendChild(labelEl);
+        row.appendChild(valueEl);
+
+        return row;
+    }
+
+    function cellHasAction(cell) {
+        if (!cell) return false;
+
+        if (cell.querySelector('a, button, form')) {
+            return true;
+        }
+
+        const text = textOf(cell);
+        return ['詳細', '編集', '削除', '複製', 'コピー', '作成', '保存', '表示', '戻る'].some((word) => text.includes(word));
+    }
+
+    function makeActions(cell) {
+        const actions = document.createElement('div');
+        actions.className = 'oshi-writer-mobile-card-actions';
+
+        if (cell) {
+            actions.appendChild(cloneCell(cell));
+        }
+
+        if (!textOf(actions) && !actions.querySelector('a, button, form')) {
+            actions.textContent = '未設定';
+        }
+
+        return actions;
+    }
+
+    function getSafeSource(table) {
+        const wrap = table.closest('.overflow-x-auto, .overflow-hidden, .oshi-table-wrap');
+
+        if (wrap && wrap.querySelector('table') === table) {
+            return wrap;
+        }
+
+        return table;
+    }
+
+    function buildTableCards(table) {
+        if (!table || table.dataset.oshiWriterCardsReady === '1') {
+            return;
+        }
+
+        const headers = Array.from(table.querySelectorAll('thead th')).map((th, index) => {
+            return textOf(th) || `項目${index + 1}`;
+        });
+
+        const rows = Array.from(table.querySelectorAll('tbody tr'));
+
+        if (!headers.length || !rows.length) {
+            return;
+        }
+
+        const source = getSafeSource(table);
+        source.classList.add('oshi-writer-mobile-table-source');
+
+        const list = document.createElement('div');
+        list.className = 'oshi-writer-mobile-card-list';
+
+        rows.forEach((tr) => {
+            const cells = Array.from(tr.children);
+
+            if (!cells.length) return;
+
+            const colspanCell = cells.length === 1 && Number(cells[0].getAttribute('colspan') || 1) > 1;
+
+            const card = document.createElement('article');
+            card.className = 'oshi-writer-mobile-card';
+
+            if (colspanCell) {
+                card.appendChild(makeRow('内容', cloneCell(cells[0]), 'full'));
+                list.appendChild(card);
+                return;
+            }
+
+            const actionIndexFromHeader = headers.findIndex((header) => header.includes('操作'));
+            const actionIndexFromCell = cells.findIndex(cellHasAction);
+            const actionIndex = actionIndexFromHeader >= 0 ? actionIndexFromHeader : actionIndexFromCell;
+
+            cells.forEach((cell, index) => {
+                if (index === actionIndex) return;
+
+                const label = headers[index] || `項目${index + 1}`;
+                const role = label.includes('状態') || label.includes('公開') ? 'status' : '';
+                card.appendChild(makeRow(label, cloneCell(cell), role));
+            });
+
+            if (actionIndex >= 0) {
+                card.appendChild(makeRow('操作', makeActions(cells[actionIndex]), 'actions'));
+            }
+
+            list.appendChild(card);
+        });
+
+        source.insertAdjacentElement('afterend', list);
+        table.dataset.oshiWriterCardsReady = '1';
+    }
+
+    function applyWriterMobileUI() {
+        if (!isMobile()) return;
+        if (!isWriterPage()) return;
+
+        const main = document.querySelector('main') || document.body;
+        if (!main) return;
+
+        document.body.classList.add('oshi-writer-mobile-ui');
+
+        Array.from(main.querySelectorAll('table')).forEach((table) => {
+            buildTableCards(table);
+        });
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', applyWriterMobileUI);
+    } else {
+        applyWriterMobileUI();
+    }
+})();
+/* STEP6A_WRITER_MOBILE_UI_END */
+
+
+/* STEP6B_WRITER_MOBILE_HAMBURGER_START */
+(function () {
+    function isMobile() {
+        return window.matchMedia('(max-width: 767.98px)').matches;
+    }
+
+    function isWriterPage() {
+        const path = window.location.pathname.replace(/\/$/, '');
+        return path === '/writer' || path.startsWith('/writer/');
+    }
+
+    function textOf(element) {
+        return (element?.textContent || '').replace(/\s+/g, ' ').trim();
+    }
+
+    function findWriterSidebar() {
+        const logoLinks = Array.from(document.querySelectorAll('a[href*="/writer/dashboard"]')).filter((link) => {
+            return link.querySelector('img') || textOf(link).includes('Oshi-Wiki');
+        });
+
+        for (const logoLink of logoLinks) {
+            const candidate =
+                logoLink.closest('aside') ||
+                logoLink.closest('nav') ||
+                logoLink.closest('section') ||
+                logoLink.closest('div');
+
+            if (candidate && candidate.querySelectorAll('a').length >= 4) {
+                return candidate;
+            }
+        }
+
+        const aside = document.querySelector('aside');
+        if (aside && aside.querySelectorAll('a[href*="/writer/"]').length >= 3) {
+            return aside;
+        }
+
+        return null;
+    }
+
+    function createIconButton() {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'oshi-writer-mobile-menu-button';
+        button.setAttribute('aria-label', 'メニューを開く');
+        button.setAttribute('aria-expanded', 'false');
+
+        button.innerHTML = `
+            <span></span>
+            <span></span>
+            <span></span>
+        `;
+
+        return button;
+    }
+
+    function createHeader(sidebar) {
+        const header = document.createElement('header');
+        header.className = 'oshi-writer-mobile-header';
+
+        const logoLink = sidebar.querySelector('a[href*="/writer/dashboard"]');
+        const logo = document.createElement('a');
+        logo.href = logoLink ? logoLink.href : '/writer/dashboard';
+        logo.className = 'oshi-writer-mobile-logo';
+
+        const img = logoLink?.querySelector('img');
+
+        if (img) {
+            logo.appendChild(img.cloneNode(true));
+        } else {
+            logo.textContent = 'Oshi-Wiki';
+        }
+
+        const button = createIconButton();
+
+        header.appendChild(logo);
+        header.appendChild(button);
+
+        return { header, button };
+    }
+
+    function createDrawer(sidebar) {
+        const overlay = document.createElement('div');
+        overlay.className = 'oshi-writer-mobile-drawer-overlay';
+
+        const drawer = document.createElement('div');
+        drawer.className = 'oshi-writer-mobile-drawer';
+        drawer.setAttribute('role', 'dialog');
+        drawer.setAttribute('aria-modal', 'true');
+        drawer.setAttribute('aria-label', 'writerメニュー');
+
+        const closeButton = document.createElement('button');
+        closeButton.type = 'button';
+        closeButton.className = 'oshi-writer-mobile-drawer-close';
+        closeButton.setAttribute('aria-label', 'メニューを閉じる');
+        closeButton.textContent = '×';
+
+        const content = document.createElement('div');
+        content.className = 'oshi-writer-mobile-drawer-content';
+
+        const clonedSidebar = sidebar.cloneNode(true);
+        clonedSidebar.classList.remove('oshi-writer-desktop-sidebar');
+        clonedSidebar.classList.add('oshi-writer-mobile-drawer-menu');
+
+        content.appendChild(clonedSidebar);
+
+        drawer.appendChild(closeButton);
+        drawer.appendChild(content);
+        overlay.appendChild(drawer);
+
+        return { overlay, closeButton };
+    }
+
+    function setOpen(isOpen, button, overlay) {
+        document.body.classList.toggle('oshi-writer-mobile-menu-open', isOpen);
+        button.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+        overlay.classList.toggle('is-open', isOpen);
+    }
+
+    function applyWriterMobileHamburger() {
+        if (!isMobile()) return;
+        if (!isWriterPage()) return;
+        if (document.body.classList.contains('oshi-writer-mobile-hamburger-ready')) return;
+
+        const sidebar = findWriterSidebar();
+        if (!sidebar) return;
+
+        document.body.classList.add('oshi-writer-mobile-hamburger-ready');
+        sidebar.classList.add('oshi-writer-desktop-sidebar');
+
+        const { header, button } = createHeader(sidebar);
+        const { overlay, closeButton } = createDrawer(sidebar);
+
+        document.body.prepend(header);
+        document.body.appendChild(overlay);
+
+        button.addEventListener('click', () => {
+            setOpen(!overlay.classList.contains('is-open'), button, overlay);
+        });
+
+        closeButton.addEventListener('click', () => {
+            setOpen(false, button, overlay);
+        });
+
+        overlay.addEventListener('click', (event) => {
+            if (event.target === overlay) {
+                setOpen(false, button, overlay);
+            }
+        });
+
+        overlay.querySelectorAll('a').forEach((link) => {
+            link.addEventListener('click', () => {
+                setOpen(false, button, overlay);
+            });
+        });
+
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape') {
+                setOpen(false, button, overlay);
+            }
+        });
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', applyWriterMobileHamburger);
+    } else {
+        applyWriterMobileHamburger();
+    }
+})();
+/* STEP6B_WRITER_MOBILE_HAMBURGER_END */
+

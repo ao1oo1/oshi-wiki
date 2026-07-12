@@ -20,7 +20,7 @@
                 </p>
             </div>
 
-            <div class="flex flex-wrap gap-3">
+            <div class="writer-prompt-top-actions-hidden flex flex-wrap gap-3">
                 <a href="{{ route('writer.prompts.index') }}"
                    class="inline-flex items-center justify-center rounded-2xl border border-[#CBD5E0] bg-white px-5 py-3 text-sm font-bold text-[#2D3748] hover:bg-[#F7FAFC]">
                     一覧へ戻る
@@ -327,5 +327,40 @@
         });
     </script>
 @endif
+
+
+<div class="writer-prompt-bottom-actions mt-8 rounded-3xl border border-[#E2E8F0] bg-white p-6 shadow-sm">
+    <div class="grid gap-3 md:grid-cols-2">
+        <a href="{{ route('writer.prompts.edit', $prompt) }}"
+           class="inline-flex items-center justify-center rounded-2xl bg-[#FED7E2] px-6 py-3 font-bold text-[#2D3748] hover:opacity-90">
+            編集
+        </a>
+
+        <form method="POST"
+              action="{{ route('writer.prompts.destroy', $prompt) }}"
+              onsubmit="return confirm('このプロンプトを削除しますか？');">
+            @csrf
+            @method('DELETE')
+            <button type="submit"
+                    class="inline-flex w-full items-center justify-center rounded-2xl border border-red-200 bg-white px-6 py-3 font-bold text-red-600 hover:bg-red-50">
+                削除
+            </button>
+        </form>
+
+        <form method="POST" action="{{ route('writer.prompts.duplicate', $prompt) }}">
+            @csrf
+            <button type="submit"
+                    class="inline-flex w-full items-center justify-center rounded-2xl border border-[#CBD5E0] bg-white px-6 py-3 font-bold text-[#2D3748] hover:bg-[#F7FAFC]">
+                複製
+            </button>
+        </form>
+
+        <a href="{{ route('writer.prompts.index') }}"
+           class="inline-flex items-center justify-center rounded-2xl border border-[#CBD5E0] bg-white px-6 py-3 font-bold text-[#2D3748] hover:bg-[#F7FAFC]">
+            一覧へ戻る
+        </a>
+    </div>
+</div>
+
 
 @include('writer.original_characters._layout_end')

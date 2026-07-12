@@ -8,12 +8,14 @@
     $fromRef = old('from_character_ref');
     $toRef = old('to_character_ref');
 
-    if (! $fromRef && $relationship) { elseif ($relationship->from_original_character_id) {
+    if (! $fromRef && $relationship) {
+        if (! empty($relationship->from_original_character_id)) {
             $fromRef = 'original:' . $relationship->from_original_character_id;
         }
     }
 
-    if (! $toRef && $relationship) { elseif ($relationship->to_original_character_id) {
+    if (! $toRef && $relationship) {
+        if (! empty($relationship->to_original_character_id)) {
             $toRef = 'original:' . $relationship->to_original_character_id;
         }
     }

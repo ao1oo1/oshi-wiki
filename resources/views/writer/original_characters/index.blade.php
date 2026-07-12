@@ -115,53 +115,16 @@
         <article class="rounded-3xl border border-[#E2E8F0] bg-white p-6 shadow-sm">
             <div class="flex flex-col gap-5 xl:flex-row xl:items-start xl:justify-between">
                 <div class="min-w-0 flex-1">
-                    <div class="mb-3 flex flex-wrap items-center gap-2">
-                        @if ($character->is_main_character)
-                            <span class="rounded-full bg-[#FED7E2] px-3 py-1 text-xs font-bold text-[#2D3748]">
-                                主人公
-                            </span>
-                        @else
-                            <span class="rounded-full bg-[#F7FAFC] px-3 py-1 text-xs font-bold text-[#4A5568]">
-                                通常キャラクター
-                            </span>
-                        @endif
+                    <div class="grid gap-3 text-sm font-bold text-[#4A5568] md:grid-cols-4">
+                        <div class="rounded-2xl bg-[#F7FAFC] px-4 py-3">
+                            <p class="text-xs text-[#A0AEC0]">名前</p>
+                            <p class="mt-1 text-lg text-[#2D3748]">
+                                <a href="{{ route('writer.original-characters.show', $character) }}" class="hover:underline">
+                                    {{ $character->name ?: '未入力' }}
+                                </a>
+                            </p>
+                        </div>
 
-                        @if ($character->status === 'active')
-                            <span class="rounded-full bg-[#FFF1F5] px-3 py-1 text-xs font-bold text-[#2D3748]">
-                                有効
-                            </span>
-                        @else
-                            <span class="rounded-full bg-[#EDF2F7] px-3 py-1 text-xs font-bold text-[#4A5568]">
-                                {{ $character->status }}
-                            </span>
-                        @endif
-
-                        @if ($character->gender)
-                            <span class="rounded-full bg-[#F7FAFC] px-3 py-1 text-xs font-bold text-[#4A5568]">
-                                {{ $character->gender }}
-                            </span>
-                        @endif
-
-                        @if ($character->age)
-                            <span class="rounded-full bg-[#F7FAFC] px-3 py-1 text-xs font-bold text-[#4A5568]">
-                                {{ $character->age }}
-                            </span>
-                        @endif
-                    </div>
-
-                    <h2 class="text-2xl font-bold leading-snug text-[#2D3748]">
-                        <a href="{{ route('writer.original-characters.show', $character) }}" class="hover:underline">
-                            {{ $character->name }}
-                        </a>
-                    </h2>
-
-                    @if ($character->name_kana)
-                        <p class="mt-1 text-sm font-bold text-[#A0AEC0]">
-                            {{ $character->name_kana }}
-                        </p>
-                    @endif
-
-                    <div class="mt-5 grid gap-3 text-sm font-bold text-[#4A5568] md:grid-cols-3">
                         <div class="rounded-2xl bg-[#F7FAFC] px-4 py-3">
                             <p class="text-xs text-[#A0AEC0]">所属</p>
                             <p class="mt-1 text-[#2D3748]">{{ $character->affiliation ?: '未入力' }}</p>
@@ -177,20 +140,6 @@
                             <p class="mt-1 text-[#2D3748]">{{ $character->updated_at?->format('Y/m/d H:i') }}</p>
                         </div>
                     </div>
-
-                    @if ($character->personality)
-                        <p class="mt-4 line-clamp-2 text-sm font-bold leading-7 text-[#4A5568]">
-                            {{ $character->personality }}
-                        </p>
-                    @elseif ($character->background)
-                        <p class="mt-4 line-clamp-2 text-sm font-bold leading-7 text-[#4A5568]">
-                            {{ $character->background }}
-                        </p>
-                    @else
-                        <p class="mt-4 text-sm font-bold text-[#A0AEC0]">
-                            性格・背景は未入力です。
-                        </p>
-                    @endif
                 </div>
 
                 <div class="flex shrink-0 flex-wrap gap-2 xl:w-52 xl:flex-col">

@@ -4716,3 +4716,830 @@ header[role="banner"] {
 }
 /* STEP5U_RELATIONSHIP_FLASH_DUPLICATE_FINAL_CSS_END */
 
+
+/* STEP6A_WRITER_MOBILE_UI_CSS_START */
+@media (max-width: 767.98px) {
+    body.oshi-writer-mobile-ui,
+    body.oshi-writer-mobile-ui main,
+    body.oshi-writer-mobile-ui header,
+    body.oshi-writer-mobile-ui footer,
+    body.oshi-writer-mobile-ui section,
+    body.oshi-writer-mobile-ui article,
+    body.oshi-writer-mobile-ui div {
+        box-sizing: border-box !important;
+        max-width: 100% !important;
+    }
+
+    body.oshi-writer-mobile-ui {
+        overflow-x: hidden !important;
+    }
+
+    body.oshi-writer-mobile-ui main {
+        width: 100% !important;
+        max-width: 100% !important;
+        overflow-x: hidden !important;
+        padding-left: 14px !important;
+        padding-right: 14px !important;
+    }
+
+    body.oshi-writer-mobile-ui .overflow-x-auto,
+    body.oshi-writer-mobile-ui .overflow-hidden {
+        max-width: 100% !important;
+        overflow-x: hidden !important;
+    }
+
+    body.oshi-writer-mobile-ui .oshi-writer-mobile-table-source {
+        display: none !important;
+    }
+
+    body.oshi-writer-mobile-ui table {
+        max-width: 100% !important;
+        overflow-x: hidden !important;
+    }
+
+    body.oshi-writer-mobile-ui .oshi-writer-mobile-card-list {
+        display: grid !important;
+        grid-template-columns: 1fr !important;
+        gap: 14px !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        margin-top: 16px !important;
+        box-sizing: border-box !important;
+    }
+
+    body.oshi-writer-mobile-ui .oshi-writer-mobile-card {
+        width: 100% !important;
+        max-width: 100% !important;
+        padding: 16px !important;
+        border: 1px solid #E2E8F0 !important;
+        border-radius: 20px !important;
+        background: #FFFFFF !important;
+        box-shadow: 0 8px 24px rgba(45, 55, 72, 0.07) !important;
+        box-sizing: border-box !important;
+        overflow: hidden !important;
+    }
+
+    body.oshi-writer-mobile-ui .oshi-writer-mobile-card-row {
+        display: grid !important;
+        grid-template-columns: 92px minmax(0, 1fr) !important;
+        gap: 10px !important;
+        align-items: center !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        padding: 11px 0 !important;
+        border-bottom: 1px dashed #E2E8F0 !important;
+        box-sizing: border-box !important;
+    }
+
+    body.oshi-writer-mobile-ui .oshi-writer-mobile-card-row:last-child {
+        border-bottom: none !important;
+        padding-bottom: 0 !important;
+    }
+
+    body.oshi-writer-mobile-ui .oshi-writer-mobile-card-row.is-full {
+        grid-template-columns: 1fr !important;
+    }
+
+    body.oshi-writer-mobile-ui .oshi-writer-mobile-card-label {
+        color: #A0AEC0 !important;
+        font-size: 12px !important;
+        font-weight: 900 !important;
+        line-height: 1.6 !important;
+        overflow-wrap: anywhere !important;
+    }
+
+    body.oshi-writer-mobile-ui .oshi-writer-mobile-card-value {
+        min-width: 0 !important;
+        max-width: 100% !important;
+        color: #2D3748 !important;
+        font-size: 14px !important;
+        font-weight: 800 !important;
+        line-height: 1.7 !important;
+        overflow-wrap: anywhere !important;
+        word-break: break-word !important;
+        box-sizing: border-box !important;
+    }
+
+    body.oshi-writer-mobile-ui .oshi-writer-mobile-card-value * {
+        max-width: 100% !important;
+        overflow-wrap: anywhere !important;
+        word-break: break-word !important;
+        box-sizing: border-box !important;
+    }
+
+    body.oshi-writer-mobile-ui .oshi-writer-mobile-card-row.is-actions {
+        grid-template-columns: 1fr !important;
+        gap: 8px !important;
+    }
+
+    body.oshi-writer-mobile-ui .oshi-writer-mobile-card-row.is-actions .oshi-writer-mobile-card-label {
+        display: none !important;
+    }
+
+    body.oshi-writer-mobile-ui .oshi-writer-mobile-card-row.is-actions .oshi-writer-mobile-card-value,
+    body.oshi-writer-mobile-ui .oshi-writer-mobile-card-actions,
+    body.oshi-writer-mobile-ui .oshi-writer-mobile-card-actions > div,
+    body.oshi-writer-mobile-ui .oshi-writer-mobile-card-actions form {
+        display: grid !important;
+        grid-template-columns: 1fr !important;
+        gap: 10px !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+    }
+
+    body.oshi-writer-mobile-ui a,
+    body.oshi-writer-mobile-ui button,
+    body.oshi-writer-mobile-ui .oshi-writer-mobile-card-actions a,
+    body.oshi-writer-mobile-ui .oshi-writer-mobile-card-actions button,
+    body.oshi-writer-mobile-ui .oshi-writer-mobile-card-actions .oshi-btn,
+    body.oshi-writer-mobile-ui .oshi-writer-mobile-card-row.is-actions a,
+    body.oshi-writer-mobile-ui .oshi-writer-mobile-card-row.is-actions button {
+        max-width: 100% !important;
+        white-space: normal !important;
+        overflow-wrap: anywhere !important;
+        word-break: break-word !important;
+        box-sizing: border-box !important;
+    }
+
+    body.oshi-writer-mobile-ui .oshi-writer-mobile-card-actions a,
+    body.oshi-writer-mobile-ui .oshi-writer-mobile-card-actions button,
+    body.oshi-writer-mobile-ui .oshi-writer-mobile-card-actions .oshi-btn,
+    body.oshi-writer-mobile-ui .oshi-writer-mobile-card-row.is-actions a,
+    body.oshi-writer-mobile-ui .oshi-writer-mobile-card-row.is-actions button,
+    body.oshi-writer-mobile-ui form button[type="submit"],
+    body.oshi-writer-mobile-ui form a,
+    body.oshi-writer-mobile-ui .writer-form-ui a,
+    body.oshi-writer-mobile-ui .writer-form-ui button {
+        display: flex !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        min-height: 44px !important;
+        align-items: center !important;
+        justify-content: center !important;
+        text-align: center !important;
+    }
+
+    body.oshi-writer-mobile-ui input,
+    body.oshi-writer-mobile-ui select,
+    body.oshi-writer-mobile-ui textarea {
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+    }
+
+    body.oshi-writer-mobile-ui .grid,
+    body.oshi-writer-mobile-ui [class*="grid-cols-"],
+    body.oshi-writer-mobile-ui [class*="xl:grid-cols-"],
+    body.oshi-writer-mobile-ui [class*="md:grid-cols-"] {
+        max-width: 100% !important;
+    }
+
+    body.oshi-writer-mobile-ui .flex,
+    body.oshi-writer-mobile-ui [class*="flex-row"],
+    body.oshi-writer-mobile-ui [class*="flex-wrap"] {
+        max-width: 100% !important;
+    }
+
+    body.oshi-writer-mobile-ui pre,
+    body.oshi-writer-mobile-ui code {
+        max-width: 100% !important;
+        white-space: pre-wrap !important;
+        overflow-wrap: anywhere !important;
+        word-break: break-word !important;
+        overflow-x: hidden !important;
+    }
+
+    body.oshi-writer-mobile-ui .line-clamp-2 {
+        overflow-wrap: anywhere !important;
+        word-break: break-word !important;
+    }
+}
+
+@media (max-width: 390px) {
+    body.oshi-writer-mobile-ui main {
+        padding-left: 12px !important;
+        padding-right: 12px !important;
+    }
+
+    body.oshi-writer-mobile-ui .oshi-writer-mobile-card {
+        padding: 14px !important;
+    }
+
+    body.oshi-writer-mobile-ui .oshi-writer-mobile-card-row {
+        grid-template-columns: 82px minmax(0, 1fr) !important;
+        gap: 9px !important;
+    }
+}
+/* STEP6A_WRITER_MOBILE_UI_CSS_END */
+
+
+/* STEP6B_WRITER_MOBILE_HAMBURGER_CSS_START */
+@media (max-width: 767.98px) {
+    body.oshi-writer-mobile-hamburger-ready {
+        padding-top: 86px !important;
+        overflow-x: hidden !important;
+    }
+
+    body.oshi-writer-mobile-hamburger-ready .oshi-writer-desktop-sidebar {
+        display: none !important;
+    }
+
+    body.oshi-writer-mobile-hamburger-ready .oshi-writer-mobile-header {
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        z-index: 9998 !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        width: 100% !important;
+        min-height: 86px !important;
+        padding: 16px 18px !important;
+        border-bottom: 1px solid #E2E8F0 !important;
+        background: rgba(255, 255, 255, 0.96) !important;
+        backdrop-filter: blur(10px) !important;
+        box-sizing: border-box !important;
+    }
+
+    body.oshi-writer-mobile-hamburger-ready .oshi-writer-mobile-logo {
+        display: flex !important;
+        align-items: center !important;
+        max-width: calc(100% - 78px) !important;
+        text-decoration: none !important;
+    }
+
+    body.oshi-writer-mobile-hamburger-ready .oshi-writer-mobile-logo img {
+        display: block !important;
+        width: auto !important;
+        max-width: 190px !important;
+        max-height: 48px !important;
+        object-fit: contain !important;
+    }
+
+    body.oshi-writer-mobile-hamburger-ready .oshi-writer-mobile-logo:not(:has(img)) {
+        color: #2D3748 !important;
+        font-size: 20px !important;
+        font-weight: 900 !important;
+    }
+
+    body.oshi-writer-mobile-hamburger-ready .oshi-writer-mobile-menu-button {
+        display: inline-flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 6px !important;
+        width: 58px !important;
+        height: 58px !important;
+        min-width: 58px !important;
+        border: 1px solid #CBD5E0 !important;
+        border-radius: 999px !important;
+        background: #FFFFFF !important;
+        box-shadow: 0 8px 24px rgba(45, 55, 72, 0.08) !important;
+        cursor: pointer !important;
+    }
+
+    body.oshi-writer-mobile-hamburger-ready .oshi-writer-mobile-menu-button span {
+        display: block !important;
+        width: 24px !important;
+        height: 3px !important;
+        border-radius: 999px !important;
+        background: #2D3748 !important;
+    }
+
+    body.oshi-writer-mobile-hamburger-ready .oshi-writer-mobile-drawer-overlay {
+        position: fixed !important;
+        inset: 0 !important;
+        z-index: 9999 !important;
+        display: none !important;
+        background: rgba(45, 55, 72, 0.46) !important;
+    }
+
+    body.oshi-writer-mobile-hamburger-ready .oshi-writer-mobile-drawer-overlay.is-open {
+        display: block !important;
+    }
+
+    body.oshi-writer-mobile-hamburger-ready .oshi-writer-mobile-drawer {
+        position: absolute !important;
+        top: 0 !important;
+        right: 0 !important;
+        width: min(86vw, 360px) !important;
+        max-width: 100% !important;
+        height: 100vh !important;
+        padding: 22px 18px 28px !important;
+        background: #FFFFFF !important;
+        overflow-y: auto !important;
+        box-shadow: -12px 0 34px rgba(45, 55, 72, 0.18) !important;
+        box-sizing: border-box !important;
+    }
+
+    body.oshi-writer-mobile-hamburger-ready .oshi-writer-mobile-drawer-close {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        width: 48px !important;
+        height: 48px !important;
+        margin-left: auto !important;
+        margin-bottom: 12px !important;
+        border: 1px solid #CBD5E0 !important;
+        border-radius: 999px !important;
+        background: #FFFFFF !important;
+        color: #2D3748 !important;
+        font-size: 30px !important;
+        font-weight: 700 !important;
+        line-height: 1 !important;
+    }
+
+    body.oshi-writer-mobile-hamburger-ready .oshi-writer-mobile-drawer-content,
+    body.oshi-writer-mobile-hamburger-ready .oshi-writer-mobile-drawer-content * {
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+    }
+
+    body.oshi-writer-mobile-hamburger-ready .oshi-writer-mobile-drawer-content img {
+        width: auto !important;
+        max-width: 190px !important;
+        max-height: 52px !important;
+        object-fit: contain !important;
+    }
+
+    body.oshi-writer-mobile-hamburger-ready .oshi-writer-mobile-drawer-content a,
+    body.oshi-writer-mobile-hamburger-ready .oshi-writer-mobile-drawer-content button {
+        display: flex !important;
+        width: 100% !important;
+        min-height: 48px !important;
+        align-items: center !important;
+        justify-content: center !important;
+        text-align: center !important;
+        white-space: normal !important;
+    }
+
+    body.oshi-writer-mobile-hamburger-ready.oshi-writer-mobile-menu-open {
+        overflow: hidden !important;
+    }
+}
+/* STEP6B_WRITER_MOBILE_HAMBURGER_CSS_END */
+
+
+/* STEP6C_WRITER_MOBILE_HAMBURGER_EMPTY_FIX_START */
+@media (max-width: 767.98px) {
+    body.oshi-writer-mobile-hamburger-ready .oshi-writer-mobile-drawer-content .oshi-writer-mobile-drawer-menu {
+        display: block !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        opacity: 1 !important;
+        visibility: visible !important;
+    }
+
+    body.oshi-writer-mobile-hamburger-ready .oshi-writer-mobile-drawer-content .oshi-writer-mobile-drawer-menu * {
+        visibility: visible !important;
+    }
+
+    body.oshi-writer-mobile-hamburger-ready .oshi-writer-mobile-drawer-content .oshi-writer-mobile-drawer-menu nav,
+    body.oshi-writer-mobile-hamburger-ready .oshi-writer-mobile-drawer-content .oshi-writer-mobile-drawer-menu div,
+    body.oshi-writer-mobile-hamburger-ready .oshi-writer-mobile-drawer-content .oshi-writer-mobile-drawer-menu section {
+        display: block !important;
+    }
+
+    body.oshi-writer-mobile-hamburger-ready .oshi-writer-mobile-drawer-content .oshi-writer-mobile-drawer-menu a,
+    body.oshi-writer-mobile-hamburger-ready .oshi-writer-mobile-drawer-content .oshi-writer-mobile-drawer-menu button {
+        display: flex !important;
+        width: 100% !important;
+        min-height: 50px !important;
+        align-items: center !important;
+        justify-content: center !important;
+        margin-bottom: 12px !important;
+        border-radius: 18px !important;
+        font-weight: 900 !important;
+        text-align: center !important;
+    }
+
+    body.oshi-writer-mobile-hamburger-ready .oshi-writer-mobile-drawer-content .oshi-writer-mobile-drawer-menu form {
+        display: block !important;
+        width: 100% !important;
+    }
+}
+/* STEP6C_WRITER_MOBILE_HAMBURGER_EMPTY_FIX_END */
+
+
+/* STEP6D_WRITER_MOBILE_BUTTON_DESIGN_START */
+@media (max-width: 767.98px) {
+    /*
+     * writer配下：スマホ時のボタンを全画面で統一
+     */
+    body.oshi-writer-mobile-ui a,
+    body.oshi-writer-mobile-ui button {
+        box-sizing: border-box !important;
+        max-width: 100% !important;
+        white-space: normal !important;
+        word-break: break-word !important;
+        overflow-wrap: anywhere !important;
+    }
+
+    /*
+     * カード内の操作エリアは縦並び・幅いっぱい
+     */
+    body.oshi-writer-mobile-ui article > div:last-child,
+    body.oshi-writer-mobile-ui article .flex.shrink-0,
+    body.oshi-writer-mobile-ui article [class*="xl:w-52"],
+    body.oshi-writer-mobile-ui .oshi-writer-mobile-card-actions,
+    body.oshi-writer-mobile-ui .oshi-writer-mobile-card-row.is-actions .oshi-writer-mobile-card-value {
+        display: grid !important;
+        grid-template-columns: 1fr !important;
+        gap: 10px !important;
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+
+    body.oshi-writer-mobile-ui article form,
+    body.oshi-writer-mobile-ui .oshi-writer-mobile-card-actions form {
+        display: block !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+    }
+
+    /*
+     * writer配下の主要ボタン共通
+     */
+    body.oshi-writer-mobile-ui main a[class*="rounded"],
+    body.oshi-writer-mobile-ui main button[class*="rounded"],
+    body.oshi-writer-mobile-ui .writer-form-ui a[class*="rounded"],
+    body.oshi-writer-mobile-ui .writer-form-ui button[class*="rounded"],
+    body.oshi-writer-mobile-ui article a[class*="rounded"],
+    body.oshi-writer-mobile-ui article button[class*="rounded"] {
+        display: flex !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        min-height: 52px !important;
+        align-items: center !important;
+        justify-content: center !important;
+        padding: 14px 18px !important;
+        border-radius: 999px !important;
+        font-size: 15px !important;
+        font-weight: 900 !important;
+        line-height: 1.25 !important;
+        text-align: center !important;
+        text-decoration: none !important;
+        box-shadow: none !important;
+    }
+
+    /*
+     * 詳細・新規登録・保存・検索などのメインボタン
+     */
+    body.oshi-writer-mobile-ui main a[class*="bg-[#FED7E2]"],
+    body.oshi-writer-mobile-ui main button[class*="bg-[#FED7E2]"],
+    body.oshi-writer-mobile-ui article a[href*="/show"],
+    body.oshi-writer-mobile-ui article a[href$="/original-characters"],
+    body.oshi-writer-mobile-ui article a[href$="/original-character-relationships"],
+    body.oshi-writer-mobile-ui article a[href$="/prompts"] {
+        border: 1px solid #FED7E2 !important;
+        background: #FED7E2 !important;
+        color: #2D3748 !important;
+    }
+
+    /*
+     * 詳細リンクはURL構造で判定しにくいものがあるため、カード操作内の最初のリンクをメインボタン寄せ
+     */
+    body.oshi-writer-mobile-ui article .flex.shrink-0 > a:first-child,
+    body.oshi-writer-mobile-ui article [class*="xl:w-52"] > a:first-child {
+        border: 1px solid #FED7E2 !important;
+        background: #FED7E2 !important;
+        color: #2D3748 !important;
+    }
+
+    /*
+     * 編集・戻る・複製などのサブボタン
+     */
+    body.oshi-writer-mobile-ui main a[class*="border-[#CBD5E0]"],
+    body.oshi-writer-mobile-ui main button[class*="border-[#CBD5E0]"],
+    body.oshi-writer-mobile-ui article a[class*="border-[#CBD5E0]"],
+    body.oshi-writer-mobile-ui article button[class*="border-[#CBD5E0]"] {
+        border: 1px solid #CBD5E0 !important;
+        background: #FFFFFF !important;
+        color: #2D3748 !important;
+    }
+
+    /*
+     * 削除ボタン
+     */
+    body.oshi-writer-mobile-ui main button[class*="red"],
+    body.oshi-writer-mobile-ui main a[class*="red"],
+    body.oshi-writer-mobile-ui article button[class*="red"],
+    body.oshi-writer-mobile-ui article a[class*="red"],
+    body.oshi-writer-mobile-ui form[action*="destroy"] button {
+        border: 1px solid #FEB2B2 !important;
+        background: #FFFFFF !important;
+        color: #E53E3E !important;
+    }
+
+    /*
+     * 横並び指定をスマホでは解除
+     */
+    body.oshi-writer-mobile-ui main .flex-wrap,
+    body.oshi-writer-mobile-ui main [class*="md:flex-row"],
+    body.oshi-writer-mobile-ui main [class*="xl:flex-row"] {
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+
+    body.oshi-writer-mobile-ui article .flex-wrap,
+    body.oshi-writer-mobile-ui article [class*="md:flex-row"],
+    body.oshi-writer-mobile-ui article [class*="xl:flex-row"] {
+        flex-direction: column !important;
+        align-items: stretch !important;
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+
+    /*
+     * フォーム下部の戻る・保存ボタンも縦並び
+     */
+    body.oshi-writer-mobile-ui .writer-form-ui form > div:last-child,
+    body.oshi-writer-mobile-ui .writer-form-ui form > div:last-child > div,
+    body.oshi-writer-mobile-ui .writer-form-ui .md\:flex-row {
+        display: grid !important;
+        grid-template-columns: 1fr !important;
+        gap: 10px !important;
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+
+    /*
+     * 無効ボタン風のdivも幅いっぱい
+     */
+    body.oshi-writer-mobile-ui main div[class*="cursor-not-allowed"] {
+        display: flex !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        min-height: 52px !important;
+        align-items: center !important;
+        justify-content: center !important;
+        padding: 14px 18px !important;
+        border-radius: 999px !important;
+        text-align: center !important;
+        font-weight: 900 !important;
+    }
+}
+/* STEP6D_WRITER_MOBILE_BUTTON_DESIGN_END */
+
+
+/* STEP6F_WRITER_CHARACTER_SHOW_BOTTOM_ACTIONS_START */
+.writer-original-character-top-actions-hidden {
+    display: none !important;
+}
+
+@media (max-width: 767.98px) {
+    body.oshi-writer-mobile-ui .writer-original-character-bottom-actions {
+        width: 100% !important;
+        max-width: 100% !important;
+        padding: 16px !important;
+        border-radius: 22px !important;
+        box-sizing: border-box !important;
+    }
+
+    body.oshi-writer-mobile-ui .writer-original-character-bottom-actions > div {
+        display: grid !important;
+        grid-template-columns: 1fr !important;
+        gap: 10px !important;
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+
+    body.oshi-writer-mobile-ui .writer-original-character-bottom-actions a,
+    body.oshi-writer-mobile-ui .writer-original-character-bottom-actions button,
+    body.oshi-writer-mobile-ui .writer-original-character-bottom-actions form {
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+    }
+
+    body.oshi-writer-mobile-ui .writer-original-character-bottom-actions a,
+    body.oshi-writer-mobile-ui .writer-original-character-bottom-actions button {
+        display: flex !important;
+        min-height: 52px !important;
+        align-items: center !important;
+        justify-content: center !important;
+        border-radius: 999px !important;
+        font-weight: 900 !important;
+        text-align: center !important;
+    }
+}
+/* STEP6F_WRITER_CHARACTER_SHOW_BOTTOM_ACTIONS_END */
+
+
+/* STEP6H_WRITER_RELATIONSHIP_SHOW_BOTTOM_ACTIONS_START */
+.writer-relationship-top-actions-hidden {
+    display: none !important;
+}
+
+@media (max-width: 767.98px) {
+    body.oshi-writer-mobile-ui .writer-relationship-bottom-actions {
+        width: 100% !important;
+        max-width: 100% !important;
+        padding: 16px !important;
+        border-radius: 22px !important;
+        box-sizing: border-box !important;
+    }
+
+    body.oshi-writer-mobile-ui .writer-relationship-bottom-actions > div {
+        display: grid !important;
+        grid-template-columns: 1fr !important;
+        gap: 10px !important;
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+
+    body.oshi-writer-mobile-ui .writer-relationship-bottom-actions a,
+    body.oshi-writer-mobile-ui .writer-relationship-bottom-actions button,
+    body.oshi-writer-mobile-ui .writer-relationship-bottom-actions form {
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+    }
+
+    body.oshi-writer-mobile-ui .writer-relationship-bottom-actions a,
+    body.oshi-writer-mobile-ui .writer-relationship-bottom-actions button {
+        display: flex !important;
+        min-height: 52px !important;
+        align-items: center !important;
+        justify-content: center !important;
+        border-radius: 999px !important;
+        font-weight: 900 !important;
+        text-align: center !important;
+    }
+
+    body.oshi-writer-mobile-ui .writer-relationship-bottom-actions form:nth-child(2) button {
+        border: 1px solid #FEB2B2 !important;
+        background: #FFFFFF !important;
+        color: #E53E3E !important;
+    }
+}
+/* STEP6H_WRITER_RELATIONSHIP_SHOW_BOTTOM_ACTIONS_END */
+
+
+/* STEP6I_WRITER_PROMPT_CHECKBOX_UI_START */
+@media (max-width: 767.98px) {
+    /*
+     * writer/prompts/create・edit：
+     * チェックボックスを小さい正方形＋内容横並びに統一
+     */
+    body.oshi-writer-mobile-ui .writer-form-ui input[type="checkbox"],
+    body.oshi-writer-mobile-ui form input[type="checkbox"] {
+        appearance: auto !important;
+        -webkit-appearance: checkbox !important;
+        display: inline-block !important;
+        width: 16px !important;
+        min-width: 16px !important;
+        max-width: 16px !important;
+        height: 16px !important;
+        min-height: 16px !important;
+        max-height: 16px !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        border-radius: 4px !important;
+        vertical-align: middle !important;
+        flex: 0 0 16px !important;
+        box-sizing: border-box !important;
+    }
+
+    body.oshi-writer-mobile-ui .writer-form-ui label:has(input[type="checkbox"]),
+    body.oshi-writer-mobile-ui form label:has(input[type="checkbox"]) {
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: flex-start !important;
+        justify-content: flex-start !important;
+        gap: 10px !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        min-height: auto !important;
+        padding: 12px 14px !important;
+        border-radius: 16px !important;
+        box-sizing: border-box !important;
+        text-align: left !important;
+    }
+
+    body.oshi-writer-mobile-ui .writer-form-ui label:has(input[type="checkbox"]) > span,
+    body.oshi-writer-mobile-ui form label:has(input[type="checkbox"]) > span {
+        display: block !important;
+        min-width: 0 !important;
+        flex: 1 1 auto !important;
+        width: auto !important;
+        max-width: calc(100% - 26px) !important;
+        text-align: left !important;
+        line-height: 1.7 !important;
+        overflow-wrap: anywhere !important;
+        word-break: break-word !important;
+    }
+
+    /*
+     * カード型のキャラクター選択欄内も横並びに固定
+     */
+    body.oshi-writer-mobile-ui .writer-form-ui .rounded-2xl:has(input[type="checkbox"]),
+    body.oshi-writer-mobile-ui .writer-form-ui .rounded-3xl:has(input[type="checkbox"]) {
+        overflow-x: hidden !important;
+    }
+
+    body.oshi-writer-mobile-ui .writer-form-ui .rounded-2xl label:has(input[type="checkbox"]),
+    body.oshi-writer-mobile-ui .writer-form-ui .rounded-3xl label:has(input[type="checkbox"]) {
+        background: #FFFFFF !important;
+    }
+
+    /*
+     * チェックボックス付き説明ボックス
+     */
+    body.oshi-writer-mobile-ui .writer-form-ui div:has(> input[type="checkbox"]),
+    body.oshi-writer-mobile-ui .writer-form-ui p:has(> input[type="checkbox"]) {
+        display: flex !important;
+        align-items: flex-start !important;
+        gap: 10px !important;
+    }
+}
+
+/*
+ * PC側でも大きい横長チェックにならないよう共通補正
+ */
+.writer-form-ui input[type="checkbox"] {
+    appearance: auto !important;
+    -webkit-appearance: checkbox !important;
+    width: 16px !important;
+    min-width: 16px !important;
+    max-width: 16px !important;
+    height: 16px !important;
+    min-height: 16px !important;
+    max-height: 16px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border-radius: 4px !important;
+    flex: 0 0 16px !important;
+    box-sizing: border-box !important;
+}
+
+.writer-form-ui label:has(input[type="checkbox"]) {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: flex-start !important;
+    gap: 10px !important;
+    text-align: left !important;
+}
+
+.writer-form-ui label:has(input[type="checkbox"]) > span {
+    min-width: 0 !important;
+    flex: 1 1 auto !important;
+    text-align: left !important;
+    overflow-wrap: anywhere !important;
+    word-break: break-word !important;
+}
+/* STEP6I_WRITER_PROMPT_CHECKBOX_UI_END */
+
+
+/* STEP6K_WRITER_PROMPT_SHOW_BOTTOM_ACTIONS_START */
+.writer-prompt-top-actions-hidden {
+    display: none !important;
+}
+
+@media (max-width: 767.98px) {
+    body.oshi-writer-mobile-ui .writer-prompt-bottom-actions {
+        width: 100% !important;
+        max-width: 100% !important;
+        padding: 16px !important;
+        border-radius: 22px !important;
+        box-sizing: border-box !important;
+    }
+
+    body.oshi-writer-mobile-ui .writer-prompt-bottom-actions > div {
+        display: grid !important;
+        grid-template-columns: 1fr !important;
+        gap: 10px !important;
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+
+    body.oshi-writer-mobile-ui .writer-prompt-bottom-actions a,
+    body.oshi-writer-mobile-ui .writer-prompt-bottom-actions button,
+    body.oshi-writer-mobile-ui .writer-prompt-bottom-actions form {
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+    }
+
+    body.oshi-writer-mobile-ui .writer-prompt-bottom-actions a,
+    body.oshi-writer-mobile-ui .writer-prompt-bottom-actions button {
+        display: flex !important;
+        min-height: 52px !important;
+        align-items: center !important;
+        justify-content: center !important;
+        border-radius: 999px !important;
+        font-weight: 900 !important;
+        text-align: center !important;
+    }
+
+    body.oshi-writer-mobile-ui .writer-prompt-bottom-actions form:nth-child(2) button {
+        border: 1px solid #FEB2B2 !important;
+        background: #FFFFFF !important;
+        color: #E53E3E !important;
+    }
+}
+/* STEP6K_WRITER_PROMPT_SHOW_BOTTOM_ACTIONS_END */
+
