@@ -36,7 +36,13 @@
                         <a href="{{ route('admin.characters.csv-import.create') }}" class="oshi-btn oshi-btn-sub">CSV取り込み</a>
 
 
-                    @endif
+                    
+                        @if (auth()->user()?->canManageAllAdminFeatures())
+                            <a href="{{ route('admin.characters.csv-export', request()->query()) }}" class="oshi-btn oshi-btn-sub">
+                                CSVエクスポート
+                            </a>
+                        @endif
+@endif
 
                     <a href="{{ route('admin.characters.create') }}" class="oshi-btn">
                         キャラクター登録画面へ

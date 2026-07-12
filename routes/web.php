@@ -114,6 +114,9 @@ require __DIR__.'/auth.php';
 
 Route::middleware(['auth', 'admin.user', 'password.changed'])->prefix('admin')->name('admin.')->group(function () {
     
+    Route::get('characters/export/csv', \App\Http\Controllers\Admin\CharacterCsvExportController::class)
+        ->name('characters.csv-export');
+    
     Route::get('characters/import', [\App\Http\Controllers\Admin\CharacterTextImportController::class, 'create'])
         ->name('characters.import.create');
 
