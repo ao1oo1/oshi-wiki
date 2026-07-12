@@ -163,7 +163,7 @@
                             <thead>
                                 <tr class="border-b bg-gray-50">
                                     <th class="px-4 py-2 text-left">相手</th>
-                                    <th class="px-4 py-2 text-left">呼ばれ方</th>
+                                    <th class="px-4 py-2 text-left">呼び方</th>
                                     <th class="px-4 py-2 text-left">関係性</th>
                                     <th class="px-4 py-2 text-left">印象・気持ち等</th>
                                     <th class="px-4 py-2 text-left">操作</th>
@@ -215,7 +215,7 @@
                             <thead>
                                 <tr class="border-b bg-gray-50">
                                     <th class="px-4 py-2 text-left">相手</th>
-                                    <th class="px-4 py-2 text-left">このキャラクターの呼ばれ方</th>
+                                    <th class="px-4 py-2 text-left">このキャラクターの呼び方</th>
                                     <th class="px-4 py-2 text-left">関係性</th>
                                     <th class="px-4 py-2 text-left">印象・気持ち等</th>
                                     <th class="px-4 py-2 text-left">操作</th>
