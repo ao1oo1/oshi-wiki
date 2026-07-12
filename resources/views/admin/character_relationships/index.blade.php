@@ -34,7 +34,12 @@
                 <a href="{{ route('admin.character-relationships.create') }}" class="oshi-btn">
                     関係性登録画面へ
                 </a>
-            </div>
+                            @if (auth()->user()?->canManageAllAdminFeatures())
+                    <a href="{{ route('admin.character-relationships.csv-import.create') }}" class="oshi-btn oshi-btn-sub">
+                        CSV取り込み
+                    </a>
+                @endif
+</div>
 
             <form method="GET" action="{{ route('admin.character-relationships.index') }}" class="mb-6 flex flex-wrap items-end gap-3">
                 <div>

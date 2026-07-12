@@ -139,6 +139,15 @@ Route::middleware(['auth', 'admin.user', 'password.changed'])->prefix('admin')->
 
 Route::middleware(['auth', 'admin.user', 'password.changed'])->prefix('admin')->name('admin.')->group(function () {
     
+    Route::get('character-relationships/import/csv', [\App\Http\Controllers\Admin\CharacterRelationshipCsvImportController::class, 'create'])
+        ->name('character-relationships.csv-import.create');
+
+    Route::post('character-relationships/import/csv', [\App\Http\Controllers\Admin\CharacterRelationshipCsvImportController::class, 'store'])
+        ->name('character-relationships.csv-import.store');
+
+    Route::get('character-relationships/import/csv/sample', [\App\Http\Controllers\Admin\CharacterRelationshipCsvImportController::class, 'sample'])
+        ->name('character-relationships.csv-import.sample');
+
     Route::post('character-relationships/bulk-action', \App\Http\Controllers\Admin\CharacterRelationshipBulkActionController::class)
         ->name('character-relationships.bulk-action');
 
