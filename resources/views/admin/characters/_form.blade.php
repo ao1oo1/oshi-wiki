@@ -154,9 +154,9 @@
     <label class="mb-2 block font-medium">タグ</label>
 
     @if (($tags ?? collect())->count())
-        <div class="grid grid-cols-1 gap-2 rounded border border-gray-200 p-3 md:grid-cols-3">
+        <div class="oshi-character-create-tags grid grid-cols-1 gap-2 rounded border border-gray-200 p-3 md:grid-cols-3">
             @foreach ($tags as $tag)
-                <label class="flex items-center gap-2">
+                <label class="oshi-character-create-tag-option flex items-center gap-2">
                     <input
                         type="checkbox"
                         name="tag_ids[]"

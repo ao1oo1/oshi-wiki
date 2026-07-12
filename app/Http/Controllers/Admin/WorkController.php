@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Models\Tag;
+
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreWorkRequest;
 use App\Http\Requests\UpdateWorkRequest;
@@ -35,10 +37,14 @@ class WorkController extends Controller
         ]);
     }
 
-    public function create(): View
+    public function create()
     {
-        abort_unless(auth()->user()?->canManageAllAdminFeatures(), 403, '作品管理のこの操作は最高管理者のみ可能です。');
-        return view('admin.works.create');
+        $tags = Tag::query()
+            ->whereNull('deleted_at')
+            ->orderBy('name')
+            ->get();
+
+        return view('admin.works.create', compact('tags'));
     }
 
     public function store(StoreWorkRequest $request): RedirectResponse

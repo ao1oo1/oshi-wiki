@@ -1,3 +1,4 @@
+
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl">
@@ -12,6 +13,13 @@
 
         @include('admin.partials.flash')
 
+
+        @if (session('success'))
+            <div class="mb-4 rounded-2xl border border-green-200 bg-green-50 px-5 py-4 text-sm font-bold text-green-800">
+                {{ session('success') }}
+            </div>
+        @endif
+
         <div class="oshi-card">
             <div class="mb-6 flex flex-wrap items-center justify-between gap-3">
                 <div>
@@ -24,7 +32,7 @@
                 </div>
 
                 <a href="{{ route('admin.character-relationships.create') }}" class="oshi-btn">
-                    新規登録
+                    関係性登録画面へ
                 </a>
             </div>
 

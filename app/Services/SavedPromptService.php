@@ -173,7 +173,7 @@ class SavedPromptService
             $lines[] = $notes;
         }
 
-        return implode("\n", $lines);
+        return implode("", $lines);
     }
 
     private function labelFrom(array $labels, ?string $value, ?string $other): string
@@ -244,7 +244,7 @@ class SavedPromptService
             return $relationshipText;
         }
 
-        return trim($relationshipText . "\n\n【関係性年表】\n" . implode("\n", $timelineLines));
+        return trim($relationshipText . "【関係性年表】" . implode("", $timelineLines));
     }
 
     private function parseCharacterRefs(array $characterRefs): array

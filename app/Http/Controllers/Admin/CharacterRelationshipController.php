@@ -63,13 +63,13 @@ class CharacterRelationshipController extends Controller
 
         if ($returnToWorkId) {
             return redirect()
-                ->route('admin.works.show', $returnToWorkId)
-                ->with('success', 'キャラクター関係性を登録しました。');
+            ->route('admin.character-relationships.index')
+            ->with('success', '関係性を追加しました。');
         }
 
         return redirect()
             ->route('admin.character-relationships.index')
-            ->with('success', 'キャラクター関係性を登録しました。');
+            ->with('success', '関係性を追加しました。');
     }
 
     public function edit(CharacterRelationship $characterRelationship): View

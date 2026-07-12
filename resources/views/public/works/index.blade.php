@@ -20,17 +20,12 @@
         <section class="oshi-hero">
             <h1>
                 @if ($isHome ?? false)
-                    <span class="oshi-accent">推しの設定</span>、もう迷わない。
+                    <span class="block"><span class="oshi-accent">推しの設定、</span></span><span class="block">もう迷わない。</span>
                 @else
                     作品一覧
                 @endif
             </h1>
-
-            <p class="oshi-lead">
-                作品名・キャラクター名・タグ・説明文をまとめて検索できます。スペース区切りで AND 検索できます。
-            </p>
-
-            <form method="GET" action="{{ route('public.works.index') }}" class="oshi-search-box">
+<form method="GET" action="{{ route('public.works.index') }}" class="oshi-search-box">
                 <input
                     type="text"
                     name="keyword"
@@ -47,8 +42,9 @@
                     検索
                 </button>
             </form>
+                <p class="oshi-public-hero-search-note">作品名・キャラクター名・タグ・説明文をまとめて検索できます。スペース区切りでAND検索できます。</p>
 
-            @if (!empty($keyword) || !empty($selectedTagId))
+@if (!empty($keyword) || !empty($selectedTagId))
                 <div style="margin-top:16px;">
                     <a href="{{ route('public.works.index') }}" class="oshi-btn oshi-btn-sub">
                         検索条件を解除

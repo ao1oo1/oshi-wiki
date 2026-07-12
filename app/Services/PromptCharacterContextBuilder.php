@@ -65,7 +65,7 @@ class PromptCharacterContextBuilder
             $blocks[] = $this->formatOriginalCharacter($character);
         }
 
-        return implode("\n\n", array_filter($blocks));
+        return implode("", array_filter($blocks));
     }
 
     private function formatOriginalCharacter(OriginalCharacter $character): string
@@ -89,7 +89,7 @@ class PromptCharacterContextBuilder
         $this->appendIfFilled($lines, 'NG設定・避けたい表現', $character->ng_points);
         $this->appendIfFilled($lines, '備考', $character->notes);
 
-        return implode("\n", $lines);
+        return implode("", $lines);
     }
 
     private function appendIfFilled(array &$lines, string $label, mixed $value): void
@@ -135,9 +135,9 @@ class PromptCharacterContextBuilder
             $this->appendIfFilled($lines, '印象・気持ち', $relationship->impression);
             $this->appendIfFilled($lines, '備考', $relationship->notes);
 
-            $blocks[] = implode("\n", $lines);
+            $blocks[] = implode("", $lines);
         }
 
-        return implode("\n\n", array_filter($blocks));
+        return implode("", array_filter($blocks));
     }
 }

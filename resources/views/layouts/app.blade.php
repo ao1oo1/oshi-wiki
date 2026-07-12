@@ -13,6 +13,12 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="oshi-admin-body">
+        @auth
+            @if (request()->is('admin') || request()->is('admin/*'))
+                @include('admin.partials.mobile-navigation')
+            @endif
+        @endauth
+
     <div class="oshi-admin-layout">
         <aside class="oshi-admin-sidebar">
             <a class="oshi-brand" href="{{ route('public.works.index') }}">

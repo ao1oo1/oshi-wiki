@@ -54,7 +54,7 @@ class WorkCsvImportController extends Controller
                 '漫画',
                 'https://example.com',
                 'https://example.com/guideline',
-                "作品の概要です。\n世界観や注意事項を記載します。",
+                "作品の概要です。世界観や注意事項を記載します。",
                 'published',
             ],
             [

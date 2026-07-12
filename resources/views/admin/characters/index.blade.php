@@ -1,3 +1,4 @@
+
 <x-app-layout>
     @php
         $canUseCharacterImports = auth()->user()?->canManageAllAdminFeatures() ?? false;
@@ -38,7 +39,7 @@
                     @endif
 
                     <a href="{{ route('admin.characters.create') }}" class="oshi-btn">
-                        新規登録
+                        キャラクター登録画面へ
                     </a>
                 </div>
             </div>

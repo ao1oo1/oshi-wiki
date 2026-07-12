@@ -1,3 +1,4 @@
+
 <x-app-layout>
     @php
         $canManageTags = auth()->user()?->canManageAllAdminFeatures() ?? false;
@@ -25,8 +26,7 @@
 
                 <div class="flex flex-wrap gap-2">
                     @if ($canManageTags)
-
-                        <a href="{{ route('admin.tags.import.create') }}" class="oshi-btn oshi-btn-sub">テキスト取り込み</a>
+<a href="{{ route('admin.tags.import.create') }}" class="oshi-btn oshi-btn-sub">テキスト取り込み</a>
 
                     @endif
                     @if ($canManageTags)
@@ -37,10 +37,11 @@
                 </div>
             </div>
 
-            <form method="POST" action="{{ route('admin.tags.store') }}" class="mb-8 rounded bg-pink-50 p-4">
+            <form method="POST" action="{{ route('admin.tags.store') }}" class="mb-8 rounded bg-pink-50 p-4 oshi-u-index-create-form">
                 @csrf
 
-                <h2 class="mb-4 text-xl font-bold">
+                <div class="oshi-tag-index-create-section {{ request()->query('show_create') ? 'is-mobile-create-open' : '' }}">
+<h2 class="mb-4 text-xl font-bold">
                     タグを新規登録
                 </h2>
 
@@ -92,6 +93,7 @@
                     </button>
                 </div>
             </form>
+</div>
 
             @if ($canManageTags)
 

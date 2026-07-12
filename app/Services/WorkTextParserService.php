@@ -31,7 +31,7 @@ class WorkTextParserService
 
     public function parse(string $text): array
     {
-        $text = str_replace(["\r\n", "\r"], "\n", trim($text));
+        $text = str_replace(["\r", "\r"], "", trim($text));
         $text = preg_replace('/[ \t　]+/u', ' ', $text);
 
         $result = [
@@ -94,7 +94,7 @@ class WorkTextParserService
 
     private function extractHeading(string $text): ?string
     {
-        $lines = array_values(array_filter(array_map('trim', explode("\n", $text))));
+        $lines = array_values(array_filter(array_map('trim', explode("", $text))));
 
         foreach ($lines as $line) {
             if (preg_match('/^[■□●○★☆#]+[ \t　]*(.+)$/u', $line, $matches)) {
@@ -114,7 +114,7 @@ class WorkTextParserService
         }
 
         $value = preg_replace('/^[■□●○★☆#\s　]+/u', '', trim($value));
-        $value = preg_replace("/\n{3,}/", "\n\n", $value);
+        $value = preg_replace("/{3,}/", "", $value);
         $value = trim($value);
 
         return $value !== '' ? $value : null;

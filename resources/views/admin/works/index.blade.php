@@ -3,7 +3,7 @@
         $canManageWorks = auth()->user()?->canManageAllAdminFeatures() ?? false;
     @endphp
     <x-slot name="header">
-        <h2 class="font-semibold text-xl">
+<h2 class="font-semibold text-xl">
             作品管理
         </h2>
     </x-slot>
@@ -24,8 +24,7 @@
 
                 <div class="flex flex-wrap gap-2">
                     @if ($canManageWorks)
-
-                        <a href="{{ route('admin.works.import.create') }}" class="oshi-btn oshi-btn-sub">テキスト取り込み</a>
+<a href="{{ route('admin.works.import.create') }}" class="oshi-btn oshi-btn-sub">テキスト取り込み</a>
 
                     @endif
                     @if ($canManageWorks)
@@ -36,10 +35,11 @@
                 </div>
             </div>
 
-            <form method="POST" action="{{ route('admin.works.store') }}" class="mb-8 rounded bg-pink-50 p-4">
+            <form method="POST" action="{{ route('admin.works.store') }}" class="mb-8 rounded bg-pink-50 p-4 oshi-u-index-create-form">
                 @csrf
 
-                <h2 class="mb-4 text-xl font-bold">
+                <div class="oshi-work-index-create-section">
+<h2 class="mb-4 text-xl font-bold">
                     作品を新規登録
                 </h2>
 
@@ -102,6 +102,7 @@
                     </button>
                 </div>
             </form>
+</div>
 
             <form method="GET" action="{{ route('admin.works.index') }}" class="mb-6 flex flex-wrap items-end gap-3">
                 <div>

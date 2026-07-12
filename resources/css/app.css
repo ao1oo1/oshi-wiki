@@ -1213,3 +1213,3506 @@ header[role="banner"] {
         padding: 8px 12px !important;
     }
 }
+
+
+/* ==================================================
+   Step3 Public responsive header
+   ================================================== */
+.oshi-public-mobile-menu {
+    display: none;
+    position: relative;
+}
+
+.oshi-public-mobile-menu-button {
+    width: 44px;
+    height: 44px;
+    border: 1px solid #E2E8F0;
+    border-radius: 999px;
+    background: #FFFFFF;
+    display: inline-flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+    cursor: pointer;
+    list-style: none;
+}
+
+.oshi-public-mobile-menu-button::-webkit-details-marker {
+    display: none;
+}
+
+.oshi-public-mobile-menu-button span {
+    width: 18px;
+    height: 2px;
+    border-radius: 999px;
+    background: #2D3748;
+    display: block;
+}
+
+.oshi-public-mobile-menu-panel {
+    position: absolute;
+    right: 0;
+    top: calc(100% + 12px);
+    z-index: 50;
+    width: min(84vw, 320px);
+    padding: 12px;
+    border: 1px solid #E2E8F0;
+    border-radius: 18px;
+    background: #FFFFFF;
+    box-shadow: 0 18px 40px rgba(45, 55, 72, 0.14);
+}
+
+.oshi-public-mobile-menu-panel a {
+    display: block;
+    padding: 13px 14px;
+    border-radius: 12px;
+    color: #2D3748;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.oshi-public-mobile-menu-panel a:hover {
+    background: #FFF1F5;
+}
+
+@media (max-width: 1023px) {
+    .oshi-public-header-inner {
+        position: relative;
+        padding: 18px 22px !important;
+        gap: 16px !important;
+    }
+
+    .oshi-public-nav {
+        display: none !important;
+    }
+
+    .oshi-public-mobile-menu {
+        display: block;
+        margin-left: auto;
+    }
+
+    .oshi-public-logo img,
+    .oshi-brand-logo {
+        height: 64px !important;
+        max-width: 220px !important;
+        object-fit: contain;
+    }
+}
+
+@media (max-width: 640px) {
+    .oshi-public-header-inner {
+        padding: 14px 16px !important;
+    }
+
+    .oshi-public-logo img,
+    .oshi-brand-logo {
+        height: 52px !important;
+        max-width: 190px !important;
+    }
+
+    .oshi-public-mobile-menu-button {
+        width: 42px;
+        height: 42px;
+    }
+}
+
+
+/* ==================================================
+   Step3-B public header tune
+   ================================================== */
+@media (max-width: 1023px) {
+    .oshi-public-header {
+        padding-top: 0 !important;
+        padding-bottom: 0 !important;
+    }
+
+    .oshi-public-header-inner {
+        padding-top: 6px !important;
+        padding-bottom: 6px !important;
+        padding-left: 16px !important;
+        padding-right: 16px !important;
+        min-height: auto !important;
+        align-items: center !important;
+    }
+
+    .oshi-public-logo,
+    .oshi-public-logo img {
+        display: block !important;
+    }
+
+    .oshi-public-logo img,
+    .oshi-brand-logo {
+        height: 88px !important;
+        width: auto !important;
+        max-width: none !important;
+        object-fit: contain !important;
+    }
+
+    .oshi-public-mobile-menu {
+        margin-left: auto !important;
+    }
+
+    .oshi-public-mobile-menu-button {
+        width: 52px !important;
+        height: 52px !important;
+    }
+
+    .oshi-public-mobile-menu-button span {
+        width: 22px !important;
+    }
+}
+
+@media (max-width: 640px) {
+    .oshi-public-header {
+        padding-top: 0 !important;
+        padding-bottom: 0 !important;
+    }
+
+    .oshi-public-header-inner {
+        padding-top: 4px !important;
+        padding-bottom: 4px !important;
+        padding-left: 14px !important;
+        padding-right: 14px !important;
+    }
+
+    .oshi-public-logo img,
+    .oshi-brand-logo {
+        height: 76px !important;
+        width: auto !important;
+        max-width: none !important;
+    }
+
+    .oshi-public-mobile-menu-button {
+        width: 50px !important;
+        height: 50px !important;
+    }
+}
+
+
+/* ==================================================
+   Step3-C mobile public header final tune
+   ================================================== */
+@media (max-width: 1023px) {
+    .oshi-public-header {
+        padding: 0 !important;
+        margin: 0 !important;
+        background: #FFFFFF !important;
+    }
+
+    .oshi-public-header-inner {
+        display: flex !important;
+        flex-direction: row !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+        width: 100% !important;
+        max-width: none !important;
+        min-height: 112px !important;
+        gap: 16px !important;
+        padding: 8px 28px !important;
+        margin: 0 auto !important;
+    }
+
+    .oshi-public-logo {
+        display: flex !important;
+        align-items: center !important;
+        flex-shrink: 0 !important;
+    }
+
+    .oshi-public-logo img,
+    .oshi-brand-logo {
+        height: 104px !important;
+        width: auto !important;
+        max-width: 420px !important;
+        object-fit: contain !important;
+        display: block !important;
+    }
+
+    .oshi-public-nav {
+        display: none !important;
+    }
+
+    .oshi-public-mobile-menu {
+        display: block !important;
+        margin-left: auto !important;
+        flex-shrink: 0 !important;
+    }
+
+    .oshi-public-mobile-menu-button {
+        width: 64px !important;
+        height: 64px !important;
+        border-color: #E2E8F0 !important;
+        box-shadow: 0 2px 10px rgba(45, 55, 72, 0.06) !important;
+    }
+
+    .oshi-public-mobile-menu-button span {
+        width: 28px !important;
+        height: 3px !important;
+    }
+
+    .oshi-hero h1 {
+        line-height: 1.22 !important;
+    }
+}
+
+@media (max-width: 640px) {
+    .oshi-public-header-inner {
+        min-height: 96px !important;
+        padding: 6px 22px !important;
+    }
+
+    .oshi-public-logo img,
+    .oshi-brand-logo {
+        height: 86px !important;
+        max-width: 300px !important;
+    }
+
+    .oshi-public-mobile-menu-button {
+        width: 56px !important;
+        height: 56px !important;
+    }
+
+    .oshi-public-mobile-menu-button span {
+        width: 24px !important;
+        height: 2.5px !important;
+    }
+
+    .oshi-hero h1 {
+        line-height: 1.18 !important;
+    }
+}
+
+@media (max-width: 420px) {
+    .oshi-public-header-inner {
+        min-height: 86px !important;
+        padding: 4px 16px !important;
+    }
+
+    .oshi-public-logo img,
+    .oshi-brand-logo {
+        height: 76px !important;
+        max-width: 245px !important;
+    }
+
+    .oshi-public-mobile-menu-button {
+        width: 50px !important;
+        height: 50px !important;
+    }
+}
+
+
+/* ==================================================
+   Step3-D mobile logo bigger and hero copy gap
+   ================================================== */
+@media (max-width: 1023px) {
+    .oshi-public-header-inner {
+        min-height: 104px !important;
+        padding: 4px 28px !important;
+    }
+
+    .oshi-public-logo {
+        display: flex !important;
+        align-items: center !important;
+        flex: 1 1 auto !important;
+        min-width: 0 !important;
+    }
+
+    .oshi-public-logo img,
+    .oshi-brand-logo {
+        height: auto !important;
+        width: 300px !important;
+        max-width: 58vw !important;
+        object-fit: contain !important;
+    }
+
+    .oshi-public-mobile-menu {
+        flex: 0 0 auto !important;
+    }
+
+    .oshi-hero h1 {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        gap: 12px !important;
+        line-height: 1.12 !important;
+    }
+
+    .oshi-hero h1 .block {
+        display: block !important;
+    }
+}
+
+@media (max-width: 640px) {
+    .oshi-public-header-inner {
+        min-height: 96px !important;
+        padding: 4px 24px !important;
+    }
+
+    .oshi-public-logo img,
+    .oshi-brand-logo {
+        width: 260px !important;
+        max-width: 58vw !important;
+        height: auto !important;
+    }
+
+    .oshi-hero h1 {
+        gap: 10px !important;
+        line-height: 1.1 !important;
+    }
+}
+
+@media (max-width: 420px) {
+    .oshi-public-header-inner {
+        min-height: 88px !important;
+        padding: 3px 18px !important;
+    }
+
+    .oshi-public-logo img,
+    .oshi-brand-logo {
+        width: 230px !important;
+        max-width: 57vw !important;
+        height: auto !important;
+    }
+
+    .oshi-public-mobile-menu-button {
+        width: 50px !important;
+        height: 50px !important;
+    }
+
+    .oshi-hero h1 {
+        gap: 9px !important;
+    }
+}
+
+
+/* ==================================================
+   Step3-E mobile logo much bigger
+   ================================================== */
+@media (max-width: 1023px) {
+    .oshi-public-header-inner {
+        min-height: 112px !important;
+        padding: 4px 24px !important;
+    }
+
+    .oshi-public-logo {
+        flex: 1 1 auto !important;
+        min-width: 0 !important;
+    }
+
+    .oshi-public-logo img,
+    .oshi-brand-logo {
+        width: 420px !important;
+        max-width: 72vw !important;
+        height: auto !important;
+        max-height: 108px !important;
+        object-fit: contain !important;
+    }
+
+    .oshi-public-mobile-menu {
+        flex: 0 0 auto !important;
+        margin-left: 12px !important;
+    }
+}
+
+@media (max-width: 640px) {
+    .oshi-public-header-inner {
+        min-height: 104px !important;
+        padding: 4px 20px !important;
+    }
+
+    .oshi-public-logo img,
+    .oshi-brand-logo {
+        width: 360px !important;
+        max-width: 70vw !important;
+        height: auto !important;
+        max-height: 100px !important;
+    }
+
+    .oshi-public-mobile-menu-button {
+        width: 56px !important;
+        height: 56px !important;
+    }
+}
+
+@media (max-width: 420px) {
+    .oshi-public-header-inner {
+        min-height: 96px !important;
+        padding: 4px 16px !important;
+    }
+
+    .oshi-public-logo img,
+    .oshi-brand-logo {
+        width: 310px !important;
+        max-width: 68vw !important;
+        height: auto !important;
+        max-height: 92px !important;
+    }
+
+    .oshi-public-mobile-menu-button {
+        width: 52px !important;
+        height: 52px !important;
+    }
+}
+
+
+/* ==================================================
+   Step3-F mobile hero fine tuning
+   ================================================== */
+@media (max-width: 1023px) {
+    .oshi-public-header-inner {
+        min-height: 110px !important;
+        padding: 2px 22px !important;
+    }
+
+    .oshi-public-logo,
+    .oshi-public-logo-link {
+        display: flex !important;
+        align-items: center !important;
+        min-width: 0 !important;
+        flex: 1 1 auto !important;
+    }
+
+    .oshi-public-logo img,
+    .oshi-public-logo-link img,
+    .oshi-brand-logo,
+    .site-logo {
+        width: auto !important;
+        height: 64px !important;
+        max-width: none !important;
+        max-height: none !important;
+        object-fit: contain !important;
+    }
+
+    .oshi-public-mobile-menu {
+        flex: 0 0 auto !important;
+        margin-left: 12px !important;
+    }
+
+    .oshi-public-mobile-menu-button {
+        width: 60px !important;
+        height: 60px !important;
+    }
+
+    .oshi-hero-title-line {
+        display: block !important;
+        line-height: 1.2 !important;
+    }
+
+    .oshi-hero-title-line + .oshi-hero-title-line {
+        margin-top: 12px !important;
+    }
+
+    .oshi-public-hero-search-note {
+        margin-top: 14px !important;
+        font-size: 14px !important;
+        line-height: 1.9 !important;
+        color: #A0AEC0 !important;
+        text-align: center !important;
+    }
+}
+
+@media (max-width: 640px) {
+    .oshi-public-header-inner {
+        min-height: 100px !important;
+        padding: 2px 18px !important;
+    }
+
+    .oshi-public-logo img,
+    .oshi-public-logo-link img,
+    .oshi-brand-logo,
+    .site-logo {
+        height: 72px !important;
+    }
+
+    .oshi-public-mobile-menu-button {
+        width: 56px !important;
+        height: 56px !important;
+    }
+
+    .oshi-hero-title-line {
+        line-height: 1.24 !important;
+    }
+
+    .oshi-hero-title-line + .oshi-hero-title-line {
+        margin-top: 14px !important;
+    }
+
+    .oshi-public-hero-search-note {
+        font-size: 13px !important;
+        line-height: 1.85 !important;
+        margin-top: 12px !important;
+        padding: 0 8px !important;
+    }
+}
+
+@media (max-width: 420px) {
+    .oshi-public-header-inner {
+        min-height: 94px !important;
+        padding: 2px 14px !important;
+    }
+
+    .oshi-public-logo img,
+    .oshi-public-logo-link img,
+    .oshi-brand-logo,
+    .site-logo {
+        height: 76px !important;
+    }
+
+    .oshi-public-mobile-menu-button {
+        width: 52px !important;
+        height: 52px !important;
+    }
+
+    .oshi-hero-title-line + .oshi-hero-title-line {
+        margin-top: 16px !important;
+    }
+
+    .oshi-public-hero-search-note {
+        font-size: 12px !important;
+        line-height: 1.8 !important;
+    }
+}
+
+
+/* ==================================================
+   Step3-G mobile logo stronger scale and duplicate note fix
+   ================================================== */
+@media (max-width: 1023px) {
+    .oshi-public-header-inner {
+        min-height: 116px !important;
+        padding: 0 22px !important;
+        overflow: visible !important;
+    }
+
+    .oshi-public-logo {
+        flex: 1 1 auto !important;
+        min-width: 0 !important;
+        overflow: visible !important;
+        transform: scale(1.45) !important;
+        transform-origin: left center !important;
+        margin-left: 18px !important;
+    }
+
+    .oshi-public-logo img,
+    .oshi-public-logo-link img,
+    .oshi-brand-logo,
+    .site-logo {
+        width: 260px !important;
+        height: auto !important;
+        max-width: none !important;
+        max-height: none !important;
+        object-fit: contain !important;
+        display: block !important;
+    }
+
+    .oshi-public-mobile-menu {
+        flex: 0 0 auto !important;
+        margin-left: auto !important;
+        position: relative !important;
+        z-index: 5 !important;
+    }
+
+    .oshi-public-hero-search-note {
+        margin: 16px auto 0 !important;
+        max-width: 560px !important;
+        padding: 0 12px !important;
+        font-size: 13px !important;
+        line-height: 1.8 !important;
+        color: #A0AEC0 !important;
+        text-align: center !important;
+        font-weight: 700 !important;
+    }
+}
+
+@media (max-width: 640px) {
+    .oshi-public-header-inner {
+        min-height: 108px !important;
+        padding: 0 18px !important;
+    }
+
+    .oshi-public-logo {
+        transform: scale(1.55) !important;
+        margin-left: 18px !important;
+    }
+
+    .oshi-public-logo img,
+    .oshi-public-logo-link img,
+    .oshi-brand-logo,
+    .site-logo {
+        width: 230px !important;
+    }
+
+    .oshi-public-hero-search-note {
+        font-size: 12px !important;
+        line-height: 1.75 !important;
+        margin-top: 14px !important;
+    }
+}
+
+@media (max-width: 420px) {
+    .oshi-public-header-inner {
+        min-height: 104px !important;
+        padding: 0 14px !important;
+    }
+
+    .oshi-public-logo {
+        transform: scale(1.65) !important;
+        margin-left: 16px !important;
+    }
+
+    .oshi-public-logo img,
+    .oshi-public-logo-link img,
+    .oshi-brand-logo,
+    .site-logo {
+        width: 200px !important;
+    }
+
+    .oshi-public-mobile-menu-button {
+        width: 52px !important;
+        height: 52px !important;
+    }
+}
+
+
+/* STEP3I_MOBILE_TOP_SPACING_START */
+@media (max-width: 767.98px) {
+    .oshi-public-header {
+        padding-top: 14px !important;
+        padding-bottom: 14px !important;
+    }
+
+    .oshi-public-header-inner {
+        min-height: 116px !important;
+        padding-top: 14px !important;
+        padding-bottom: 14px !important;
+        padding-left: 22px !important;
+        padding-right: 22px !important;
+        align-items: center !important;
+    }
+
+    .oshi-public-header-brand,
+    .oshi-public-header-logo,
+    .oshi-public-header-logo-wrap {
+        display: flex !important;
+        align-items: center !important;
+    }
+
+    .oshi-public-header-brand img,
+    .oshi-public-header-logo img,
+    .oshi-public-header-logo-wrap img,
+    .oshi-site-logo img,
+    .site-logo img,
+    .public-logo img {
+        max-height: 72px !important;
+        width: auto !important;
+        object-fit: contain !important;
+    }
+
+    .oshi-public-header-brand {
+        gap: 10px !important;
+    }
+
+    .oshi-public-header-menu-button,
+    .oshi-public-menu-button,
+    .oshi-mobile-menu-button {
+        width: 84px !important;
+        height: 84px !important;
+        flex-shrink: 0 !important;
+    }
+
+    .oshi-public-hero,
+    .oshi-public-hero-section,
+    .oshi-public-works-hero {
+        padding-top: 56px !important;
+        padding-bottom: 56px !important;
+    }
+
+    .oshi-public-hero-inner,
+    .oshi-public-works-hero-inner {
+        max-width: 100% !important;
+        padding-left: 22px !important;
+        padding-right: 22px !important;
+    }
+
+    .oshi-public-hero-copy,
+    .oshi-public-works-hero-copy {
+        margin-bottom: 34px !important;
+    }
+
+    .oshi-public-hero-title,
+    .oshi-public-works-hero-title,
+    .oshi-public-hero h1 {
+        margin-top: 0 !important;
+        margin-bottom: 30px !important;
+        font-size: clamp(2.5rem, 8.6vw, 3.4rem) !important;
+        line-height: 1.3 !important;
+        letter-spacing: 0.01em !important;
+    }
+
+    .oshi-public-hero-title .line,
+    .oshi-public-works-hero-title .line {
+        display: block !important;
+    }
+
+    .oshi-public-hero-form,
+    .oshi-public-works-search,
+    .oshi-public-search-form,
+    .oshi-public-hero form {
+        margin-top: 12px !important;
+    }
+
+    .oshi-public-hero-form input[type="text"],
+    .oshi-public-search-form input[type="text"],
+    .oshi-public-hero input[type="text"],
+    .oshi-public-works-search input[type="text"] {
+        min-height: 82px !important;
+        padding-top: 20px !important;
+        padding-bottom: 20px !important;
+        padding-left: 26px !important;
+        padding-right: 26px !important;
+        font-size: 1rem !important;
+        margin-bottom: 18px !important;
+    }
+
+    .oshi-public-hero-form button,
+    .oshi-public-search-form button,
+    .oshi-public-hero button,
+    .oshi-public-works-search button {
+        min-height: 80px !important;
+        font-size: 1rem !important;
+        margin-top: 0 !important;
+    }
+
+    .oshi-public-hero-search-note {
+        margin-top: 24px !important;
+        margin-bottom: 0 !important;
+        padding-left: 14px !important;
+        padding-right: 14px !important;
+        font-size: 0.88rem !important;
+        line-height: 1.9 !important;
+        text-align: center !important;
+    }
+}
+/* STEP3I_MOBILE_TOP_SPACING_END */
+
+
+/* STEP3J_HERO_SECOND_LINE_MARGIN_START */
+@media (max-width: 767.98px) {
+    .oshi-hero-title-line + .oshi-hero-title-line,
+    .oshi-public-hero-title-line + .oshi-public-hero-title-line,
+    .oshi-hero h1 .block + .block {
+        margin-bottom: 30px !important;
+    }
+}
+/* STEP3J_HERO_SECOND_LINE_MARGIN_END */
+
+
+/* STEP3K_MOBILE_HEADER_VERTICAL_COMPACT_START */
+@media (max-width: 767.98px) {
+    .oshi-public-header {
+        padding-top: 0 !important;
+        padding-bottom: 0 !important;
+        margin-top: 0 !important;
+        margin-bottom: 0 !important;
+    }
+
+    .oshi-public-header-inner {
+        min-height: 76px !important;
+        padding-top: 0 !important;
+        padding-bottom: 0 !important;
+        padding-left: 20px !important;
+        padding-right: 20px !important;
+        align-items: center !important;
+    }
+
+    .oshi-public-logo {
+        margin-top: 0 !important;
+        margin-bottom: 0 !important;
+    }
+
+    .oshi-public-logo img,
+    .oshi-public-logo-link img,
+    .oshi-brand-logo,
+    .site-logo {
+        max-height: 72px !important;
+    }
+
+    .oshi-public-mobile-menu,
+    .oshi-public-mobile-menu-button {
+        margin-top: 0 !important;
+        margin-bottom: 0 !important;
+    }
+}
+
+@media (max-width: 420px) {
+    .oshi-public-header-inner {
+        min-height: 70px !important;
+        padding-top: 0 !important;
+        padding-bottom: 0 !important;
+        padding-left: 16px !important;
+        padding-right: 16px !important;
+    }
+
+    .oshi-public-logo img,
+    .oshi-public-logo-link img,
+    .oshi-brand-logo,
+    .site-logo {
+        max-height: 66px !important;
+    }
+
+    .oshi-public-mobile-menu-button {
+        width: 50px !important;
+        height: 50px !important;
+    }
+}
+/* STEP3K_MOBILE_HEADER_VERTICAL_COMPACT_END */
+
+
+/* STEP4_ADMIN_MOBILE_NAV_START */
+.oshi-admin-mobile-header {
+    display: none;
+}
+
+@media (max-width: 1023px) {
+    .oshi-admin-mobile-header {
+        position: sticky;
+        top: 0;
+        z-index: 80;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        min-height: 64px;
+        padding: 10px 16px;
+        border-bottom: 1px solid #E2E8F0;
+        background: #FFFFFF;
+    }
+
+    .oshi-admin-mobile-brand {
+        color: #2D3748;
+        font-size: 16px;
+        font-weight: 800;
+        text-decoration: none;
+    }
+
+    .oshi-admin-mobile-menu {
+        position: relative;
+        flex: 0 0 auto;
+    }
+
+    .oshi-admin-mobile-menu-button {
+        width: 46px;
+        height: 46px;
+        border: 1px solid #E2E8F0;
+        border-radius: 999px;
+        background: #FFFFFF;
+        display: inline-flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+        cursor: pointer;
+        list-style: none;
+        box-shadow: 0 4px 14px rgba(45, 55, 72, 0.08);
+    }
+
+    .oshi-admin-mobile-menu-button::-webkit-details-marker {
+        display: none;
+    }
+
+    .oshi-admin-mobile-menu-button span {
+        display: block;
+        width: 20px;
+        height: 2px;
+        border-radius: 999px;
+        background: #2D3748;
+    }
+
+    .oshi-admin-mobile-menu-panel {
+        position: absolute;
+        right: 0;
+        top: calc(100% + 10px);
+        z-index: 90;
+        width: min(86vw, 340px);
+        max-height: calc(100vh - 86px);
+        overflow-y: auto;
+        padding: 12px;
+        border: 1px solid #E2E8F0;
+        border-radius: 18px;
+        background: #FFFFFF;
+        box-shadow: 0 18px 44px rgba(45, 55, 72, 0.16);
+    }
+
+    .oshi-admin-mobile-menu-panel a,
+    .oshi-admin-mobile-menu-panel button {
+        display: block;
+        width: 100%;
+        padding: 13px 14px;
+        border-radius: 12px;
+        color: #2D3748;
+        background: transparent;
+        text-align: left;
+        font-size: 14px;
+        font-weight: 700;
+        text-decoration: none;
+    }
+
+    .oshi-admin-mobile-menu-panel a:hover,
+    .oshi-admin-mobile-menu-panel button:hover {
+        background: #FFF1F5;
+    }
+
+    .oshi-admin-layout {
+        display: block !important;
+        min-height: auto !important;
+    }
+
+    .oshi-admin-sidebar {
+        display: none !important;
+    }
+
+    .oshi-admin-main {
+        max-width: none !important;
+        width: 100% !important;
+        padding: 18px 14px 40px !important;
+    }
+
+    .oshi-admin-title {
+        margin-bottom: 18px !important;
+        font-size: 1.25rem !important;
+    }
+
+    .oshi-stat-grid {
+        grid-template-columns: 1fr !important;
+        gap: 12px !important;
+    }
+}
+
+@media (min-width: 1024px) {
+    .oshi-admin-mobile-header {
+        display: none !important;
+    }
+}
+/* STEP4_ADMIN_MOBILE_NAV_END */
+
+
+/* STEP3L_PC_TABLET_HERO_TITLE_ONE_LINE_START */
+/* PC・タブレットではキャッチコピーを1行表示 */
+@media (min-width: 768px) {
+    .oshi-hero h1 {
+        display: block !important;
+        line-height: 1.25 !important;
+    }
+
+    .oshi-hero-title-line,
+    .oshi-public-hero-title-line,
+    .oshi-hero h1 .block {
+        display: inline !important;
+        margin-top: 0 !important;
+        margin-bottom: 0 !important;
+    }
+
+    .oshi-hero-title-line + .oshi-hero-title-line,
+    .oshi-public-hero-title-line + .oshi-public-hero-title-line,
+    .oshi-hero h1 .block + .block {
+        margin-top: 0 !important;
+        margin-bottom: 0 !important;
+    }
+}
+
+/* スマホでは2行表示を維持 */
+@media (max-width: 767.98px) {
+    .oshi-hero h1 {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+    }
+
+    .oshi-hero-title-line,
+    .oshi-public-hero-title-line,
+    .oshi-hero h1 .block {
+        display: block !important;
+    }
+
+    .oshi-hero-title-line + .oshi-hero-title-line,
+    .oshi-public-hero-title-line + .oshi-public-hero-title-line,
+    .oshi-hero h1 .block + .block {
+        margin-top: 16px !important;
+        margin-bottom: 30px !important;
+    }
+}
+/* STEP3L_PC_TABLET_HERO_TITLE_ONE_LINE_END */
+
+
+/* STEP3M_HERO_TITLE_BOTTOM_MARGIN_START */
+/* キャッチコピー下の余白 */
+.oshi-hero h1 {
+    margin-bottom: 34px !important;
+}
+
+@media (min-width: 768px) {
+    .oshi-hero h1 {
+        margin-bottom: 36px !important;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .oshi-hero h1 {
+        margin-bottom: 34px !important;
+    }
+
+    .oshi-hero-title-line + .oshi-hero-title-line,
+    .oshi-public-hero-title-line + .oshi-public-hero-title-line,
+    .oshi-hero h1 .block + .block {
+        margin-bottom: 34px !important;
+    }
+}
+/* STEP3M_HERO_TITLE_BOTTOM_MARGIN_END */
+
+
+/* STEP3N_PC_HEADER_VERTICAL_COMPACT_START */
+/* PCヘッダー上下余白を削る */
+@media (min-width: 1024px) {
+    .oshi-public-header {
+        padding-top: 0 !important;
+        padding-bottom: 0 !important;
+    }
+
+    .oshi-public-header-inner {
+        padding-top: 10px !important;
+        padding-bottom: 10px !important;
+        min-height: auto !important;
+        align-items: center !important;
+    }
+
+    .oshi-public-logo img,
+    .oshi-brand-logo {
+        height: 86px !important;
+        width: auto !important;
+        max-width: none !important;
+    }
+
+    .oshi-public-nav a {
+        min-height: 42px !important;
+        padding-top: 9px !important;
+        padding-bottom: 9px !important;
+    }
+}
+/* STEP3N_PC_HEADER_VERTICAL_COMPACT_END */
+
+
+/* STEP4_ADMIN_RESPONSIVE_START */
+.oshi-admin-mobile-header {
+    display: none;
+}
+
+/* タブレット縦・スマホ */
+@media (max-width: 1023px) {
+    .oshi-admin-mobile-header {
+        position: sticky;
+        top: 0;
+        z-index: 90;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        min-height: 64px;
+        padding: 10px 16px;
+        border-bottom: 1px solid #E2E8F0;
+        background: #FFFFFF;
+        box-shadow: 0 4px 18px rgba(45, 55, 72, 0.06);
+    }
+
+    .oshi-admin-mobile-brand {
+        color: #2D3748;
+        font-size: 16px;
+        font-weight: 800;
+        text-decoration: none;
+        letter-spacing: 0.02em;
+    }
+
+    .oshi-admin-mobile-menu {
+        position: relative;
+        flex: 0 0 auto;
+    }
+
+    .oshi-admin-mobile-menu-button {
+        width: 46px;
+        height: 46px;
+        border: 1px solid #E2E8F0;
+        border-radius: 999px;
+        background: #FFFFFF;
+        display: inline-flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+        cursor: pointer;
+        list-style: none;
+        box-shadow: 0 4px 14px rgba(45, 55, 72, 0.08);
+    }
+
+    .oshi-admin-mobile-menu-button::-webkit-details-marker {
+        display: none;
+    }
+
+    .oshi-admin-mobile-menu-button span {
+        display: block;
+        width: 20px;
+        height: 2px;
+        border-radius: 999px;
+        background: #2D3748;
+    }
+
+    .oshi-admin-mobile-menu-panel {
+        position: absolute;
+        right: 0;
+        top: calc(100% + 10px);
+        z-index: 100;
+        width: min(86vw, 340px);
+        max-height: calc(100vh - 86px);
+        overflow-y: auto;
+        padding: 12px;
+        border: 1px solid #E2E8F0;
+        border-radius: 18px;
+        background: #FFFFFF;
+        box-shadow: 0 18px 44px rgba(45, 55, 72, 0.16);
+    }
+
+    .oshi-admin-mobile-menu-panel a,
+    .oshi-admin-mobile-menu-panel button {
+        display: block;
+        width: 100%;
+        padding: 13px 14px;
+        border-radius: 12px;
+        color: #2D3748;
+        background: transparent;
+        text-align: left;
+        font-size: 14px;
+        font-weight: 700;
+        text-decoration: none;
+    }
+
+    .oshi-admin-mobile-menu-panel a:hover,
+    .oshi-admin-mobile-menu-panel button:hover {
+        background: #FFF1F5;
+    }
+
+    .oshi-admin-layout {
+        display: block !important;
+        min-height: auto !important;
+    }
+
+    .oshi-admin-sidebar {
+        display: none !important;
+    }
+
+    .oshi-admin-main {
+        max-width: none !important;
+        width: 100% !important;
+        padding: 20px 14px 44px !important;
+    }
+
+    .oshi-admin-title {
+        margin-bottom: 18px !important;
+        font-size: 1.25rem !important;
+        line-height: 1.45 !important;
+    }
+
+    .oshi-stat-grid {
+        grid-template-columns: 1fr !important;
+        gap: 12px !important;
+        margin-bottom: 24px !important;
+    }
+
+    .oshi-stat {
+        padding: 16px 18px !important;
+    }
+
+    .oshi-card {
+        padding: 18px !important;
+        border-radius: 18px !important;
+    }
+
+    .oshi-table-wrap {
+        width: 100% !important;
+        overflow-x: auto !important;
+        border-radius: 18px !important;
+    }
+
+    .oshi-table {
+        min-width: 720px;
+    }
+
+    .oshi-admin-main .flex,
+    .oshi-admin-main .inline-flex {
+        flex-wrap: wrap;
+    }
+
+    .oshi-admin-main input[type="text"],
+    .oshi-admin-main input[type="email"],
+    .oshi-admin-main input[type="password"],
+    .oshi-admin-main input[type="url"],
+    .oshi-admin-main select,
+    .oshi-admin-main textarea {
+        width: 100%;
+        max-width: 100%;
+    }
+
+    .oshi-admin-main .oshi-btn,
+    .oshi-admin-main button,
+    .oshi-admin-main input[type="submit"] {
+        min-height: 42px;
+    }
+}
+
+/* スマホ小さめ */
+@media (max-width: 640px) {
+    .oshi-admin-mobile-header {
+        min-height: 60px;
+        padding: 8px 14px;
+    }
+
+    .oshi-admin-mobile-brand {
+        font-size: 15px;
+    }
+
+    .oshi-admin-mobile-menu-button {
+        width: 44px;
+        height: 44px;
+    }
+
+    .oshi-admin-main {
+        padding: 18px 12px 40px !important;
+    }
+
+    .oshi-admin-title {
+        font-size: 1.18rem !important;
+    }
+
+    .oshi-card {
+        padding: 16px !important;
+    }
+}
+
+@media (min-width: 1024px) {
+    .oshi-admin-mobile-header {
+        display: none !important;
+    }
+}
+/* STEP4_ADMIN_RESPONSIVE_END */
+
+
+/* STEP4B_ADMIN_MOBILE_OVERFLOW_FIX_START */
+@media (max-width: 1023px) {
+    html,
+    body {
+        max-width: 100%;
+        overflow-x: hidden !important;
+    }
+
+    .oshi-admin-body,
+    .oshi-admin-layout,
+    .oshi-admin-main {
+        width: 100% !important;
+        max-width: 100% !important;
+        overflow-x: hidden !important;
+        box-sizing: border-box !important;
+    }
+
+    .oshi-admin-mobile-header {
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+        padding-left: 14px !important;
+        padding-right: 14px !important;
+        overflow: visible !important;
+    }
+
+    .oshi-admin-mobile-brand {
+        min-width: 0 !important;
+        flex: 1 1 auto !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        white-space: nowrap !important;
+    }
+
+    .oshi-admin-mobile-menu {
+        flex: 0 0 auto !important;
+        margin-left: 8px !important;
+        position: relative !important;
+    }
+
+    .oshi-admin-mobile-menu-button {
+        width: 44px !important;
+        height: 44px !important;
+        min-width: 44px !important;
+    }
+
+    .oshi-admin-mobile-menu-panel {
+        right: 0 !important;
+        width: min(82vw, 320px) !important;
+        max-width: calc(100vw - 28px) !important;
+        box-sizing: border-box !important;
+    }
+
+    .oshi-admin-main {
+        padding-left: 12px !important;
+        padding-right: 12px !important;
+    }
+
+    .oshi-admin-main > *,
+    .oshi-card,
+    .oshi-form-card,
+    .oshi-table-wrap,
+    .rounded.bg-white,
+    .bg-white.shadow,
+    .rounded.bg-white.p-6,
+    .rounded.bg-white.p-8 {
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+    }
+
+    .oshi-card,
+    .oshi-form-card {
+        width: 100% !important;
+        overflow: hidden !important;
+    }
+
+    .oshi-admin-main .flex {
+        max-width: 100% !important;
+    }
+
+    .oshi-admin-main input,
+    .oshi-admin-main select,
+    .oshi-admin-main textarea {
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+    }
+}
+
+@media (max-width: 640px) {
+    .oshi-admin-mobile-header {
+        padding-left: 12px !important;
+        padding-right: 12px !important;
+    }
+
+    .oshi-admin-mobile-menu-button {
+        width: 42px !important;
+        height: 42px !important;
+        min-width: 42px !important;
+    }
+
+    .oshi-admin-main {
+        padding-left: 10px !important;
+        padding-right: 10px !important;
+    }
+
+    .oshi-card,
+    .oshi-form-card,
+    .rounded.bg-white,
+    .bg-white.shadow,
+    .rounded.bg-white.p-6,
+    .rounded.bg-white.p-8 {
+        padding-left: 14px !important;
+        padding-right: 14px !important;
+    }
+}
+/* STEP4B_ADMIN_MOBILE_OVERFLOW_FIX_END */
+
+
+/* STEP4C_ADMIN_IPHONE_WIDTH_TUNE_START */
+@media (max-width: 767.98px) {
+    html,
+    body {
+        width: 100% !important;
+        max-width: 100% !important;
+        overflow-x: hidden !important;
+    }
+
+    .oshi-admin-body {
+        width: 100% !important;
+        max-width: 100vw !important;
+        overflow-x: hidden !important;
+    }
+
+    .oshi-admin-layout {
+        display: block !important;
+        width: 100% !important;
+        max-width: 100vw !important;
+        overflow-x: hidden !important;
+        box-sizing: border-box !important;
+    }
+
+    .oshi-admin-mobile-header {
+        left: 0 !important;
+        right: 0 !important;
+        width: 100% !important;
+        max-width: 100vw !important;
+        box-sizing: border-box !important;
+        padding-left: 14px !important;
+        padding-right: 14px !important;
+        overflow: visible !important;
+    }
+
+    .oshi-admin-mobile-brand {
+        flex: 1 1 auto !important;
+        min-width: 0 !important;
+        max-width: calc(100vw - 86px) !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        white-space: nowrap !important;
+    }
+
+    .oshi-admin-mobile-menu {
+        flex: 0 0 44px !important;
+        width: 44px !important;
+        min-width: 44px !important;
+        margin-left: 8px !important;
+        position: relative !important;
+    }
+
+    .oshi-admin-mobile-menu-button {
+        width: 44px !important;
+        height: 44px !important;
+        min-width: 44px !important;
+    }
+
+    .oshi-admin-main {
+        width: 100% !important;
+        max-width: 100vw !important;
+        padding-left: 14px !important;
+        padding-right: 14px !important;
+        box-sizing: border-box !important;
+        overflow-x: hidden !important;
+    }
+
+    .oshi-admin-main > * {
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+    }
+
+    .oshi-card,
+    .oshi-form-card,
+    .oshi-table-wrap,
+    .rounded.bg-white,
+    .bg-white.shadow,
+    .rounded.bg-white.p-6,
+    .rounded.bg-white.p-8 {
+        width: 100% !important;
+        max-width: calc(100vw - 28px) !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+        box-sizing: border-box !important;
+        overflow: hidden !important;
+    }
+
+    .oshi-card .flex,
+    .oshi-form-card .flex,
+    .oshi-admin-main .flex {
+        flex-wrap: wrap !important;
+    }
+
+    .oshi-admin-main a,
+    .oshi-admin-main button {
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+    }
+
+    .oshi-admin-main input,
+    .oshi-admin-main select,
+    .oshi-admin-main textarea {
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+    }
+
+    .oshi-admin-mobile-menu-panel {
+        right: 0 !important;
+        width: min(82vw, 320px) !important;
+        max-width: calc(100vw - 28px) !important;
+        box-sizing: border-box !important;
+    }
+}
+
+/* iPhone 14 Pro / 15 / 16 系の 430px 前後で右切れを防ぐ */
+@media (min-width: 391px) and (max-width: 480px) {
+    .oshi-admin-mobile-header {
+        padding-left: 12px !important;
+        padding-right: 12px !important;
+    }
+
+    .oshi-admin-main {
+        padding-left: 12px !important;
+        padding-right: 12px !important;
+    }
+
+    .oshi-card,
+    .oshi-form-card,
+    .oshi-table-wrap,
+    .rounded.bg-white,
+    .bg-white.shadow,
+    .rounded.bg-white.p-6,
+    .rounded.bg-white.p-8 {
+        max-width: calc(100vw - 24px) !important;
+    }
+
+    .oshi-admin-mobile-brand {
+        max-width: calc(100vw - 82px) !important;
+    }
+}
+
+/* iPhone 12 Pro / 13 mini などの 390px 以下 */
+@media (max-width: 390px) {
+    .oshi-admin-mobile-header {
+        padding-left: 10px !important;
+        padding-right: 10px !important;
+    }
+
+    .oshi-admin-main {
+        padding-left: 10px !important;
+        padding-right: 10px !important;
+    }
+
+    .oshi-card,
+    .oshi-form-card,
+    .oshi-table-wrap,
+    .rounded.bg-white,
+    .bg-white.shadow,
+    .rounded.bg-white.p-6,
+    .rounded.bg-white.p-8 {
+        max-width: calc(100vw - 20px) !important;
+    }
+
+    .oshi-admin-mobile-brand {
+        max-width: calc(100vw - 78px) !important;
+        font-size: 14px !important;
+    }
+
+    .oshi-admin-mobile-menu,
+    .oshi-admin-mobile-menu-button {
+        width: 42px !important;
+        min-width: 42px !important;
+        height: 42px !important;
+        flex-basis: 42px !important;
+    }
+}
+/* STEP4C_ADMIN_IPHONE_WIDTH_TUNE_END */
+
+
+
+
+
+/* STEP5B_CREATE_TAG_CHECKBOX_FIX_START */
+@media (max-width: 767.98px) {
+    body.oshi-u-mobile-create-page .oshi-work-create-tags,
+    body.oshi-u-mobile-create-page .oshi-character-create-tags {
+        display: grid !important;
+        grid-template-columns: 1fr !important;
+        gap: 10px !important;
+        width: 100% !important;
+        padding: 0 !important;
+        border: none !important;
+        background: transparent !important;
+    }
+
+    body.oshi-u-mobile-create-page .oshi-work-create-tag-option,
+    body.oshi-u-mobile-create-page .oshi-character-create-tag-option,
+    body.oshi-u-mobile-create-page .oshi-work-create-tags label,
+    body.oshi-u-mobile-create-page .oshi-character-create-tags label {
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        justify-content: flex-start !important;
+        gap: 10px !important;
+        width: 100% !important;
+        min-height: 46px !important;
+        padding: 10px 12px !important;
+        border: 1px solid #E2E8F0 !important;
+        border-radius: 14px !important;
+        background: #FFFFFF !important;
+        color: #2D3748 !important;
+        font-size: 14px !important;
+        font-weight: 800 !important;
+        line-height: 1.5 !important;
+        box-sizing: border-box !important;
+        text-align: left !important;
+    }
+
+    body.oshi-u-mobile-create-page .oshi-work-create-tag-option input[type="checkbox"],
+    body.oshi-u-mobile-create-page .oshi-character-create-tag-option input[type="checkbox"],
+    body.oshi-u-mobile-create-page .oshi-work-create-tags input[type="checkbox"],
+    body.oshi-u-mobile-create-page .oshi-character-create-tags input[type="checkbox"] {
+        appearance: auto !important;
+        -webkit-appearance: checkbox !important;
+        display: inline-block !important;
+        width: 18px !important;
+        min-width: 18px !important;
+        max-width: 18px !important;
+        height: 18px !important;
+        min-height: 18px !important;
+        max-height: 18px !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        border-radius: 3px !important;
+        flex: 0 0 18px !important;
+        box-sizing: border-box !important;
+        transform: none !important;
+    }
+
+    body.oshi-u-mobile-create-page .oshi-work-create-tag-option span,
+    body.oshi-u-mobile-create-page .oshi-character-create-tag-option span,
+    body.oshi-u-mobile-create-page .oshi-work-create-tags label span,
+    body.oshi-u-mobile-create-page .oshi-character-create-tags label span {
+        display: inline !important;
+        width: auto !important;
+        min-width: 0 !important;
+        color: #2D3748 !important;
+        font-size: 14px !important;
+        font-weight: 800 !important;
+        line-height: 1.5 !important;
+    }
+}
+/* STEP5B_CREATE_TAG_CHECKBOX_FIX_END */
+
+
+/* STEP5A_ADMIN_MOBILE_UI_CSS_START */
+@media (max-width: 767.98px) {
+    body.oshi-u-mobile-index-page .oshi-u-upper-title-hidden,
+    body.oshi-u-mobile-index-page .oshi-u-old-menu-link-hidden,
+    body.oshi-u-mobile-index-page .oshi-u-old-menu-block-hidden,
+    body.oshi-u-mobile-index-page .oshi-u-index-create-form-hidden,
+    body.oshi-u-mobile-create-page .oshi-u-old-menu-link-hidden,
+    body.oshi-u-mobile-create-page .oshi-u-old-menu-block-hidden,
+    body.oshi-u-mobile-create-page .oshi-u-create-link-hidden {
+        display: none !important;
+    }
+
+    body.oshi-u-mobile-index-page .oshi-table-wrap.oshi-u-table-source,
+    body.oshi-u-mobile-index-page table.oshi-u-table-source {
+        display: none !important;
+    }
+
+    .oshi-u-mobile-create-link {
+        display: block !important;
+        width: 100% !important;
+        margin: 0 0 16px !important;
+    }
+
+    .oshi-u-mobile-create-button {
+        display: flex !important;
+        width: 100% !important;
+        min-height: 52px !important;
+        justify-content: center !important;
+        align-items: center !important;
+        padding: 12px 18px !important;
+        border-radius: 999px !important;
+        background: #FED7E2 !important;
+        color: #2D3748 !important;
+        font-size: 15px !important;
+        font-weight: 900 !important;
+        text-align: center !important;
+        text-decoration: none !important;
+        box-sizing: border-box !important;
+        box-shadow: 0 8px 22px rgba(45, 55, 72, 0.08) !important;
+    }
+
+    .oshi-u-card-list {
+        display: grid !important;
+        gap: 14px !important;
+        width: 100% !important;
+        margin-top: 16px !important;
+    }
+
+    .oshi-u-card {
+        width: 100% !important;
+        padding: 16px !important;
+        border: 1px solid #E2E8F0 !important;
+        border-radius: 20px !important;
+        background: #FFFFFF !important;
+        box-shadow: 0 8px 24px rgba(45, 55, 72, 0.07) !important;
+        box-sizing: border-box !important;
+        overflow: hidden !important;
+    }
+
+    .oshi-u-card-row {
+        display: grid !important;
+        grid-template-columns: 104px minmax(0, 1fr) !important;
+        gap: 12px !important;
+        align-items: center !important;
+        padding: 11px 0 !important;
+        border-bottom: 1px dashed #E2E8F0 !important;
+    }
+
+    .oshi-u-card-row:last-child {
+        border-bottom: none !important;
+        padding-bottom: 0 !important;
+    }
+
+    .oshi-u-card-label {
+        color: #718096 !important;
+        font-size: 12px !important;
+        font-weight: 800 !important;
+        line-height: 1.6 !important;
+    }
+
+    .oshi-u-card-value {
+        min-width: 0 !important;
+        color: #2D3748 !important;
+        font-size: 14px !important;
+        font-weight: 700 !important;
+        line-height: 1.7 !important;
+        overflow-wrap: anywhere !important;
+        word-break: break-word !important;
+    }
+
+    .oshi-u-card-row.is-select input[type="checkbox"] {
+        width: 20px !important;
+        height: 20px !important;
+        margin: 0 !important;
+    }
+
+    .oshi-u-card-row.is-status .oshi-u-card-value,
+    .oshi-u-card-row.is-actions .oshi-u-card-value {
+        width: 100% !important;
+    }
+
+    .oshi-u-status-pill {
+        display: flex !important;
+        width: 100% !important;
+        min-height: 42px !important;
+        justify-content: center !important;
+        align-items: center !important;
+        padding: 10px 14px !important;
+        border-radius: 999px !important;
+        font-size: 13px !important;
+        font-weight: 800 !important;
+        line-height: 1.2 !important;
+        text-align: center !important;
+        box-sizing: border-box !important;
+    }
+
+    .oshi-u-status-pill.is-public {
+        background: #D9FBE5 !important;
+        color: #047857 !important;
+    }
+
+    .oshi-u-status-pill.is-private {
+        background: #FEE2E2 !important;
+        color: #B91C1C !important;
+    }
+
+    .oshi-u-status-pill.is-draft,
+    .oshi-u-status-pill.is-unknown {
+        background: #EDF2F7 !important;
+        color: #2D3748 !important;
+    }
+
+    .oshi-u-card-actions {
+        display: grid !important;
+        grid-template-columns: 1fr !important;
+        gap: 10px !important;
+        width: 100% !important;
+    }
+
+    .oshi-u-card-action-item,
+    .oshi-u-card-action-item > div {
+        width: 100% !important;
+    }
+
+    .oshi-u-card-actions a,
+    .oshi-u-card-actions button,
+    .oshi-u-card-actions .oshi-btn {
+        display: flex !important;
+        width: 100% !important;
+        min-height: 42px !important;
+        justify-content: center !important;
+        align-items: center !important;
+        padding: 10px 14px !important;
+        border-radius: 999px !important;
+        font-size: 13px !important;
+        font-weight: 800 !important;
+        line-height: 1.2 !important;
+        text-align: center !important;
+        box-sizing: border-box !important;
+    }
+
+    body.oshi-u-mobile-create-page .oshi-admin-main {
+        padding-left: 14px !important;
+        padding-right: 14px !important;
+        padding-bottom: 44px !important;
+    }
+
+    body.oshi-u-mobile-create-page .oshi-admin-title,
+    body.oshi-u-mobile-create-page h1 {
+        margin-bottom: 18px !important;
+        color: #2D3748 !important;
+        font-size: 1.45rem !important;
+        font-weight: 900 !important;
+        line-height: 1.45 !important;
+    }
+
+    body.oshi-u-mobile-create-page .oshi-u-create-card {
+        width: 100% !important;
+        max-width: 100% !important;
+        padding: 24px 18px !important;
+        border: none !important;
+        border-radius: 0 !important;
+        background: #FFF5FA !important;
+        box-shadow: none !important;
+        box-sizing: border-box !important;
+        overflow: visible !important;
+    }
+
+    body.oshi-u-mobile-create-page .oshi-u-create-panel-title {
+        margin: 0 0 24px !important;
+        color: #2D3748 !important;
+        font-size: 1.9rem !important;
+        font-weight: 900 !important;
+        line-height: 1.4 !important;
+    }
+
+    body.oshi-u-mobile-create-page .oshi-u-create-form {
+        display: grid !important;
+        grid-template-columns: 1fr !important;
+        gap: 24px !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        box-sizing: border-box !important;
+    }
+
+    body.oshi-u-mobile-create-page .oshi-u-create-form label,
+    body.oshi-u-mobile-create-page .oshi-u-create-form .oshi-label,
+    body.oshi-u-mobile-create-page .oshi-u-create-form p.oshi-label {
+        display: block !important;
+        margin-bottom: 10px !important;
+        color: #2D3748 !important;
+        font-size: 15px !important;
+        font-weight: 900 !important;
+        line-height: 1.6 !important;
+    }
+
+    body.oshi-u-mobile-create-page .oshi-u-create-form input[type="text"],
+    body.oshi-u-mobile-create-page .oshi-u-create-form input[type="email"],
+    body.oshi-u-mobile-create-page .oshi-u-create-form input[type="url"],
+    body.oshi-u-mobile-create-page .oshi-u-create-form input[type="number"],
+    body.oshi-u-mobile-create-page .oshi-u-create-form select,
+    body.oshi-u-mobile-create-page .oshi-u-create-form textarea,
+    body.oshi-u-mobile-create-page .oshi-u-work-select-form input,
+    body.oshi-u-mobile-create-page .oshi-u-work-select-form select {
+        display: block !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        min-height: 52px !important;
+        padding: 12px 14px !important;
+        border: 1px solid #E2E8F0 !important;
+        border-radius: 14px !important;
+        background: #FFFFFF !important;
+        color: #2D3748 !important;
+        font-size: 15px !important;
+        font-weight: 700 !important;
+        line-height: 1.6 !important;
+        box-sizing: border-box !important;
+        box-shadow: none !important;
+    }
+
+    body.oshi-u-mobile-create-page .oshi-u-create-form textarea {
+        min-height: 160px !important;
+        resize: vertical !important;
+    }
+
+    body.oshi-u-mobile-create-page .oshi-u-create-form button[type="submit"],
+    body.oshi-u-mobile-create-page .oshi-u-create-form input[type="submit"],
+    body.oshi-u-mobile-create-page .oshi-u-work-select-form button {
+        display: flex !important;
+        width: 100% !important;
+        min-height: 52px !important;
+        justify-content: center !important;
+        align-items: center !important;
+        padding: 12px 18px !important;
+        border: none !important;
+        border-radius: 999px !important;
+        background: #FED7E2 !important;
+        color: #2D3748 !important;
+        font-size: 15px !important;
+        font-weight: 900 !important;
+        line-height: 1.2 !important;
+        text-align: center !important;
+        box-sizing: border-box !important;
+    }
+
+    body.oshi-u-mobile-create-page .oshi-u-create-bottom-actions {
+        display: grid !important;
+        grid-template-columns: 1fr !important;
+        gap: 12px !important;
+        width: 100% !important;
+        margin-top: 28px !important;
+    }
+
+    body.oshi-u-mobile-create-page .oshi-u-create-bottom-link {
+        display: flex !important;
+        width: 100% !important;
+        min-height: 52px !important;
+        justify-content: center !important;
+        align-items: center !important;
+        padding: 12px 18px !important;
+        border-radius: 999px !important;
+        background: #EDF2F7 !important;
+        color: #2D3748 !important;
+        font-size: 15px !important;
+        font-weight: 800 !important;
+        text-align: center !important;
+        text-decoration: none !important;
+        box-sizing: border-box !important;
+    }
+
+    body.oshi-u-relationship-create .oshi-u-work-select-card {
+        display: block !important;
+        width: 100% !important;
+        margin: 0 0 20px !important;
+        padding: 18px !important;
+        border: 1px solid #E2E8F0 !important;
+        border-radius: 18px !important;
+        background: #FFFFFF !important;
+        box-shadow: 0 8px 24px rgba(45, 55, 72, 0.06) !important;
+        box-sizing: border-box !important;
+    }
+
+    body.oshi-u-relationship-create .oshi-u-work-select-form {
+        display: grid !important;
+        grid-template-columns: 1fr !important;
+        gap: 12px !important;
+        width: 100% !important;
+    }
+}
+
+@media (max-width: 390px) {
+    .oshi-u-card-row {
+        grid-template-columns: 86px minmax(0, 1fr) !important;
+        gap: 10px !important;
+    }
+
+    .oshi-u-card {
+        padding: 14px !important;
+    }
+
+    body.oshi-u-mobile-create-page .oshi-admin-main {
+        padding-left: 12px !important;
+        padding-right: 12px !important;
+    }
+
+    body.oshi-u-mobile-create-page .oshi-u-create-panel-title {
+        font-size: 1.55rem !important;
+    }
+}
+
+@media (min-width: 768px) {
+    .oshi-u-card-list,
+    .oshi-u-mobile-create-link,
+    .oshi-u-create-bottom-actions {
+        display: none !important;
+    }
+}
+/* STEP5A_ADMIN_MOBILE_UI_CSS_END */
+
+
+/* STEP5F_ADMIN_MOBILE_LIST_CARD_FIX_CSS_START */
+@media (max-width: 767.98px) {
+    body.oshi-u-list-card-polished .oshi-u-existing-create-link-hidden {
+        display: none !important;
+    }
+
+    body.oshi-u-list-card-polished .oshi-u-card-list {
+        margin-top: 18px !important;
+    }
+
+    body.oshi-u-list-card-polished .oshi-u-card {
+        border-radius: 20px !important;
+        background: #FFFFFF !important;
+    }
+
+    body.oshi-u-list-card-polished .oshi-u-card-row {
+        align-items: center !important;
+    }
+
+    body.oshi-u-list-card-polished .oshi-u-card-row.is-select {
+        min-height: 46px !important;
+    }
+
+    body.oshi-u-list-card-polished .oshi-u-card-row.is-select .oshi-u-card-value {
+        display: flex !important;
+        align-items: center !important;
+    }
+
+    body.oshi-u-list-card-polished .oshi-u-card-checkbox,
+    body.oshi-u-list-card-polished .oshi-u-card-row.is-select input[type="checkbox"] {
+        appearance: auto !important;
+        -webkit-appearance: checkbox !important;
+        width: 18px !important;
+        min-width: 18px !important;
+        max-width: 18px !important;
+        height: 18px !important;
+        min-height: 18px !important;
+        max-height: 18px !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        border-radius: 3px !important;
+        flex: 0 0 18px !important;
+        box-sizing: border-box !important;
+        transform: none !important;
+    }
+
+    body.oshi-u-list-card-polished .oshi-u-card-row.is-status,
+    body.oshi-u-list-card-polished .oshi-u-card-row.is-actions {
+        align-items: center !important;
+    }
+
+    body.oshi-u-list-card-polished .oshi-u-card-row.is-status .oshi-u-card-value,
+    body.oshi-u-list-card-polished .oshi-u-card-row.is-actions .oshi-u-card-value {
+        display: block !important;
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+
+    body.oshi-u-list-card-polished .oshi-u-status-pill {
+        width: 100% !important;
+        max-width: 100% !important;
+        min-height: 42px !important;
+        border-radius: 999px !important;
+    }
+
+    body.oshi-u-list-card-polished .oshi-u-card-actions {
+        display: grid !important;
+        grid-template-columns: 1fr !important;
+        gap: 10px !important;
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+
+    body.oshi-u-list-card-polished .oshi-u-card-action-item,
+    body.oshi-u-list-card-polished .oshi-u-card-action-item > div,
+    body.oshi-u-list-card-polished .oshi-u-card-action-item form {
+        display: block !important;
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+
+    body.oshi-u-list-card-polished .oshi-u-card-actions a,
+    body.oshi-u-list-card-polished .oshi-u-card-actions button,
+    body.oshi-u-list-card-polished .oshi-u-card-actions .oshi-btn {
+        display: flex !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        min-height: 42px !important;
+        justify-content: center !important;
+        align-items: center !important;
+        padding: 10px 14px !important;
+        border-radius: 999px !important;
+        box-sizing: border-box !important;
+        text-align: center !important;
+    }
+
+    body.oshi-u-list-card-polished .oshi-chip {
+        display: inline-flex !important;
+        max-width: 100% !important;
+        margin: 2px 4px 2px 0 !important;
+        white-space: normal !important;
+        overflow-wrap: anywhere !important;
+    }
+}
+/* STEP5F_ADMIN_MOBILE_LIST_CARD_FIX_CSS_END */
+
+
+/* STEP5G_ADMIN_MOBILE_CREATE_UI_FIX_CSS_START */
+@media (max-width: 767.98px) {
+    body.oshi-u-create-ui-polished .oshi-u-create-top-link-hidden {
+        display: none !important;
+    }
+
+    body.oshi-u-create-ui-polished .oshi-admin-main {
+        padding-left: 14px !important;
+        padding-right: 14px !important;
+        padding-bottom: 48px !important;
+    }
+
+    body.oshi-u-create-ui-polished .oshi-admin-title,
+    body.oshi-u-create-ui-polished .oshi-admin-main > div:first-child {
+        display: none !important;
+    }
+
+    body.oshi-u-create-ui-polished .oshi-u-polished-create-card {
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+        padding: 24px 18px !important;
+        border: none !important;
+        border-radius: 0 !important;
+        background: #FFF5FA !important;
+        box-shadow: none !important;
+        box-sizing: border-box !important;
+        overflow: visible !important;
+    }
+
+    body.oshi-u-create-ui-polished .oshi-u-polished-create-title {
+        margin: 0 0 24px !important;
+        color: #2D3748 !important;
+        font-size: 1.9rem !important;
+        font-weight: 900 !important;
+        line-height: 1.4 !important;
+    }
+
+    body.oshi-u-create-ui-polished .oshi-u-polished-create-form {
+        display: grid !important;
+        grid-template-columns: 1fr !important;
+        gap: 24px !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        box-sizing: border-box !important;
+    }
+
+    body.oshi-u-create-ui-polished .oshi-u-polished-create-form > div,
+    body.oshi-u-create-ui-polished .oshi-u-polished-create-form .space-y-6 > div {
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+    }
+
+    body.oshi-u-create-ui-polished .oshi-u-polished-create-form label,
+    body.oshi-u-create-ui-polished .oshi-u-polished-create-form .oshi-label,
+    body.oshi-u-create-ui-polished .oshi-u-polished-create-form p.oshi-label {
+        display: block !important;
+        margin: 0 0 10px !important;
+        color: #2D3748 !important;
+        font-size: 15px !important;
+        font-weight: 900 !important;
+        line-height: 1.6 !important;
+    }
+
+    body.oshi-u-create-ui-polished .oshi-u-polished-create-form input[type="text"],
+    body.oshi-u-create-ui-polished .oshi-u-polished-create-form input[type="email"],
+    body.oshi-u-create-ui-polished .oshi-u-polished-create-form input[type="url"],
+    body.oshi-u-create-ui-polished .oshi-u-polished-create-form input[type="number"],
+    body.oshi-u-create-ui-polished .oshi-u-polished-create-form select,
+    body.oshi-u-create-ui-polished .oshi-u-polished-create-form textarea {
+        display: block !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        min-height: 52px !important;
+        padding: 12px 14px !important;
+        border: 1px solid #E2E8F0 !important;
+        border-radius: 14px !important;
+        background: #FFFFFF !important;
+        color: #2D3748 !important;
+        font-size: 15px !important;
+        font-weight: 700 !important;
+        line-height: 1.6 !important;
+        box-sizing: border-box !important;
+        box-shadow: none !important;
+    }
+
+    body.oshi-u-create-ui-polished .oshi-u-polished-create-form textarea {
+        min-height: 160px !important;
+        resize: vertical !important;
+    }
+
+    body.oshi-u-create-ui-polished .oshi-u-polished-submit,
+    body.oshi-u-create-ui-polished .oshi-u-polished-create-form button[type="submit"],
+    body.oshi-u-create-ui-polished .oshi-u-polished-create-form input[type="submit"] {
+        display: flex !important;
+        width: 100% !important;
+        min-height: 52px !important;
+        justify-content: center !important;
+        align-items: center !important;
+        padding: 12px 18px !important;
+        border: none !important;
+        border-radius: 999px !important;
+        background: #FED7E2 !important;
+        color: #2D3748 !important;
+        font-size: 15px !important;
+        font-weight: 900 !important;
+        line-height: 1.2 !important;
+        text-align: center !important;
+        text-decoration: none !important;
+        box-sizing: border-box !important;
+        box-shadow: 0 8px 22px rgba(45, 55, 72, 0.08) !important;
+    }
+
+    body.oshi-u-create-ui-polished .oshi-u-polished-bottom-actions {
+        display: grid !important;
+        grid-template-columns: 1fr !important;
+        gap: 12px !important;
+        width: 100% !important;
+        margin-top: 28px !important;
+    }
+
+    body.oshi-u-create-ui-polished .oshi-u-polished-back-link {
+        display: flex !important;
+        width: 100% !important;
+        min-height: 52px !important;
+        justify-content: center !important;
+        align-items: center !important;
+        padding: 12px 18px !important;
+        border-radius: 999px !important;
+        background: #EDF2F7 !important;
+        color: #2D3748 !important;
+        font-size: 15px !important;
+        font-weight: 800 !important;
+        text-align: center !important;
+        text-decoration: none !important;
+        box-sizing: border-box !important;
+    }
+
+    body.oshi-u-create-ui-polished .oshi-u-polished-work-select-card {
+        display: block !important;
+        width: 100% !important;
+        margin: 0 0 20px !important;
+        padding: 18px !important;
+        border: 1px solid #E2E8F0 !important;
+        border-radius: 18px !important;
+        background: #FFFFFF !important;
+        box-shadow: 0 8px 24px rgba(45, 55, 72, 0.06) !important;
+        box-sizing: border-box !important;
+    }
+
+    body.oshi-u-create-ui-polished .oshi-u-polished-work-select-form {
+        display: grid !important;
+        grid-template-columns: 1fr !important;
+        gap: 12px !important;
+        width: 100% !important;
+    }
+
+    body.oshi-u-create-ui-polished .oshi-u-polished-work-select-form input,
+    body.oshi-u-create-ui-polished .oshi-u-polished-work-select-form select {
+        width: 100% !important;
+        min-height: 52px !important;
+        border-radius: 14px !important;
+        box-sizing: border-box !important;
+    }
+
+    body.oshi-u-create-ui-polished .oshi-u-polished-work-select-form button,
+    body.oshi-u-create-ui-polished .oshi-u-polished-work-select-form input[type="submit"] {
+        display: flex !important;
+        width: 100% !important;
+        min-height: 52px !important;
+        justify-content: center !important;
+        align-items: center !important;
+        border-radius: 999px !important;
+        background: #FED7E2 !important;
+        color: #2D3748 !important;
+        font-weight: 900 !important;
+    }
+}
+
+@media (max-width: 390px) {
+    body.oshi-u-create-ui-polished .oshi-admin-main {
+        padding-left: 12px !important;
+        padding-right: 12px !important;
+    }
+
+    body.oshi-u-create-ui-polished .oshi-u-polished-create-title {
+        font-size: 1.55rem !important;
+    }
+
+    body.oshi-u-create-ui-polished .oshi-u-polished-create-card {
+        padding-left: 14px !important;
+        padding-right: 14px !important;
+    }
+}
+
+@media (min-width: 768px) {
+    .oshi-u-polished-bottom-actions {
+        display: none !important;
+    }
+}
+/* STEP5G_ADMIN_MOBILE_CREATE_UI_FIX_CSS_END */
+
+
+/* STEP5H_CHECKBOX_UI_UNIFY_START */
+@media (max-width: 767.98px) {
+    /*
+     * 作品・キャラクター新規登録のタグチェックボックスを統一
+     * 形：白い角丸カード内に「小さい正方形チェックボックス + タグ名」
+     */
+    body.oshi-u-create-ui-polished .oshi-work-create-tags,
+    body.oshi-u-create-ui-polished .oshi-character-create-tags,
+    body.oshi-u-mobile-create-page .oshi-work-create-tags,
+    body.oshi-u-mobile-create-page .oshi-character-create-tags {
+        display: grid !important;
+        grid-template-columns: 1fr !important;
+        gap: 12px !important;
+        width: 100% !important;
+        padding: 0 !important;
+        border: none !important;
+        background: transparent !important;
+        box-shadow: none !important;
+        box-sizing: border-box !important;
+    }
+
+    body.oshi-u-create-ui-polished .oshi-work-create-tag-option,
+    body.oshi-u-create-ui-polished .oshi-character-create-tag-option,
+    body.oshi-u-mobile-create-page .oshi-work-create-tag-option,
+    body.oshi-u-mobile-create-page .oshi-character-create-tag-option {
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        justify-content: flex-start !important;
+        gap: 12px !important;
+        width: 100% !important;
+        min-height: 58px !important;
+        margin: 0 !important;
+        padding: 14px 16px !important;
+        border: 1px solid #E2E8F0 !important;
+        border-radius: 16px !important;
+        background: #FFFFFF !important;
+        color: #2D3748 !important;
+        font-size: 15px !important;
+        font-weight: 900 !important;
+        line-height: 1.5 !important;
+        text-align: left !important;
+        box-sizing: border-box !important;
+        box-shadow: none !important;
+    }
+
+    body.oshi-u-create-ui-polished .oshi-work-create-tag-option input[type="checkbox"],
+    body.oshi-u-create-ui-polished .oshi-character-create-tag-option input[type="checkbox"],
+    body.oshi-u-mobile-create-page .oshi-work-create-tag-option input[type="checkbox"],
+    body.oshi-u-mobile-create-page .oshi-character-create-tag-option input[type="checkbox"] {
+        appearance: auto !important;
+        -webkit-appearance: checkbox !important;
+        display: inline-block !important;
+        width: 18px !important;
+        min-width: 18px !important;
+        max-width: 18px !important;
+        height: 18px !important;
+        min-height: 18px !important;
+        max-height: 18px !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        border-radius: 3px !important;
+        background: initial !important;
+        box-shadow: none !important;
+        flex: 0 0 18px !important;
+        box-sizing: border-box !important;
+        transform: none !important;
+    }
+
+    body.oshi-u-create-ui-polished .oshi-work-create-tag-option span,
+    body.oshi-u-create-ui-polished .oshi-character-create-tag-option span,
+    body.oshi-u-mobile-create-page .oshi-work-create-tag-option span,
+    body.oshi-u-mobile-create-page .oshi-character-create-tag-option span {
+        display: inline-block !important;
+        width: auto !important;
+        min-width: 0 !important;
+        margin: 0 !important;
+        color: #2D3748 !important;
+        font-size: 15px !important;
+        font-weight: 900 !important;
+        line-height: 1.5 !important;
+        text-align: left !important;
+    }
+
+    /*
+     * 一覧カードの選択チェックボックスも小さい正方形に統一
+     */
+    body.oshi-u-list-card-polished .oshi-u-card-row.is-select input[type="checkbox"],
+    body.oshi-u-list-card-polished .oshi-u-card-checkbox {
+        appearance: auto !important;
+        -webkit-appearance: checkbox !important;
+        display: inline-block !important;
+        width: 18px !important;
+        min-width: 18px !important;
+        max-width: 18px !important;
+        height: 18px !important;
+        min-height: 18px !important;
+        max-height: 18px !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        border-radius: 3px !important;
+        background: initial !important;
+        box-shadow: none !important;
+        flex: 0 0 18px !important;
+        box-sizing: border-box !important;
+        transform: none !important;
+    }
+}
+/* STEP5H_CHECKBOX_UI_UNIFY_END */
+
+
+/* STEP5I_WORK_CREATE_FORM_RESTORE_CSS_START */
+@media (max-width: 767.98px) {
+    /*
+     * STEP5Gの広すぎる上部div非表示対策。
+     * 新規登録フォームカードは必ず表示する。
+     */
+    body.oshi-u-work-create-form-restored .oshi-u-safe-top-heading-hidden {
+        display: none !important;
+    }
+
+    body.oshi-u-work-create-form-restored .oshi-u-force-visible-create-card {
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+        padding: 24px 18px !important;
+        border: none !important;
+        border-radius: 0 !important;
+        background: #FFF5FA !important;
+        box-shadow: none !important;
+        box-sizing: border-box !important;
+        overflow: visible !important;
+    }
+
+    body.oshi-u-work-create-form-restored .oshi-u-force-visible-create-form {
+        display: grid !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        grid-template-columns: 1fr !important;
+        gap: 24px !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        box-sizing: border-box !important;
+    }
+
+    body.oshi-u-work-create-form-restored .oshi-u-work-create-fixed-title {
+        display: block !important;
+        margin: 0 0 24px !important;
+        color: #2D3748 !important;
+        font-size: 1.9rem !important;
+        font-weight: 900 !important;
+        line-height: 1.4 !important;
+    }
+
+    body.oshi-u-work-create-form-restored .oshi-u-force-visible-create-form input[type="text"],
+    body.oshi-u-work-create-form-restored .oshi-u-force-visible-create-form input[type="email"],
+    body.oshi-u-work-create-form-restored .oshi-u-force-visible-create-form input[type="url"],
+    body.oshi-u-work-create-form-restored .oshi-u-force-visible-create-form input[type="number"],
+    body.oshi-u-work-create-form-restored .oshi-u-force-visible-create-form select,
+    body.oshi-u-work-create-form-restored .oshi-u-force-visible-create-form textarea {
+        display: block !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+    }
+
+    body.oshi-u-work-create-form-restored .oshi-u-force-visible-create-form button[type="submit"] {
+        display: flex !important;
+        width: 100% !important;
+        min-height: 52px !important;
+        justify-content: center !important;
+        align-items: center !important;
+        border-radius: 999px !important;
+        background: #FED7E2 !important;
+        color: #2D3748 !important;
+        font-weight: 900 !important;
+    }
+}
+/* STEP5I_WORK_CREATE_FORM_RESTORE_CSS_END */
+
+
+/* STEP5J_CREATE_DUPLICATE_TITLE_FIX_CSS_START */
+@media (max-width: 767.98px) {
+    .oshi-u-duplicate-create-title-hidden {
+        display: none !important;
+    }
+}
+/* STEP5J_CREATE_DUPLICATE_TITLE_FIX_CSS_END */
+
+
+/* STEP5K_TAG_CREATE_SHOW_FIX_CSS_START */
+@media (max-width: 767.98px) {
+    body.oshi-u-tag-create-open .oshi-u-tag-create-link-hidden {
+        display: none !important;
+    }
+
+    body.oshi-u-tag-create-open .oshi-u-tag-create-form-visible {
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 18px 0 24px !important;
+        padding: 24px 18px !important;
+        border: none !important;
+        border-radius: 20px !important;
+        background: #FFF5FA !important;
+        box-shadow: none !important;
+        box-sizing: border-box !important;
+        overflow: visible !important;
+    }
+
+    body.oshi-u-tag-create-open .oshi-tag-index-create-section {
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+    }
+
+    body.oshi-u-tag-create-open .oshi-tag-index-create-section h2,
+    body.oshi-u-tag-create-open .oshi-tag-index-create-section h3 {
+        margin: 0 0 22px !important;
+        color: #2D3748 !important;
+        font-size: 1.75rem !important;
+        font-weight: 900 !important;
+        line-height: 1.4 !important;
+    }
+
+    body.oshi-u-tag-create-open .oshi-u-tag-create-form-visible input[type="text"],
+    body.oshi-u-tag-create-open .oshi-u-tag-create-form-visible select,
+    body.oshi-u-tag-create-open .oshi-u-tag-create-form-visible textarea {
+        display: block !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        min-height: 52px !important;
+        padding: 12px 14px !important;
+        border: 1px solid #E2E8F0 !important;
+        border-radius: 14px !important;
+        background: #FFFFFF !important;
+        color: #2D3748 !important;
+        font-size: 15px !important;
+        font-weight: 700 !important;
+        box-sizing: border-box !important;
+    }
+
+    body.oshi-u-tag-create-open .oshi-u-tag-create-form-visible textarea {
+        min-height: 150px !important;
+    }
+
+    body.oshi-u-tag-create-open .oshi-u-tag-create-form-visible button[type="submit"] {
+        display: flex !important;
+        width: 100% !important;
+        min-height: 52px !important;
+        justify-content: center !important;
+        align-items: center !important;
+        border-radius: 999px !important;
+        background: #FED7E2 !important;
+        color: #2D3748 !important;
+        font-size: 15px !important;
+        font-weight: 900 !important;
+        box-sizing: border-box !important;
+    }
+
+    body.oshi-u-tag-create-closed .oshi-u-index-create-form-hidden {
+        display: none !important;
+    }
+}
+/* STEP5K_TAG_CREATE_SHOW_FIX_CSS_END */
+
+
+/* STEP5L_CREATE_PAGE_SAFE_RENDER_CSS_START */
+@media (max-width: 767.98px) {
+    body.oshi-u-create-safe-render .oshi-u-safe-create-hidden-block,
+    body.oshi-u-create-safe-render .oshi-u-safe-create-hidden-link,
+    body.oshi-u-create-safe-render .oshi-u-create-top-link-hidden,
+    body.oshi-u-create-safe-render .oshi-u-duplicate-create-title-hidden {
+        display: none !important;
+    }
+
+    body.oshi-u-create-safe-render .oshi-admin-main {
+        display: block !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        padding: 18px 14px 48px !important;
+        box-sizing: border-box !important;
+        overflow: visible !important;
+    }
+
+    body.oshi-u-create-safe-render .oshi-u-safe-create-card {
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+        padding: 24px 18px !important;
+        border: none !important;
+        border-radius: 20px !important;
+        background: #FFF5FA !important;
+        box-shadow: none !important;
+        box-sizing: border-box !important;
+        overflow: visible !important;
+    }
+
+    body.oshi-u-create-safe-render .oshi-u-safe-create-title {
+        display: block !important;
+        margin: 0 0 24px !important;
+        color: #2D3748 !important;
+        font-size: 1.9rem !important;
+        font-weight: 900 !important;
+        line-height: 1.4 !important;
+    }
+
+    body.oshi-u-create-safe-render .oshi-u-safe-create-form {
+        display: grid !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        grid-template-columns: 1fr !important;
+        gap: 24px !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        box-sizing: border-box !important;
+    }
+
+    body.oshi-u-create-safe-render .oshi-u-safe-create-form > div,
+    body.oshi-u-create-safe-render .oshi-u-safe-create-form .space-y-6 > div {
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+    }
+
+    body.oshi-u-create-safe-render .oshi-u-safe-create-form label,
+    body.oshi-u-create-safe-render .oshi-u-safe-create-form .oshi-label,
+    body.oshi-u-create-safe-render .oshi-u-safe-create-form p.oshi-label {
+        display: block !important;
+        margin: 0 0 10px !important;
+        color: #2D3748 !important;
+        font-size: 15px !important;
+        font-weight: 900 !important;
+        line-height: 1.6 !important;
+    }
+
+    body.oshi-u-create-safe-render .oshi-u-safe-create-form input[type="text"],
+    body.oshi-u-create-safe-render .oshi-u-safe-create-form input[type="email"],
+    body.oshi-u-create-safe-render .oshi-u-safe-create-form input[type="url"],
+    body.oshi-u-create-safe-render .oshi-u-safe-create-form input[type="number"],
+    body.oshi-u-create-safe-render .oshi-u-safe-create-form select,
+    body.oshi-u-create-safe-render .oshi-u-safe-create-form textarea {
+        display: block !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        min-height: 52px !important;
+        padding: 12px 14px !important;
+        border: 1px solid #E2E8F0 !important;
+        border-radius: 14px !important;
+        background: #FFFFFF !important;
+        color: #2D3748 !important;
+        font-size: 15px !important;
+        font-weight: 700 !important;
+        line-height: 1.6 !important;
+        box-sizing: border-box !important;
+        box-shadow: none !important;
+    }
+
+    body.oshi-u-create-safe-render .oshi-u-safe-create-form textarea {
+        min-height: 160px !important;
+        resize: vertical !important;
+    }
+
+    body.oshi-u-create-safe-render .oshi-u-safe-create-submit,
+    body.oshi-u-create-safe-render .oshi-u-safe-create-form button[type="submit"],
+    body.oshi-u-create-safe-render .oshi-u-safe-create-form input[type="submit"] {
+        display: flex !important;
+        width: 100% !important;
+        min-height: 52px !important;
+        justify-content: center !important;
+        align-items: center !important;
+        padding: 12px 18px !important;
+        border: none !important;
+        border-radius: 999px !important;
+        background: #FED7E2 !important;
+        color: #2D3748 !important;
+        font-size: 15px !important;
+        font-weight: 900 !important;
+        text-align: center !important;
+        box-sizing: border-box !important;
+    }
+
+    body.oshi-u-create-safe-render .oshi-u-safe-create-bottom-actions {
+        display: grid !important;
+        grid-template-columns: 1fr !important;
+        gap: 12px !important;
+        width: 100% !important;
+        margin-top: 28px !important;
+    }
+
+    body.oshi-u-create-safe-render .oshi-u-safe-create-bottom-link {
+        display: flex !important;
+        width: 100% !important;
+        min-height: 52px !important;
+        justify-content: center !important;
+        align-items: center !important;
+        padding: 12px 18px !important;
+        border-radius: 999px !important;
+        background: #EDF2F7 !important;
+        color: #2D3748 !important;
+        font-size: 15px !important;
+        font-weight: 800 !important;
+        text-align: center !important;
+        text-decoration: none !important;
+        box-sizing: border-box !important;
+    }
+}
+
+@media (max-width: 390px) {
+    body.oshi-u-create-safe-render .oshi-admin-main {
+        padding-left: 12px !important;
+        padding-right: 12px !important;
+    }
+
+    body.oshi-u-create-safe-render .oshi-u-safe-create-title {
+        font-size: 1.55rem !important;
+    }
+
+    body.oshi-u-create-safe-render .oshi-u-safe-create-card {
+        padding-left: 14px !important;
+        padding-right: 14px !important;
+    }
+}
+/* STEP5L_CREATE_PAGE_SAFE_RENDER_CSS_END */
+
+
+/* STEP5M_RELATIONSHIP_CREATE_BUTTON_FIX_CSS_START */
+@media (max-width: 767.98px) {
+    body.oshi-u-relationship-create-button-fixed .oshi-u-relationship-mobile-create-link {
+        display: block !important;
+        width: 100% !important;
+        margin: 0 0 20px !important;
+    }
+
+    body.oshi-u-relationship-create-button-fixed .oshi-u-relationship-mobile-create-button {
+        display: flex !important;
+        width: 100% !important;
+        min-height: 52px !important;
+        justify-content: center !important;
+        align-items: center !important;
+        padding: 12px 18px !important;
+        border-radius: 999px !important;
+        background: #FED7E2 !important;
+        color: #2D3748 !important;
+        font-size: 15px !important;
+        font-weight: 900 !important;
+        line-height: 1.2 !important;
+        text-align: center !important;
+        text-decoration: none !important;
+        box-sizing: border-box !important;
+        box-shadow: 0 8px 22px rgba(45, 55, 72, 0.08) !important;
+    }
+
+    body.oshi-u-relationship-create-button-fixed .oshi-u-existing-create-link-hidden {
+        display: none !important;
+    }
+}
+/* STEP5M_RELATIONSHIP_CREATE_BUTTON_FIX_CSS_END */
+
+
+/* STEP5N_CREATE_FORM_FORCE_SHOW_START */
+@media (max-width: 767.98px) {
+    /*
+     * 新規登録フォームカードが .oshi-admin-main の先頭に移動した場合でも、
+     * 旧CSSの「先頭div非表示」に巻き込まれないようにする。
+     */
+    body.oshi-u-create-safe-render .oshi-admin-main > div.oshi-u-safe-create-card,
+    body.oshi-u-create-safe-render .oshi-admin-main > div:first-child.oshi-u-safe-create-card,
+    body.oshi-u-work-create-form-restored .oshi-admin-main > div.oshi-u-force-visible-create-card,
+    body.oshi-u-work-create-form-restored .oshi-admin-main > div:first-child.oshi-u-force-visible-create-card {
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+    }
+
+    body.oshi-u-create-safe-render .oshi-u-safe-create-card form,
+    body.oshi-u-create-safe-render .oshi-u-safe-create-form,
+    body.oshi-u-work-create-form-restored .oshi-u-force-visible-create-card form,
+    body.oshi-u-work-create-form-restored .oshi-u-force-visible-create-form {
+        display: grid !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+    }
+
+    body.oshi-u-create-safe-render .oshi-u-safe-create-title,
+    body.oshi-u-work-create-form-restored .oshi-u-work-create-fixed-title {
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+    }
+}
+/* STEP5N_CREATE_FORM_FORCE_SHOW_END */
+
+
+/* STEP5O_CHARACTER_EDIT_TAG_UI_FIX_CSS_START */
+@media (max-width: 767.98px) {
+    /*
+     * キャラクター編集画面のタグUIを、
+     * 新規登録画面と同じ「小さい正方形チェックボックス + タグ名」に統一する。
+     */
+    body.oshi-u-character-edit-tag-ui-fixed .oshi-character-create-tags,
+    body.oshi-u-character-edit-tag-ui-fixed .oshi-character-edit-tags {
+        display: grid !important;
+        grid-template-columns: 1fr !important;
+        gap: 12px !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        padding: 0 !important;
+        border: none !important;
+        background: transparent !important;
+        box-shadow: none !important;
+        box-sizing: border-box !important;
+    }
+
+    body.oshi-u-character-edit-tag-ui-fixed .oshi-character-create-tag-option,
+    body.oshi-u-character-edit-tag-ui-fixed .oshi-character-edit-tag-option,
+    body.oshi-u-character-edit-tag-ui-fixed .oshi-character-create-tags label {
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        justify-content: flex-start !important;
+        gap: 12px !important;
+        width: 100% !important;
+        min-height: 58px !important;
+        margin: 0 !important;
+        padding: 14px 16px !important;
+        border: 1px solid #E2E8F0 !important;
+        border-radius: 16px !important;
+        background: #FFFFFF !important;
+        color: #2D3748 !important;
+        font-size: 15px !important;
+        font-weight: 900 !important;
+        line-height: 1.5 !important;
+        text-align: left !important;
+        box-sizing: border-box !important;
+        box-shadow: none !important;
+    }
+
+    body.oshi-u-character-edit-tag-ui-fixed .oshi-character-create-tag-option input[type="checkbox"],
+    body.oshi-u-character-edit-tag-ui-fixed .oshi-character-edit-tag-option input[type="checkbox"],
+    body.oshi-u-character-edit-tag-ui-fixed .oshi-character-create-tags input[type="checkbox"],
+    body.oshi-u-character-edit-tag-ui-fixed input.oshi-character-edit-tag-checkbox {
+        appearance: auto !important;
+        -webkit-appearance: checkbox !important;
+        display: inline-block !important;
+        width: 18px !important;
+        min-width: 18px !important;
+        max-width: 18px !important;
+        height: 18px !important;
+        min-height: 18px !important;
+        max-height: 18px !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        border-radius: 3px !important;
+        background: initial !important;
+        box-shadow: none !important;
+        flex: 0 0 18px !important;
+        box-sizing: border-box !important;
+        transform: none !important;
+    }
+
+    body.oshi-u-character-edit-tag-ui-fixed .oshi-character-create-tag-option span,
+    body.oshi-u-character-edit-tag-ui-fixed .oshi-character-edit-tag-option span,
+    body.oshi-u-character-edit-tag-ui-fixed .oshi-character-create-tags label span {
+        display: inline-block !important;
+        width: auto !important;
+        min-width: 0 !important;
+        margin: 0 !important;
+        color: #2D3748 !important;
+        font-size: 15px !important;
+        font-weight: 900 !important;
+        line-height: 1.5 !important;
+        text-align: left !important;
+    }
+}
+/* STEP5O_CHARACTER_EDIT_TAG_UI_FIX_CSS_END */
+
+
+/* STEP5P_EDIT_TAG_UI_COMMON_FIX_CSS_START */
+@media (max-width: 767.98px) {
+    /*
+     * 作品・キャラクター編集画面のタグUIを、
+     * 新規登録画面と同じ「小さい正方形チェックボックス + タグ名」に統一する。
+     */
+    body.oshi-u-edit-tag-ui-fixed .oshi-work-create-tags,
+    body.oshi-u-edit-tag-ui-fixed .oshi-character-create-tags,
+    body.oshi-u-edit-tag-ui-fixed .oshi-u-edit-tags {
+        display: grid !important;
+        grid-template-columns: 1fr !important;
+        gap: 12px !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        padding: 0 !important;
+        border: none !important;
+        background: transparent !important;
+        box-shadow: none !important;
+        box-sizing: border-box !important;
+    }
+
+    body.oshi-u-edit-tag-ui-fixed .oshi-work-create-tag-option,
+    body.oshi-u-edit-tag-ui-fixed .oshi-character-create-tag-option,
+    body.oshi-u-edit-tag-ui-fixed .oshi-u-edit-tag-option,
+    body.oshi-u-edit-tag-ui-fixed .oshi-work-create-tags label,
+    body.oshi-u-edit-tag-ui-fixed .oshi-character-create-tags label,
+    body.oshi-u-edit-tag-ui-fixed .oshi-u-edit-tags label {
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        justify-content: flex-start !important;
+        gap: 12px !important;
+        width: 100% !important;
+        min-height: 58px !important;
+        margin: 0 !important;
+        padding: 14px 16px !important;
+        border: 1px solid #E2E8F0 !important;
+        border-radius: 16px !important;
+        background: #FFFFFF !important;
+        color: #2D3748 !important;
+        font-size: 15px !important;
+        font-weight: 900 !important;
+        line-height: 1.5 !important;
+        text-align: left !important;
+        box-sizing: border-box !important;
+        box-shadow: none !important;
+    }
+
+    body.oshi-u-edit-tag-ui-fixed .oshi-work-create-tag-option input[type="checkbox"],
+    body.oshi-u-edit-tag-ui-fixed .oshi-character-create-tag-option input[type="checkbox"],
+    body.oshi-u-edit-tag-ui-fixed .oshi-u-edit-tag-option input[type="checkbox"],
+    body.oshi-u-edit-tag-ui-fixed .oshi-work-create-tags input[type="checkbox"],
+    body.oshi-u-edit-tag-ui-fixed .oshi-character-create-tags input[type="checkbox"],
+    body.oshi-u-edit-tag-ui-fixed .oshi-u-edit-tags input[type="checkbox"],
+    body.oshi-u-edit-tag-ui-fixed input.oshi-u-edit-tag-checkbox {
+        appearance: auto !important;
+        -webkit-appearance: checkbox !important;
+        display: inline-block !important;
+        width: 18px !important;
+        min-width: 18px !important;
+        max-width: 18px !important;
+        height: 18px !important;
+        min-height: 18px !important;
+        max-height: 18px !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        border-radius: 3px !important;
+        background: initial !important;
+        box-shadow: none !important;
+        flex: 0 0 18px !important;
+        box-sizing: border-box !important;
+        transform: none !important;
+    }
+
+    body.oshi-u-edit-tag-ui-fixed .oshi-work-create-tag-option span,
+    body.oshi-u-edit-tag-ui-fixed .oshi-character-create-tag-option span,
+    body.oshi-u-edit-tag-ui-fixed .oshi-u-edit-tag-option span,
+    body.oshi-u-edit-tag-ui-fixed .oshi-work-create-tags label span,
+    body.oshi-u-edit-tag-ui-fixed .oshi-character-create-tags label span,
+    body.oshi-u-edit-tag-ui-fixed .oshi-u-edit-tags label span {
+        display: inline-block !important;
+        width: auto !important;
+        min-width: 0 !important;
+        margin: 0 !important;
+        color: #2D3748 !important;
+        font-size: 15px !important;
+        font-weight: 900 !important;
+        line-height: 1.5 !important;
+        text-align: left !important;
+    }
+}
+/* STEP5P_EDIT_TAG_UI_COMMON_FIX_CSS_END */
+
+
+/* STEP5Q_EDIT_PAGE_MOBILE_UI_CSS_START */
+@media (max-width: 767.98px) {
+    body.oshi-u-edit-mobile-ui .oshi-u-edit-mobile-hidden-block,
+    body.oshi-u-edit-mobile-ui .oshi-u-edit-mobile-hidden-link {
+        display: none !important;
+    }
+
+    body.oshi-u-edit-mobile-ui .oshi-admin-main {
+        display: block !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        padding: 18px 14px 48px !important;
+        box-sizing: border-box !important;
+        overflow: visible !important;
+    }
+
+    body.oshi-u-edit-mobile-ui .oshi-u-edit-mobile-card {
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+        padding: 24px 18px !important;
+        border: none !important;
+        border-radius: 20px !important;
+        background: #FFF5FA !important;
+        box-shadow: none !important;
+        box-sizing: border-box !important;
+        overflow: visible !important;
+    }
+
+    body.oshi-u-edit-mobile-ui .oshi-u-edit-mobile-title {
+        display: block !important;
+        margin: 0 0 24px !important;
+        color: #2D3748 !important;
+        font-size: 1.9rem !important;
+        font-weight: 900 !important;
+        line-height: 1.4 !important;
+    }
+
+    body.oshi-u-edit-mobile-ui .oshi-u-edit-mobile-form {
+        display: grid !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        grid-template-columns: 1fr !important;
+        gap: 24px !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        box-sizing: border-box !important;
+    }
+
+    body.oshi-u-edit-mobile-ui .oshi-u-edit-mobile-form > div,
+    body.oshi-u-edit-mobile-ui .oshi-u-edit-mobile-form .space-y-6 > div {
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+    }
+
+    body.oshi-u-edit-mobile-ui .oshi-u-edit-mobile-form label,
+    body.oshi-u-edit-mobile-ui .oshi-u-edit-mobile-form .oshi-label,
+    body.oshi-u-edit-mobile-ui .oshi-u-edit-mobile-form p.oshi-label {
+        display: block !important;
+        margin: 0 0 10px !important;
+        color: #2D3748 !important;
+        font-size: 15px !important;
+        font-weight: 900 !important;
+        line-height: 1.6 !important;
+    }
+
+    body.oshi-u-edit-mobile-ui .oshi-u-edit-mobile-form input[type="text"],
+    body.oshi-u-edit-mobile-ui .oshi-u-edit-mobile-form input[type="email"],
+    body.oshi-u-edit-mobile-ui .oshi-u-edit-mobile-form input[type="url"],
+    body.oshi-u-edit-mobile-ui .oshi-u-edit-mobile-form input[type="number"],
+    body.oshi-u-edit-mobile-ui .oshi-u-edit-mobile-form select,
+    body.oshi-u-edit-mobile-ui .oshi-u-edit-mobile-form textarea {
+        display: block !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        min-height: 52px !important;
+        padding: 12px 14px !important;
+        border: 1px solid #E2E8F0 !important;
+        border-radius: 14px !important;
+        background: #FFFFFF !important;
+        color: #2D3748 !important;
+        font-size: 15px !important;
+        font-weight: 700 !important;
+        line-height: 1.6 !important;
+        box-sizing: border-box !important;
+        box-shadow: none !important;
+    }
+
+    body.oshi-u-edit-mobile-ui .oshi-u-edit-mobile-form textarea {
+        min-height: 160px !important;
+        resize: vertical !important;
+    }
+
+    body.oshi-u-edit-mobile-ui .oshi-u-edit-mobile-submit,
+    body.oshi-u-edit-mobile-ui .oshi-u-edit-mobile-form button[type="submit"],
+    body.oshi-u-edit-mobile-ui .oshi-u-edit-mobile-form input[type="submit"] {
+        display: flex !important;
+        width: 100% !important;
+        min-height: 52px !important;
+        justify-content: center !important;
+        align-items: center !important;
+        padding: 12px 18px !important;
+        border: none !important;
+        border-radius: 999px !important;
+        background: #FED7E2 !important;
+        color: #2D3748 !important;
+        font-size: 15px !important;
+        font-weight: 900 !important;
+        text-align: center !important;
+        box-sizing: border-box !important;
+    }
+
+    body.oshi-u-edit-mobile-ui .oshi-u-edit-mobile-bottom-actions {
+        display: grid !important;
+        grid-template-columns: 1fr !important;
+        gap: 12px !important;
+        width: 100% !important;
+        margin-top: 28px !important;
+    }
+
+    body.oshi-u-edit-mobile-ui .oshi-u-edit-mobile-bottom-link {
+        display: flex !important;
+        width: 100% !important;
+        min-height: 52px !important;
+        justify-content: center !important;
+        align-items: center !important;
+        padding: 12px 18px !important;
+        border-radius: 999px !important;
+        background: #EDF2F7 !important;
+        color: #2D3748 !important;
+        font-size: 15px !important;
+        font-weight: 800 !important;
+        text-align: center !important;
+        text-decoration: none !important;
+        box-sizing: border-box !important;
+    }
+}
+
+@media (max-width: 390px) {
+    body.oshi-u-edit-mobile-ui .oshi-admin-main {
+        padding-left: 12px !important;
+        padding-right: 12px !important;
+    }
+
+    body.oshi-u-edit-mobile-ui .oshi-u-edit-mobile-title {
+        font-size: 1.55rem !important;
+    }
+
+    body.oshi-u-edit-mobile-ui .oshi-u-edit-mobile-card {
+        padding-left: 14px !important;
+        padding-right: 14px !important;
+    }
+}
+/* STEP5Q_EDIT_PAGE_MOBILE_UI_CSS_END */
+
+
+/* STEP5R_EXTRA_ADMIN_MOBILE_CARDS_CSS_START */
+@media (max-width: 767.98px) {
+    body.oshi-u-extra-admin-mobile-cards,
+    body.oshi-u-extra-admin-mobile-cards .oshi-admin-layout,
+    body.oshi-u-extra-admin-mobile-cards .oshi-admin-main {
+        max-width: 100% !important;
+        overflow-x: hidden !important;
+        box-sizing: border-box !important;
+    }
+
+    body.oshi-u-extra-admin-mobile-cards .oshi-admin-main {
+        padding-left: 14px !important;
+        padding-right: 14px !important;
+    }
+
+    body.oshi-u-extra-admin-mobile-cards .oshi-u-extra-old-nav-hidden {
+        display: none !important;
+    }
+
+    body.oshi-u-extra-admin-mobile-cards .oshi-u-extra-table-source {
+        display: none !important;
+    }
+
+    body.oshi-u-extra-admin-mobile-cards .oshi-table-wrap,
+    body.oshi-u-extra-admin-mobile-cards .overflow-x-auto,
+    body.oshi-u-extra-admin-mobile-cards table {
+        max-width: 100% !important;
+        overflow-x: hidden !important;
+    }
+
+    body.oshi-u-extra-admin-mobile-cards .oshi-u-extra-card-list {
+        display: grid !important;
+        grid-template-columns: 1fr !important;
+        gap: 14px !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        margin-top: 16px !important;
+        box-sizing: border-box !important;
+    }
+
+    body.oshi-u-extra-admin-mobile-cards .oshi-u-extra-card {
+        display: block !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        padding: 16px !important;
+        border: 1px solid #E2E8F0 !important;
+        border-radius: 20px !important;
+        background: #FFFFFF !important;
+        box-shadow: 0 8px 24px rgba(45, 55, 72, 0.07) !important;
+        box-sizing: border-box !important;
+        overflow: hidden !important;
+    }
+
+    body.oshi-u-extra-admin-mobile-cards .oshi-u-extra-card-row {
+        display: grid !important;
+        grid-template-columns: 104px minmax(0, 1fr) !important;
+        gap: 12px !important;
+        align-items: center !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        padding: 11px 0 !important;
+        border-bottom: 1px dashed #E2E8F0 !important;
+        box-sizing: border-box !important;
+    }
+
+    body.oshi-u-extra-admin-mobile-cards .oshi-u-extra-card-row:last-child {
+        border-bottom: none !important;
+        padding-bottom: 0 !important;
+    }
+
+    body.oshi-u-extra-admin-mobile-cards .oshi-u-extra-card-label {
+        color: #718096 !important;
+        font-size: 12px !important;
+        font-weight: 900 !important;
+        line-height: 1.6 !important;
+        overflow-wrap: anywhere !important;
+    }
+
+    body.oshi-u-extra-admin-mobile-cards .oshi-u-extra-card-value {
+        min-width: 0 !important;
+        max-width: 100% !important;
+        color: #2D3748 !important;
+        font-size: 14px !important;
+        font-weight: 800 !important;
+        line-height: 1.7 !important;
+        overflow-wrap: anywhere !important;
+        word-break: break-word !important;
+        box-sizing: border-box !important;
+    }
+
+    body.oshi-u-extra-admin-mobile-cards .oshi-u-extra-card-value a {
+        overflow-wrap: anywhere !important;
+        word-break: break-word !important;
+    }
+
+    body.oshi-u-extra-admin-mobile-cards .oshi-u-extra-card-row.is-actions .oshi-u-extra-card-value {
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+
+    body.oshi-u-extra-admin-mobile-cards .oshi-u-extra-card-actions,
+    body.oshi-u-extra-admin-mobile-cards .oshi-u-extra-card-actions > div,
+    body.oshi-u-extra-admin-mobile-cards .oshi-u-extra-card-actions form {
+        display: grid !important;
+        grid-template-columns: 1fr !important;
+        gap: 10px !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+    }
+
+    body.oshi-u-extra-admin-mobile-cards .oshi-u-extra-card-actions a,
+    body.oshi-u-extra-admin-mobile-cards .oshi-u-extra-card-actions button,
+    body.oshi-u-extra-admin-mobile-cards .oshi-u-extra-card-actions .oshi-btn,
+    body.oshi-u-extra-admin-mobile-cards .oshi-u-extra-card-actions [class*="rounded"],
+    body.oshi-u-extra-admin-mobile-cards .oshi-u-extra-card-row.is-actions a,
+    body.oshi-u-extra-admin-mobile-cards .oshi-u-extra-card-row.is-actions button,
+    body.oshi-u-extra-admin-mobile-cards .oshi-u-extra-card-row.is-actions .oshi-btn {
+        display: flex !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        min-height: 42px !important;
+        justify-content: center !important;
+        align-items: center !important;
+        padding: 10px 14px !important;
+        border-radius: 999px !important;
+        font-size: 13px !important;
+        font-weight: 900 !important;
+        line-height: 1.2 !important;
+        text-align: center !important;
+        text-decoration: none !important;
+        box-sizing: border-box !important;
+        white-space: normal !important;
+    }
+
+    body.oshi-u-extra-admin-mobile-cards .oshi-u-extra-card-row.is-status .oshi-u-extra-card-value,
+    body.oshi-u-extra-admin-mobile-cards .oshi-u-extra-card-row.is-status .oshi-badge,
+    body.oshi-u-extra-admin-mobile-cards .oshi-u-extra-card-row.is-status [class*="rounded"] {
+        width: 100% !important;
+        max-width: 100% !important;
+        text-align: center !important;
+        justify-content: center !important;
+    }
+}
+
+@media (max-width: 390px) {
+    body.oshi-u-extra-admin-mobile-cards .oshi-admin-main {
+        padding-left: 12px !important;
+        padding-right: 12px !important;
+    }
+
+    body.oshi-u-extra-admin-mobile-cards .oshi-u-extra-card-row {
+        grid-template-columns: 86px minmax(0, 1fr) !important;
+        gap: 10px !important;
+    }
+
+    body.oshi-u-extra-admin-mobile-cards .oshi-u-extra-card {
+        padding: 14px !important;
+    }
+}
+/* STEP5R_EXTRA_ADMIN_MOBILE_CARDS_CSS_END */
+
+
+/* STEP5S_REVIEW_REQUESTS_ALL_TABLES_CARDS_CSS_START */
+@media (max-width: 767.98px) {
+    body.oshi-u-review-all-tables-cards,
+    body.oshi-u-review-all-tables-cards .oshi-admin-layout,
+    body.oshi-u-review-all-tables-cards .oshi-admin-main {
+        max-width: 100% !important;
+        overflow-x: hidden !important;
+        box-sizing: border-box !important;
+    }
+
+    body.oshi-u-review-all-tables-cards .oshi-admin-main {
+        padding-left: 14px !important;
+        padding-right: 14px !important;
+    }
+
+    body.oshi-u-review-all-tables-cards .oshi-u-review-table-source {
+        display: none !important;
+    }
+
+    body.oshi-u-review-all-tables-cards table,
+    body.oshi-u-review-all-tables-cards .oshi-table-wrap,
+    body.oshi-u-review-all-tables-cards .overflow-x-auto {
+        max-width: 100% !important;
+        overflow-x: hidden !important;
+    }
+
+    body.oshi-u-review-all-tables-cards .oshi-u-review-card-list {
+        display: grid !important;
+        grid-template-columns: 1fr !important;
+        gap: 14px !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 16px 0 32px !important;
+        box-sizing: border-box !important;
+    }
+
+    body.oshi-u-review-all-tables-cards .oshi-u-review-card {
+        display: block !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        padding: 16px !important;
+        border: 1px solid #E2E8F0 !important;
+        border-radius: 20px !important;
+        background: #FFFFFF !important;
+        box-shadow: 0 8px 24px rgba(45, 55, 72, 0.07) !important;
+        box-sizing: border-box !important;
+        overflow: hidden !important;
+    }
+
+    body.oshi-u-review-all-tables-cards .oshi-u-review-card-row {
+        display: grid !important;
+        grid-template-columns: 104px minmax(0, 1fr) !important;
+        gap: 12px !important;
+        align-items: center !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        padding: 11px 0 !important;
+        border-bottom: 1px dashed #E2E8F0 !important;
+        box-sizing: border-box !important;
+    }
+
+    body.oshi-u-review-all-tables-cards .oshi-u-review-card-row:last-child {
+        border-bottom: none !important;
+        padding-bottom: 0 !important;
+    }
+
+    body.oshi-u-review-all-tables-cards .oshi-u-review-card-label {
+        color: #718096 !important;
+        font-size: 12px !important;
+        font-weight: 900 !important;
+        line-height: 1.6 !important;
+        overflow-wrap: anywhere !important;
+    }
+
+    body.oshi-u-review-all-tables-cards .oshi-u-review-card-value {
+        min-width: 0 !important;
+        max-width: 100% !important;
+        color: #2D3748 !important;
+        font-size: 14px !important;
+        font-weight: 800 !important;
+        line-height: 1.7 !important;
+        overflow-wrap: anywhere !important;
+        word-break: break-word !important;
+        box-sizing: border-box !important;
+    }
+
+    body.oshi-u-review-all-tables-cards .oshi-u-review-card-value a {
+        overflow-wrap: anywhere !important;
+        word-break: break-word !important;
+    }
+
+    body.oshi-u-review-all-tables-cards .oshi-u-review-card-row.is-actions .oshi-u-review-card-value {
+        display: block !important;
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+
+    body.oshi-u-review-all-tables-cards .oshi-u-review-card-actions,
+    body.oshi-u-review-all-tables-cards .oshi-u-review-card-actions > div,
+    body.oshi-u-review-all-tables-cards .oshi-u-review-card-actions form {
+        display: grid !important;
+        grid-template-columns: 1fr !important;
+        gap: 10px !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+    }
+
+    body.oshi-u-review-all-tables-cards .oshi-u-review-card-actions a,
+    body.oshi-u-review-all-tables-cards .oshi-u-review-card-actions button,
+    body.oshi-u-review-all-tables-cards .oshi-u-review-card-actions .oshi-btn,
+    body.oshi-u-review-all-tables-cards .oshi-u-review-card-actions [class*="rounded"],
+    body.oshi-u-review-all-tables-cards .oshi-u-review-card-row.is-actions a,
+    body.oshi-u-review-all-tables-cards .oshi-u-review-card-row.is-actions button,
+    body.oshi-u-review-all-tables-cards .oshi-u-review-card-row.is-actions .oshi-btn {
+        display: flex !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        min-height: 42px !important;
+        justify-content: center !important;
+        align-items: center !important;
+        padding: 10px 14px !important;
+        border-radius: 999px !important;
+        font-size: 13px !important;
+        font-weight: 900 !important;
+        line-height: 1.2 !important;
+        text-align: center !important;
+        text-decoration: none !important;
+        white-space: normal !important;
+        box-sizing: border-box !important;
+    }
+}
+
+@media (max-width: 390px) {
+    body.oshi-u-review-all-tables-cards .oshi-admin-main {
+        padding-left: 12px !important;
+        padding-right: 12px !important;
+    }
+
+    body.oshi-u-review-all-tables-cards .oshi-u-review-card-row {
+        grid-template-columns: 86px minmax(0, 1fr) !important;
+        gap: 10px !important;
+    }
+
+    body.oshi-u-review-all-tables-cards .oshi-u-review-card {
+        padding: 14px !important;
+    }
+}
+/* STEP5S_REVIEW_REQUESTS_ALL_TABLES_CARDS_CSS_END */
+
+
+/* STEP5T_RELATIONSHIP_FLASH_DUPLICATE_FIX_START */
+@media (max-width: 767.98px) {
+    /*
+     * 関係性一覧でsuccessメッセージが2つ出る場合、
+     * 上部のグローバル表示だけを非表示にし、
+     * 関係性一覧カード直前の見やすい表示を残す。
+     */
+    body:has(.oshi-u-relationships-index) .oshi-admin-main > .bg-green-50:first-child,
+    body:has(.oshi-u-relationships-index) .oshi-admin-main > .border-green-200:first-child,
+    body:has(.oshi-u-relationships-index) .oshi-admin-main > .text-green-800:first-child {
+        display: none !important;
+    }
+}
+/* STEP5T_RELATIONSHIP_FLASH_DUPLICATE_FIX_END */
+
+
+/* STEP5U_RELATIONSHIP_FLASH_DUPLICATE_FINAL_CSS_START */
+.oshi-u-relationship-flash-duplicate-hidden {
+    display: none !important;
+}
+/* STEP5U_RELATIONSHIP_FLASH_DUPLICATE_FINAL_CSS_END */
+
