@@ -21,6 +21,11 @@ return Application::configure(basePath: dirname(__DIR__))
             'password.changed' => EnsurePasswordChanged::class,
         ]);
     })
+    ->withMiddleware(function (\Illuminate\Foundation\Configuration\Middleware $middleware): void {
+        $middleware->web(append: [
+            \App\Http\Middleware\ShowComingSoonForHome::class,
+        ]);
+    })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(
             fn (Request $request) => $request->is('api/*'),

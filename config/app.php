@@ -65,7 +65,9 @@ return [
     |
     */
 
-    'timezone' => 'UTC',
+        'coming_soon_enabled' => env('COMING_SOON_ENABLED', false),
+
+'timezone' => 'UTC',
 
     /*
     |--------------------------------------------------------------------------
