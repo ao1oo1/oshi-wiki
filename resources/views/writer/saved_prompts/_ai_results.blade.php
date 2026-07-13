@@ -117,7 +117,6 @@
                 <textarea
                     id="result_body"
                     name="result_body"
-                    maxlength="10000"
                     rows="18"
                     required
                     placeholder="AIが返したプロット、構成案、キャラクターの役割、場面案、伏線、執筆時の注意点などを貼り付けてください。"
@@ -463,14 +462,20 @@
                     return;
                 }
 
-                const length = resultBody.value.length;
+                const normalizedValue = resultBody.value
+                .replace(/\r\n/g, '\n')
+                .replace(/\r/g, '\n');
+
+            const length = Array.from(
+                normalizedValue
+            ).length;
 
                 resultCount.textContent =
                     length.toLocaleString();
 
                 resultCount.classList.toggle(
                     'text-red-600',
-                    length >= maxLength
+                    length > maxLength
                 );
             };
 
