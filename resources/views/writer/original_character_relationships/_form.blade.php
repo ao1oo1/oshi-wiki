@@ -1,29 +1,41 @@
 @php
-    $relationship = $relationship ?? $originalCharacterRelationship ?? null;
+    $relationship = $relationship
+        ?? $originalCharacterRelationship
+        ?? null;
 
-    $oldValue = function (string $key, $default = '') use ($relationship) {
-        return old($key, $relationship?->{$key} ?? $default);
+    $oldValue = function (
+        string $key,
+        $default = ''
+    ) use ($relationship) {
+        return old(
+            $key,
+            $relationship?->{$key} ?? $default
+        );
     };
 
     $fromRef = old('from_character_ref');
     $toRef = old('to_character_ref');
 
     if (! $fromRef && $relationship) {
-        if (! empty($relationship->from_original_character_id)) {
-            $fromRef = 'original:' . $relationship->from_original_character_id;
-        }
+        $fromRef = $relationship->fromReference();
     }
 
     if (! $toRef && $relationship) {
-        if (! empty($relationship->to_original_character_id)) {
-            $toRef = 'original:' . $relationship->to_original_character_id;
-        }
+        $toRef = $relationship->toReference();
     }
 
-    $status = old('status', $relationship?->status ?? 'active');
-    $characters = $characters ?? collect();
+    $status = old(
+        'status',
+        $relationship?->status ?? 'active'
+    );
 
-    $timelineItems = old('timeline_items', $relationship?->timeline_items ?? []);
+    $characters = $characters ?? collect();
+    $publishedWorks = $publishedWorks ?? collect();
+
+    $timelineItems = old(
+        'timeline_items',
+        $relationship?->timeline_items ?? []
+    );
 
     if (! is_array($timelineItems)) {
         $timelineItems = [];
@@ -35,26 +47,33 @@
         ->filter(function ($item) {
             return is_array($item)
                 && (
-                    trim((string)($item['period'] ?? '')) !== ''
-                    || trim((string)($item['content'] ?? '')) !== ''
+                    trim((string) ($item['period'] ?? '')) !== ''
+                    || trim((string) ($item['content'] ?? '')) !== ''
                 );
         })
         ->count();
 
-    /*
-     * 新規登録時：必ず3行だけ表示
-     * 編集時：保存済みが4件以上あれば保存済み件数分を表示
-     */
-    $initialTimelineCount = min(10, max(3, $filledTimelineCount));
+    $initialTimelineCount = min(
+        10,
+        max(3, $filledTimelineCount)
+    );
 
-    for ($i = count($timelineItems); $i < $initialTimelineCount; $i++) {
+    for (
+        $i = count($timelineItems);
+        $i < $initialTimelineCount;
+        $i++
+    ) {
         $timelineItems[$i] = [
             'period' => '',
             'content' => '',
         ];
     }
 
-    $timelineItems = array_slice($timelineItems, 0, $initialTimelineCount);
+    $timelineItems = array_slice(
+        $timelineItems,
+        0,
+        $initialTimelineCount
+    );
 @endphp
 
 @if ($errors->any())
@@ -71,61 +90,157 @@
 <div class="space-y-8">
     <section class="rounded-3xl border border-[#E2E8F0] bg-white p-6 shadow-sm md:p-8">
         <div class="mb-6">
-            <p class="text-sm font-bold text-[#A0AEC0]">STEP 1</p>
-            <h2 class="mt-1 text-2xl font-bold text-[#2D3748]">関係を作るキャラクターを選ぶ</h2>
-            <p class="mt-2 text-sm font-bold leading-7 text-[#718096]">
-                「誰から誰へ」の関係性かを選びます。自分で登録したオリジナルキャラクター同士を組み合わせられます。
+            <p class="text-sm font-bold text-[#A0AEC0]">
+                STEP 1
             </p>
+
+            <h2 class="mt-1 text-2xl font-bold text-[#2D3748]">
+                関係を作るキャラクターを選ぶ
+            </h2>
+
+            <p class="mt-2 text-sm font-bold leading-7 text-[#718096]">
+                自分のオリジナルキャラクターと、Oshi-Wikiに公開されている登録済みキャラクターを組み合わせられます。
+                登録済みキャラクターの元データは変更されません。
+            </p>
+        </div>
+
+        <div class="mb-6 rounded-2xl border border-[#FED7E2] bg-[#FFF7FA] p-5">
+            <p class="font-bold text-[#2D3748]">
+                選択できる組み合わせ
+            </p>
+
+            <ul class="mt-3 space-y-2 text-sm font-bold leading-7 text-[#718096]">
+                <li>・オリジナル → オリジナル</li>
+                <li>・オリジナル → 登録済みキャラクター</li>
+                <li>・登録済みキャラクター → オリジナル</li>
+                <li>・登録済みキャラクター → 登録済みキャラクター</li>
+            </ul>
         </div>
 
         <div class="grid gap-5 md:grid-cols-2">
             <div>
-                <label for="from_character_ref">From：関係元キャラクター <span class="text-red-500">必須</span></label>
-                <select id="from_character_ref" name="from_character_ref" required>
-                    <option value="">選択してください</option>
+                <label for="from_character_ref">
+                    From：関係元キャラクター
+                    <span class="text-red-500">必須</span>
+                </label>
 
-                    <optgroup label="オリジナルキャラクター">
-                        @foreach ($characters as $character)
-                            <option value="original:{{ $character->id }}" @selected($fromRef === 'original:' . $character->id)>
-                                {{ $character->name }}
-                            </option>
-                        @endforeach
-                    </optgroup>
+                <select
+                    id="from_character_ref"
+                    name="from_character_ref"
+                    required
+                >
+                    <option value="">
+                        選択してください
+                    </option>
 
-                    <optgroup label="オリジナルキャラクター">
-                    </optgroup>
+                    @if ($characters->isNotEmpty())
+                        <optgroup label="自分のオリジナルキャラクター">
+                            @foreach ($characters as $character)
+                                @php
+                                    $ref = 'original:' . $character->id;
+                                @endphp
+
+                                <option
+                                    value="{{ $ref }}"
+                                    @selected($fromRef === $ref)
+                                >
+                                    {{ $character->name }}
+                                </option>
+                            @endforeach
+                        </optgroup>
+                    @endif
+
+                    @foreach ($publishedWorks as $work)
+                        @if ($work->characters->isNotEmpty())
+                            <optgroup label="登録済み：{{ $work->title }}">
+                                @foreach ($work->characters as $character)
+                                    @php
+                                        $ref = 'v1:' . $character->id;
+                                    @endphp
+
+                                    <option
+                                        value="{{ $ref }}"
+                                        @selected($fromRef === $ref)
+                                    >
+                                        {{ $character->name }}
+                                    </option>
+                                @endforeach
+                            </optgroup>
+                        @endif
+                    @endforeach
                 </select>
+
                 <p class="mt-2 text-xs font-bold leading-6 text-[#A0AEC0]">
-                    呼び方・印象を向ける側のキャラクターです。
+                    呼び方・印象・気持ちを向ける側です。
                 </p>
             </div>
 
             <div>
-                <label for="to_character_ref">To：関係先キャラクター <span class="text-red-500">必須</span></label>
-                <select id="to_character_ref" name="to_character_ref" required>
-                    <option value="">選択してください</option>
+                <label for="to_character_ref">
+                    To：関係先キャラクター
+                    <span class="text-red-500">必須</span>
+                </label>
 
-                    <optgroup label="オリジナルキャラクター">
-                        @foreach ($characters as $character)
-                            <option value="original:{{ $character->id }}" @selected($toRef === 'original:' . $character->id)>
-                                {{ $character->name }}
-                            </option>
-                        @endforeach
-                    </optgroup>
+                <select
+                    id="to_character_ref"
+                    name="to_character_ref"
+                    required
+                >
+                    <option value="">
+                        選択してください
+                    </option>
 
-                    <optgroup label="オリジナルキャラクター">
-                    </optgroup>
+                    @if ($characters->isNotEmpty())
+                        <optgroup label="自分のオリジナルキャラクター">
+                            @foreach ($characters as $character)
+                                @php
+                                    $ref = 'original:' . $character->id;
+                                @endphp
+
+                                <option
+                                    value="{{ $ref }}"
+                                    @selected($toRef === $ref)
+                                >
+                                    {{ $character->name }}
+                                </option>
+                            @endforeach
+                        </optgroup>
+                    @endif
+
+                    @foreach ($publishedWorks as $work)
+                        @if ($work->characters->isNotEmpty())
+                            <optgroup label="登録済み：{{ $work->title }}">
+                                @foreach ($work->characters as $character)
+                                    @php
+                                        $ref = 'v1:' . $character->id;
+                                    @endphp
+
+                                    <option
+                                        value="{{ $ref }}"
+                                        @selected($toRef === $ref)
+                                    >
+                                        {{ $character->name }}
+                                    </option>
+                                @endforeach
+                            </optgroup>
+                        @endif
+                    @endforeach
                 </select>
+
                 <p class="mt-2 text-xs font-bold leading-6 text-[#A0AEC0]">
-                    呼び方・印象を向けられる側のキャラクターです。
+                    呼び方・印象・気持ちを向けられる側です。
                 </p>
             </div>
         </div>
 
         <div class="mt-5 rounded-2xl bg-[#F7FAFC] p-5">
-            <p class="text-sm font-bold text-[#2D3748]">例</p>
+            <p class="text-sm font-bold text-[#2D3748]">
+                例
+            </p>
+
             <p class="mt-2 text-sm font-bold leading-7 text-[#718096]">
-                FromがキャラクターA、ToがキャラクターBの場合、「キャラクターAがキャラクターBをどう呼ぶか」「どう思っているか」を登録します。
+                Fromがオリジナルキャラクター、Toが登録済みキャラクターの場合、
+                オリジナルキャラクターが原作キャラクターをどう呼び、どう思っているかを登録します。
             </p>
         </div>
     </section>

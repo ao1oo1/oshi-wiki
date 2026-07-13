@@ -4,6 +4,14 @@
     $prompt = $prompt
         ?? $savedPrompt
         ?? null;
+
+    if (
+        $prompt
+        && $prompt->work_source
+            === \App\Models\SavedPrompt::WORK_SOURCE_V1
+    ) {
+        $prompt->loadMissing('work');
+    }
 @endphp
 
 @if (! $prompt)
@@ -71,6 +79,12 @@
             @if ($prompt->include_relationship_timeline)
                 <span class="rounded-full bg-[#FFF1F5] px-3 py-1 text-xs font-bold text-[#2D3748]">
                     年表データ反映
+                </span>
+            @endif
+
+            @if ($prompt->use_story_length_options)
+                <span class="rounded-full bg-[#FED7E2] px-3 py-1 text-xs font-bold text-[#2D3748]">
+                    {{ $prompt->storyLengthLabel() }}
                 </span>
             @endif
 
@@ -149,6 +163,45 @@
                 <p class="text-xs font-bold text-[#A0AEC0]">関係性年表</p>
                 <p class="mt-2 font-bold text-[#2D3748]">
                     {{ $prompt->include_relationship_timeline ? 'プロンプトに反映する' : '反映しない' }}
+                </p>
+            </div>
+
+            <div class="rounded-2xl bg-[#F7FAFC] p-5">
+                <p class="text-xs font-bold text-[#A0AEC0]">
+                    長編・短編設定
+                </p>
+                <p class="mt-2 font-bold text-[#2D3748]">
+                    {{ $prompt->storyLengthLabel() }}
+                </p>
+
+                @if ($prompt->use_story_length_options)
+                    <div class="mt-3 space-y-1 text-sm font-bold text-[#718096]">
+                        <p>
+                            詳細プロット：
+                            {{ $prompt->output_plot_first ? '先に出力する' : '指定なし' }}
+                        </p>
+                        <p>
+                            起承転結：
+                            {{ $prompt->output_in_parts ? '順番に分ける' : '指定なし' }}
+                        </p>
+                    </div>
+                @endif
+            </div>
+
+            <div class="rounded-2xl bg-[#F7FAFC] p-5">
+                <p class="text-xs font-bold text-[#A0AEC0]">
+                    保存済み文体分析
+                </p>
+
+                <p class="mt-2 font-bold text-[#2D3748]">
+                    {{
+                        number_format(
+                            count(
+                                $prompt->selected_story_analysis_ids
+                                    ?? []
+                            )
+                        )
+                    }}件使用
                 </p>
             </div>
 
@@ -328,6 +381,14 @@
     </script>
 @endif
 
+
+@include(
+    'writer.saved_prompts._ai_results',
+    [
+        'prompt' => $prompt,
+        'aiResults' => $aiResults ?? collect(),
+    ]
+)
 
 <div class="writer-prompt-bottom-actions mt-8 rounded-3xl border border-[#E2E8F0] bg-white p-6 shadow-sm">
     <div class="grid gap-3 md:grid-cols-2">

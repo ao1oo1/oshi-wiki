@@ -9,7 +9,18 @@ return new class extends Migration
 {
     public function up(): void
     {
-        DB::statement("ALTER TABLE works MODIFY status VARCHAR(50) NOT NULL DEFAULT 'draft'");
+        /*
+         * MODIFY構文はMySQL専用です。
+         * 本番MySQLではstatus定義を更新し、
+         * SQLiteを使用する自動テストでは実行しません。
+         */
+        if (DB::getDriverName() === 'mysql') {
+            DB::statement(
+                "ALTER TABLE works "
+                . "MODIFY status VARCHAR(50) "
+                . "NOT NULL DEFAULT 'draft'"
+            );
+        }
 
         Schema::table('works', function (Blueprint $table) {
             $table->string('title_kana')->nullable()->after('title');

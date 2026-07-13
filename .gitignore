@@ -25,3 +25,15 @@ _ide_helper.php
 Homestead.json
 Homestead.yaml
 Thumbs.db
+
+# OSHI_WIKI_LOCAL_BACKUPS
+.env.bak
+*.bak
+*.bak.*
+*.orig
+*.rej
+*~
+.DS_Store
+# /OSHI_WIKI_LOCAL_BACKUPS
+
+.env.testing

@@ -20,9 +20,22 @@ class StoreSavedPromptRequest extends FormRequest
             'title' => ['required', 'string', 'max:255'],
             'category' => ['nullable', Rule::in(array_keys(SavedPrompt::categoryLabels()))],
             'purpose' => ['nullable', 'string', 'max:255'],
-            'selected_character_refs' => ['nullable', 'array'],
+            'work_ref' => [
+                'required',
+                'string',
+                'regex:/^(original|work:\d+)$/',
+            ],
+            'selected_character_refs' => [
+                'nullable',
+                'array',
+                'max:60',
+            ],
             'include_relationship_timeline' => ['nullable', 'boolean'],
-            'selected_character_refs.*' => ['string', 'max:100', 'regex:/^original:\\d+$/'],
+            'selected_character_refs.*' => [
+                'string',
+                'max:100',
+                'regex:/^(original|v1):\\d+$/',
+            ],
 
             'writing_style' => ['required', Rule::in(array_keys(SavedPrompt::writingStyleLabels()))],
             'writing_style_other' => ['nullable', 'string', 'max:255'],
@@ -35,6 +48,28 @@ class StoreSavedPromptRequest extends FormRequest
             'plot_development' => $this->nullableTextRules(WritingAssistLimits::longNoteMaxLength($this->user())),
             'plot_turn' => $this->nullableTextRules(WritingAssistLimits::longNoteMaxLength($this->user())),
             'plot_conclusion' => $this->nullableTextRules(WritingAssistLimits::longNoteMaxLength($this->user())),
+
+            'use_story_length_options' => ['nullable', 'boolean'],
+            'story_length_type' => [
+                'nullable',
+                Rule::requiredIf(
+                    fn () => $this->boolean('use_story_length_options')
+                ),
+                Rule::in(['short', 'long']),
+            ],
+            'output_plot_first' => ['nullable', 'boolean'],
+            'output_in_parts' => ['nullable', 'boolean'],
+
+            'selected_story_analysis_ids' => [
+                'nullable',
+                'array',
+                'max:10',
+            ],
+            'selected_story_analysis_ids.*' => [
+                'required',
+                'integer',
+                'distinct',
+            ],
 
             'notes' => $this->nullableTextRules(WritingAssistLimits::noteMaxLength($this->user())),
             'status' => ['nullable', Rule::in(['active', 'draft'])],

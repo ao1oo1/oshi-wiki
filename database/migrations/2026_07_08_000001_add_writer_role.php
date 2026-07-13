@@ -31,7 +31,7 @@ return new class extends Migration
         }
 
         if (Schema::hasColumn('roles', 'created_at')) {
-            $values['created_at'] = DB::raw('COALESCE(created_at, NOW())');
+            $values['created_at'] = now();
         }
 
         DB::table('roles')->updateOrInsert(

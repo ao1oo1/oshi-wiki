@@ -105,7 +105,7 @@ class User extends Authenticatable
 
     public function canAccessWriter(): bool
     {
-        return $this->isWriter();
+        return $this->isSuperAdmin() || $this->isWriter();
     }
     public function canModifyOwnedAdminContent($model): bool
     {

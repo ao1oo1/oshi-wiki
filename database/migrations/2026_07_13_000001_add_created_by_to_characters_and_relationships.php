@@ -8,31 +8,77 @@ return new class extends Migration
 {
     public function up(): void
     {
-        if (Schema::hasTable('characters') && ! Schema::hasColumn('characters', 'created_by')) {
-            Schema::table('characters', function (Blueprint $table) {
-                $table->unsignedBigInteger('created_by')->nullable()->after('reviewed_by')->index();
+        if (
+            Schema::hasTable('characters')
+            && ! Schema::hasColumn('characters', 'created_by')
+        ) {
+            Schema::table('characters', function (Blueprint $table): void {
+                $column = $table
+                    ->unsignedBigInteger('created_by')
+                    ->nullable()
+                    ->index();
+
+                if (Schema::hasColumn('characters', 'reviewed_by')) {
+                    $column->after('reviewed_by');
+                }
             });
         }
 
-        if (Schema::hasTable('character_relationships') && ! Schema::hasColumn('character_relationships', 'created_by')) {
-            Schema::table('character_relationships', function (Blueprint $table) {
-                $table->unsignedBigInteger('created_by')->nullable()->after('reviewed_by')->index();
-            });
+        if (
+            Schema::hasTable('character_relationships')
+            && ! Schema::hasColumn(
+                'character_relationships',
+                'created_by'
+            )
+        ) {
+            Schema::table(
+                'character_relationships',
+                function (Blueprint $table): void {
+                    $column = $table
+                        ->unsignedBigInteger('created_by')
+                        ->nullable()
+                        ->index();
+
+                    if (
+                        Schema::hasColumn(
+                            'character_relationships',
+                            'reviewed_by'
+                        )
+                    ) {
+                        $column->after('reviewed_by');
+                    }
+                }
+            );
         }
     }
 
     public function down(): void
     {
-        if (Schema::hasTable('character_relationships') && Schema::hasColumn('character_relationships', 'created_by')) {
-            Schema::table('character_relationships', function (Blueprint $table) {
-                $table->dropColumn('created_by');
-            });
+        if (
+            Schema::hasTable('character_relationships')
+            && Schema::hasColumn(
+                'character_relationships',
+                'created_by'
+            )
+        ) {
+            Schema::table(
+                'character_relationships',
+                function (Blueprint $table): void {
+                    $table->dropColumn('created_by');
+                }
+            );
         }
 
-        if (Schema::hasTable('characters') && Schema::hasColumn('characters', 'created_by')) {
-            Schema::table('characters', function (Blueprint $table) {
-                $table->dropColumn('created_by');
-            });
+        if (
+            Schema::hasTable('characters')
+            && Schema::hasColumn('characters', 'created_by')
+        ) {
+            Schema::table(
+                'characters',
+                function (Blueprint $table): void {
+                    $table->dropColumn('created_by');
+                }
+            );
         }
     }
 };

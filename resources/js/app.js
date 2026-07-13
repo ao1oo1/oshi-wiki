@@ -2311,3 +2311,115 @@ Alpine.start();
 })();
 /* STEP6B_WRITER_MOBILE_HAMBURGER_END */
 
+// OSHI_WIKI_GLOBAL_RADIO_FIX
+/**
+ * ラジオボタンに誤って付与された
+ * 横幅・高さ・伸縮用クラスだけを除去する。
+ *
+ * 外観はresources/css/app.cssで統一する。
+ */
+const normalizeOshiWikiRadioButtons = () => {
+    document
+        .querySelectorAll('input[type="radio"]')
+        .forEach((radio) => {
+            [
+                'w-full',
+                'min-w-full',
+                'max-w-full',
+                'h-full',
+                'min-h-full',
+                'max-h-full',
+                'flex-1',
+                'grow',
+                'basis-full',
+                'rounded-none',
+                'rounded-sm',
+                'rounded-md',
+                'rounded-lg',
+                'rounded-xl',
+                'rounded-2xl',
+                'rounded-3xl',
+            ].forEach((className) => {
+                radio.classList.remove(className);
+            });
+
+            /*
+             * 過去にJavaScriptで設定したインラインCSSを解除し、
+             * app.cssのデザインを適用する。
+             */
+            [
+                'appearance',
+                '-webkit-appearance',
+                'display',
+                'inline-size',
+                'block-size',
+                'width',
+                'height',
+                'min-width',
+                'min-height',
+                'max-width',
+                'max-height',
+                'flex',
+                'flex-grow',
+                'flex-shrink',
+                'margin',
+                'margin-top',
+                'margin-right',
+                'margin-bottom',
+                'margin-left',
+                'padding',
+                'border-radius',
+                'background-color',
+                'background-image',
+                'box-shadow',
+                'box-sizing',
+                'vertical-align',
+            ].forEach((property) => {
+                radio.style.removeProperty(property);
+            });
+        });
+};
+
+document.addEventListener(
+    'DOMContentLoaded',
+    normalizeOshiWikiRadioButtons
+);
+
+const oshiWikiRadioObserver = new MutationObserver(
+    (mutations) => {
+        const hasRadioButton = mutations.some(
+            (mutation) =>
+                Array.from(mutation.addedNodes).some(
+                    (node) =>
+                        node.nodeType === Node.ELEMENT_NODE
+                        && (
+                            node.matches?.(
+                                'input[type="radio"]'
+                            )
+                            || node.querySelector?.(
+                                'input[type="radio"]'
+                            )
+                        )
+                )
+        );
+
+        if (hasRadioButton) {
+            normalizeOshiWikiRadioButtons();
+        }
+    }
+);
+
+document.addEventListener('DOMContentLoaded', () => {
+    if (! document.body) {
+        return;
+    }
+
+    oshiWikiRadioObserver.observe(
+        document.body,
+        {
+            childList: true,
+            subtree: true,
+        }
+    );
+});
+// /OSHI_WIKI_GLOBAL_RADIO_FIX

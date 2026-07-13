@@ -82,10 +82,27 @@
         <div class="rounded-3xl bg-[#F7FAFC] p-6">
             <div class="grid gap-6 md:grid-cols-[1fr_auto_1fr] md:items-center">
                 <div>
-                    <p class="text-xs font-bold text-[#A0AEC0]">From</p>
-                    <p class="mt-2 text-2xl font-bold text-[#2D3748]">
-                        {{ method_exists($relationship, 'fromDisplayName') ? $relationship->fromDisplayName() : '未設定' }}
+                    <p class="text-xs font-bold text-[#A0AEC0]">
+                        From
                     </p>
+
+                    <p class="mt-2 text-2xl font-bold text-[#2D3748]">
+                        {{ $relationship->fromDisplayName() }}
+                    </p>
+
+                    <p class="mt-2 text-sm font-bold text-[#718096]">
+                        {{ $relationship->fromSourceLabel() }}
+                    </p>
+
+                    @if (
+                        $relationship->from_character_source
+                            === \App\Models\OriginalCharacterRelationship::SOURCE_V1
+                        && $relationship->fromV1Character?->work
+                    )
+                        <p class="mt-1 text-xs font-bold text-[#A0AEC0]">
+                            作品：{{ $relationship->fromV1Character->work->title }}
+                        </p>
+                    @endif
                 </div>
 
                 <div class="text-center text-3xl font-bold text-[#A0AEC0]">
@@ -93,10 +110,27 @@
                 </div>
 
                 <div>
-                    <p class="text-xs font-bold text-[#A0AEC0]">To</p>
-                    <p class="mt-2 text-2xl font-bold text-[#2D3748]">
-                        {{ method_exists($relationship, 'toDisplayName') ? $relationship->toDisplayName() : '未設定' }}
+                    <p class="text-xs font-bold text-[#A0AEC0]">
+                        To
                     </p>
+
+                    <p class="mt-2 text-2xl font-bold text-[#2D3748]">
+                        {{ $relationship->toDisplayName() }}
+                    </p>
+
+                    <p class="mt-2 text-sm font-bold text-[#718096]">
+                        {{ $relationship->toSourceLabel() }}
+                    </p>
+
+                    @if (
+                        $relationship->to_character_source
+                            === \App\Models\OriginalCharacterRelationship::SOURCE_V1
+                        && $relationship->toV1Character?->work
+                    )
+                        <p class="mt-1 text-xs font-bold text-[#A0AEC0]">
+                            作品：{{ $relationship->toV1Character->work->title }}
+                        </p>
+                    @endif
                 </div>
             </div>
         </div>
