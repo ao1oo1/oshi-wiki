@@ -210,7 +210,7 @@
                     </a>
 
                     <a href="{{ route('public.home') }}" class="block rounded-2xl px-5 py-4 text-[#2D3748] hover:bg-[#FFF1F5]">
-                        公開ページ
+                        データベース画面
                     </a>
                 </nav>
 
