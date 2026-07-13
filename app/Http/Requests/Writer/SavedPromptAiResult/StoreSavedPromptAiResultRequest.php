@@ -7,7 +7,7 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class StoreSavedPromptAiResultRequest extends FormRequest
 {
-    private const RESULT_BODY_MAX_LENGTH = 10000;
+    private const RESULT_BODY_MAX_LENGTH = 20000;
 
     public function authorize(): bool
     {
