@@ -33,7 +33,7 @@
     @endif
 
     <a href="{{ route('public.works.index') }}" target="_blank">
-        公開ページ
+        データベース画面
     </a>
 
                             @if (auth()->user()?->canManageAllAdminFeatures())
