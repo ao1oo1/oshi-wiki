@@ -58,4 +58,15 @@ class Work extends Model
     {
         return $this->status === 'published' && $this->deleted_at === null;
     }
+    protected static function booted(): void
+    {
+        // OWNER_CREATED_BY_AUTO_SET
+        static::creating(function ($model): void {
+            if (auth()->check() && empty($model->created_by)) {
+                $model->created_by = auth()->id();
+            }
+        });
+        // /OWNER_CREATED_BY_AUTO_SET
+    }
+
 }

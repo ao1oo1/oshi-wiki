@@ -25,6 +25,19 @@ class WorkController extends Controller
         $keyword = request('keyword');
         $selectedTagId = request('tag_id');
 
+
+        $currentUser = auth()->user();
+
+        if (isset($works) && method_exists($works, 'getCollection')) {
+            $works->getCollection()->transform(function ($model) use ($currentUser) {
+                $model->can_modify_by_current_user = $currentUser
+                    ? $currentUser->canModifyOwnedAdminContent($model)
+                    : false;
+
+                return $model;
+            });
+        }
+
         return view('admin.works.index', [
             'works' => $this->service->paginate(
                 20,
@@ -66,6 +79,7 @@ class WorkController extends Controller
 
     public function edit(Work $work): View
     {
+        $this->ensureCanModifyWork($work);
         abort_unless(auth()->user()?->canManageAllAdminFeatures(), 403, '作品管理のこの操作は最高管理者のみ可能です。');
         return view('admin.works.edit', [
             'work' => $work->load('tags'),
@@ -75,6 +89,7 @@ class WorkController extends Controller
 
     public function update(UpdateWorkRequest $request, Work $work): RedirectResponse
     {
+        $this->ensureCanModifyWork($work);
         abort_unless(auth()->user()?->canManageAllAdminFeatures(), 403, '作品管理のこの操作は最高管理者のみ可能です。');
         $this->service->update($work, $request->validated());
 
@@ -85,13 +100,25 @@ class WorkController extends Controller
 
     public function destroy(Work $work): RedirectResponse
     {
+        $this->ensureCanModifyWork($work);
         abort_unless(auth()->user()?->canManageAllAdminFeatures(), 403, '作品管理のこの操作は最高管理者のみ可能です。');
-        abort_unless(auth()->user()?->isSuperAdmin(), 403, '削除操作は最高管理者のみ可能です。');
-
-        $this->service->delete($work);
+$this->service->delete($work);
 
         return redirect()
             ->route('admin.works.index')
             ->with('success', '作品を削除しました。');
     }
+    private function ensureCanModifyWork(Work $work): void
+    {
+        $user = auth()->user();
+
+        abort_unless($user, 403);
+
+        abort_unless(
+            $user->canModifyOwnedAdminContent($work),
+            403,
+            '他のスタッフまたは最高管理者が登録した作品は編集・削除できません。'
+        );
+    }
+
 }

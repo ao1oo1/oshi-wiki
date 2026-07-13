@@ -1,8 +1,10 @@
 <x-app-layout>
     @php
-        $canUseCharacterImports = auth()->user()?->canManageAllAdminFeatures() ?? false;
-        $canEditCharacters = $canUseCharacterImports || auth()->user()?->isStaff();
-    @endphp
+$canUseCharacterImports = auth()->user()?->canManageAllAdminFeatures() ?? false;
+        $canCreateCharacters = $canUseCharacterImports || auth()->user()?->isStaff();
+        $currentAdminUser = auth()->user();
+        $currentAdminUserId = $currentAdminUser?->id;
+@endphp
 
     <x-slot name="header">
         <h2 class="font-semibold text-xl">
@@ -40,7 +42,7 @@
                         </a>
                     @endif
 
-                    @if ($canEditCharacters)
+                    @if ($canCreateCharacters)
                         <a href="{{ route('admin.characters.create') }}" class="oshi-btn">
                             キャラクター登録画面へ
                         </a>
@@ -111,37 +113,42 @@
             </form>
 
             @if ($canUseCharacterImports)
-                <form method="POST" action="{{ route('admin.characters.bulk-action') }}" onsubmit="return confirm('選択したキャラクターに一括操作を実行します。よろしいですか？');">
+                <form
+                    id="character-bulk-form"
+                    method="POST"
+                    action="{{ route('admin.characters.bulk-action') }}"
+                    onsubmit="return confirm('選択したキャラクターに一括操作を実行します。よろしいですか？');"
+                    class="mb-6 rounded-3xl bg-[#FFF5F7] p-5"
+                >
                     @csrf
 
-                    <div class="mb-6 rounded-3xl bg-[#FFF5F7] p-5">
-                        <div class="flex flex-wrap items-end gap-4">
-                            <div>
-                                <label for="bulk_action" class="mb-1 block text-sm font-bold text-[#4A5568]">
-                                    チェックしたキャラクターを一括操作
-                                </label>
-                                <select
-                                    id="bulk_action"
-                                    name="bulk_action"
-                                    class="rounded-2xl border border-[#CBD5E0] bg-white px-4 py-3"
-                                    required
-                                >
-                                    <option value="">選択してください</option>
-                                    <option value="published">公開</option>
-                                    <option value="private">非公開</option>
-                                    <option value="delete">削除</option>
-                                </select>
-                            </div>
-
-                            <button type="submit" class="oshi-btn">
-                                一括反映
-                            </button>
-
-                            <p class="text-sm font-bold text-[#A0AEC0]">
-                                削除は完全削除ではなく、削除フラグを付ける処理です。
-                            </p>
+                    <div class="flex flex-wrap items-end gap-4">
+                        <div>
+                            <label for="bulk_action" class="mb-1 block text-sm font-bold text-[#4A5568]">
+                                チェックしたキャラクターを一括操作
+                            </label>
+                            <select
+                                id="bulk_action"
+                                name="bulk_action"
+                                class="rounded-2xl border border-[#CBD5E0] bg-white px-4 py-3"
+                                required
+                            >
+                                <option value="">選択してください</option>
+                                <option value="published">公開</option>
+                                <option value="private">非公開</option>
+                                <option value="delete">削除</option>
+                            </select>
                         </div>
+
+                        <button type="submit" class="oshi-btn">
+                            一括反映
+                        </button>
+
+                        <p class="text-sm font-bold text-[#A0AEC0]">
+                            削除は完全削除ではなく、削除フラグを付ける処理です。
+                        </p>
                     </div>
+                </form>
             @endif
 
             <div class="overflow-hidden rounded-3xl border border-[#E2E8F0] bg-white">
@@ -151,7 +158,10 @@
                             <tr>
                                 @if ($canUseCharacterImports)
                                     <th class="px-5 py-4 font-bold">
-                                        <input type="checkbox" onclick="document.querySelectorAll('.character-check').forEach(el => el.checked = this.checked)">
+                                        <input
+                                            type="checkbox"
+                                            onclick="document.querySelectorAll('.character-check').forEach(el => el.checked = this.checked)"
+                                        >
                                     </th>
                                 @endif
                                 <th class="px-5 py-4 font-bold">キャラクター名</th>
@@ -165,10 +175,20 @@
 
                         <tbody>
                             @forelse ($characters as $character)
+                                @php
+                                    $canModifyCharacter = (bool) ($character->can_modify_by_current_user ?? false);
+                                @endphp
+
                                 <tr class="border-t border-[#E2E8F0]">
                                     @if ($canUseCharacterImports)
                                         <td class="px-5 py-4 align-middle">
-                                            <input class="character-check" type="checkbox" name="ids[]" value="{{ $character->id }}">
+                                            <input
+                                                class="character-check"
+                                                form="character-bulk-form"
+                                                type="checkbox"
+                                                name="ids[]"
+                                                value="{{ $character->id }}"
+                                            >
                                         </td>
                                     @endif
 
@@ -198,13 +218,11 @@
                                                 詳細
                                             </a>
 
-                                            @if ($canEditCharacters)
+                                            @if ($canModifyCharacter)
                                                 <a href="{{ route('admin.characters.edit', $character) }}" class="oshi-btn oshi-btn-sub">
                                                     編集
                                                 </a>
-                                            @endif
 
-                                            @if ($canUseCharacterImports)
                                                 <form
                                                     method="POST"
                                                     action="{{ route('admin.characters.destroy', $character) }}"
@@ -231,10 +249,6 @@
                     </table>
                 </div>
             </div>
-
-            @if ($canUseCharacterImports)
-                </form>
-            @endif
 
             <div class="mt-6">
                 {{ $characters->links() }}

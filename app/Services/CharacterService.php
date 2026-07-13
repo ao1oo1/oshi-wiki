@@ -28,6 +28,12 @@ class CharacterService
         unset($data['tag_ids']);
 
         $data = $this->applyReviewRule($data, false);
+
+        // CHARACTER_OWNER_SET_FIX
+        if (auth()->check() && empty($data['created_by'])) {
+            $data['created_by'] = auth()->id();
+        }
+        // /CHARACTER_OWNER_SET_FIX
         $data['status'] = $data['status'] ?? 'draft';
 
         $character = $this->repository->create($data);

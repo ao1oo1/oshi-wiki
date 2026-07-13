@@ -23,6 +23,7 @@ class CharacterRelationship extends Model
         'review_status',
         'reviewed_at',
         'reviewed_by',
+        'created_by'
     ];
 
     public function work(): BelongsTo
@@ -39,4 +40,15 @@ class CharacterRelationship extends Model
     {
         return $this->belongsTo(Character::class, 'to_character_id');
     }
+    protected static function booted(): void
+    {
+        // OWNER_CREATED_BY_AUTO_SET
+        static::creating(function ($model): void {
+            if (auth()->check() && empty($model->created_by)) {
+                $model->created_by = auth()->id();
+            }
+        });
+        // /OWNER_CREATED_BY_AUTO_SET
+    }
+
 }

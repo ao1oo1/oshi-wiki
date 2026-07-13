@@ -11,6 +11,7 @@ class CharacterRelationshipBulkActionController extends Controller
 {
     public function __invoke(BulkActionCharacterRelationshipRequest $request): RedirectResponse
     {
+        abort_unless(auth()->user()?->canManageAllAdminFeatures(), 403, '一括操作は最高管理者のみ可能です。');
         abort_unless(auth()->user()?->isSuperAdmin(), 403);
 
         $ids = $request->input('relationship_ids', []);

@@ -25,13 +25,33 @@ class CharacterController extends Controller
         $keyword = request('keyword');
         $selectedTagId = request('tag_id');
 
+        $characters = $this->service->paginate(
+            20,
+            $selectedWorkId ? (int) $selectedWorkId : null,
+            $keyword,
+            $selectedTagId ? (int) $selectedTagId : null
+        );
+
+        // CHARACTER_INDEX_CAN_MODIFY_FLAG_FIX
+        $currentUser = auth()->user();
+
+        $characters->getCollection()->transform(function (Character $character) use ($currentUser) {
+            $character->can_modify_by_current_user = $currentUser
+                && (
+                    $currentUser->canManageAllAdminFeatures()
+                    || (
+                        $currentUser->isStaff()
+                        && ! is_null($character->created_by)
+                        && (int) $character->created_by === (int) $currentUser->id
+                    )
+                );
+
+            return $character;
+        });
+        // /CHARACTER_INDEX_CAN_MODIFY_FLAG_FIX
+
         return view('admin.characters.index', [
-            'characters' => $this->service->paginate(
-                20,
-                $selectedWorkId ? (int) $selectedWorkId : null,
-                $keyword,
-                $selectedTagId ? (int) $selectedTagId : null
-            ),
+            'characters' => $characters,
             'works' => Work::query()->latest()->get(),
             'tags' => \App\Models\Tag::query()
                 ->where('type', 'character')
@@ -90,6 +110,8 @@ class CharacterController extends Controller
 
     public function edit(Character $character): View
     {
+        $this->ensureCanModifyCharacter($character);
+
         return view('admin.characters.edit', [
             'character' => $character->load('tags'),
             'works' => Work::query()->latest()->get(),
@@ -102,6 +124,8 @@ class CharacterController extends Controller
 
     public function update(UpdateCharacterRequest $request, Character $character): RedirectResponse
     {
+        $this->ensureCanModifyCharacter($character);
+
         $data = $request->validated();
 
         // STAFF_CHARACTER_REVIEW_STATUS_FIX
@@ -120,7 +144,7 @@ class CharacterController extends Controller
 
     public function destroy(Character $character): RedirectResponse
     {
-        abort_unless(auth()->user()?->isSuperAdmin(), 403, '削除操作は最高管理者のみ可能です。');
+        $this->ensureCanModifyCharacter($character);
 
         $this->service->delete($character);
 
@@ -128,4 +152,19 @@ class CharacterController extends Controller
             ->route('admin.characters.index')
             ->with('success', 'キャラクターを削除しました。');
     }
+
+    private function ensureCanModifyCharacter(Character $character): void
+    {
+        $user = auth()->user();
+
+        abort_unless($user, 403);
+
+        abort_unless(
+            $user->canModifyOwnedAdminContent($character),
+            403,
+            '他のスタッフまたは最高管理者が登録したキャラクターは編集・削除できません。'
+        );
+    }
+
+
 }

@@ -60,5 +60,6 @@
             {{ $slot }}
         </main>
     </div>
+    @include('admin.partials.staff-mobile-ui')
 </body>
 </html>

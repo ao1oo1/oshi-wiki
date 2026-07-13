@@ -11,6 +11,7 @@ class WorkBulkActionController extends Controller
 {
     public function __invoke(BulkActionWorkRequest $request): RedirectResponse
     {
+        abort_unless(auth()->user()?->canManageAllAdminFeatures(), 403, '一括操作は最高管理者のみ可能です。');
         abort_unless(auth()->user()?->canManageAllAdminFeatures(), 403, '作品管理のこの操作は最高管理者のみ可能です。');
         abort_unless(auth()->user()?->isSuperAdmin(), 403);
 

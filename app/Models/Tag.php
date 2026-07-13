@@ -20,6 +20,7 @@ class Tag extends Model
         'review_status',
         'reviewed_at',
         'reviewed_by',
+        'created_by'
     ];
 
     public function works(): BelongsToMany
@@ -33,4 +34,15 @@ class Tag extends Model
         return $this->belongsToMany(Character::class)
             ->withTimestamps();
     }
+    protected static function booted(): void
+    {
+        // OWNER_CREATED_BY_AUTO_SET
+        static::creating(function ($model): void {
+            if (auth()->check() && empty($model->created_by)) {
+                $model->created_by = auth()->id();
+            }
+        });
+        // /OWNER_CREATED_BY_AUTO_SET
+    }
+
 }

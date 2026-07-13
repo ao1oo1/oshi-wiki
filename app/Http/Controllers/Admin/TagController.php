@@ -54,6 +54,19 @@ class TagController extends Controller
             ->orderBy('type')
             ->pluck('type');
 
+
+        $currentUser = auth()->user();
+
+        if (isset($tags) && method_exists($tags, 'getCollection')) {
+            $tags->getCollection()->transform(function ($model) use ($currentUser) {
+                $model->can_modify_by_current_user = $currentUser
+                    ? $currentUser->canModifyOwnedAdminContent($model)
+                    : false;
+
+                return $model;
+            });
+        }
+
         return view('admin.tags.index', [
             'tags' => $tags,
             'tagTypes' => $tagTypes,
@@ -73,6 +86,7 @@ class TagController extends Controller
 
     public function edit(Tag $tag): View
     {
+        $this->ensureCanModifyTag($tag);
         abort_unless(auth()->user()?->canManageAllAdminFeatures(), 403, 'タグ管理のこの操作は最高管理者のみ可能です。');
         return view('admin.tags.edit', [
             'tag' => $tag,
@@ -81,6 +95,7 @@ class TagController extends Controller
 
     public function update(UpdateTagRequest $request, Tag $tag): RedirectResponse
     {
+        $this->ensureCanModifyTag($tag);
         abort_unless(auth()->user()?->canManageAllAdminFeatures(), 403, 'タグ管理のこの操作は最高管理者のみ可能です。');
         $this->service->update($tag, $request->validated());
 
@@ -91,12 +106,24 @@ class TagController extends Controller
 
     public function destroy(Tag $tag): RedirectResponse
     {
-        abort_unless(auth()->user()?->isSuperAdmin(), 403, '削除操作は最高管理者のみ可能です。');
-
-        $this->service->delete($tag);
+        $this->ensureCanModifyTag($tag);
+$this->service->delete($tag);
 
         return redirect()
             ->route('admin.tags.index')
             ->with('success', 'タグを削除しました。');
     }
+    private function ensureCanModifyTag(Tag $tag): void
+    {
+        $user = auth()->user();
+
+        abort_unless($user, 403);
+
+        abort_unless(
+            $user->canModifyOwnedAdminContent($tag),
+            403,
+            '他のスタッフまたは最高管理者が登録したタグは編集・削除できません。'
+        );
+    }
+
 }

@@ -32,6 +32,7 @@ class Character extends Model
         'review_status',
         'reviewed_at',
         'reviewed_by',
+        'created_by'
     ];
 
 
@@ -55,4 +56,15 @@ class Character extends Model
     {
         return $this->hasMany(CharacterRelationship::class, 'to_character_id');
     }
+    protected static function booted(): void
+    {
+        // OWNER_CREATED_BY_AUTO_SET
+        static::creating(function ($model): void {
+            if (auth()->check() && empty($model->created_by)) {
+                $model->created_by = auth()->id();
+            }
+        });
+        // /OWNER_CREATED_BY_AUTO_SET
+    }
+
 }

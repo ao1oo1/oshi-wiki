@@ -25,6 +25,12 @@ class CharacterRelationshipService
         $this->validateCharacters($data);
 
         $data = $this->applyReviewRule($data, false);
+
+        // RELATIONSHIP_OWNER_SET_FIX
+        if (auth()->check() && empty($data['created_by'])) {
+            $data['created_by'] = auth()->id();
+        }
+        // /RELATIONSHIP_OWNER_SET_FIX
         $data['status'] = $data['status'] ?? 'draft';
 
         return $this->repository->create($data);

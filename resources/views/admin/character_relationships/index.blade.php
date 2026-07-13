@@ -1,5 +1,15 @@
-
 <x-app-layout>
+    @php
+        $relationships = $relationships ?? $characterRelationships ?? collect();
+
+        $currentUser = auth()->user();
+        $canManageRelationships = $currentUser?->canManageAllAdminFeatures() ?? false;
+        $canCreateRelationships = $canManageRelationships || ($currentUser?->isStaff() ?? false);
+
+        $selectedWorkId = $selectedWorkId ?? request('work_id');
+        $keyword = $keyword ?? request('keyword');
+    @endphp
+
     <x-slot name="header">
         <h2 class="font-semibold text-xl">
             関係性管理
@@ -7,19 +17,13 @@
     </x-slot>
 
     <div class="p-6">
-        @php
-            $relationships = $relationships ?? $characterRelationships ?? collect();
-        @endphp
-
         @include('admin.partials.flash')
-
-
-
+        @include('admin.partials.publish-help')
 
         <div class="oshi-card">
-            <div class="mb-6 flex flex-wrap items-center justify-between gap-3">
+            <div class="mb-6 flex flex-wrap items-start justify-between gap-4">
                 <div>
-                    <h1 class="text-2xl font-bold">
+                    <h1 class="text-2xl font-bold text-[#2D3748]">
                         関係性管理
                     </h1>
                     <p class="oshi-muted">
@@ -27,133 +31,204 @@
                     </p>
                 </div>
 
-                <a href="{{ route('admin.character-relationships.create') }}" class="oshi-btn">
-                    関係性登録画面へ
-                </a>
-                            @if (auth()->user()?->canManageAllAdminFeatures())
-                    <a href="{{ route('admin.character-relationships.csv-import.create') }}" class="oshi-btn oshi-btn-sub">
-                        CSV取り込み
+                @if ($canCreateRelationships)
+                    <a href="{{ route('admin.character-relationships.create') }}" class="oshi-btn">
+                        関係性登録画面へ
                     </a>
-                
-                    <a href="{{ route('admin.character-relationships.csv-export', request()->query()) }}" class="oshi-btn oshi-btn-sub">
-                        CSVエクスポート
-                    </a>
-@endif
-</div>
+                @endif
+            </div>
 
-            <form method="GET" action="{{ route('admin.character-relationships.index') }}" class="mb-6 flex flex-wrap items-end gap-3">
-                <div>
-                    <label for="keyword" class="mb-1 block font-medium">
-                        キーワード
-                    </label>
-                    <input
-                        id="keyword"
-                        type="text"
-                        name="keyword"
-                        value="{{ $keyword ?? '' }}"
-                        class="rounded border-gray-300"
-                        placeholder="呼称・関係性など"
-                    >
-                </div>
-
-                <div>
-                    <label for="work_id" class="mb-1 block font-medium">
-                        作品で絞り込み
-                    </label>
-                    <select id="work_id" name="work_id" class="rounded border-gray-300">
-                        <option value="">全作品</option>
-                        @foreach (($works ?? collect()) as $work)
-                            <option value="{{ $work->id }}" @selected(($selectedWorkId ?? '') == $work->id)>
-                                {{ $work->title }}
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
-
-                <button type="submit" class="oshi-btn">
-                    検索・絞り込み
-                </button>
-
-                <a href="{{ route('admin.character-relationships.index') }}" class="oshi-btn oshi-btn-sub">
-                    解除
-                </a>
-            </form>
-
-            <form method="POST" action="{{ route('admin.character-relationships.bulk-action') }}" onsubmit="return confirmRelationshipBulkAction();">
-                @csrf
-
-                <div class="mb-4 flex flex-wrap items-end gap-3 rounded bg-pink-50 p-4">
+            <form method="GET" action="{{ route('admin.character-relationships.index') }}" class="mb-6">
+                <div class="grid gap-4 md:grid-cols-[280px_1fr_auto_auto] md:items-end">
                     <div>
-                        <label for="relationship_bulk_action" class="mb-1 block font-medium">
-                            チェックした関係性を一括操作
+                        <label for="keyword" class="mb-1 block text-sm font-bold text-[#4A5568]">
+                            キーワード
                         </label>
-                        <select id="relationship_bulk_action" name="bulk_action" class="rounded border-gray-300">
-                            <option value="">選択してください</option>
-                            <option value="publish">公開にする</option>
-                            <option value="private">非公開にする</option>
-                            <option value="delete">削除フラグをつける</option>
+                        <input
+                            id="keyword"
+                            type="text"
+                            name="keyword"
+                            value="{{ $keyword }}"
+                            placeholder="呼称・関係性など"
+                            class="w-full rounded-2xl border border-[#CBD5E0] bg-white px-4 py-3"
+                        >
+                    </div>
+
+                    <div>
+                        <label for="work_id" class="mb-1 block text-sm font-bold text-[#4A5568]">
+                            作品で絞り込み
+                        </label>
+                        <select
+                            id="work_id"
+                            name="work_id"
+                            class="w-full rounded-2xl border border-[#CBD5E0] bg-white px-4 py-3"
+                        >
+                            <option value="">全作品</option>
+                            @foreach (($works ?? collect()) as $work)
+                                <option value="{{ $work->id }}" @selected((string) $selectedWorkId === (string) $work->id)>
+                                    {{ $work->title }}
+                                </option>
+                            @endforeach
                         </select>
                     </div>
 
                     <button type="submit" class="oshi-btn">
-                        一括反映
+                        検索・絞り込み
                     </button>
 
-                    <p class="text-sm text-gray-600">
-                        削除は完全削除ではなく、削除フラグを付ける処理です。
-                    </p>
+                    <a href="{{ route('admin.character-relationships.index') }}" class="oshi-btn oshi-btn-sub text-center">
+                        解除
+                    </a>
                 </div>
+            </form>
 
-                <div class="oshi-table-wrap">
-                    <table class="oshi-table">
-                        <thead>
+            @if ($canManageRelationships)
+                <form
+                    id="relationship-bulk-form"
+                    method="POST"
+                    action="{{ route('admin.character-relationships.bulk-action') }}"
+                    onsubmit="return confirmRelationshipBulkAction();"
+                    class="mb-6 rounded-3xl bg-[#FFF5F7] p-5"
+                >
+                    @csrf
+
+                    <div class="flex flex-wrap items-end gap-4">
+                        <div>
+                            <label for="relationship_bulk_action" class="mb-1 block text-sm font-bold text-[#4A5568]">
+                                チェックした関係性を一括操作
+                            </label>
+                            <select
+                                id="relationship_bulk_action"
+                                name="bulk_action"
+                                class="rounded-2xl border border-[#CBD5E0] bg-white px-4 py-3"
+                                required
+                            >
+                                <option value="">選択してください</option>
+                                <option value="publish">公開にする</option>
+                                <option value="private">非公開にする</option>
+                                <option value="delete">削除</option>
+                            </select>
+                        </div>
+
+                        <button type="submit" class="oshi-btn">
+                            一括反映
+                        </button>
+
+                        <p class="text-sm font-bold text-[#A0AEC0]">
+                            削除は完全削除ではなく、削除フラグを付ける処理です。
+                        </p>
+                    </div>
+                </form>
+            @endif
+
+            <div class="overflow-hidden rounded-3xl border border-[#E2E8F0] bg-white">
+                <div class="overflow-x-auto">
+                    <table class="w-full min-w-[900px] text-left text-sm">
+                        <thead class="bg-[#FFF5F7] text-[#2D3748]">
                             <tr>
-                                <th><input type="checkbox" id="relationship_check_all"></th>
-                                <th>作品</th>
-                                <th>キャラクター</th>
-                                <th>相手</th>
-                                <th>呼び方</th>
-                                <th>関係性</th>
-                                <th>状態</th>
-                                <th>操作</th>
+                                @if ($canManageRelationships)
+                                    <th class="px-5 py-4 font-bold">
+                                        <input
+                                            type="checkbox"
+                                            id="relationship_check_all"
+                                            class="h-5 w-5 rounded border-[#A0AEC0]"
+                                        >
+                                    </th>
+                                @endif
+                                <th class="px-5 py-4 font-bold">作品</th>
+                                <th class="px-5 py-4 font-bold">キャラクター</th>
+                                <th class="px-5 py-4 font-bold">相手</th>
+                                <th class="px-5 py-4 font-bold">呼び方</th>
+                                <th class="px-5 py-4 font-bold">関係性</th>
+                                <th class="px-5 py-4 font-bold">状態</th>
+                                <th class="px-5 py-4 font-bold">操作</th>
                             </tr>
                         </thead>
+
                         <tbody>
                             @forelse ($relationships as $relation)
-                                <tr>
-                                    <td>
-                                        <input type="checkbox" name="relationship_ids[]" value="{{ $relation->id }}" class="relationship-checkbox">
+                                @php
+                                    $canModifyRow = (bool) ($relation->can_modify_by_current_user ?? false);
+
+                                    if (! $canModifyRow && $currentUser && method_exists($currentUser, 'canModifyOwnedAdminContent')) {
+                                        $canModifyRow = $currentUser->canModifyOwnedAdminContent($relation);
+                                    }
+                                @endphp
+
+                                <tr class="border-t border-[#E2E8F0]">
+                                    @if ($canManageRelationships)
+                                        <td class="px-5 py-4 align-middle">
+                                            <input
+                                                form="relationship-bulk-form"
+                                                type="checkbox"
+                                                name="relationship_ids[]"
+                                                value="{{ $relation->id }}"
+                                                class="relationship-checkbox h-5 w-5 rounded border-[#A0AEC0]"
+                                            >
+                                        </td>
+                                    @endif
+
+                                    <td class="px-5 py-4 align-middle text-[#2D3748]">
+                                        {{ $relation->work?->title ?? '未設定' }}
                                     </td>
 
-                                    <td>{{ $relation->work?->title ?? '未設定' }}</td>
-                                    <td>{{ $relation->fromCharacter?->name ?? '未設定' }}</td>
-                                    <td>{{ $relation->toCharacter?->name ?? '未設定' }}</td>
-                                    <td>{{ $relation->called_name ?: '未設定' }}</td>
-                                    <td>{{ $relation->relationship ?: '未設定' }}</td>
+                                    <td class="px-5 py-4 align-middle text-[#2D3748]">
+                                        {{ $relation->fromCharacter?->name ?? '未設定' }}
+                                    </td>
 
-                                    <td>
+                                    <td class="px-5 py-4 align-middle text-[#2D3748]">
+                                        {{ $relation->toCharacter?->name ?? '未設定' }}
+                                    </td>
+
+                                    <td class="px-5 py-4 align-middle text-[#2D3748]">
+                                        {{ $relation->called_name ?: '未設定' }}
+                                    </td>
+
+                                    <td class="px-5 py-4 align-middle text-[#2D3748]">
+                                        {{ $relation->relationship ?: '未設定' }}
+                                    </td>
+
+                                    <td class="px-5 py-4 align-middle">
                                         @include('admin.partials.status-badge', ['status' => $relation->status])
                                     </td>
 
-                                    <td>
+                                    <td class="px-5 py-4 align-middle">
                                         <div class="flex flex-wrap gap-2">
-                                            <a href="{{ route('admin.character-relationships.edit', $relation) }}" class="oshi-btn oshi-btn-sub">
-                                                編集
-                                            </a>
+                                            @if ($canModifyRow)
+                                                <a href="{{ route('admin.character-relationships.edit', $relation) }}" class="oshi-btn oshi-btn-sub">
+                                                    編集
+                                                </a>
+
+                                                <form
+                                                    method="POST"
+                                                    action="{{ route('admin.character-relationships.destroy', $relation) }}"
+                                                    onsubmit="return confirm('この関係性を削除します。よろしいですか？');"
+                                                >
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="oshi-btn oshi-btn-sub text-red-600">
+                                                        削除
+                                                    </button>
+                                                </form>
+                                            @else
+                                                <span class="text-sm font-bold text-[#A0AEC0]">
+                                                    —
+                                                </span>
+                                            @endif
                                         </div>
                                     </td>
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="8">
-                                        <div class="oshi-empty">関係性はまだ登録されていません。</div>
+                                    <td colspan="{{ $canManageRelationships ? 8 : 7 }}" class="px-5 py-8 text-center text-[#718096]">
+                                        関係性はまだ登録されていません。
                                     </td>
                                 </tr>
                             @endforelse
                         </tbody>
                     </table>
                 </div>
-            </form>
+            </div>
 
             <div class="mt-6">
                 {{ $relationships->links() }}
@@ -161,36 +236,38 @@
         </div>
     </div>
 
-    <script>
-        const relationshipCheckAll = document.getElementById('relationship_check_all');
+    @if ($canManageRelationships)
+        <script>
+            const relationshipCheckAll = document.getElementById('relationship_check_all');
 
-        if (relationshipCheckAll) {
-            relationshipCheckAll.addEventListener('change', function () {
-                document.querySelectorAll('.relationship-checkbox').forEach(function (checkbox) {
-                    checkbox.checked = relationshipCheckAll.checked;
+            if (relationshipCheckAll) {
+                relationshipCheckAll.addEventListener('change', function () {
+                    document.querySelectorAll('.relationship-checkbox').forEach(function (checkbox) {
+                        checkbox.checked = relationshipCheckAll.checked;
+                    });
                 });
-            });
-        }
-
-        function confirmRelationshipBulkAction() {
-            const checkedCount = document.querySelectorAll('.relationship-checkbox:checked').length;
-            const action = document.getElementById('relationship_bulk_action')?.value;
-
-            if (checkedCount === 0) {
-                alert('一括操作する関係性を選択してください。');
-                return false;
             }
 
-            if (!action) {
-                alert('一括操作の内容を選択してください。');
-                return false;
-            }
+            function confirmRelationshipBulkAction() {
+                const checkedCount = document.querySelectorAll('.relationship-checkbox:checked').length;
+                const action = document.getElementById('relationship_bulk_action')?.value;
 
-            if (action === 'delete') {
-                return confirm(checkedCount + '件の関係性に削除フラグを付けます。よろしいですか？');
-            }
+                if (checkedCount === 0) {
+                    alert('一括操作する関係性を選択してください。');
+                    return false;
+                }
 
-            return confirm(checkedCount + '件の関係性を一括変更します。よろしいですか？');
-        }
-    </script>
+                if (! action) {
+                    alert('一括操作の内容を選択してください。');
+                    return false;
+                }
+
+                if (action === 'delete') {
+                    return confirm(checkedCount + '件の関係性に削除フラグを付けます。よろしいですか？');
+                }
+
+                return confirm(checkedCount + '件の関係性を一括変更します。よろしいですか？');
+            }
+        </script>
+    @endif
 </x-app-layout>

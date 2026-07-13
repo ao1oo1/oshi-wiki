@@ -107,4 +107,16 @@ class User extends Authenticatable
     {
         return $this->isWriter();
     }
+    public function canModifyOwnedAdminContent($model): bool
+    {
+        if ($this->canManageAllAdminFeatures()) {
+            return true;
+        }
+
+        return $this->isStaff()
+            && isset($model->created_by)
+            && ! is_null($model->created_by)
+            && (int) $model->created_by === (int) $this->id;
+    }
+
 }

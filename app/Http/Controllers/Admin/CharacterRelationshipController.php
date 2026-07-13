@@ -24,6 +24,19 @@ class CharacterRelationshipController extends Controller
         $selectedWorkId = request('work_id');
         $keyword = request('keyword');
 
+
+        $currentUser = auth()->user();
+
+        if (isset($relationships) && method_exists($relationships, 'getCollection')) {
+            $relationships->getCollection()->transform(function ($model) use ($currentUser) {
+                $model->can_modify_by_current_user = $currentUser
+                    ? $currentUser->canModifyOwnedAdminContent($model)
+                    : false;
+
+                return $model;
+            });
+        }
+
         return view('admin.character_relationships.index', [
             'characterRelationships' => $this->service->paginate(
                 20,
@@ -81,6 +94,8 @@ class CharacterRelationshipController extends Controller
 
     public function edit(CharacterRelationship $characterRelationship): View
     {
+        $this->ensureCanModifyRelationship($characterRelationship);
+
         return view('admin.character_relationships.edit', [
             'characterRelationship' => $characterRelationship,
             'works' => Work::query()->latest()->get(),
@@ -97,6 +112,8 @@ class CharacterRelationshipController extends Controller
         UpdateCharacterRelationshipRequest $request,
         CharacterRelationship $characterRelationship
     ): RedirectResponse {
+        $this->ensureCanModifyRelationship($characterRelationship);
+
         $data = $request->validated();
 
         // STAFF_RELATIONSHIP_REVIEW_STATUS_FIX
@@ -115,7 +132,7 @@ class CharacterRelationshipController extends Controller
 
     public function destroy(CharacterRelationship $characterRelationship): RedirectResponse
     {
-        abort_unless(auth()->user()?->isSuperAdmin(), 403, '削除操作は最高管理者のみ可能です。');
+        $this->ensureCanModifyRelationship($characterRelationship);
 
         $this->service->delete($characterRelationship);
 
@@ -123,4 +140,19 @@ class CharacterRelationshipController extends Controller
             ->route('admin.character-relationships.index')
             ->with('success', 'キャラクター関係性を削除しました。');
     }
+
+    private function ensureCanModifyRelationship(CharacterRelationship $characterRelationship): void
+    {
+        $user = auth()->user();
+
+        abort_unless($user, 403);
+
+        abort_unless(
+            $user->canModifyOwnedAdminContent($characterRelationship),
+            403,
+            '他のスタッフまたは最高管理者が登録した関係性は編集・削除できません。'
+        );
+    }
+
+
 }
