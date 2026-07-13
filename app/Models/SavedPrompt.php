@@ -6,12 +6,9 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
 class SavedPrompt extends Model
 {
-    use SoftDeletes;
-
     public const WORK_SOURCE_ORIGINAL = 'original';
     public const WORK_SOURCE_V1 = 'v1';
 
@@ -60,7 +57,6 @@ class SavedPrompt extends Model
             'output_in_parts' => 'boolean',
             'selected_story_analysis_ids' => 'array',
             'last_used_at' => 'datetime',
-            'deleted_at' => 'datetime',
         ];
     }
 

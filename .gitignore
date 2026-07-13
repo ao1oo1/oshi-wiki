@@ -35,3 +35,5 @@ Thumbs.db
 *~
 .DS_Store
 # /OSHI_WIKI_LOCAL_BACKUPS
+
+.env.testing

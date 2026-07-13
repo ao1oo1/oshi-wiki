@@ -73,6 +73,62 @@ class SavedPromptService
         return $this->repository->create($payload);
     }
 
+    public function createStoryAnalysisPromptForUser(
+        User $user,
+        array $data
+    ): SavedPrompt {
+        $limit = WritingAssistLimits::promptsPerUser($user);
+
+        if (
+            $limit !== null
+            && $this->repository->countForUser($user) >= $limit
+        ) {
+            throw ValidationException::withMessages([
+                'prompt_title' =>
+                    "保存プロンプトは最大{$limit}件まで登録できます。",
+            ]);
+        }
+
+        $title = trim(
+            (string) ($data['prompt_title'] ?? '')
+        );
+
+        if ($title === '') {
+            $title = 'ストーリー分析 '
+                . now()->format('Y/m/d H:i');
+        }
+
+        return $this->repository->create([
+            'user_id' => $user->id,
+            'title' => $title,
+            'category' => 'other',
+            'purpose' => 'ストーリーの文体・構成分析',
+            'work_source' => SavedPrompt::WORK_SOURCE_ORIGINAL,
+            'work_id' => null,
+            'selected_character_refs' => [],
+            'include_relationship_timeline' => false,
+            'writing_style' => 'other',
+            'writing_style_other' => '文体分析',
+            'genre' => 'other',
+            'genre_other' => '文体分析',
+            'synopsis' => null,
+            'plot_opening' => null,
+            'plot_development' => null,
+            'plot_turn' => null,
+            'plot_conclusion' => null,
+            'use_story_length_options' => false,
+            'story_length_type' => null,
+            'output_plot_first' => false,
+            'output_in_parts' => false,
+            'selected_story_analysis_ids' => [],
+            'prompt_body' => trim(
+                (string) $data['prompt_body']
+            ),
+            'notes' => null,
+            'status' => 'active',
+        ]);
+    }
+
     public function update(
         User $user,
         SavedPrompt $savedPrompt,

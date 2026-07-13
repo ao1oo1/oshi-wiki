@@ -63,16 +63,12 @@ class SavedPromptAiResultService
         );
 
         $existing = $this->repository
-            ->findForPromptWithTrashed(
+            ->findForPrompt(
                 $user,
                 $savedPrompt->id
             );
 
         if ($existing) {
-            if ($existing->trashed()) {
-                $existing->restore();
-            }
-
             $existing->title = $title !== ''
                 ? $title
                 : 'AI回答 '

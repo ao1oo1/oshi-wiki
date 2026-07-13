@@ -44,20 +44,25 @@ Route::middleware(['auth', 'writer.user'])->prefix('writer')->name('writer.')->g
     Route::post('prompts/{prompt}/record-usage', [\App\Http\Controllers\Writer\SavedPromptController::class, 'recordUsage'])
         ->name('prompts.record-usage');
 
-    Route::get(
-        'stories/analysis',
-        [\App\Http\Controllers\Writer\WriterStoryController::class, 'analysis']
-    )->name('stories.analysis');
-
     Route::post(
-        'stories/analysis',
-        [\App\Http\Controllers\Writer\WriterStoryController::class, 'generateAnalysisPrompt']
-    )->name('stories.analysis.generate');
+        'story-analyses/generate-prompt',
+        [\App\Http\Controllers\Writer\WriterStoryAnalysisController::class, 'generatePrompt']
+    )->name('story-analyses.generate-prompt');
 
-    Route::post(
-        'stories/analysis/results',
-        [\App\Http\Controllers\Writer\WriterStoryController::class, 'storeAnalysisResult']
-    )->name('stories.analysis-results.store');
+    Route::patch(
+        'story-analyses/{story_analysis}/result',
+        [\App\Http\Controllers\Writer\WriterStoryAnalysisController::class, 'updateResult']
+    )->name('story-analyses.result.update');
+
+    Route::delete(
+        'story-analyses/{story_analysis}/result',
+        [\App\Http\Controllers\Writer\WriterStoryAnalysisController::class, 'destroyResult']
+    )->name('story-analyses.result.destroy');
+
+    Route::resource(
+        'story-analyses',
+        \App\Http\Controllers\Writer\WriterStoryAnalysisController::class
+    );
 
     Route::resource(
         'stories',

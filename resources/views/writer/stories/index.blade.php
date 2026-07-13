@@ -34,7 +34,7 @@
 
         <div class="flex flex-col gap-3 md:flex-row">
             <a
-                href="{{ route('writer.stories.analysis') }}"
+                href="{{ route('writer.story-analyses.index') }}"
                 class="inline-flex items-center justify-center rounded-2xl border border-[#FED7E2] bg-white px-6 py-3 font-bold text-[#2D3748] hover:bg-[#FFF1F5]"
             >
                 分析プロンプトを作成

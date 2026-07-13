@@ -204,6 +204,11 @@
                         ストーリー管理
                     </a>
 
+            <a href="{{ route('writer.story-analyses.index') }}"
+               class="block rounded-2xl px-5 py-4 text-xl font-bold transition {{ request()->routeIs('writer.story-analyses.*') ? 'bg-[#FED7E2] text-[#2D3748]' : 'text-[#2D3748] hover:bg-[#FFF1F5]' }}">
+                文体分析
+            </a>
+
                     <a href="{{ route('writer.prompts.index') }}"
                        class="block rounded-2xl px-5 py-4 {{ request()->routeIs('writer.prompts.*') ? 'bg-[#FED7E2] text-[#2D3748]' : 'text-[#2D3748] hover:bg-[#FFF1F5]' }}">
                         プロンプト管理

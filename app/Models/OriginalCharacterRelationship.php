@@ -5,12 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
 class OriginalCharacterRelationship extends Model
 {
-    use SoftDeletes;
-
     public const SOURCE_ORIGINAL = 'original';
     public const SOURCE_V1 = 'v1';
 
@@ -36,7 +33,6 @@ class OriginalCharacterRelationship extends Model
 
     protected $casts = [
         'timeline_items' => 'array',
-        'deleted_at' => 'datetime',
     ];
 
     public function user(): BelongsTo

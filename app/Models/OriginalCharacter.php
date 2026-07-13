@@ -5,12 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
 class OriginalCharacter extends Model
 {
-    use SoftDeletes;
-
     protected $fillable = [
         'user_id',
         'name',
@@ -38,7 +35,6 @@ class OriginalCharacter extends Model
     {
         return [
             'is_main_character' => 'boolean',
-            'deleted_at' => 'datetime',
         ];
     }
 

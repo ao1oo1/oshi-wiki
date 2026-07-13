@@ -418,7 +418,7 @@
 
             <div class="mt-5">
                 <a
-                    href="{{ route('writer.stories.analysis') }}"
+                    href="{{ route('writer.story-analyses.index') }}"
                     class="inline-flex items-center justify-center rounded-2xl bg-[#FED7E2] px-6 py-3 font-bold text-[#2D3748] hover:opacity-90"
                 >
                     ストーリー分析へ

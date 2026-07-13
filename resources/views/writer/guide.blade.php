@@ -308,7 +308,7 @@
             </div>
 
             <a
-                href="{{ route('writer.stories.analysis') }}"
+                href="{{ route('writer.story-analyses.index') }}"
                 class="inline-flex items-center justify-center rounded-2xl bg-[#FED7E2] px-5 py-3 text-sm font-bold text-[#2D3748] hover:opacity-90"
             >
                 ストーリー分析へ
@@ -760,7 +760,7 @@
             </a>
 
             <a
-                href="{{ route('writer.stories.analysis') }}"
+                href="{{ route('writer.story-analyses.index') }}"
                 class="rounded-3xl bg-[#F7FAFC] p-5 transition hover:bg-[#FFF1F5]"
             >
                 <p class="font-bold text-[#2D3748]">

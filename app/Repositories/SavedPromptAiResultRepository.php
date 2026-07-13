@@ -26,13 +26,13 @@ class SavedPromptAiResultRepository
     }
 
     /**
-     * 論理削除済みも含め、対象プロンプトの回答を取得する。
+     * 対象プロンプトに保存されたAI結果を取得する。
      */
-    public function findForPromptWithTrashed(
+    public function findForPrompt(
         User $user,
         int $savedPromptId
     ): ?SavedPromptAiResult {
-        return SavedPromptAiResult::withTrashed()
+        return SavedPromptAiResult::query()
             ->forUser($user)
             ->where('saved_prompt_id', $savedPromptId)
             ->first();
@@ -41,7 +41,7 @@ class SavedPromptAiResultRepository
     public function create(
         array $data
     ): SavedPromptAiResult {
-        return SavedPromptAiResult::create($data);
+        return SavedPromptAiResult::query()->create($data);
     }
 
     public function save(
@@ -51,11 +51,11 @@ class SavedPromptAiResultRepository
     }
 
     /**
-     * DBの一意制約と競合しないよう、削除時は物理削除する。
+     * Writer側データは物理削除する。
      */
     public function delete(
         SavedPromptAiResult $result
     ): bool {
-        return (bool) $result->forceDelete();
+        return (bool) $result->delete();
     }
 }
