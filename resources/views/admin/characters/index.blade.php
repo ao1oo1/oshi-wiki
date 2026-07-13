@@ -151,7 +151,7 @@ $canUseCharacterImports = auth()->user()?->canManageAllAdminFeatures() ?? false;
                 </form>
             @endif
 
-            <div class="overflow-hidden rounded-3xl border border-[#E2E8F0] bg-white">
+            <div class="staff-mobile-table-shell overflow-hidden rounded-3xl border border-[#E2E8F0] bg-white">
                 <div class="overflow-x-auto">
                     <table class="w-full min-w-[900px] text-left text-sm">
                         <thead class="bg-[#FFF5F7] text-[#2D3748]">
@@ -249,6 +249,8 @@ $canUseCharacterImports = auth()->user()?->canManageAllAdminFeatures() ?? false;
                     </table>
                 </div>
             </div>
+
+            @include('admin.characters._staff_mobile_cards')
 
             <div class="mt-6">
                 {{ $characters->links() }}
