@@ -25,6 +25,11 @@ Route::middleware(['auth', 'writer.user'])->prefix('writer')->name('writer.')->g
     Route::get('guide', \App\Http\Controllers\Writer\GuideController::class)
         ->name('guide');
 
+    Route::get(
+        'original-characters/{original_character}/image',
+        [\App\Http\Controllers\Writer\OriginalCharacterController::class, 'image']
+    )->name('original-characters.image');
+
     Route::resource('original-characters', \App\Http\Controllers\Writer\OriginalCharacterController::class);
     Route::post('original-character-relationships/{originalCharacterRelationship}/duplicate', [\App\Http\Controllers\Writer\OriginalCharacterRelationshipController::class, 'duplicate'])
         ->name('original-character-relationships.duplicate');

@@ -17,7 +17,10 @@
             キャラクターデータが見つかりません。
         </div>
     @else
-        <form method="POST" action="{{ route('writer.original-characters.update', $character) }}" class="space-y-8">
+        <form method="POST"
+              action="{{ route('writer.original-characters.update', $character) }}"
+              enctype="multipart/form-data"
+              class="space-y-8">
             @csrf
             @method('PUT')
             @include('writer.original_characters._form', ['character' => $character])

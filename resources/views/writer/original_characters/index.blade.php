@@ -114,6 +114,33 @@
     @forelse ($characterItems as $character)
         <article class="rounded-3xl border border-[#E2E8F0] bg-white p-6 shadow-sm">
             <div class="flex flex-col gap-5 xl:flex-row xl:items-start xl:justify-between">
+                {{-- V3_ORIGINAL_CHARACTER_IMAGE_INDEX --}}
+                <a
+                    href="{{ route('writer.original-characters.show', $character) }}"
+                    class="block shrink-0"
+                >
+                    @if ($character->image_path)
+                        <img
+                            src="{{ route('writer.original-characters.image', $character) }}"
+                            alt="{{ $character->name }}の登録画像"
+                            loading="lazy"
+                            class="rounded-2xl border border-[#E2E8F0] bg-[#F7FAFC]"
+                            style="display:block; width:96px; height:96px; max-width:96px; object-fit:contain;"
+                        >
+                    @else
+                        <div class="flex items-center justify-center rounded-2xl border border-dashed border-[#CBD5E0] bg-[#F7FAFC]"
+                             style="width:96px; height:96px; max-width:96px;">
+                            <div class="text-center">
+                                <p class="text-3xl">🖼️</p>
+                                <p class="mt-2 text-xs font-bold text-[#A0AEC0]">
+                                    画像なし
+                                </p>
+                            </div>
+                        </div>
+                    @endif
+                </a>
+                {{-- /V3_ORIGINAL_CHARACTER_IMAGE_INDEX --}}
+
                 <div class="min-w-0 flex-1">
                     <div class="grid gap-3 text-sm font-bold text-[#4A5568] md:grid-cols-4">
                         <div class="rounded-2xl bg-[#F7FAFC] px-4 py-3">

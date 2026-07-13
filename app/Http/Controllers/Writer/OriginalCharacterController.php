@@ -10,7 +10,9 @@ use App\Services\OriginalCharacterService;
 use App\Support\WritingAssistLimits;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class OriginalCharacterController extends Controller
 {
@@ -41,7 +43,8 @@ class OriginalCharacterController extends Controller
     {
         $originalCharacter = $this->service->createForUser(
             $request->user(),
-            $request->validated()
+            $request->validated(),
+            $request->file('character_image')
         );
 
         return redirect()
@@ -49,8 +52,10 @@ class OriginalCharacterController extends Controller
             ->with('success', 'オリジナルキャラクターを登録しました。');
     }
 
-    public function show(Request $request, OriginalCharacter $originalCharacter): View
-    {
+    public function show(
+        Request $request,
+        OriginalCharacter $originalCharacter
+    ): View {
         $this->authorizeOwner($request, $originalCharacter);
 
         return view('writer.original_characters.show', [
@@ -58,8 +63,32 @@ class OriginalCharacterController extends Controller
         ]);
     }
 
-    public function edit(Request $request, OriginalCharacter $originalCharacter): View
-    {
+    public function image(
+        Request $request,
+        OriginalCharacter $originalCharacter
+    ): BinaryFileResponse {
+        $this->authorizeOwner($request, $originalCharacter);
+
+        abort_unless($originalCharacter->image_path, 404);
+        abort_unless(
+            Storage::disk('local')->exists($originalCharacter->image_path),
+            404
+        );
+
+        $absolutePath = Storage::disk('local')->path(
+            $originalCharacter->image_path
+        );
+
+        return response()->file($absolutePath, [
+            'Cache-Control' => 'private, max-age=3600',
+            'X-Content-Type-Options' => 'nosniff',
+        ]);
+    }
+
+    public function edit(
+        Request $request,
+        OriginalCharacter $originalCharacter
+    ): View {
         $this->authorizeOwner($request, $originalCharacter);
 
         return view('writer.original_characters.edit', [
@@ -67,19 +96,28 @@ class OriginalCharacterController extends Controller
         ]);
     }
 
-    public function update(UpdateOriginalCharacterRequest $request, OriginalCharacter $originalCharacter): RedirectResponse
-    {
+    public function update(
+        UpdateOriginalCharacterRequest $request,
+        OriginalCharacter $originalCharacter
+    ): RedirectResponse {
         $this->authorizeOwner($request, $originalCharacter);
 
-        $this->service->update($originalCharacter, $request->validated());
+        $this->service->update(
+            $originalCharacter,
+            $request->validated(),
+            $request->file('character_image'),
+            $request->boolean('remove_image')
+        );
 
         return redirect()
             ->route('writer.original-characters.show', $originalCharacter)
             ->with('success', 'オリジナルキャラクターを更新しました。');
     }
 
-    public function destroy(Request $request, OriginalCharacter $originalCharacter): RedirectResponse
-    {
+    public function destroy(
+        Request $request,
+        OriginalCharacter $originalCharacter
+    ): RedirectResponse {
         $this->authorizeOwner($request, $originalCharacter);
 
         $this->service->delete($originalCharacter);
@@ -89,10 +127,15 @@ class OriginalCharacterController extends Controller
             ->with('success', 'オリジナルキャラクターを削除しました。');
     }
 
-    private function authorizeOwner(Request $request, OriginalCharacter $originalCharacter): void
-    {
+    private function authorizeOwner(
+        Request $request,
+        OriginalCharacter $originalCharacter
+    ): void {
         $user = $request->user();
 
-        abort_unless($originalCharacter->user_id === $user?->id, 403);
+        abort_unless(
+            (int) $originalCharacter->user_id === (int) $user?->id,
+            403
+        );
     }
 }

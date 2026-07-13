@@ -25,6 +25,8 @@ class OriginalCharacter extends Model
         'personality',
         'appearance',
         'background',
+        'image_path',
+        'image_original_name',
         'is_main_character',
         'important_points',
         'ng_points',
@@ -52,5 +54,10 @@ class OriginalCharacter extends Model
         }
 
         return $query->where('user_id', $user->id);
+    }
+
+    public function hasImage(): bool
+    {
+        return filled($this->image_path);
     }
 }

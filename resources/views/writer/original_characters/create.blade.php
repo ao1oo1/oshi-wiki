@@ -43,7 +43,10 @@
             </div>
         </div>
     @else
-        <form method="POST" action="{{ route('writer.original-characters.store') }}" class="space-y-8">
+        <form method="POST"
+              action="{{ route('writer.original-characters.store') }}"
+              enctype="multipart/form-data"
+              class="space-y-8">
             @csrf
             @include('writer.original_characters._form')
         </form>

@@ -47,6 +47,32 @@
     </div>
 
     <section class="mb-8 rounded-3xl border border-[#E2E8F0] bg-white p-6 shadow-sm md:p-8">
+        {{-- V3_ORIGINAL_CHARACTER_IMAGE_SHOW --}}
+        <div class="mb-8 grid gap-6 md:grid-cols-[240px_minmax(0,1fr)] md:items-start">
+            <div>
+                @if ($character->image_path)
+                    <img
+                        src="{{ route('writer.original-characters.image', $character) }}"
+                        alt="{{ $character->name }}の登録画像"
+                        class="rounded-3xl border border-[#E2E8F0] bg-[#F7FAFC]"
+                        style="display:block; width:min(33.333vw, 360px); height:auto; max-width:100%; max-height:420px; object-fit:contain;"
+                    >
+                @else
+                    <div class="flex items-center justify-center rounded-3xl border border-dashed border-[#CBD5E0] bg-[#F7FAFC]"
+                         style="width:min(33.333vw, 360px); height:min(33.333vw, 360px); max-width:100%;">
+                        <div class="text-center">
+                            <p class="text-5xl">🖼️</p>
+                            <p class="mt-3 text-sm font-bold text-[#A0AEC0]">
+                                画像は登録されていません
+                            </p>
+                        </div>
+                    </div>
+                @endif
+            </div>
+
+            <div class="min-w-0">
+        {{-- /V3_ORIGINAL_CHARACTER_IMAGE_SHOW --}}
+
         <div class="mb-5 flex flex-wrap items-center gap-2">
             @if ($character->is_main_character)
                 <span class="rounded-full bg-[#FED7E2] px-3 py-1 text-xs font-bold text-[#2D3748]">
@@ -90,6 +116,8 @@
                 {{ $character->name_kana }}
             </p>
         @endif
+            </div>
+        </div>
     </section>
 
     <section class="mb-8 rounded-3xl border border-[#E2E8F0] bg-white p-6 shadow-sm md:p-8">

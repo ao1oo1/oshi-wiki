@@ -21,6 +21,105 @@
 @endif
 
 <div class="space-y-8">
+    {{-- V3_ORIGINAL_CHARACTER_IMAGE_FORM --}}
+    <section class="rounded-3xl border border-[#E2E8F0] bg-white p-6 shadow-sm md:p-8">
+        <div class="mb-6">
+            <p class="text-sm font-bold text-[#A0AEC0]">キャラクター画像</p>
+            <h2 class="mt-1 text-2xl font-bold text-[#2D3748]">見た目の参考画像</h2>
+            <p class="mt-2 text-sm font-bold leading-7 text-[#718096]">
+                キャラクターの外見を確認しやすくするための画像を1枚登録できます。
+                画像の登録は任意です。JPG、JPEG、PNG、WebP形式、4MB以下、
+                縦横4,000px以下の画像を選択してください。
+            </p>
+        </div>
+
+        <div class="grid gap-6 md:grid-cols-[220px_minmax(0,1fr)] md:items-start">
+            <div>
+                @if ($character?->image_path)
+                    <img
+                        id="character-image-current"
+                        src="{{ route('writer.original-characters.image', $character) }}"
+                        alt="{{ $character->name }}の登録画像"
+                        class="rounded-3xl border border-[#E2E8F0] bg-[#F7FAFC]"
+                        style="display:block; width:240px; height:240px; max-width:100%; object-fit:contain;"
+                    >
+                @else
+                    <div
+                        id="character-image-placeholder"
+                        class="flex items-center justify-center rounded-3xl border border-dashed border-[#CBD5E0] bg-[#F7FAFC] p-6 text-center"
+                        style="width:240px; height:240px; max-width:100%;"
+                    >
+                        <div>
+                            <p class="text-4xl">🖼️</p>
+                            <p class="mt-3 text-sm font-bold leading-6 text-[#A0AEC0]">
+                                画像はまだ<br>登録されていません
+                            </p>
+                        </div>
+                    </div>
+                @endif
+
+                <img
+                    id="character-image-preview"
+                    src=""
+                    alt="選択した画像のプレビュー"
+                    class="hidden rounded-3xl border border-[#E2E8F0] bg-[#F7FAFC]"
+                    style="display:none; width:240px; height:240px; max-width:100%; object-fit:contain;"
+                >
+            </div>
+
+            <div class="space-y-5">
+                <div>
+                    <label for="character_image"
+                           class="mb-2 block text-sm font-bold text-[#2D3748]">
+                        画像ファイル
+                    </label>
+
+                    <input
+                        id="character_image"
+                        type="file"
+                        name="character_image"
+                        accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
+                        class="block w-full rounded-2xl border border-[#CBD5E0] bg-white px-4 py-3 text-sm font-bold text-[#4A5568] file:mr-4 file:rounded-xl file:border-0 file:bg-[#FED7E2] file:px-4 file:py-2 file:font-bold file:text-[#2D3748] hover:file:opacity-90"
+                    >
+
+                    <p class="mt-2 text-xs font-bold leading-6 text-[#A0AEC0]">
+                        画像の登録は任意です。登録できる形式：JPG・JPEG・PNG・WebP ／ 最大4MB ／ 縦横4,000px以下
+                    </p>
+                </div>
+
+                @if ($character?->image_path)
+                    <div class="rounded-2xl bg-[#F7FAFC] p-4">
+                        <p class="text-xs font-bold text-[#A0AEC0]">
+                            現在登録されている画像
+                        </p>
+                        <p class="mt-1 break-all text-sm font-bold text-[#2D3748]">
+                            {{ $character->image_original_name ?: '登録済み画像' }}
+                        </p>
+                    </div>
+
+                    <label class="flex cursor-pointer items-start gap-3 rounded-2xl border border-red-100 bg-red-50 p-4">
+                        <input
+                            type="checkbox"
+                            name="remove_image"
+                            value="1"
+                            class="mt-1 h-4 w-4 shrink-0 rounded border-red-300 text-red-500 focus:ring-red-300"
+                            @checked(old('remove_image'))
+                        >
+                        <span>
+                            <span class="block text-sm font-bold text-red-600">
+                                現在の画像を削除する
+                            </span>
+                            <span class="mt-1 block text-xs font-bold leading-6 text-red-400">
+                                新しい画像を選択した場合は、新しい画像への差し替えが優先されます。
+                            </span>
+                        </span>
+                    </label>
+                @endif
+            </div>
+        </div>
+    </section>
+    {{-- /V3_ORIGINAL_CHARACTER_IMAGE_FORM --}}
+
     <section class="rounded-3xl border border-[#E2E8F0] bg-white p-6 shadow-sm md:p-8">
         <div class="mb-6">
             <p class="text-sm font-bold text-[#A0AEC0]">STEP 1</p>
@@ -225,3 +324,56 @@
         </div>
     </div>
 </div>
+
+{{-- V3_ORIGINAL_CHARACTER_IMAGE_PREVIEW --}}
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const input = document.getElementById('character_image');
+        const preview = document.getElementById('character-image-preview');
+        const currentImage = document.getElementById('character-image-current');
+        const placeholder = document.getElementById('character-image-placeholder');
+
+        if (!input || !preview) {
+            return;
+        }
+
+        input.addEventListener('change', () => {
+            const file = input.files && input.files[0];
+
+            if (!file) {
+                preview.src = '';
+                preview.classList.add('hidden');
+                preview.style.display = 'none';
+
+                if (currentImage) {
+                    currentImage.classList.remove('hidden');
+                }
+
+                if (placeholder) {
+                    placeholder.classList.remove('hidden');
+                }
+
+                return;
+            }
+
+            const reader = new FileReader();
+
+            reader.addEventListener('load', (event) => {
+                preview.src = event.target.result;
+                preview.classList.remove('hidden');
+                preview.style.display = 'block';
+
+                if (currentImage) {
+                    currentImage.classList.add('hidden');
+                }
+
+                if (placeholder) {
+                    placeholder.classList.add('hidden');
+                }
+            });
+
+            reader.readAsDataURL(file);
+        });
+    });
+</script>
+{{-- /V3_ORIGINAL_CHARACTER_IMAGE_PREVIEW --}}
