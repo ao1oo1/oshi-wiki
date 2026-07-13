@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class SavedPrompt extends Model
@@ -12,6 +13,7 @@ class SavedPrompt extends Model
     use SoftDeletes;
 
     public const WORK_SOURCE_ORIGINAL = 'original';
+    public const WORK_SOURCE_V1 = 'v1';
 
     protected $fillable = [
         'user_id',
@@ -35,6 +37,12 @@ class SavedPrompt extends Model
         'plot_turn',
         'plot_conclusion',
 
+        'use_story_length_options',
+        'story_length_type',
+        'output_plot_first',
+        'output_in_parts',
+        'selected_story_analysis_ids',
+
         'prompt_body',
         'notes',
         'status',
@@ -46,6 +54,11 @@ class SavedPrompt extends Model
     {
         return [
             'selected_character_refs' => 'array',
+            'include_relationship_timeline' => 'boolean',
+            'use_story_length_options' => 'boolean',
+            'output_plot_first' => 'boolean',
+            'output_in_parts' => 'boolean',
+            'selected_story_analysis_ids' => 'array',
             'last_used_at' => 'datetime',
             'deleted_at' => 'datetime',
         ];
@@ -122,8 +135,36 @@ class SavedPrompt extends Model
         return self::genreLabels()[$this->genre] ?? '-';
     }
 
+    public function storyLengthLabel(): string
+    {
+        if (! $this->use_story_length_options) {
+            return '指定なし';
+        }
+
+        return $this->story_length_type === 'long'
+            ? '長編・全10話'
+            : '短編・1話完結';
+    }
+
+    public function aiResults(): HasMany
+    {
+        return $this->hasMany(
+            SavedPromptAiResult::class
+        )->latest();
+    }
+
+    public function work(): BelongsTo
+    {
+        return $this->belongsTo(Work::class);
+    }
+
     public function workLabel(): string
     {
+        if ($this->work_source === self::WORK_SOURCE_V1) {
+            return $this->work?->title
+                ?? '参照できない作品';
+        }
+
         return 'オリジナル';
     }
 

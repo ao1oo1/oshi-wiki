@@ -38,6 +38,30 @@ class WritingAssistLimits
         return (int) config('writing_assist.limits.prompts_per_user', 50);
     }
 
+    public static function storiesPerUser(?User $user = null): ?int
+    {
+        if (self::isUnlimited($user)) {
+            return null;
+        }
+
+        return (int) config(
+            'writing_assist.limits.stories_per_user',
+            10
+        );
+    }
+
+    public static function storyBodyMaxLength(?User $user = null): ?int
+    {
+        if (self::isUnlimited($user)) {
+            return null;
+        }
+
+        return (int) config(
+            'writing_assist.limits.story_body_max_length',
+            100000
+        );
+    }
+
     public static function promptBodyMaxLength(?User $user = null): ?int
     {
         if (self::isUnlimited($user)) {
@@ -81,6 +105,8 @@ class WritingAssistLimits
             'original_characters_per_user' => self::originalCharactersPerUser($user),
             'relationships_per_user' => self::relationshipsPerUser($user),
             'prompts_per_user' => self::promptsPerUser($user),
+            'stories_per_user' => self::storiesPerUser($user),
+            'story_body_max_length' => self::storyBodyMaxLength($user),
             'prompt_body_max_length' => self::promptBodyMaxLength($user),
             'synopsis_max_length' => self::synopsisMaxLength($user),
             'note_max_length' => self::noteMaxLength($user),

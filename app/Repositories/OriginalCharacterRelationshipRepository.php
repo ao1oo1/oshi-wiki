@@ -8,13 +8,16 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 class OriginalCharacterRelationshipRepository
 {
-    public function paginateForUser(User $user, int $perPage = 20): LengthAwarePaginator
-    {
+    public function paginateForUser(
+        User $user,
+        int $perPage = 20
+    ): LengthAwarePaginator {
         return OriginalCharacterRelationship::query()
             ->with([
                 'fromCharacter',
                 'toCharacter',
-
+                'fromV1Character.work',
+                'toV1Character.work',
             ])
             ->forUser($user)
             ->latest()
@@ -23,27 +26,31 @@ class OriginalCharacterRelationshipRepository
 
     public function countForUser(User $user): int
     {
-        if ($user->isSuperAdmin()) {
-            return OriginalCharacterRelationship::query()->count();
-        }
-
+        /*
+         * 最高管理者であってもWriter側では、
+         * 本人が登録したデータだけを数える。
+         */
         return OriginalCharacterRelationship::query()
-            ->where('user_id', $user->id)
+            ->forUser($user)
             ->count();
     }
 
-    public function create(array $data): OriginalCharacterRelationship
-    {
+    public function create(
+        array $data
+    ): OriginalCharacterRelationship {
         return OriginalCharacterRelationship::create($data);
     }
 
-    public function update(OriginalCharacterRelationship $relationship, array $data): bool
-    {
+    public function update(
+        OriginalCharacterRelationship $relationship,
+        array $data
+    ): bool {
         return $relationship->update($data);
     }
 
-    public function delete(OriginalCharacterRelationship $relationship): bool
-    {
+    public function delete(
+        OriginalCharacterRelationship $relationship
+    ): bool {
         return $relationship->delete();
     }
 }

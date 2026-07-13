@@ -44,6 +44,36 @@ Route::middleware(['auth', 'writer.user'])->prefix('writer')->name('writer.')->g
     Route::post('prompts/{prompt}/record-usage', [\App\Http\Controllers\Writer\SavedPromptController::class, 'recordUsage'])
         ->name('prompts.record-usage');
 
+    Route::get(
+        'stories/analysis',
+        [\App\Http\Controllers\Writer\WriterStoryController::class, 'analysis']
+    )->name('stories.analysis');
+
+    Route::post(
+        'stories/analysis',
+        [\App\Http\Controllers\Writer\WriterStoryController::class, 'generateAnalysisPrompt']
+    )->name('stories.analysis.generate');
+
+    Route::post(
+        'stories/analysis/results',
+        [\App\Http\Controllers\Writer\WriterStoryController::class, 'storeAnalysisResult']
+    )->name('stories.analysis-results.store');
+
+    Route::resource(
+        'stories',
+        \App\Http\Controllers\Writer\WriterStoryController::class
+    );
+
+    Route::post(
+        'prompts/{prompt}/ai-results',
+        [\App\Http\Controllers\Writer\SavedPromptAiResultController::class, 'store']
+    )->name('prompts.ai-results.store');
+
+    Route::delete(
+        'prompts/{prompt}/ai-results/{result}',
+        [\App\Http\Controllers\Writer\SavedPromptAiResultController::class, 'destroy']
+    )->name('prompts.ai-results.destroy');
+
     Route::resource('prompts', \App\Http\Controllers\Writer\SavedPromptController::class);
 });
 

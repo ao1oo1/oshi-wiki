@@ -8,6 +8,9 @@ use App\Http\Requests\Writer\SavedPrompt\StoreSavedPromptRequest;
 use App\Http\Requests\Writer\SavedPrompt\UpdateSavedPromptRequest;
 use App\Models\OriginalCharacter;
 use App\Models\SavedPrompt;
+use App\Models\Work;
+use App\Models\WriterStoryAnalysis;
+use App\Services\SavedPromptAiResultService;
 use App\Services\SavedPromptService;
 use App\Support\WritingAssistLimits;
 use Illuminate\Http\JsonResponse;
@@ -20,7 +23,8 @@ use Throwable;
 class SavedPromptController extends Controller
 {
     public function __construct(
-        private readonly SavedPromptService $service
+        private readonly SavedPromptService $service,
+        private readonly SavedPromptAiResultService $aiResultService
     ) {
     }
 
@@ -99,6 +103,11 @@ class SavedPromptController extends Controller
 
         return view('writer.saved_prompts.show', [
             'savedPrompt' => $prompt,
+            'aiResults' =>
+                $this->aiResultService->latestForPrompt(
+                    $request->user(),
+                    $prompt
+                ),
         ]);
     }
 
@@ -176,8 +185,28 @@ class SavedPromptController extends Controller
             ->orderBy('name')
             ->get();
 
+        $publishedWorks = Work::query()
+            ->with([
+                'characters' => function ($query): void {
+                    $query
+                        ->where('status', 'published')
+                        ->orderBy('name');
+                },
+            ])
+            ->where('status', 'published')
+            ->orderBy('title')
+            ->get();
+
+        $storyAnalyses = WriterStoryAnalysis::query()
+            ->forUser($user)
+            ->latest()
+            ->limit(10)
+            ->get();
+
         return [
             'originalCharacters' => $originalCharacters,
+            'publishedWorks' => $publishedWorks,
+            'storyAnalyses' => $storyAnalyses,
             'categoryLabels' => SavedPrompt::categoryLabels(),
             'writingStyleLabels' => SavedPrompt::writingStyleLabels(),
             'genreLabels' => SavedPrompt::genreLabels(),

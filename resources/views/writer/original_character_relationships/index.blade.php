@@ -116,10 +116,29 @@
                     <div class="rounded-3xl bg-[#F7FAFC] p-5">
                         <div class="grid gap-5 md:grid-cols-[1fr_auto_1fr] md:items-center">
                             <div>
-                                <p class="text-xs font-bold text-[#A0AEC0]">From</p>
+                                <div class="flex flex-wrap items-center gap-2">
+                                    <p class="text-xs font-bold text-[#A0AEC0]">
+                                        From
+                                    </p>
+
+                                    <span class="rounded-full bg-white px-3 py-1 text-xs font-bold text-[#4A5568]">
+                                        {{ $relationship->fromSourceLabel() }}
+                                    </span>
+                                </div>
+
                                 <p class="mt-2 text-2xl font-bold text-[#2D3748]">
-                                    {{ method_exists($relationship, 'fromDisplayName') ? $relationship->fromDisplayName() : '未設定' }}
+                                    {{ $relationship->fromDisplayName() }}
                                 </p>
+
+                                @if (
+                                    $relationship->from_character_source
+                                        === \App\Models\OriginalCharacterRelationship::SOURCE_V1
+                                    && $relationship->fromV1Character?->work
+                                )
+                                    <p class="mt-2 text-xs font-bold text-[#A0AEC0]">
+                                        {{ $relationship->fromV1Character->work->title }}
+                                    </p>
+                                @endif
                             </div>
 
                             <div class="text-center text-2xl font-bold text-[#A0AEC0]">
@@ -127,10 +146,29 @@
                             </div>
 
                             <div>
-                                <p class="text-xs font-bold text-[#A0AEC0]">To</p>
+                                <div class="flex flex-wrap items-center gap-2">
+                                    <p class="text-xs font-bold text-[#A0AEC0]">
+                                        To
+                                    </p>
+
+                                    <span class="rounded-full bg-white px-3 py-1 text-xs font-bold text-[#4A5568]">
+                                        {{ $relationship->toSourceLabel() }}
+                                    </span>
+                                </div>
+
                                 <p class="mt-2 text-2xl font-bold text-[#2D3748]">
-                                    {{ method_exists($relationship, 'toDisplayName') ? $relationship->toDisplayName() : '未設定' }}
+                                    {{ $relationship->toDisplayName() }}
                                 </p>
+
+                                @if (
+                                    $relationship->to_character_source
+                                        === \App\Models\OriginalCharacterRelationship::SOURCE_V1
+                                    && $relationship->toV1Character?->work
+                                )
+                                    <p class="mt-2 text-xs font-bold text-[#A0AEC0]">
+                                        {{ $relationship->toV1Character->work->title }}
+                                    </p>
+                                @endif
                             </div>
                         </div>
                     </div>
