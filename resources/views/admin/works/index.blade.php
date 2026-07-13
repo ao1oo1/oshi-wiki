@@ -152,6 +152,9 @@
                 </a>
             </form>
 
+            @include('admin.works._staff_mobile_cards')
+
+
             @if ($canManageWorks)
 
 
@@ -184,7 +187,7 @@
                     </p>
                 </div>
 
-                <div class="oshi-table-wrap">
+                <div class="staff-work-mobile-table-shell oshi-table-wrap">
                     <table class="oshi-table">
                         <thead>
                             <tr>
@@ -249,6 +252,8 @@
                         </tbody>
                     </table>
                 </div>
+
+                
             </form>
 
 
@@ -314,6 +319,8 @@
     </div>
 @endif
 {{-- /STAFF_WORK_LIST_VISIBLE_FIX --}}
+            
+
 
 
                 {{ $works->links() }}
