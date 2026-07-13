@@ -56,6 +56,13 @@ class CharacterRelationshipController extends Controller
     public function store(StoreCharacterRelationshipRequest $request): RedirectResponse
     {
         $data = $request->validated();
+
+        // STAFF_RELATIONSHIP_REVIEW_STATUS_FIX
+        if (! auth()->user()?->canManageAllAdminFeatures()) {
+            $data['status'] = 'draft';
+            $data['review_status'] = 'pending';
+        }
+        // /STAFF_RELATIONSHIP_REVIEW_STATUS_FIX
         $returnToWorkId = $data['return_to_work_id'] ?? null;
         unset($data['return_to_work_id']);
 
@@ -90,7 +97,16 @@ class CharacterRelationshipController extends Controller
         UpdateCharacterRelationshipRequest $request,
         CharacterRelationship $characterRelationship
     ): RedirectResponse {
-        $this->service->update($characterRelationship, $request->validated());
+        $data = $request->validated();
+
+        // STAFF_RELATIONSHIP_REVIEW_STATUS_FIX
+        if (! auth()->user()?->canManageAllAdminFeatures()) {
+            $data['status'] = 'draft';
+            $data['review_status'] = 'pending';
+        }
+        // /STAFF_RELATIONSHIP_REVIEW_STATUS_FIX
+
+        $this->service->update($characterRelationship, $data);
 
         return redirect()
             ->route('admin.character-relationships.index')

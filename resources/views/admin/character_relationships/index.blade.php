@@ -14,11 +14,7 @@
         @include('admin.partials.flash')
 
 
-        @if (session('success'))
-            <div class="mb-4 rounded-2xl border border-green-200 bg-green-50 px-5 py-4 text-sm font-bold text-green-800">
-                {{ session('success') }}
-            </div>
-        @endif
+
 
         <div class="oshi-card">
             <div class="mb-6 flex flex-wrap items-center justify-between gap-3">

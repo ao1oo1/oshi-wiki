@@ -175,6 +175,8 @@
 </div>
 
 @if (auth()->user()?->isSuperAdmin())
+{{-- STAFF_HIDE_STATUS_FIELD_FIX --}}
+@if (auth()->user()?->canManageAllAdminFeatures())
 <div class="mb-6">
     <label for="status" class="mb-1 block font-medium">状態</label>
     <p class="mb-2 text-sm text-gray-600">
@@ -190,6 +192,10 @@
         <option value="private" @selected(old('status', $character->status ?? '') === 'private')>非公開</option>
     </select>
 </div>
+@else
+    <input type="hidden" name="status" value="{{ old('status', $character->status ?? $characterRelationship->status ?? 'draft') }}">
+@endif
+{{-- /STAFF_HIDE_STATUS_FIELD_FIX --}}
 @else
     <div class="mb-6 rounded bg-pink-50 p-4 text-sm">
         情報入力スタッフによる登録・編集は、最高管理者への承認申請として保存されます。

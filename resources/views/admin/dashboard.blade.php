@@ -6,11 +6,41 @@
     </x-slot>
 
     <div class="p-6">
-        <div class="mx-auto max-w-6xl">
-            @include('admin.partials.navigation')
+        
+{{-- STAFF_DASHBOARD_NOTICE --}}
+@if (auth()->user()?->isStaff())
+    <div class="mb-6 rounded-3xl border border-[#FED7E2] bg-[#FFF5F7] p-6 shadow-sm">
+        <div class="mb-4">
+            <p class="inline-flex rounded-full bg-white px-4 py-2 text-sm font-bold text-[#2D3748]">
+                管理スタッフの方へ
+            </p>
+        </div>
 
+        <h3 class="mb-4 text-xl font-bold text-[#2D3748]">
+            コントリビューター登録ありがとうございます。
+        </h3>
 
-            <div class="mb-6 grid grid-cols-1 gap-4 md:grid-cols-3">
+        <div class="space-y-4 leading-8 text-[#4A5568]">
+            <p>
+                Oshi-Wikiでは、作品・キャラクター・関係性などの情報を、できるだけ客観的で信頼できる形で整理しています。
+                情報を登録する際は、公式サイト、公式ファンブック、設定資料集、公式ガイドブックなど、信ぴょう性のある資料をもとに入力してください。
+            </p>
+
+            <p>
+                登録・編集した情報は、すぐには公開されません。
+                管理者が内容を確認したうえで、問題がないものから順次公開します。
+            </p>
+
+            <p>
+                登録したい作品がある場合や、機能の使いにくさ、改善案、不具合などがある場合は、管理者へフォームからご連絡ください。
+            </p>
+        </div>
+    </div>
+@endif
+{{-- /STAFF_DASHBOARD_NOTICE --}}
+
+<div class="mx-auto max-w-6xl">
+<div class="mb-6 grid grid-cols-1 gap-4 md:grid-cols-3">
                 <a
                     href="{{ route('admin.works.index') }}"
                     class="block oshi-card"

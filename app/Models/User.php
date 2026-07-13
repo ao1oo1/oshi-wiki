@@ -100,7 +100,7 @@ class User extends Authenticatable
 
     public function canAccessAdmin(): bool
     {
-        return $this->isSuperAdmin() || $this->isStaff();
+        return $this->canManageAllAdminFeatures() || $this->isStaff();
     }
 
     public function canAccessWriter(): bool

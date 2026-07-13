@@ -13,7 +13,107 @@
         @include('admin.partials.flash')
         @include('admin.partials.publish-help')
 
-        <div class="oshi-card">
+
+{{-- STAFF_TAG_LIST_VISIBLE_FIX --}}
+@if (! $canManageTags)
+    <div class="mb-6 rounded-3xl border border-[#E2E8F0] bg-white p-6 shadow-sm">
+        <div class="mb-5">
+            <h2 class="text-xl font-bold text-[#2D3748]">
+                タグ一覧
+            </h2>
+            <p class="mt-1 text-sm font-bold text-[#A0AEC0]">
+                登録済みタグを確認できます。
+            </p>
+        </div>
+
+        <form method="GET" action="{{ route('admin.tags.index') }}" class="mb-6 rounded-3xl border border-[#E2E8F0] bg-[#F7FAFC] p-5">
+            <div class="grid gap-4 md:grid-cols-[220px_1fr_auto_auto] md:items-end">
+                <div>
+                    <label for="staff_type" class="mb-1 block text-sm font-bold text-[#4A5568]">
+                        種類
+                    </label>
+                    <select id="staff_type" name="type" class="w-full rounded-2xl border border-[#CBD5E0] bg-white px-4 py-3">
+                        <option value="">すべて</option>
+                        @foreach (($tagTypes ?? collect()) as $tagType)
+                            <option value="{{ $tagType }}" @selected(($selectedType ?? request('type')) === $tagType)>
+                                {{ $tagType }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div>
+                    <label for="staff_keyword" class="mb-1 block text-sm font-bold text-[#4A5568]">
+                        キーワード
+                    </label>
+                    <input
+                        id="staff_keyword"
+                        type="text"
+                        name="keyword"
+                        value="{{ $keyword ?? request('keyword') }}"
+                        placeholder="タグ名・説明など"
+                        class="w-full rounded-2xl border border-[#CBD5E0] bg-white px-4 py-3"
+                    >
+                </div>
+
+                <button type="submit" class="oshi-btn">
+                    検索・絞り込み
+                </button>
+
+                <a href="{{ route('admin.tags.index') }}" class="oshi-btn oshi-btn-sub text-center">
+                    解除
+                </a>
+            </div>
+        </form>
+
+        <div class="overflow-x-auto rounded-3xl border border-[#E2E8F0]">
+            <table class="w-full text-left text-sm">
+                <thead class="bg-[#FFF5F7] text-[#2D3748]">
+                    <tr>
+                        <th class="p-4 font-bold">タグ名</th>
+                        <th class="p-4 font-bold">種類</th>
+                        <th class="p-4 font-bold">説明</th>
+                        <th class="p-4 font-bold">状態</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse ($tags as $tag)
+                        <tr class="border-t border-[#E2E8F0]">
+                            <td class="p-4 align-top font-bold text-[#2D3748]">
+                                {{ $tag->name }}
+                            </td>
+                            <td class="p-4 align-top text-[#4A5568]">
+                                {{ $tag->type ?: '—' }}
+                            </td>
+                            <td class="p-4 align-top text-[#4A5568]">
+                                {{ $tag->description ?: '—' }}
+                            </td>
+                            <td class="p-4 align-top text-[#4A5568]">
+                                {{ $tag->status ?: '—' }}
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="4" class="p-8 text-center text-[#718096]">
+                                タグが登録されていません。
+                            </td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+
+        <div class="mt-6">
+            {{ $tags->links() }}
+        </div>
+    </div>
+@endif
+{{-- /STAFF_TAG_LIST_VISIBLE_FIX --}}
+
+
+        {{-- STAFF_HIDE_TAG_HEADER_CARD_FIX --}}
+@if ($canManageTags)
+<div class="oshi-card">
             <div class="mb-6 flex flex-wrap items-center justify-between gap-3">
                 <div>
                     <h1 class="text-2xl font-bold">
@@ -43,7 +143,9 @@
                 </div>
             </div>
 
-            <form method="POST" action="{{ route('admin.tags.store') }}" class="mb-8 rounded bg-pink-50 p-4 oshi-u-index-create-form">
+            {{-- STAFF_HIDE_TAG_CREATE_FORM_FIX --}}
+@if ($canManageTags)
+<form method="POST" action="{{ route('admin.tags.store') }}" class="mb-8 rounded bg-pink-50 p-4 oshi-u-index-create-form">
                 @csrf
 
                 <div class="oshi-tag-index-create-section {{ request()->query('show_create') ? 'is-mobile-create-open' : '' }}">
@@ -99,6 +201,8 @@
                     </button>
                 </div>
             </form>
+@endif
+{{-- /STAFF_HIDE_TAG_CREATE_FORM_FIX --}}
 </div>
 
             @if ($canManageTags)
@@ -271,4 +375,7 @@
             return confirm(checkedCount + '件のタグを一括変更します。よろしいですか？');
         }
     </script>
+@endif
+{{-- /STAFF_HIDE_TAG_HEADER_CARD_FIX --}}
+
 </x-app-layout>

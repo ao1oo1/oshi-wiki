@@ -51,6 +51,9 @@ Route::middleware(['auth', 'admin.user', 'password.changed'])->prefix('admin')->
     Route::get('works/export/csv', \App\Http\Controllers\Admin\WorkCsvExportController::class)
         ->name('works.csv-export');
 
+    Route::get('staff-guide', \App\Http\Controllers\Admin\StaffGuideController::class)
+        ->name('staff-guide');
+
     Route::get('trash', [\App\Http\Controllers\Admin\TrashController::class, 'index'])
         ->name('trash.index');
 

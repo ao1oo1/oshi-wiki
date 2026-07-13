@@ -58,6 +58,13 @@ class CharacterController extends Controller
     public function store(StoreCharacterRequest $request): RedirectResponse
     {
         $data = $request->validated();
+
+        // STAFF_CHARACTER_REVIEW_STATUS_FIX
+        if (! auth()->user()?->canManageAllAdminFeatures()) {
+            $data['status'] = 'draft';
+            $data['review_status'] = 'pending';
+        }
+        // /STAFF_CHARACTER_REVIEW_STATUS_FIX
         $returnToWorkId = $data['return_to_work_id'] ?? null;
         unset($data['return_to_work_id']);
 
@@ -95,7 +102,16 @@ class CharacterController extends Controller
 
     public function update(UpdateCharacterRequest $request, Character $character): RedirectResponse
     {
-        $this->service->update($character, $request->validated());
+        $data = $request->validated();
+
+        // STAFF_CHARACTER_REVIEW_STATUS_FIX
+        if (! auth()->user()?->canManageAllAdminFeatures()) {
+            $data['status'] = 'draft';
+            $data['review_status'] = 'pending';
+        }
+        // /STAFF_CHARACTER_REVIEW_STATUS_FIX
+
+        $this->service->update($character, $data);
 
         return redirect()
             ->route('admin.characters.show', $character)

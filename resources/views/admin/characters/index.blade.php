@@ -1,8 +1,9 @@
-
 <x-app-layout>
     @php
         $canUseCharacterImports = auth()->user()?->canManageAllAdminFeatures() ?? false;
+        $canEditCharacters = $canUseCharacterImports || auth()->user()?->isStaff();
     @endphp
+
     <x-slot name="header">
         <h2 class="font-semibold text-xl">
             キャラクター管理
@@ -11,9 +12,10 @@
 
     <div class="p-6">
         @include('admin.partials.flash')
+        @include('admin.partials.publish-help')
 
         <div class="oshi-card">
-            <div class="mb-6 flex flex-wrap items-center justify-between gap-3">
+            <div class="mb-6 flex flex-wrap items-start justify-between gap-4">
                 <div>
                     <h1 class="text-2xl font-bold">
                         キャラクター管理
@@ -25,213 +27,213 @@
 
                 <div class="flex flex-wrap gap-2">
                     @if ($canUseCharacterImports)
+                        <a href="{{ route('admin.characters.import.create') }}" class="oshi-btn oshi-btn-sub">
+                            テキスト取り込み
+                        </a>
 
-                        <a href="{{ route('admin.characters.import.create') }}" class="oshi-btn oshi-btn-sub">テキスト取り込み</a>
+                        <a href="{{ route('admin.characters.csv-import.create') }}" class="oshi-btn oshi-btn-sub">
+                            CSV取り込み
+                        </a>
 
+                        <a href="{{ route('admin.characters.csv-export', request()->query()) }}" class="oshi-btn oshi-btn-sub">
+                            CSVエクスポート
+                        </a>
                     @endif
 
-                    @if ($canUseCharacterImports)
-
-
-                        <a href="{{ route('admin.characters.csv-import.create') }}" class="oshi-btn oshi-btn-sub">CSV取り込み</a>
-
-
-                    
-                        @if (auth()->user()?->canManageAllAdminFeatures())
-                            <a href="{{ route('admin.characters.csv-export', request()->query()) }}" class="oshi-btn oshi-btn-sub">
-                                CSVエクスポート
-                            </a>
-                        @endif
-@endif
-
-                    <a href="{{ route('admin.characters.create') }}" class="oshi-btn">
-                        キャラクター登録画面へ
-                    </a>
+                    @if ($canEditCharacters)
+                        <a href="{{ route('admin.characters.create') }}" class="oshi-btn">
+                            キャラクター登録画面へ
+                        </a>
+                    @endif
                 </div>
             </div>
 
-            <form method="GET" action="{{ route('admin.characters.index') }}" class="mb-6 flex flex-wrap items-end gap-3">
-                <div>
-                    <label for="keyword" class="mb-1 block font-medium">
-                        キーワード
-                    </label>
-                    <input
-                        id="keyword"
-                        type="text"
-                        name="keyword"
-                        value="{{ $keyword ?? '' }}"
-                        class="rounded border-gray-300"
-                        placeholder="名前・所属・性格など"
-                    >
-                </div>
-
-                <div>
-                    <label for="work_id" class="mb-1 block font-medium">
-                        作品で絞り込み
-                    </label>
-                    <select id="work_id" name="work_id" class="rounded border-gray-300">
-                        <option value="">全作品</option>
-                        @foreach ($works as $work)
-                            <option value="{{ $work->id }}" @selected(($selectedWorkId ?? '') == $work->id)>
-                                {{ $work->title }}
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
-
-                <div>
-                    <label for="tag_id" class="mb-1 block font-medium">
-                        タグで絞り込み
-                    </label>
-                    <select id="tag_id" name="tag_id" class="rounded border-gray-300">
-                        <option value="">全タグ</option>
-                        @foreach (($tags ?? collect()) as $tag)
-                            <option value="{{ $tag->id }}" @selected(($selectedTagId ?? '') == $tag->id)>
-                                {{ $tag->name }}
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
-
-                <button type="submit" class="oshi-btn">
-                    検索・絞り込み
-                </button>
-
-                <a href="{{ route('admin.characters.index') }}" class="oshi-btn oshi-btn-sub">
-                    解除
-                </a>
-            </form>
-
-            @if ($canUseCharacterImports)
-
-
-            <form method="POST" action="{{ route('admin.characters.bulk-action') }}" onsubmit="return confirmBulkAction();">
-                @csrf
-
-                <div class="mb-4 flex flex-wrap items-end gap-3 rounded bg-pink-50 p-4">
+            <form method="GET" action="{{ route('admin.characters.index') }}" class="mb-6">
+                <div class="grid gap-4 md:grid-cols-[280px_1fr_220px_auto_auto] md:items-end">
                     <div>
-                        <label for="bulk_action" class="mb-1 block font-medium">
-                            チェックした項目を一括操作
+                        <label for="keyword" class="mb-1 block text-sm font-bold text-[#4A5568]">
+                            キーワード
                         </label>
-                        <select id="bulk_action" name="bulk_action" class="rounded border-gray-300">
-                            <option value="">選択してください</option>
-                            <option value="publish">公開にする</option>
-                            <option value="private">非公開にする</option>
-                            <option value="delete">削除フラグをつける</option>
+                        <input
+                            id="keyword"
+                            type="text"
+                            name="keyword"
+                            value="{{ $keyword ?? request('keyword') }}"
+                            placeholder="名前・所属・性格など"
+                            class="w-full rounded-2xl border border-[#CBD5E0] bg-white px-4 py-3"
+                        >
+                    </div>
+
+                    <div>
+                        <label for="work_id" class="mb-1 block text-sm font-bold text-[#4A5568]">
+                            作品で絞り込み
+                        </label>
+                        <select
+                            id="work_id"
+                            name="work_id"
+                            class="w-full rounded-2xl border border-[#CBD5E0] bg-white px-4 py-3"
+                        >
+                            <option value="">全作品</option>
+                            @foreach ($works as $work)
+                                <option value="{{ $work->id }}" @selected((string)($selectedWorkId ?? request('work_id')) === (string)$work->id)>
+                                    {{ $work->title }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div>
+                        <label for="tag_id" class="mb-1 block text-sm font-bold text-[#4A5568]">
+                            タグで絞り込み
+                        </label>
+                        <select
+                            id="tag_id"
+                            name="tag_id"
+                            class="w-full rounded-2xl border border-[#CBD5E0] bg-white px-4 py-3"
+                        >
+                            <option value="">全タグ</option>
+                            @foreach (($tags ?? collect()) as $tag)
+                                <option value="{{ $tag->id }}" @selected((string)($selectedTagId ?? request('tag_id')) === (string)$tag->id)>
+                                    {{ $tag->name }}
+                                </option>
+                            @endforeach
                         </select>
                     </div>
 
                     <button type="submit" class="oshi-btn">
-                        一括反映
+                        検索・絞り込み
                     </button>
 
-                    <p class="text-sm text-gray-600">
-                        削除は完全削除ではなく、削除フラグを付ける処理です。
-                    </p>
+                    <a href="{{ route('admin.characters.index') }}" class="oshi-btn oshi-btn-sub text-center">
+                        解除
+                    </a>
                 </div>
+            </form>
 
-                <div class="oshi-table-wrap">
-                    <table class="oshi-table">
-                        <thead>
+            @if ($canUseCharacterImports)
+                <form method="POST" action="{{ route('admin.characters.bulk-action') }}" onsubmit="return confirm('選択したキャラクターに一括操作を実行します。よろしいですか？');">
+                    @csrf
+
+                    <div class="mb-6 rounded-3xl bg-[#FFF5F7] p-5">
+                        <div class="flex flex-wrap items-end gap-4">
+                            <div>
+                                <label for="bulk_action" class="mb-1 block text-sm font-bold text-[#4A5568]">
+                                    チェックしたキャラクターを一括操作
+                                </label>
+                                <select
+                                    id="bulk_action"
+                                    name="bulk_action"
+                                    class="rounded-2xl border border-[#CBD5E0] bg-white px-4 py-3"
+                                    required
+                                >
+                                    <option value="">選択してください</option>
+                                    <option value="published">公開</option>
+                                    <option value="private">非公開</option>
+                                    <option value="delete">削除</option>
+                                </select>
+                            </div>
+
+                            <button type="submit" class="oshi-btn">
+                                一括反映
+                            </button>
+
+                            <p class="text-sm font-bold text-[#A0AEC0]">
+                                削除は完全削除ではなく、削除フラグを付ける処理です。
+                            </p>
+                        </div>
+                    </div>
+            @endif
+
+            <div class="overflow-hidden rounded-3xl border border-[#E2E8F0] bg-white">
+                <div class="overflow-x-auto">
+                    <table class="w-full min-w-[900px] text-left text-sm">
+                        <thead class="bg-[#FFF5F7] text-[#2D3748]">
                             <tr>
-                                <th>
-                                    <input type="checkbox" id="check_all">
-                                </th>
-                                <th>名前</th>
-                                <th>作品</th>
-                                <th>年齢</th>
-                                <th>所属</th>
-                                <th>一人称</th>
-                                <th>状態</th>
-                                <th>タグ</th>
-                                <th>操作</th>
+                                @if ($canUseCharacterImports)
+                                    <th class="px-5 py-4 font-bold">
+                                        <input type="checkbox" onclick="document.querySelectorAll('.character-check').forEach(el => el.checked = this.checked)">
+                                    </th>
+                                @endif
+                                <th class="px-5 py-4 font-bold">キャラクター名</th>
+                                <th class="px-5 py-4 font-bold">作品</th>
+                                <th class="px-5 py-4 font-bold">所属</th>
+                                <th class="px-5 py-4 font-bold">状態</th>
+                                <th class="px-5 py-4 font-bold">承認状態</th>
+                                <th class="px-5 py-4 font-bold">操作</th>
                             </tr>
                         </thead>
+
                         <tbody>
                             @forelse ($characters as $character)
-                                <tr>
-                                    <td>
-                                        <input
-                                            type="checkbox"
-                                            name="character_ids[]"
-                                            value="{{ $character->id }}"
-                                            class="character-checkbox"
-                                        >
+                                <tr class="border-t border-[#E2E8F0]">
+                                    @if ($canUseCharacterImports)
+                                        <td class="px-5 py-4 align-middle">
+                                            <input class="character-check" type="checkbox" name="ids[]" value="{{ $character->id }}">
+                                        </td>
+                                    @endif
+
+                                    <td class="px-5 py-4 align-middle font-bold text-[#2D3748]">
+                                        {{ $character->name }}
                                     </td>
 
-                                    <td>
-                                        <div class="font-bold">
-                                            {{ $character->name }}
-                                        </div>
-
-                                        @if ($character->name_kana)
-                                            <div class="oshi-muted">
-                                                {{ $character->name_kana }}
-                                            </div>
-                                        @endif
+                                    <td class="px-5 py-4 align-middle text-[#4A5568]">
+                                        {{ $character->work?->title ?? '—' }}
                                     </td>
 
-                                    <td>
-                                        {{ $character->work?->title ?? '未設定' }}
+                                    <td class="px-5 py-4 align-middle text-[#4A5568]">
+                                        {{ $character->affiliation ?: '—' }}
                                     </td>
 
-                                    <td>
-                                        {{ $character->age ?: '未設定' }}
-                                    </td>
-
-                                    <td>
-                                        {{ $character->affiliation ?: '未設定' }}
-                                    </td>
-
-                                    <td>
-                                        {{ $character->first_person ?: '未設定' }}
-                                    </td>
-
-                                    <td>
+                                    <td class="px-5 py-4 align-middle">
                                         @include('admin.partials.status-badge', ['status' => $character->status])
                                     </td>
 
-                                    <td>
-                                        @if ($character->tags->count())
-                                            <div class="flex flex-wrap gap-1">
-                                                @foreach ($character->tags as $tag)
-                                                    <span class="oshi-chip">
-                                                        {{ $tag->name }}
-                                                    </span>
-                                                @endforeach
-                                            </div>
-                                        @else
-                                            <span class="oshi-muted">未設定</span>
-                                        @endif
+                                    <td class="px-5 py-4 align-middle text-[#4A5568]">
+                                        {{ $character->review_status ?: '—' }}
                                     </td>
 
-                                    <td>
+                                    <td class="px-5 py-4 align-middle">
                                         <div class="flex flex-wrap gap-2">
                                             <a href="{{ route('admin.characters.show', $character) }}" class="oshi-btn oshi-btn-sub">
                                                 詳細
                                             </a>
 
-                                            <a href="{{ route('admin.characters.edit', $character) }}" class="oshi-btn oshi-btn-sub">
-                                                編集
-                                            </a>
+                                            @if ($canEditCharacters)
+                                                <a href="{{ route('admin.characters.edit', $character) }}" class="oshi-btn oshi-btn-sub">
+                                                    編集
+                                                </a>
+                                            @endif
+
+                                            @if ($canUseCharacterImports)
+                                                <form
+                                                    method="POST"
+                                                    action="{{ route('admin.characters.destroy', $character) }}"
+                                                    onsubmit="return confirm('このキャラクターを削除します。よろしいですか？');"
+                                                >
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="oshi-btn oshi-btn-sub text-red-600">
+                                                        削除
+                                                    </button>
+                                                </form>
+                                            @endif
                                         </div>
                                     </td>
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="9">
-                                        <div class="oshi-empty">
-                                            キャラクターはまだ登録されていません。
-                                        </div>
+                                    <td colspan="{{ $canUseCharacterImports ? 7 : 6 }}" class="px-5 py-8 text-center text-[#718096]">
+                                        キャラクターが登録されていません。
                                     </td>
                                 </tr>
                             @endforelse
                         </tbody>
                     </table>
                 </div>
-            </form>
+            </div>
 
-
+            @if ($canUseCharacterImports)
+                </form>
             @endif
 
             <div class="mt-6">
@@ -239,37 +241,4 @@
             </div>
         </div>
     </div>
-
-    <script>
-        const checkAll = document.getElementById('check_all');
-
-        if (checkAll) {
-            checkAll.addEventListener('change', function () {
-                document.querySelectorAll('.character-checkbox').forEach(function (checkbox) {
-                    checkbox.checked = checkAll.checked;
-                });
-            });
-        }
-
-        function confirmBulkAction() {
-            const checkedCount = document.querySelectorAll('.character-checkbox:checked').length;
-            const action = document.getElementById('bulk_action')?.value;
-
-            if (checkedCount === 0) {
-                alert('一括操作するキャラクターを選択してください。');
-                return false;
-            }
-
-            if (!action) {
-                alert('一括操作の内容を選択してください。');
-                return false;
-            }
-
-            if (action === 'delete') {
-                return confirm(checkedCount + '件のキャラクターに削除フラグを付けます。よろしいですか？');
-            }
-
-            return confirm(checkedCount + '件のキャラクターを一括変更します。よろしいですか？');
-        }
-    </script>
 </x-app-layout>

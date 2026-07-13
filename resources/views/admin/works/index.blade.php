@@ -41,7 +41,9 @@
                 </div>
             </div>
 
-            <form method="POST" action="{{ route('admin.works.store') }}" class="mb-8 rounded bg-pink-50 p-4 oshi-u-index-create-form">
+            {{-- STAFF_HIDE_WORK_CREATE_FORM_FIX --}}
+@if ($canManageWorks)
+<form method="POST" action="{{ route('admin.works.store') }}" class="mb-8 rounded bg-pink-50 p-4 oshi-u-index-create-form">
                 @csrf
 
                 <div class="oshi-work-index-create-section">
@@ -108,6 +110,8 @@
                     </button>
                 </div>
             </form>
+@endif
+{{-- /STAFF_HIDE_WORK_CREATE_FORM_FIX --}}
 </div>
 
             <form method="GET" action="{{ route('admin.works.index') }}" class="mb-6 flex flex-wrap items-end gap-3">
@@ -255,6 +259,63 @@
             @endif
 
             <div class="mt-6">
+
+{{-- STAFF_WORK_LIST_VISIBLE_FIX --}}
+@if (! $canManageWorks)
+    <div class="mt-6 overflow-x-auto rounded-3xl border border-[#E2E8F0] bg-white shadow-sm">
+        <table class="w-full text-left text-sm">
+            <thead class="bg-[#FFF5F7] text-[#2D3748]">
+                <tr>
+                    <th class="p-4 font-bold">作品名</th>
+                    <th class="p-4 font-bold">ジャンル</th>
+                    <th class="p-4 font-bold">原作媒体</th>
+                    <th class="p-4 font-bold">タグ</th>
+                    <th class="p-4 font-bold">状態</th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse ($works as $work)
+                    <tr class="border-t border-[#E2E8F0]">
+                        <td class="p-4 align-top font-bold text-[#2D3748]">
+                            @if (Route::has('admin.works.show'))
+                                <a href="{{ route('admin.works.show', $work) }}" class="text-[#2D3748] underline-offset-4 hover:underline">
+                                    {{ $work->title }}
+                                </a>
+                            @else
+                                {{ $work->title }}
+                            @endif
+                        </td>
+                        <td class="p-4 align-top text-[#4A5568]">
+                            {{ $work->genre ?: '—' }}
+                        </td>
+                        <td class="p-4 align-top text-[#4A5568]">
+                            {{ $work->original_media ?: '—' }}
+                        </td>
+                        <td class="p-4 align-top text-[#4A5568]">
+                            @if ($work->tags && $work->tags->count())
+                                {{ $work->tags->pluck('name')->join('、') }}
+                            @else
+                                —
+                            @endif
+                        </td>
+                        <td class="p-4 align-top text-[#4A5568]">
+                            {{ $work->status ?: '—' }}
+                        </td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="5" class="p-8 text-center text-[#718096]">
+                            作品が登録されていません。
+                        </td>
+                    </tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
+@endif
+{{-- /STAFF_WORK_LIST_VISIBLE_FIX --}}
+
+
                 {{ $works->links() }}
             </div>
         </div>
