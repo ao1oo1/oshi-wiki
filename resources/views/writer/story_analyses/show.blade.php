@@ -62,9 +62,6 @@
 
                             {{ $resolved['story']->title }}
 
-                            @if ($resolved['story']->trashed())
-                                （削除済み）
-                            @endif
                         @else
                             削除済みストーリー（ID：{{ $resolved['id'] }}）
                         @endif
