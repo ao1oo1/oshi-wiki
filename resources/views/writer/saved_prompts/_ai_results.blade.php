@@ -40,7 +40,7 @@
             <p class="mt-2 text-sm font-bold leading-7 text-[#718096]">
                 AI回答は、1つのプロンプトにつき1件まで保存できます。
                 すでに回答が保存されている場合は、再保存すると現在の内容を更新します。
-                保存できる回答は最大10,000文字です。
+                保存できる回答は最大20,000文字です。
             </p>
 
             <p class="mt-2 text-sm font-bold leading-7 text-[#718096]">
@@ -134,7 +134,7 @@
                         <span id="saved-prompt-ai-result-count">
                             {{ number_format(mb_strlen($resultBody)) }}
                         </span>
-                        / 10,000文字
+                        / 20,000文字
                     </p>
                 </div>
             </div>
@@ -455,7 +455,7 @@
                 }
             );
 
-            const maxLength = 10000;
+            const maxLength = 20000;
 
             const updateResultCount = () => {
                 if (! resultBody || ! resultCount) {
