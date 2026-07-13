@@ -66,7 +66,7 @@
             </div>
         </form>
 
-        <div class="overflow-x-auto rounded-3xl border border-[#E2E8F0]">
+        <div class="staff-tag-mobile-table-shell overflow-x-auto rounded-3xl border border-[#E2E8F0]">
             <table class="w-full text-left text-sm">
                 <thead class="bg-[#FFF5F7] text-[#2D3748]">
                     <tr>
@@ -102,6 +102,8 @@
                 </tbody>
             </table>
         </div>
+
+        @include('admin.tags._staff_mobile_cards')
 
         <div class="mt-6">
             {{ $tags->links() }}
