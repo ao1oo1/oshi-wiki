@@ -2,6 +2,8 @@
 
 namespace App\Services;
 
+use App\Models\Character;
+
 class CharacterTextParserService
 {
     private array $labelMap = [
@@ -14,63 +16,135 @@ class CharacterTextParserService
         'ふりがな' => 'name_kana',
         'フリガナ' => 'name_kana',
 
+        '本名' => 'real_name',
+        '別名・愛称' => 'aliases',
+        '別名' => 'aliases',
+        '愛称' => 'aliases',
+        '英語表記' => 'name_english',
+        '性別' => 'gender',
         '年齢' => 'age',
+        '生年月日・誕生日' => 'birthday',
+        '生年月日' => 'birthday',
+        '誕生日' => 'birthday',
+        '身長' => 'height',
+        '体重' => 'weight',
+        '血液型' => 'blood_type',
+        '出身地' => 'birthplace',
+        '種族' => 'species',
         '所属' => 'affiliation',
 
-        '学年クラス' => 'grade_class',
-        '学年・クラス' => 'grade_class',
-        'クラス' => 'grade_class',
+        '学校・学年・クラス' => 'school_grade_class',
+        '学年・クラス' => 'school_grade_class',
+        '学年クラス' => 'school_grade_class',
+        'クラス' => 'school_grade_class',
 
-        '一人称' => 'first_person',
-
-        '口調の例' => 'tone_examples',
-        'セリフ例' => 'tone_examples',
-        '台詞例' => 'tone_examples',
-        '口調' => 'tone',
-
-        '性格・特徴' => 'personality',
-        '性格' => 'personality',
-        '特徴' => 'personality',
+        '職業・役職' => 'occupation_position',
+        '職業' => 'occupation_position',
+        '役職' => 'occupation_position',
+        '家族構成' => 'family_structure',
 
         '外見の特徴' => 'appearance',
         '外見' => 'appearance',
         '容姿' => 'appearance',
 
+        '性格・特徴' => 'personality',
+        '性格' => 'personality',
+        '特徴' => 'personality',
+
+        '一人称' => 'first_person',
+        '二人称' => 'second_person',
+
+        '基本口調' => 'basic_tone',
+        '口調' => 'basic_tone',
+        '口癖' => 'catchphrases',
+        '特徴的な言い回し' => 'distinctive_speech',
+        '相手による口調の違い' => 'tone_by_relationship',
+
+        '短いセリフ例' => 'short_quote_examples',
+        '口調の例' => 'short_quote_examples',
+        'セリフ例' => 'short_quote_examples',
+        '台詞例' => 'short_quote_examples',
+
+        '能力・技・戦闘' => 'abilities',
+        '能力' => 'abilities',
+
         '背景・経歴' => 'background',
         '背景、経歴' => 'background',
         '背景' => 'background',
         '経歴' => 'background',
+
+        '作品内での活躍' => 'story_activities',
+
+        'ページ名または資料名' => 'source_title',
+        'ページ名・資料名' => 'source_title',
+        '出典' => 'source_title',
+        'URL' => 'source_url',
+        '情報源区分' => 'source_type',
+        '信頼度' => 'source_reliability',
+        '確認日' => 'source_checked_at',
+        'ネタバレ' => 'spoiler_level',
     ];
 
     public function parse(string $text): array
     {
-        $text = str_replace(["\r", "\r"], "", trim($text));
-        $text = preg_replace('/[ \t　]+/u', ' ', $text);
+        $text = str_replace("\r", '', trim($text));
+        $text = preg_replace('/[ \t　]+/u', ' ', $text) ?? $text;
 
-        $result = [
-            'name' => null,
-            'name_kana' => null,
-            'age' => null,
-            'affiliation' => null,
-            'grade_class' => null,
-            'first_person' => null,
-            'tone' => null,
-            'tone_examples' => null,
-            'personality' => null,
-            'appearance' => null,
-            'background' => null,
-        ];
+        $result = array_fill_keys([
+            'name',
+            'name_kana',
+            'real_name',
+            'aliases',
+            'name_english',
+            'gender',
+            'age',
+            'birthday',
+            'height',
+            'weight',
+            'blood_type',
+            'birthplace',
+            'species',
+            'affiliation',
+            'school_grade_class',
+            'occupation_position',
+            'family_structure',
+            'appearance',
+            'personality',
+            'first_person',
+            'second_person',
+            'basic_tone',
+            'catchphrases',
+            'distinctive_speech',
+            'tone_by_relationship',
+            'short_quote_examples',
+            'abilities',
+            'background',
+            'story_activities',
+            'source_title',
+            'source_url',
+            'source_type',
+            'source_reliability',
+            'source_checked_at',
+            'spoiler_level',
+        ], null);
 
         $headingName = $this->extractHeadingName($text);
 
         $labels = array_keys($this->labelMap);
 
-        // 長いラベルを優先する
-        usort($labels, fn ($a, $b) => mb_strlen($b) <=> mb_strlen($a));
+        usort(
+            $labels,
+            fn (string $a, string $b): int => mb_strlen($b) <=> mb_strlen($a)
+        );
 
-        $labelPattern = implode('|', array_map(fn ($label) => preg_quote($label, '/'), $labels));
+        $labelPattern = implode(
+            '|',
+            array_map(
+                fn (string $label): string => preg_quote($label, '/'),
+                $labels
+            )
+        );
 
-        // 「名前:」「年齢：」などの位置を全部取得する。改行なしでもOK。
         preg_match_all(
             '/(' . $labelPattern . ')[ \t　]*[:：]/u',
             $text,
@@ -82,28 +156,32 @@ class CharacterTextParserService
 
         foreach ($matches[1] as $index => $match) {
             $label = $match[0];
-            $labelStart = $match[1];
-
             $fullMatch = $matches[0][$index][0];
             $fullStart = $matches[0][$index][1];
-            $valueStart = $fullStart + strlen($fullMatch);
 
             $found[] = [
-                'label' => $label,
                 'key' => $this->labelMap[$label],
-                'label_start' => $labelStart,
-                'value_start' => $valueStart,
+                'label_start' => $match[1],
+                'value_start' => $fullStart + strlen($fullMatch),
             ];
         }
 
         foreach ($found as $index => $item) {
             $nextStart = $found[$index + 1]['label_start'] ?? strlen($text);
 
-            $value = substr($text, $item['value_start'], $nextStart - $item['value_start']);
+            $value = substr(
+                $text,
+                $item['value_start'],
+                $nextStart - $item['value_start']
+            );
+
             $value = $this->cleanValue($value);
 
             if ($value !== null) {
-                $result[$item['key']] = $value;
+                $result[$item['key']] = $this->normalizeChoice(
+                    $item['key'],
+                    $value
+                );
             }
         }
 
@@ -116,14 +194,29 @@ class CharacterTextParserService
 
     private function extractHeadingName(string $text): ?string
     {
-        $lines = array_values(array_filter(array_map('trim', explode("", $text))));
+        $lines = array_values(
+            array_filter(
+                array_map(
+                    'trim',
+                    preg_split('/\R/u', $text) ?: []
+                )
+            )
+        );
 
         foreach ($lines as $line) {
-            if (preg_match('/^[■□●○★☆#]+[ \t　]*(.+)$/u', $line, $matches)) {
+            if (
+                preg_match(
+                    '/^[■□●○★☆#]+[ \t　]*(.+)$/u',
+                    $line,
+                    $matches
+                )
+            ) {
                 $heading = trim($matches[1]);
 
-                // 見出しの後ろに「名前:」などが続いていたら、そこより前だけを見出し名にする
-                $heading = preg_split('/名前[ \t　]*[:：]/u', $heading)[0] ?? $heading;
+                $heading = preg_split(
+                    '/名前[ \t　]*[:：]/u',
+                    $heading
+                )[0] ?? $heading;
 
                 return trim($heading) ?: null;
             }
@@ -136,14 +229,43 @@ class CharacterTextParserService
     {
         $value = trim($value);
 
-        // 先頭の装飾や不要スペースを軽く除去
-        $value = preg_replace('/^[■□●○★☆#\s　]+/u', '', $value);
+        $value = preg_replace(
+            '/^[■□●○★☆#\s　]+/u',
+            '',
+            $value
+        ) ?? $value;
 
-        // 3行以上の空行を2行にまとめる
-        $value = preg_replace("/{3,}/", "", $value);
+        $value = preg_replace(
+            '/\n{3,}/u',
+            "\n\n",
+            $value
+        ) ?? $value;
 
         $value = trim($value);
 
         return $value !== '' ? $value : null;
+    }
+
+    private function normalizeChoice(
+        string $key,
+        string $value
+    ): string {
+        $maps = [
+            'source_type' => array_flip(
+                Character::SOURCE_TYPES
+            ),
+            'source_reliability' => array_flip(
+                Character::SOURCE_RELIABILITIES
+            ),
+            'spoiler_level' => array_flip(
+                Character::SPOILER_LEVELS
+            ),
+        ];
+
+        if (! isset($maps[$key])) {
+            return $value;
+        }
+
+        return $maps[$key][$value] ?? $value;
     }
 }
