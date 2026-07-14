@@ -134,7 +134,7 @@ $canUseCharacterImports = auth()->user()?->canManageAllAdminFeatures() ?? false;
                                 required
                             >
                                 <option value="">選択してください</option>
-                                <option value="published">公開</option>
+                                <option value="publish">公開</option>
                                 <option value="private">非公開</option>
                                 <option value="delete">削除</option>
                             </select>
@@ -186,7 +186,7 @@ $canUseCharacterImports = auth()->user()?->canManageAllAdminFeatures() ?? false;
                                                 class="character-check"
                                                 form="character-bulk-form"
                                                 type="checkbox"
-                                                name="ids[]"
+                                                name="character_ids[]"
                                                 value="{{ $character->id }}"
                                             >
                                         </td>
