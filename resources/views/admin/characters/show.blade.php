@@ -1,196 +1,194 @@
 <x-app-layout>
-    @php
-        $canUseCharacterImports = auth()->user()?->canManageAllAdminFeatures() ?? false;
-    @endphp
     <x-slot name="header">
-        <h2 class="font-semibold text-xl">
-            キャラクター詳細
-        </h2>
+        <h2 class="text-xl font-semibold">キャラクター詳細</h2>
     </x-slot>
 
+    @php
+        $displayValue = static fn ($value) => filled($value) ? $value : '未設定';
+        $sourceTypeLabel = \App\Models\Character::SOURCE_TYPES[$character->source_type] ?? '未設定';
+        $sourceReliabilityLabel = \App\Models\Character::SOURCE_RELIABILITIES[$character->source_reliability] ?? '未設定';
+        $spoilerLabel = \App\Models\Character::SPOILER_LEVELS[$character->spoiler_level] ?? 'なし';
+    @endphp
+
     <div class="p-6">
-        <div class="mx-auto max-w-5xl">
+        <div class="mx-auto max-w-6xl">
             @include('admin.partials.navigation')
 
-
             @if (session('success'))
-                <div class="mb-4 rounded bg-green-100 px-4 py-3 text-green-800">
+                <div class="mb-4 rounded-2xl bg-green-100 px-5 py-4 text-green-800">
                     {{ session('success') }}
                 </div>
             @endif
 
             <div class="mb-6 flex flex-wrap gap-3">
-                <a
-                    href="{{ route('admin.characters.index') }}"
-                    style="display:inline-block;background:#4b5563;color:#ffffff;padding:10px 18px;border-radius:8px;font-weight:bold;text-decoration:none;"
-                >
-                    キャラクター一覧へ
-                </a>
-
-                <a
-                    href="{{ route('admin.works.show', $character->work) }}"
-                    style="display:inline-block;background:#16a34a;color:#ffffff;padding:10px 18px;border-radius:8px;font-weight:bold;text-decoration:none;"
-                >
-                    作品詳細へ
-                </a>
-
-                <a
-                    href="{{ route('admin.characters.edit', $character) }}"
-                    style="display:inline-block;background:#2563eb;color:#ffffff;padding:10px 18px;border-radius:8px;font-weight:bold;text-decoration:none;"
-                >
-                    編集する
-                </a>
-
-                <a
-                    href="{{ route('admin.character-relationships.create', ['work_id' => $character->work_id]) }}"
-                    style="display:inline-block;background:#9333ea;color:#ffffff;padding:10px 18px;border-radius:8px;font-weight:bold;text-decoration:none;"
-                >
-                    関係性を追加
-                </a>
+                <a href="{{ route('admin.characters.index') }}" class="oshi-btn oshi-btn-sub">キャラクター一覧へ</a>
+                <a href="{{ route('admin.works.show', $character->work) }}" class="oshi-btn oshi-btn-sub">作品詳細へ</a>
+                <a href="{{ route('admin.characters.edit', $character) }}" class="oshi-btn">編集する</a>
+                <a href="{{ route('admin.character-relationships.create', ['work_id' => $character->work_id]) }}" class="oshi-btn oshi-btn-sub">関係性を追加</a>
             </div>
 
             @include('admin.partials.publish-help')
 
-            <div class="mb-6 rounded bg-white p-6 shadow">
-                <div class="mb-6 border-b pb-4">
-                    <p class="mb-2 text-sm text-gray-500">
-                        {{ $character->work?->title }}
-                    </p>
+            <section class="mb-6 rounded-3xl bg-white p-6 shadow">
+                <p class="mb-2 text-sm text-[#718096]">{{ $character->work?->title }}</p>
+                <h1 class="text-3xl font-bold text-[#2D3748]">{{ $character->name }}</h1>
 
-                    <h3 class="text-2xl font-bold">
-                        {{ $character->name }}
-                    </h3>
+                @if ($character->name_kana)
+                    <p class="mt-1 text-[#718096]">{{ $character->name_kana }}</p>
+                @endif
 
-                    @if ($character->name_kana)
-                        <p class="mt-1 text-gray-600">
-                            {{ $character->name_kana }}
-                        </p>
-                    @endif
+                <div class="mt-5 flex flex-wrap gap-2">
+                    @include('admin.partials.status-badge', ['status' => $character->status])
+                    <span class="rounded-full bg-[#FFF5F7] px-3 py-1 text-sm font-bold text-[#2D3748]">
+                        ネタバレ：{{ $spoilerLabel }}
+                    </span>
                 </div>
+
+                @if ($character->tags->count())
+                    <div class="mt-5 flex flex-wrap gap-2">
+                        @foreach ($character->tags as $tag)
+                            <span class="rounded-full bg-gray-100 px-3 py-1 text-sm">{{ $tag->name }}</span>
+                        @endforeach
+                    </div>
+                @endif
+            </section>
+
+            <section class="mb-6 rounded-3xl bg-white p-6 shadow">
+                <h2 class="mb-5 text-xl font-bold">基本情報</h2>
+
+                <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+                    @foreach ([
+                        '本名' => $character->real_name,
+                        '別名・愛称' => $character->aliases,
+                        '英語表記' => $character->name_english,
+                        '性別' => $character->gender,
+                        '年齢' => $character->age,
+                        '生年月日・誕生日' => $character->birthday,
+                        '身長' => $character->height,
+                        '体重' => $character->weight,
+                        '血液型' => $character->blood_type,
+                        '出身地' => $character->birthplace,
+                        '種族' => $character->species,
+                        '所属' => $character->affiliation,
+                        '学校・学年・クラス' => $character->school_grade_class,
+                        '職業・役職' => $character->occupation_position,
+                        '家族構成' => $character->family_structure,
+                    ] as $label => $value)
+                        <div>
+                            <h3 class="mb-1 font-bold">{{ $label }}</h3>
+                            <div class="whitespace-pre-wrap rounded-2xl bg-gray-50 p-4">{{ $displayValue($value) }}</div>
+                        </div>
+                    @endforeach
+                </div>
+            </section>
+
+            @foreach ([
+                '外見' => $character->appearance,
+                '性格・特徴' => $character->personality,
+            ] as $label => $value)
+                <section class="mb-6 rounded-3xl bg-white p-6 shadow">
+                    <h2 class="mb-3 text-xl font-bold">{{ $label }}</h2>
+                    <div class="whitespace-pre-wrap rounded-2xl bg-gray-50 p-4">{{ $displayValue($value) }}</div>
+                </section>
+            @endforeach
+
+            <section class="mb-6 rounded-3xl bg-white p-6 shadow">
+                <h2 class="mb-5 text-xl font-bold">一人称・口調</h2>
 
                 <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+                    @foreach ([
+                        '一人称' => $character->first_person,
+                        '二人称' => $character->second_person,
+                    ] as $label => $value)
+                        <div>
+                            <h3 class="mb-1 font-bold">{{ $label }}</h3>
+                            <div class="whitespace-pre-wrap rounded-2xl bg-gray-50 p-4">{{ $displayValue($value) }}</div>
+                        </div>
+                    @endforeach
+                </div>
+
+                <div class="mt-5 space-y-5">
+                    @foreach ([
+                        '基本口調' => $character->basic_tone,
+                        '口癖' => $character->catchphrases,
+                        '特徴的な言い回し' => $character->distinctive_speech,
+                        '相手による口調の違い' => $character->tone_by_relationship,
+                        '短いセリフ例' => $character->short_quote_examples,
+                    ] as $label => $value)
+                        <div>
+                            <h3 class="mb-1 font-bold">{{ $label }}</h3>
+                            <div class="whitespace-pre-wrap rounded-2xl bg-gray-50 p-4">{{ $displayValue($value) }}</div>
+                        </div>
+                    @endforeach
+                </div>
+            </section>
+
+            @foreach ([
+                '能力・技・戦闘' => $character->abilities,
+                '背景・経歴' => $character->background,
+                '作品内での活躍' => $character->story_activities,
+            ] as $label => $value)
+                <section class="mb-6 rounded-3xl bg-white p-6 shadow">
+                    <h2 class="mb-3 text-xl font-bold">{{ $label }}</h2>
+                    <div class="whitespace-pre-wrap rounded-2xl bg-gray-50 p-4">{{ $displayValue($value) }}</div>
+                </section>
+            @endforeach
+
+            <section class="mb-6 rounded-3xl bg-white p-6 shadow">
+                <h2 class="mb-5 text-xl font-bold">出典</h2>
+
+                <div class="space-y-5">
                     <div>
-                        <h4 class="mb-1 font-semibold">年齢</h4>
-                        <p class="rounded bg-gray-50 p-3">
-                            {{ $character->age ?: '未設定' }}
-                        </p>
+                        <h3 class="mb-1 font-bold">ページ名または資料名</h3>
+                        <div class="whitespace-pre-wrap rounded-2xl bg-gray-50 p-4">{{ $displayValue($character->source_title) }}</div>
                     </div>
 
                     <div>
-                        <h4 class="mb-1 font-semibold">一人称</h4>
-                        <p class="rounded bg-gray-50 p-3">
-                            {{ $character->first_person ?: '未設定' }}
-                        </p>
+                        <h3 class="mb-1 font-bold">URL</h3>
+                        <div class="whitespace-pre-wrap break-all rounded-2xl bg-gray-50 p-4">{{ $displayValue($character->source_url) }}</div>
                     </div>
 
-                    <div>
-                        <h4 class="mb-1 font-semibold">所属</h4>
-                        <p class="rounded bg-gray-50 p-3">
-                            {{ $character->affiliation ?: '未設定' }}
-                        </p>
-                    </div>
-
-                    <div>
-                        <h4 class="mb-1 font-semibold">学年クラス</h4>
-                        <p class="rounded bg-gray-50 p-3">
-                            {{ $character->grade_class ?: '未設定' }}
-                        </p>
-                    </div>
-
-                    <div>
-                        <h4 class="mb-1 font-semibold">状態</h4>
-                        <div class="rounded bg-gray-50 p-3">
-                            @include('admin.partials.status-badge', ['status' => $character->status])
+                    <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
+                        <div>
+                            <h3 class="mb-1 font-bold">情報源区分</h3>
+                            <div class="rounded-2xl bg-gray-50 p-4">{{ $sourceTypeLabel }}</div>
+                        </div>
+                        <div>
+                            <h3 class="mb-1 font-bold">信頼度</h3>
+                            <div class="rounded-2xl bg-gray-50 p-4">{{ $sourceReliabilityLabel }}</div>
+                        </div>
+                        <div>
+                            <h3 class="mb-1 font-bold">確認日</h3>
+                            <div class="rounded-2xl bg-gray-50 p-4">{{ $character->source_checked_at?->format('Y年n月j日') ?? '未設定' }}</div>
                         </div>
                     </div>
                 </div>
+            </section>
 
-
-                <div class="mt-6">
-                    <h4 class="mb-2 font-semibold">キャラクタータグ</h4>
-
-                    @if ($character->tags->count())
-                        <div class="flex flex-wrap gap-2">
-                            @foreach ($character->tags as $tag)
-                                <span class="rounded bg-gray-100 px-3 py-1 text-sm">
-                                    {{ $tag->name }}
-                                </span>
-                            @endforeach
-                        </div>
-                    @else
-                        <p class="text-gray-600">
-                            タグは未設定です。
-                        </p>
-                    @endif
-                </div>
-
-                <div class="mt-6 space-y-5">
-                    <div>
-                        <h4 class="mb-1 font-semibold">口調</h4>
-                        <div class="whitespace-pre-wrap rounded bg-gray-50 p-4">{{ $character->tone ?: '未設定' }}</div>
-                    </div>
-
-                    <div>
-                        <h4 class="mb-1 font-semibold">口調の例</h4>
-                        <div class="whitespace-pre-wrap rounded bg-gray-50 p-4">{{ $character->tone_examples ?: '未設定' }}</div>
-                    </div>
-
-                    <div>
-                        <h4 class="mb-1 font-semibold">性格</h4>
-                        <div class="whitespace-pre-wrap rounded bg-gray-50 p-4">{{ $character->personality ?: '未設定' }}</div>
-                    </div>
-
-                    <div>
-                        <h4 class="mb-1 font-semibold">外見の特徴</h4>
-                        <div class="whitespace-pre-wrap rounded bg-gray-50 p-4">{{ $character->appearance ?: '未設定' }}</div>
-                    </div>
-
-                    <div>
-                        <h4 class="mb-1 font-semibold">背景・経歴</h4>
-                        <div class="whitespace-pre-wrap rounded bg-gray-50 p-4">{{ $character->background ?: '未設定' }}</div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="mb-6 rounded bg-white p-6 shadow">
-                <h3 class="mb-4 text-lg font-semibold">
-                    このキャラクターから見た関係性
-                </h3>
+            <section class="mb-6 rounded-3xl bg-white p-6 shadow">
+                <h2 class="mb-4 text-xl font-bold">このキャラクターから見た関係性</h2>
 
                 @if ($character->outgoingRelationships->count())
                     <div class="oshi-table-wrap">
                         <table class="oshi-table">
                             <thead>
-                                <tr class="border-b bg-gray-50">
-                                    <th class="px-4 py-2 text-left">相手</th>
-                                    <th class="px-4 py-2 text-left">呼び方</th>
-                                    <th class="px-4 py-2 text-left">関係性</th>
-                                    <th class="px-4 py-2 text-left">印象・気持ち等</th>
-                                    <th class="px-4 py-2 text-left">操作</th>
+                                <tr>
+                                    <th>相手</th>
+                                    <th>呼び方</th>
+                                    <th>関係性</th>
+                                    <th>印象・気持ち等</th>
+                                    <th>操作</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @foreach ($character->outgoingRelationships as $relation)
-                                    <tr class="border-b">
-                                        <td class="px-4 py-2">
-                                            {{ $relation->toCharacter?->name }}
-                                        </td>
-                                        <td class="px-4 py-2">
-                                            {{ $relation->called_name ?: '未設定' }}
-                                        </td>
-                                        <td class="px-4 py-2">
-                                            {{ $relation->relationship ?: '未設定' }}
-                                        </td>
-                                        <td class="px-4 py-2">
-                                            {{ $relation->impression ?: '未設定' }}
-                                        </td>
-                                        <td class="px-4 py-2">
-                                            <a
-                                                href="{{ route('admin.character-relationships.edit', $relation) }}"
-                                                style="display:inline-block;background:#2563eb;color:#ffffff;padding:6px 12px;border-radius:6px;text-decoration:none;"
-                                            >
-                                                編集
-                                            </a>
+                                    <tr>
+                                        <td>{{ $relation->toCharacter?->name }}</td>
+                                        <td>{{ $relation->called_name ?: '未設定' }}</td>
+                                        <td>{{ $relation->relationship ?: '未設定' }}</td>
+                                        <td>{{ $relation->impression ?: '未設定' }}</td>
+                                        <td>
+                                            <a href="{{ route('admin.character-relationships.edit', $relation) }}" class="oshi-btn oshi-btn-sub">編集</a>
                                         </td>
                                     </tr>
                                 @endforeach
@@ -198,51 +196,34 @@
                         </table>
                     </div>
                 @else
-                    <p class="text-gray-600">
-                        このキャラクターから見た関係性はまだ登録されていません。
-                    </p>
+                    <p class="text-[#718096]">このキャラクターから見た関係性はまだ登録されていません。</p>
                 @endif
-            </div>
+            </section>
 
-            <div class="rounded bg-white p-6 shadow">
-                <h3 class="mb-4 text-lg font-semibold">
-                    他キャラクターから見たこのキャラクター
-                </h3>
+            <section class="rounded-3xl bg-white p-6 shadow">
+                <h2 class="mb-4 text-xl font-bold">他キャラクターから見たこのキャラクター</h2>
 
                 @if ($character->incomingRelationships->count())
                     <div class="oshi-table-wrap">
                         <table class="oshi-table">
                             <thead>
-                                <tr class="border-b bg-gray-50">
-                                    <th class="px-4 py-2 text-left">相手</th>
-                                    <th class="px-4 py-2 text-left">このキャラクターの呼び方</th>
-                                    <th class="px-4 py-2 text-left">関係性</th>
-                                    <th class="px-4 py-2 text-left">印象・気持ち等</th>
-                                    <th class="px-4 py-2 text-left">操作</th>
+                                <tr>
+                                    <th>相手</th>
+                                    <th>このキャラクターの呼び方</th>
+                                    <th>関係性</th>
+                                    <th>印象・気持ち等</th>
+                                    <th>操作</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @foreach ($character->incomingRelationships as $relation)
-                                    <tr class="border-b">
-                                        <td class="px-4 py-2">
-                                            {{ $relation->fromCharacter?->name }}
-                                        </td>
-                                        <td class="px-4 py-2">
-                                            {{ $relation->called_name ?: '未設定' }}
-                                        </td>
-                                        <td class="px-4 py-2">
-                                            {{ $relation->relationship ?: '未設定' }}
-                                        </td>
-                                        <td class="px-4 py-2">
-                                            {{ $relation->impression ?: '未設定' }}
-                                        </td>
-                                        <td class="px-4 py-2">
-                                            <a
-                                                href="{{ route('admin.character-relationships.edit', $relation) }}"
-                                                style="display:inline-block;background:#2563eb;color:#ffffff;padding:6px 12px;border-radius:6px;text-decoration:none;"
-                                            >
-                                                編集
-                                            </a>
+                                    <tr>
+                                        <td>{{ $relation->fromCharacter?->name }}</td>
+                                        <td>{{ $relation->called_name ?: '未設定' }}</td>
+                                        <td>{{ $relation->relationship ?: '未設定' }}</td>
+                                        <td>{{ $relation->impression ?: '未設定' }}</td>
+                                        <td>
+                                            <a href="{{ route('admin.character-relationships.edit', $relation) }}" class="oshi-btn oshi-btn-sub">編集</a>
                                         </td>
                                     </tr>
                                 @endforeach
@@ -250,11 +231,9 @@
                         </table>
                     </div>
                 @else
-                    <p class="text-gray-600">
-                        他キャラクターから見た関係性はまだ登録されていません。
-                    </p>
+                    <p class="text-[#718096]">他キャラクターから見た関係性はまだ登録されていません。</p>
                 @endif
-            </div>
+            </section>
         </div>
     </div>
 </x-app-layout>

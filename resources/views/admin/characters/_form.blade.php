@@ -1,5 +1,5 @@
 @if ($errors->any())
-    <div class="mb-4 rounded bg-red-100 px-4 py-3 text-red-800">
+    <div class="mb-6 rounded-2xl bg-red-100 px-5 py-4 text-red-800">
         <ul class="list-disc pl-5">
             @foreach ($errors->all() as $error)
                 <li>{{ $error }}</li>
@@ -8,203 +8,243 @@
     </div>
 @endif
 
-<div class="mb-4">
-    <label for="work_id" class="mb-1 block font-medium">作品</label>
-    <select
-        id="work_id"
-        name="work_id"
-        class="w-full rounded border-gray-300"
-        required
-    >
-        <option value="">選択してください</option>
-        @foreach ($works as $work)
-            <option
-                value="{{ $work->id }}"
-                @selected(old('work_id', $character->work_id ?? $selectedWorkId ?? '') == $work->id)
-            >
-                {{ $work->title }}
-            </option>
-        @endforeach
-    </select>
-</div>
+@php
+    $fieldClass = 'w-full rounded-2xl border border-[#CBD5E0] bg-white px-4 py-3';
+    $sectionClass = 'mb-8 rounded-3xl border border-[#E2E8F0] bg-white p-6';
+    $currentCharacter = $character ?? null;
+@endphp
 
-<div class="mb-4">
-    <label for="name" class="mb-1 block font-medium">キャラクター名</label>
-    <input
-        id="name"
-        type="text"
-        name="name"
-        value="{{ old('name', $character->name ?? '') }}"
-        class="w-full rounded border-gray-300"
-        required
-    >
-</div>
-
-<div class="mb-4">
-    <label for="name_kana" class="mb-1 block font-medium">読み仮名</label>
-    <input
-        id="name_kana"
-        type="text"
-        name="name_kana"
-        value="{{ old('name_kana', $character->name_kana ?? '') }}"
-        class="w-full rounded border-gray-300"
-    >
-</div>
-
-<div class="grid grid-cols-1 gap-4 md:grid-cols-2">
-    <div class="mb-4">
-        <label for="age" class="mb-1 block font-medium">年齢</label>
-        <input
-            id="age"
-            type="text"
-            name="age"
-            value="{{ old('age', $character->age ?? '') }}"
-            class="w-full rounded border-gray-300"
-        >
-    </div>
+<section class="{{ $sectionClass }}">
+    <h3 class="mb-5 text-xl font-bold text-[#2D3748]">作品・公開設定</h3>
 
     <div class="mb-4">
-        <label for="first_person" class="mb-1 block font-medium">一人称</label>
-        <input
-            id="first_person"
-            type="text"
-            name="first_person"
-            value="{{ old('first_person', $character->first_person ?? '') }}"
-            class="w-full rounded border-gray-300"
-        >
-    </div>
-</div>
-
-<div class="grid grid-cols-1 gap-4 md:grid-cols-2">
-    <div class="mb-4">
-        <label for="affiliation" class="mb-1 block font-medium">所属</label>
-        <input
-            id="affiliation"
-            type="text"
-            name="affiliation"
-            value="{{ old('affiliation', $character->affiliation ?? '') }}"
-            class="w-full rounded border-gray-300"
-        >
-    </div>
-
-    <div class="mb-4">
-        <label for="grade_class" class="mb-1 block font-medium">学年クラス</label>
-        <input
-            id="grade_class"
-            type="text"
-            name="grade_class"
-            value="{{ old('grade_class', $character->grade_class ?? '') }}"
-            class="w-full rounded border-gray-300"
-        >
-    </div>
-</div>
-
-<div class="mb-4">
-    <label for="tone" class="mb-1 block font-medium">口調</label>
-    <textarea
-        id="tone"
-        name="tone"
-        rows="3"
-        class="w-full rounded border-gray-300"
-    >{{ old('tone', $character->tone ?? '') }}</textarea>
-</div>
-
-<div class="mb-4">
-    <label for="tone_examples" class="mb-1 block font-medium">口調の例</label>
-    <textarea
-        id="tone_examples"
-        name="tone_examples"
-        rows="3"
-        class="w-full rounded border-gray-300"
-    >{{ old('tone_examples', $character->tone_examples ?? '') }}</textarea>
-</div>
-
-<div class="mb-4">
-    <label for="personality" class="mb-1 block font-medium">性格</label>
-    <textarea
-        id="personality"
-        name="personality"
-        rows="3"
-        class="w-full rounded border-gray-300"
-    >{{ old('personality', $character->personality ?? '') }}</textarea>
-</div>
-
-<div class="mb-4">
-    <label for="appearance" class="mb-1 block font-medium">外見の特徴</label>
-    <textarea
-        id="appearance"
-        name="appearance"
-        rows="3"
-        class="w-full rounded border-gray-300"
-    >{{ old('appearance', $character->appearance ?? '') }}</textarea>
-</div>
-
-<div class="mb-4">
-    <label for="background" class="mb-1 block font-medium">背景・経歴</label>
-    <textarea
-        id="background"
-        name="background"
-        rows="3"
-        class="w-full rounded border-gray-300"
-    >{{ old('background', $character->background ?? '') }}</textarea>
-</div>
-
-
-<div class="mb-6">
-    <label class="mb-2 block font-medium">タグ</label>
-
-    @if (($tags ?? collect())->count())
-        <div class="oshi-character-create-tags grid grid-cols-1 gap-2 rounded border border-gray-200 p-3 md:grid-cols-3">
-            @foreach ($tags as $tag)
-                <label class="oshi-character-create-tag-option flex items-center gap-2">
-                    <input
-                        type="checkbox"
-                        name="tag_ids[]"
-                        value="{{ $tag->id }}"
-                        @checked(in_array($tag->id, old('tag_ids', isset($character) ? $character->tags->pluck('id')->toArray() : [])))
-                    >
-                    <span>{{ $tag->name }}</span>
-                </label>
+        <label for="work_id" class="mb-1 block font-bold">作品</label>
+        <select id="work_id" name="work_id" class="{{ $fieldClass }}" required>
+            <option value="">選択してください</option>
+            @foreach ($works as $work)
+                <option
+                    value="{{ $work->id }}"
+                    @selected(old('work_id', $currentCharacter?->work_id ?? $selectedWorkId ?? '') == $work->id)
+                >
+                    {{ $work->title }}
+                </option>
             @endforeach
+        </select>
+    </div>
+
+    @if (auth()->user()?->canManageAllAdminFeatures())
+        <div>
+            <label for="status" class="mb-1 block font-bold">状態</label>
+            <p class="mb-2 text-sm text-[#718096]">公開ページに表示する場合は「公開」を選択してください。</p>
+            <select id="status" name="status" class="{{ $fieldClass }}">
+                <option value="draft" @selected(old('status', $currentCharacter?->status ?? 'draft') === 'draft')>下書き</option>
+                <option value="published" @selected(old('status', $currentCharacter?->status ?? '') === 'published')>公開</option>
+                <option value="private" @selected(old('status', $currentCharacter?->status ?? '') === 'private')>非公開</option>
+            </select>
         </div>
     @else
-        <p class="text-sm text-gray-600">
-            まだタグが登録されていません。先にタグ管理から登録してください。
-        </p>
+        <div class="rounded-2xl bg-pink-50 p-4 text-sm text-[#4A5568]">
+            情報入力スタッフによる登録・編集は、最高管理者への承認申請として保存されます。
+        </div>
     @endif
-</div>
+</section>
 
-@if (auth()->user()?->isSuperAdmin())
-{{-- STAFF_HIDE_STATUS_FIELD_FIX --}}
-@if (auth()->user()?->canManageAllAdminFeatures())
-<div class="mb-6">
-    <label for="status" class="mb-1 block font-medium">状態</label>
-    <p class="mb-2 text-sm text-gray-600">
-        公開ページに表示したい場合は「公開」を選択してください。
-    </p>
-    <select
-        id="status"
-        name="status"
-        class="w-full rounded border-gray-300"
-    >
-        <option value="draft" @selected(old('status', $character->status ?? 'draft') === 'draft')>下書き</option>
-        <option value="published" @selected(old('status', $character->status ?? '') === 'published')>公開</option>
-        <option value="private" @selected(old('status', $character->status ?? '') === 'private')>非公開</option>
-    </select>
-</div>
-@else
-    <input type="hidden" name="status" value="{{ old('status', $character->status ?? $characterRelationship->status ?? 'draft') }}">
-@endif
-{{-- /STAFF_HIDE_STATUS_FIELD_FIX --}}
-@else
-    <div class="mb-6 rounded bg-pink-50 p-4 text-sm">
-        情報入力スタッフによる登録・編集は、最高管理者への承認申請として保存されます。
+<section class="{{ $sectionClass }}">
+    <h3 class="mb-5 text-xl font-bold text-[#2D3748]">基本情報</h3>
+
+    <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+        @foreach ([
+            ['name', '名前', true],
+            ['name_kana', '読み仮名', false],
+            ['real_name', '本名', false],
+            ['name_english', '英語表記', false],
+            ['gender', '性別', false],
+            ['age', '年齢', false],
+            ['birthday', '生年月日・誕生日', false],
+            ['height', '身長', false],
+            ['weight', '体重', false],
+            ['blood_type', '血液型', false],
+            ['birthplace', '出身地', false],
+            ['species', '種族', false],
+            ['affiliation', '所属', false],
+            ['school_grade_class', '学校・学年・クラス', false],
+            ['occupation_position', '職業・役職', false],
+        ] as [$field, $label, $required])
+            <div>
+                <label for="{{ $field }}" class="mb-1 block font-bold">{{ $label }}</label>
+                <input
+                    id="{{ $field }}"
+                    type="text"
+                    name="{{ $field }}"
+                    value="{{ old($field, data_get($currentCharacter, $field, '')) }}"
+                    class="{{ $fieldClass }}"
+                    @required($required)
+                >
+            </div>
+        @endforeach
     </div>
-@endif
+
+    <div class="mt-4">
+        <label for="aliases" class="mb-1 block font-bold">別名・愛称</label>
+        <textarea id="aliases" name="aliases" rows="3" class="{{ $fieldClass }}">{{ old('aliases', $currentCharacter?->aliases ?? '') }}</textarea>
+    </div>
+
+    <div class="mt-4">
+        <label for="family_structure" class="mb-1 block font-bold">家族構成</label>
+        <textarea id="family_structure" name="family_structure" rows="3" class="{{ $fieldClass }}">{{ old('family_structure', $currentCharacter?->family_structure ?? '') }}</textarea>
+    </div>
+</section>
+
+<section class="{{ $sectionClass }}">
+    <h3 class="mb-5 text-xl font-bold text-[#2D3748]">外見・性格</h3>
+
+    <div class="mb-5">
+        <label for="appearance" class="mb-1 block font-bold">外見</label>
+        <p class="mb-2 text-sm text-[#718096]">作品内で客観的に確認できる外見情報を入力してください。</p>
+        <textarea id="appearance" name="appearance" rows="6" class="{{ $fieldClass }}">{{ old('appearance', $currentCharacter?->appearance ?? '') }}</textarea>
+    </div>
+
+    <div>
+        <label for="personality" class="mb-1 block font-bold">性格・特徴</label>
+        <textarea id="personality" name="personality" rows="6" class="{{ $fieldClass }}">{{ old('personality', $currentCharacter?->personality ?? '') }}</textarea>
+    </div>
+</section>
+
+<section class="{{ $sectionClass }}">
+    <h3 class="mb-5 text-xl font-bold text-[#2D3748]">一人称・口調</h3>
+
+    <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+        <div>
+            <label for="first_person" class="mb-1 block font-bold">一人称</label>
+            <input id="first_person" type="text" name="first_person" value="{{ old('first_person', $currentCharacter?->first_person ?? '') }}" class="{{ $fieldClass }}">
+        </div>
+
+        <div>
+            <label for="second_person" class="mb-1 block font-bold">二人称</label>
+            <input id="second_person" type="text" name="second_person" value="{{ old('second_person', $currentCharacter?->second_person ?? '') }}" class="{{ $fieldClass }}">
+        </div>
+    </div>
+
+    @foreach ([
+        ['basic_tone', '基本口調', 4],
+        ['catchphrases', '口癖', 3],
+        ['distinctive_speech', '特徴的な言い回し', 4],
+        ['tone_by_relationship', '相手による口調の違い', 5],
+        ['short_quote_examples', '短いセリフ例', 5],
+    ] as [$field, $label, $rows])
+        <div class="mt-5">
+            <label for="{{ $field }}" class="mb-1 block font-bold">{{ $label }}</label>
+            @if ($field === 'short_quote_examples')
+                <p class="mb-2 text-sm text-[#718096]">
+                    短いセリフ例のみ入力してください。長文の書き起こしや、台詞の大量転載は行わないでください。
+                </p>
+            @endif
+            <textarea id="{{ $field }}" name="{{ $field }}" rows="{{ $rows }}" class="{{ $fieldClass }}">{{ old($field, data_get($currentCharacter, $field, '')) }}</textarea>
+        </div>
+    @endforeach
+</section>
+
+<section class="{{ $sectionClass }}">
+    <h3 class="mb-5 text-xl font-bold text-[#2D3748]">能力・経歴・活躍</h3>
+
+    @foreach ([
+        ['abilities', '能力・技・戦闘', '能力、技、武器、制限、弱点、戦闘スタイルなど'],
+        ['background', '背景・経歴', '過去から現在までの経歴'],
+        ['story_activities', '作品内での活躍', '主要な登場、事件、戦闘、成長など'],
+    ] as [$field, $label, $description])
+        <div class="mb-5 last:mb-0">
+            <label for="{{ $field }}" class="mb-1 block font-bold">{{ $label }}</label>
+            <p class="mb-2 text-sm text-[#718096]">{{ $description }}</p>
+            <textarea id="{{ $field }}" name="{{ $field }}" rows="7" class="{{ $fieldClass }}">{{ old($field, data_get($currentCharacter, $field, '')) }}</textarea>
+        </div>
+    @endforeach
+</section>
+
+<section class="{{ $sectionClass }}">
+    <h3 class="mb-5 text-xl font-bold text-[#2D3748]">出典</h3>
+
+    <div class="mb-5">
+        <label for="source_title" class="mb-1 block font-bold">ページ名または資料名</label>
+        <textarea id="source_title" name="source_title" rows="4" class="{{ $fieldClass }}">{{ old('source_title', $currentCharacter?->source_title ?? '') }}</textarea>
+    </div>
+
+    <div class="mb-5">
+        <label for="source_url" class="mb-1 block font-bold">URL</label>
+        <textarea id="source_url" name="source_url" rows="4" class="{{ $fieldClass }}">{{ old('source_url', $currentCharacter?->source_url ?? '') }}</textarea>
+    </div>
+
+    <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
+        <div>
+            <label for="source_type" class="mb-1 block font-bold">情報源区分</label>
+            <select id="source_type" name="source_type" class="{{ $fieldClass }}">
+                <option value="">選択してください</option>
+                @foreach (\App\Models\Character::SOURCE_TYPES as $value => $label)
+                    <option value="{{ $value }}" @selected(old('source_type', $currentCharacter?->source_type ?? '') === $value)>{{ $label }}</option>
+                @endforeach
+            </select>
+        </div>
+
+        <div>
+            <label for="source_reliability" class="mb-1 block font-bold">信頼度</label>
+            <select id="source_reliability" name="source_reliability" class="{{ $fieldClass }}">
+                <option value="">選択してください</option>
+                @foreach (\App\Models\Character::SOURCE_RELIABILITIES as $value => $label)
+                    <option value="{{ $value }}" @selected(old('source_reliability', $currentCharacter?->source_reliability ?? '') === $value)>{{ $label }}</option>
+                @endforeach
+            </select>
+        </div>
+
+        <div>
+            <label for="source_checked_at" class="mb-1 block font-bold">確認日</label>
+            <input
+                id="source_checked_at"
+                type="date"
+                name="source_checked_at"
+                value="{{ old('source_checked_at', $currentCharacter?->source_checked_at?->format('Y-m-d') ?? '') }}"
+                class="{{ $fieldClass }}"
+            >
+        </div>
+    </div>
+</section>
+
+<section class="{{ $sectionClass }}">
+    <h3 class="mb-5 text-xl font-bold text-[#2D3748]">ネタバレ・タグ</h3>
+
+    <div class="mb-6">
+        <label for="spoiler_level" class="mb-1 block font-bold">ネタバレ</label>
+        <select id="spoiler_level" name="spoiler_level" class="{{ $fieldClass }}">
+            @foreach (\App\Models\Character::SPOILER_LEVELS as $value => $label)
+                <option value="{{ $value }}" @selected(old('spoiler_level', $currentCharacter?->spoiler_level ?? 'none') === $value)>{{ $label }}</option>
+            @endforeach
+        </select>
+    </div>
+
+    <div>
+        <label class="mb-2 block font-bold">タグ</label>
+
+        @if (($tags ?? collect())->count())
+            <div class="grid grid-cols-1 gap-2 rounded-2xl border border-[#E2E8F0] p-4 md:grid-cols-3">
+                @foreach ($tags as $tag)
+                    <label class="flex items-center gap-2">
+                        <input
+                            type="checkbox"
+                            name="tag_ids[]"
+                            value="{{ $tag->id }}"
+                            @checked(in_array($tag->id, old('tag_ids', $currentCharacter ? $currentCharacter->tags->pluck('id')->toArray() : [])))
+                        >
+                        <span>{{ $tag->name }}</span>
+                    </label>
+                @endforeach
+            </div>
+        @else
+            <p class="text-sm text-[#718096]">まだタグが登録されていません。</p>
+        @endif
+    </div>
+</section>
 
 <button
     type="submit"
-    style="display:inline-block;background:#2563eb;color:#ffffff;padding:10px 24px;border-radius:8px;font-weight:bold;border:none;cursor:pointer;"
+    class="rounded-2xl bg-[#2D3748] px-8 py-3 font-bold text-white"
 >
     保存する
 </button>
