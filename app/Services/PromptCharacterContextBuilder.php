@@ -273,7 +273,7 @@ class PromptCharacterContextBuilder
         $this->appendIfFilled(
             $lines,
             '学年・クラス',
-            $character->grade_class
+            $character->school_grade_class
         );
 
         $this->appendIfFilled(
@@ -285,13 +285,13 @@ class PromptCharacterContextBuilder
         $this->appendIfFilled(
             $lines,
             '口調',
-            $character->tone
+            $character->basic_tone
         );
 
         $this->appendIfFilled(
             $lines,
             '口調例',
-            $character->tone_examples
+            $character->short_quote_examples
         );
 
         $this->appendIfFilled(

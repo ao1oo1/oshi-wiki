@@ -69,7 +69,7 @@
                     @foreach ($work->characters as $character)
                         <article class="oshi-card">
                             <p class="mb-1 text-sm text-gray-500">
-                                {{ $character->affiliation ?: '所属未設定' }}
+                                {{ $character->occupation_position ?: $character->affiliation ?: '所属・役職未設定' }}
                             </p>
 
                             <h3 class="mb-2 text-xl font-bold">
@@ -82,9 +82,21 @@
                                 </p>
                             @endif
 
-                            <div class="mb-3 text-sm text-gray-700">
+                            <div class="mb-3 flex flex-wrap gap-x-4 gap-y-1 text-sm text-gray-700">
                                 @if ($character->age)
                                     <span>年齢：{{ $character->age }}</span>
+                                @endif
+
+                                @if ($character->gender)
+                                    <span>性別：{{ $character->gender }}</span>
+                                @endif
+
+                                @if ($character->species)
+                                    <span>種族：{{ $character->species }}</span>
+                                @endif
+
+                                @if ($character->school_grade_class)
+                                    <span>学校・学年・クラス：{{ $character->school_grade_class }}</span>
                                 @endif
 
                                 @if ($character->first_person)
@@ -102,9 +114,21 @@
                                 </div>
                             @endif
 
-                            <p class="mb-4 line-clamp-3 text-gray-700">
-                                {{ $character->personality ?: $character->background ?: '説明はまだ登録されていません。' }}
+                            <p class="mb-4 line-clamp-3 whitespace-pre-wrap text-gray-700">
+                                {{ $character->personality
+                                    ?: $character->appearance
+                                    ?: $character->abilities
+                                    ?: $character->background
+                                    ?: $character->story_activities
+                                    ?: '説明はまだ登録されていません。' }}
                             </p>
+
+                            @if (($character->spoiler_level ?? 'none') !== 'none')
+                                <p class="mb-3 rounded-xl bg-amber-50 px-3 py-2 text-xs font-bold text-amber-800">
+                                    ネタバレ：
+                                    {{ \App\Models\Character::SPOILER_LEVELS[$character->spoiler_level] ?? 'あり' }}
+                                </p>
+                            @endif
 
                             <a
                                 href="{{ route('public.characters.show', $character) }}"
