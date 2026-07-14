@@ -36,7 +36,7 @@ class CharacterCsvExportController extends Controller
 
         $headers = $this->headers();
 
-        fputcsv($handle, $headers);
+        fputcsv($handle, $headers, ',', '"', '');
 
         $query = Character::query()
             ->with(['work'])
@@ -50,7 +50,7 @@ class CharacterCsvExportController extends Controller
 
         $query->chunk(500, function ($characters) use ($handle, $headers) {
             foreach ($characters as $character) {
-                fputcsv($handle, $this->row($character, $headers));
+                fputcsv($handle, $this->row($character, $headers), ',', '"', '');
             }
         });
 
