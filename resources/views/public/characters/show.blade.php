@@ -3,214 +3,334 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $character->name }} | {{ $character->work?->title }} | <span class="oshi-brand-mark">✦</span> Oshi-Wiki</title>
+    <title>{{ $character->name }} | {{ $character->work?->title }} | Oshi-Wiki</title>
     <link rel="icon" href="{{ asset('favicon.ico') }}" type="image/x-icon">
     <link rel="shortcut icon" href="{{ asset('favicon.ico') }}" type="image/x-icon">
-
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body >
+<body>
     @include('public.partials.header')
 
+    @php
+        $sourceTypeLabel = \App\Models\Character::SOURCE_TYPES[$character->source_type] ?? null;
+        $sourceReliabilityLabel = \App\Models\Character::SOURCE_RELIABILITIES[$character->source_reliability] ?? null;
+        $spoilerLabel = \App\Models\Character::SPOILER_LEVELS[$character->spoiler_level] ?? 'なし';
+
+        $spoilerMessages = [
+            'minor' => '一部ネタバレを含みます。',
+            'major' => '物語の重要な展開に関するネタバレを含みます。',
+            'latest_chapter' => '単行本未収録の内容を含む可能性があります。',
+            'anime_spoiler' => 'アニメ未視聴者向けのネタバレを含みます。',
+        ];
+
+        $sourceUrls = collect(preg_split('/\R/u', (string) $character->source_url))
+            ->map(fn ($url) => trim($url))
+            ->filter()
+            ->values();
+    @endphp
+
     <main class="oshi-container">
-        <div >
-            <div class="mb-6 flex flex-wrap gap-3">
+        <div class="mb-6 flex flex-wrap gap-3">
+            <a
+                href="{{ route('public.works.index') }}"
+                class="oshi-btn oshi-btn-sub"
+            >
+                作品一覧へ戻る
+            </a>
+
+            @if ($character->work)
                 <a
-                    href="{{ route('public.works.index') }}"
-                    style="display:inline-block;background:#A0AEC0;color:#ffffff;padding:10px 18px;border-radius:8px;font-weight:bold;text-decoration:none;"
+                    href="{{ route('public.works.show', $character->work) }}"
+                    class="oshi-btn oshi-btn-sub"
                 >
-                    作品一覧へ戻る
+                    作品詳細へ戻る
                 </a>
+            @endif
+        </div>
 
-                @if ($character->work)
-                    <a
-                        href="{{ route('public.works.show', $character->work) }}"
-                        style="display:inline-block;background:#2D3748;color:#ffffff;padding:10px 18px;border-radius:8px;font-weight:bold;text-decoration:none;"
-                    >
-                        作品詳細へ戻る
-                    </a>
-                @endif
-            </div>
-
-            <section class="oshi-card">
-                <p class="mb-2 text-sm text-gray-500">
-                    {{ $character->work?->title }}
+        @if (($character->spoiler_level ?? 'none') !== 'none')
+            <section class="mb-6 rounded-3xl border border-amber-300 bg-amber-50 p-5 text-amber-900">
+                <p class="font-bold">
+                    ネタバレ：{{ $spoilerLabel }}
                 </p>
+                <p class="mt-1 text-sm">
+                    {{ $spoilerMessages[$character->spoiler_level] ?? 'ネタバレを含みます。' }}
+                </p>
+            </section>
+        @endif
 
-                <h1 class="mb-2 text-3xl font-bold">
-                    {{ $character->name }}
-                </h1>
+        <section class="oshi-card">
+            <p class="mb-2 text-sm text-gray-500">
+                {{ $character->work?->title }}
+            </p>
 
-                @if ($character->name_kana)
-                    <p class="mb-4 text-gray-500">
-                        {{ $character->name_kana }}
-                    </p>
-                @endif
+            <h1 class="mb-1 text-3xl font-bold">
+                {{ $character->name }}
+            </h1>
 
-                @if ($character->tags->count())
-                    <div class="mb-5 flex flex-wrap gap-2">
-                        @foreach ($character->tags as $tag)
-                            <span
-                                class="oshi-chip"
-                                style="background:#FED7E2;color:#2D3748;"
-                            >
-                                {{ $tag->name }}
-                            </span>
-                        @endforeach
-                    </div>
-                @endif
+            @if ($character->name_kana)
+                <p class="text-gray-500">
+                    {{ $character->name_kana }}
+                </p>
+            @endif
+
+            @if ($character->name_english)
+                <p class="mt-1 text-sm text-gray-500">
+                    {{ $character->name_english }}
+                </p>
+            @endif
+
+            @if ($character->tags->count())
+                <div class="mt-5 flex flex-wrap gap-2">
+                    @foreach ($character->tags as $tag)
+                        <span
+                            class="oshi-chip"
+                            style="background:#FED7E2;color:#2D3748;"
+                        >
+                            {{ $tag->name }}
+                        </span>
+                    @endforeach
+                </div>
+            @endif
+        </section>
+
+        <section class="oshi-card">
+            <h2 class="mb-5 text-2xl font-bold">基本情報</h2>
+
+            <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+                @foreach ([
+                    '本名' => $character->real_name,
+                    '別名・愛称' => $character->aliases,
+                    '性別' => $character->gender,
+                    '年齢' => $character->age,
+                    '生年月日・誕生日' => $character->birthday,
+                    '身長' => $character->height,
+                    '体重' => $character->weight,
+                    '血液型' => $character->blood_type,
+                    '出身地' => $character->birthplace,
+                    '種族' => $character->species,
+                    '所属' => $character->affiliation,
+                    '学校・学年・クラス' => $character->school_grade_class,
+                    '職業・役職' => $character->occupation_position,
+                    '家族構成' => $character->family_structure,
+                ] as $label => $value)
+                    @if (filled($value))
+                        <div>
+                            <h3 class="mb-1 font-semibold">{{ $label }}</h3>
+                            <div class="whitespace-pre-wrap rounded-2xl bg-gray-50 p-4">{{ $value }}</div>
+                        </div>
+                    @endif
+                @endforeach
+            </div>
+        </section>
+
+        @foreach ([
+            '外見' => $character->appearance,
+            '性格・特徴' => $character->personality,
+        ] as $label => $value)
+            @if (filled($value))
+                <section class="oshi-card">
+                    <h2 class="mb-3 text-2xl font-bold">{{ $label }}</h2>
+                    <div class="whitespace-pre-wrap rounded-2xl bg-gray-50 p-4">{{ $value }}</div>
+                </section>
+            @endif
+        @endforeach
+
+        @if (
+            filled($character->first_person)
+            || filled($character->second_person)
+            || filled($character->basic_tone)
+            || filled($character->catchphrases)
+            || filled($character->distinctive_speech)
+            || filled($character->tone_by_relationship)
+            || filled($character->short_quote_examples)
+        )
+            <section class="oshi-card">
+                <h2 class="mb-5 text-2xl font-bold">一人称・口調</h2>
 
                 <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
-                    <div>
-                        <h2 class="mb-1 font-semibold">年齢</h2>
-                        <p class="oshi-card">
-                            {{ $character->age ?: '未設定' }}
-                        </p>
-                    </div>
-
-                    <div>
-                        <h2 class="mb-1 font-semibold">一人称</h2>
-                        <p class="oshi-card">
-                            {{ $character->first_person ?: '未設定' }}
-                        </p>
-                    </div>
-
-                    <div>
-                        <h2 class="mb-1 font-semibold">所属</h2>
-                        <p class="oshi-card">
-                            {{ $character->affiliation ?: '未設定' }}
-                        </p>
-                    </div>
-
-                    <div>
-                        <h2 class="mb-1 font-semibold">学年クラス</h2>
-                        <p class="oshi-card">
-                            {{ $character->grade_class ?: '未設定' }}
-                        </p>
-                    </div>
+                    @foreach ([
+                        '一人称' => $character->first_person,
+                        '二人称' => $character->second_person,
+                    ] as $label => $value)
+                        @if (filled($value))
+                            <div>
+                                <h3 class="mb-1 font-semibold">{{ $label }}</h3>
+                                <div class="whitespace-pre-wrap rounded-2xl bg-gray-50 p-4">{{ $value }}</div>
+                            </div>
+                        @endif
+                    @endforeach
                 </div>
 
-                <div class="mt-6 space-y-5">
-                    <div>
-                        <h2 class="mb-1 font-semibold">口調</h2>
-                        <div class="whitespace-pre-wrap rounded bg-gray-50 p-4">{{ $character->tone ?: '未設定' }}</div>
-                    </div>
-
-                    <div>
-                        <h2 class="mb-1 font-semibold">口調の例</h2>
-                        <div class="whitespace-pre-wrap rounded bg-gray-50 p-4">{{ $character->tone_examples ?: '未設定' }}</div>
-                    </div>
-
-                    <div>
-                        <h2 class="mb-1 font-semibold">性格</h2>
-                        <div class="whitespace-pre-wrap rounded bg-gray-50 p-4">{{ $character->personality ?: '未設定' }}</div>
-                    </div>
-
-                    <div>
-                        <h2 class="mb-1 font-semibold">外見の特徴</h2>
-                        <div class="whitespace-pre-wrap rounded bg-gray-50 p-4">{{ $character->appearance ?: '未設定' }}</div>
-                    </div>
-
-                    <div>
-                        <h2 class="mb-1 font-semibold">背景・経歴</h2>
-                        <div class="whitespace-pre-wrap rounded bg-gray-50 p-4">{{ $character->background ?: '未設定' }}</div>
-                    </div>
+                <div class="mt-5 space-y-5">
+                    @foreach ([
+                        '基本口調' => $character->basic_tone,
+                        '口癖' => $character->catchphrases,
+                        '特徴的な言い回し' => $character->distinctive_speech,
+                        '相手による口調の違い' => $character->tone_by_relationship,
+                        '短いセリフ例' => $character->short_quote_examples,
+                    ] as $label => $value)
+                        @if (filled($value))
+                            <div>
+                                <h3 class="mb-1 font-semibold">{{ $label }}</h3>
+                                <div class="whitespace-pre-wrap rounded-2xl bg-gray-50 p-4">{{ $value }}</div>
+                            </div>
+                        @endif
+                    @endforeach
                 </div>
             </section>
+        @endif
 
+        @foreach ([
+            '能力・技・戦闘' => $character->abilities,
+            '背景・経歴' => $character->background,
+            '作品内での活躍' => $character->story_activities,
+        ] as $label => $value)
+            @if (filled($value))
+                <section class="oshi-card">
+                    <h2 class="mb-3 text-2xl font-bold">{{ $label }}</h2>
+                    <div class="whitespace-pre-wrap rounded-2xl bg-gray-50 p-4">{{ $value }}</div>
+                </section>
+            @endif
+        @endforeach
+
+        @if (
+            filled($character->source_title)
+            || $sourceUrls->isNotEmpty()
+            || filled($sourceTypeLabel)
+            || filled($sourceReliabilityLabel)
+            || $character->source_checked_at
+        )
             <section class="oshi-card">
-                <h2 class="mb-4 text-2xl font-bold">
-                    このキャラクターから見た関係性
-                </h2>
+                <h2 class="mb-5 text-2xl font-bold">出典</h2>
 
-                @if ($character->outgoingRelationships->count())
-                    <div class="oshi-table-wrap">
-                        <table class="oshi-table">
-                            <thead>
-                                <tr class="border-b bg-gray-50">
-                                    <th class="px-4 py-2 text-left">相手</th>
-                                    <th class="px-4 py-2 text-left">呼ばれ方</th>
-                                    <th class="px-4 py-2 text-left">関係性</th>
-                                    <th class="px-4 py-2 text-left">印象・気持ち等</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach ($character->outgoingRelationships as $relation)
-                                    <tr class="border-b">
-                                        <td class="px-4 py-2">
-                                            {{ $relation->toCharacter?->name }}
-                                        </td>
-                                        <td class="px-4 py-2">
-                                            {{ $relation->called_name ?: '未設定' }}
-                                        </td>
-                                        <td class="px-4 py-2">
-                                            {{ $relation->relationship ?: '未設定' }}
-                                        </td>
-                                        <td class="px-4 py-2">
-                                            {{ $relation->impression ?: '未設定' }}
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
+                @if (filled($character->source_title))
+                    <div class="mb-5">
+                        <h3 class="mb-1 font-semibold">ページ名または資料名</h3>
+                        <div class="whitespace-pre-wrap rounded-2xl bg-gray-50 p-4">{{ $character->source_title }}</div>
                     </div>
-                @else
-                    <p class="text-gray-600">
-                        公開中の関係性はまだ登録されていません。
-                    </p>
                 @endif
-            </section>
 
-            <section class="oshi-card">
-                <h2 class="mb-4 text-2xl font-bold">
-                    他キャラクターから見たこのキャラクター
-                </h2>
-
-                @if ($character->incomingRelationships->count())
-                    <div class="oshi-table-wrap">
-                        <table class="oshi-table">
-                            <thead>
-                                <tr class="border-b bg-gray-50">
-                                    <th class="px-4 py-2 text-left">相手</th>
-                                    <th class="px-4 py-2 text-left">このキャラクターの呼ばれ方</th>
-                                    <th class="px-4 py-2 text-left">関係性</th>
-                                    <th class="px-4 py-2 text-left">印象・気持ち等</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach ($character->incomingRelationships as $relation)
-                                    <tr class="border-b">
-                                        <td class="px-4 py-2">
-                                            {{ $relation->fromCharacter?->name }}
-                                        </td>
-                                        <td class="px-4 py-2">
-                                            {{ $relation->called_name ?: '未設定' }}
-                                        </td>
-                                        <td class="px-4 py-2">
-                                            {{ $relation->relationship ?: '未設定' }}
-                                        </td>
-                                        <td class="px-4 py-2">
-                                            {{ $relation->impression ?: '未設定' }}
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
+                @if ($sourceUrls->isNotEmpty())
+                    <div class="mb-5">
+                        <h3 class="mb-1 font-semibold">URL</h3>
+                        <div class="space-y-2 rounded-2xl bg-gray-50 p-4">
+                            @foreach ($sourceUrls as $url)
+                                @if (\Illuminate\Support\Str::startsWith($url, ['https://', 'http://']))
+                                    <a
+                                        href="{{ $url }}"
+                                        target="_blank"
+                                        rel="noopener noreferrer nofollow"
+                                        class="block break-all text-blue-700 underline"
+                                    >
+                                        {{ $url }}
+                                    </a>
+                                @else
+                                    <p class="break-all">{{ $url }}</p>
+                                @endif
+                            @endforeach
+                        </div>
                     </div>
-                @else
-                    <p class="text-gray-600">
-                        公開中の関係性はまだ登録されていません。
-                    </p>
                 @endif
+
+                <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
+                    @if (filled($sourceTypeLabel))
+                        <div>
+                            <h3 class="mb-1 font-semibold">情報源区分</h3>
+                            <div class="rounded-2xl bg-gray-50 p-4">{{ $sourceTypeLabel }}</div>
+                        </div>
+                    @endif
+
+                    @if (filled($sourceReliabilityLabel))
+                        <div>
+                            <h3 class="mb-1 font-semibold">信頼度</h3>
+                            <div class="rounded-2xl bg-gray-50 p-4">{{ $sourceReliabilityLabel }}</div>
+                        </div>
+                    @endif
+
+                    @if ($character->source_checked_at)
+                        <div>
+                            <h3 class="mb-1 font-semibold">確認日</h3>
+                            <div class="rounded-2xl bg-gray-50 p-4">
+                                {{ $character->source_checked_at->format('Y年n月j日') }}
+                            </div>
+                        </div>
+                    @endif
+                </div>
             </section>
-        </div>
-    
+        @endif
+
+        <section class="oshi-card">
+            <h2 class="mb-4 text-2xl font-bold">
+                このキャラクターから見た関係性
+            </h2>
+
+            @if ($character->outgoingRelationships->count())
+                <div class="oshi-table-wrap">
+                    <table class="oshi-table">
+                        <thead>
+                            <tr class="border-b bg-gray-50">
+                                <th class="px-4 py-2 text-left">相手</th>
+                                <th class="px-4 py-2 text-left">呼ばれ方</th>
+                                <th class="px-4 py-2 text-left">関係性</th>
+                                <th class="px-4 py-2 text-left">印象・気持ち等</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach ($character->outgoingRelationships as $relation)
+                                <tr class="border-b">
+                                    <td class="px-4 py-2">{{ $relation->toCharacter?->name }}</td>
+                                    <td class="px-4 py-2">{{ $relation->called_name ?: '未設定' }}</td>
+                                    <td class="px-4 py-2">{{ $relation->relationship ?: '未設定' }}</td>
+                                    <td class="px-4 py-2">{{ $relation->impression ?: '未設定' }}</td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            @else
+                <p class="text-gray-600">公開中の関係性はまだ登録されていません。</p>
+            @endif
+        </section>
+
+        <section class="oshi-card">
+            <h2 class="mb-4 text-2xl font-bold">
+                他キャラクターから見たこのキャラクター
+            </h2>
+
+            @if ($character->incomingRelationships->count())
+                <div class="oshi-table-wrap">
+                    <table class="oshi-table">
+                        <thead>
+                            <tr class="border-b bg-gray-50">
+                                <th class="px-4 py-2 text-left">相手</th>
+                                <th class="px-4 py-2 text-left">このキャラクターの呼ばれ方</th>
+                                <th class="px-4 py-2 text-left">関係性</th>
+                                <th class="px-4 py-2 text-left">印象・気持ち等</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach ($character->incomingRelationships as $relation)
+                                <tr class="border-b">
+                                    <td class="px-4 py-2">{{ $relation->fromCharacter?->name }}</td>
+                                    <td class="px-4 py-2">{{ $relation->called_name ?: '未設定' }}</td>
+                                    <td class="px-4 py-2">{{ $relation->relationship ?: '未設定' }}</td>
+                                    <td class="px-4 py-2">{{ $relation->impression ?: '未設定' }}</td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            @else
+                <p class="text-gray-600">公開中の関係性はまだ登録されていません。</p>
+            @endif
+        </section>
+
         @include('public.partials.helpful-button', [
             'targetType' => 'character',
             'targetId' => $character->id,
             'helpfulCount' => $character->helpful_count ?? 0,
         ])
-
-</main>
+    </main>
 </body>
 </html>
