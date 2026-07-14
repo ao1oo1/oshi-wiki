@@ -116,4 +116,83 @@ class CharacterCsvRoundTripTest extends TestCase
         $this->assertContains('tag_ids', $headers);
         $this->assertContains('tag_names', $headers);
     }
+
+    public function test_export_can_limit_csv_to_one_character(): void
+    {
+        $work = Work::factory()->create();
+
+        $target = Character::factory()->create([
+            'work_id' => $work->id,
+            'name' => '個別出力対象',
+        ]);
+
+        Character::factory()->create([
+            'work_id' => $work->id,
+            'name' => '出力対象外',
+        ]);
+
+        $controller = app(
+            \App\Http\Controllers\Admin\CharacterCsvExportController::class
+        );
+
+        $reflection = new \ReflectionClass($controller);
+        $method = $reflection->getMethod('buildCsv');
+
+        $request = \Illuminate\Http\Request::create(
+            '/admin/characters/export/csv',
+            'GET',
+            ['character_id' => $target->id]
+        );
+
+        $csv = $method->invoke($controller, $request);
+        $csv = preg_replace('/^\xEF\xBB\xBF/', '', $csv) ?? $csv;
+
+        $handle = fopen('php://temp', 'r+b');
+        fwrite($handle, $csv);
+        rewind($handle);
+
+        $headers = fgetcsv($handle, null, ',', '"', '');
+        $row = fgetcsv($handle, null, ',', '"', '');
+        $extraRow = fgetcsv($handle, null, ',', '"', '');
+
+        $data = array_combine($headers, $row);
+
+        $this->assertSame((string) $target->id, $data['character_id']);
+        $this->assertSame('個別出力対象', $data['character_name']);
+        $this->assertFalse($extraRow);
+    }
+
+    public function test_character_detail_view_shows_id_and_individual_export_link(): void
+    {
+        $work = Work::factory()->create();
+
+        $character = Character::factory()->create([
+            'work_id' => $work->id,
+            'name' => '詳細表示対象',
+        ]);
+
+        $character->load([
+            'work',
+            'tags',
+            'outgoingRelationships.toCharacter',
+            'incomingRelationships.fromCharacter',
+        ]);
+
+        $view = $this->view(
+            'admin.characters.show',
+            ['character' => $character]
+        );
+
+        $view
+            ->assertSee('キャラクターID：' . $character->id)
+            ->assertSee(
+                route(
+                    'admin.characters.csv-export',
+                    ['character_id' => $character->id]
+                ),
+                false
+            )
+            ->assertSee('このキャラクターをCSVエクスポート');
+    }
+
 }

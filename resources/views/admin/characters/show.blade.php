@@ -24,6 +24,12 @@
                 <a href="{{ route('admin.characters.index') }}" class="oshi-btn oshi-btn-sub">キャラクター一覧へ</a>
                 <a href="{{ route('admin.works.show', $character->work) }}" class="oshi-btn oshi-btn-sub">作品詳細へ</a>
                 <a href="{{ route('admin.characters.edit', $character) }}" class="oshi-btn">編集する</a>
+                <a
+                    href="{{ route('admin.characters.csv-export', ['character_id' => $character->id]) }}"
+                    class="oshi-btn oshi-btn-sub"
+                >
+                    このキャラクターをCSVエクスポート
+                </a>
                 <a href="{{ route('admin.character-relationships.create', ['work_id' => $character->work_id]) }}" class="oshi-btn oshi-btn-sub">関係性を追加</a>
             </div>
 
@@ -31,7 +37,12 @@
 
             <section class="mb-6 rounded-3xl bg-white p-6 shadow">
                 <p class="mb-2 text-sm text-[#718096]">{{ $character->work?->title }}</p>
-                <h1 class="text-3xl font-bold text-[#2D3748]">{{ $character->name }}</h1>
+                <div class="flex flex-wrap items-center gap-3">
+                    <h1 class="text-3xl font-bold text-[#2D3748]">{{ $character->name }}</h1>
+                    <span class="rounded-full bg-gray-100 px-3 py-1 text-sm font-bold text-[#4A5568]">
+                        キャラクターID：{{ $character->id }}
+                    </span>
+                </div>
 
                 @if ($character->name_kana)
                     <p class="mt-1 text-[#718096]">{{ $character->name_kana }}</p>
