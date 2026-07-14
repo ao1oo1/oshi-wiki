@@ -21,9 +21,13 @@ class CharacterCsvExportController extends Controller
 
         $csv = $this->buildCsv($request);
 
+        $filename = $request->filled('character_id')
+            ? 'oshi-wiki-character-' . $request->integer('character_id') . '-export.csv'
+            : 'oshi-wiki-characters-export.csv';
+
         return response($csv, 200, [
             'Content-Type' => 'text/csv; charset=UTF-8',
-            'Content-Disposition' => 'attachment; filename="oshi-wiki-characters-export.csv"',
+            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
         ]);
     }
 
@@ -160,6 +164,10 @@ class CharacterCsvExportController extends Controller
 
     private function applyFilters(Builder $query, Request $request): void
     {
+        if ($request->filled('character_id')) {
+            $query->whereKey($request->integer('character_id'));
+        }
+
         if ($request->filled('work_id')) {
             $query->where('work_id', $request->integer('work_id'));
         }
