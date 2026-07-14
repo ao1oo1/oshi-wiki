@@ -181,17 +181,43 @@ class CharacterCsvImportService
             'status' => $status,
         ];
 
+        $data = $this->applyLegacyAliases($data);
+
         $columns = [
             'name_kana',
+            'real_name',
+            'aliases',
+            'name_english',
+            'gender',
             'age',
+            'birthday',
+            'height',
+            'weight',
+            'blood_type',
+            'birthplace',
+            'species',
             'affiliation',
-            'grade_class',
-            'first_person',
-            'tone',
-            'tone_examples',
-            'personality',
+            'school_grade_class',
+            'occupation_position',
+            'family_structure',
             'appearance',
+            'personality',
+            'first_person',
+            'second_person',
+            'basic_tone',
+            'catchphrases',
+            'distinctive_speech',
+            'tone_by_relationship',
+            'short_quote_examples',
+            'abilities',
             'background',
+            'story_activities',
+            'source_title',
+            'source_url',
+            'source_type',
+            'source_reliability',
+            'source_checked_at',
+            'spoiler_level',
             'review_status',
             'reviewed_at',
             'reviewed_by',
@@ -210,6 +236,26 @@ class CharacterCsvImportService
         }
 
         return $payload;
+    }
+
+    private function applyLegacyAliases(array $data): array
+    {
+        $aliases = [
+            'grade_class' => 'school_grade_class',
+            'tone' => 'basic_tone',
+            'tone_examples' => 'short_quote_examples',
+        ];
+
+        foreach ($aliases as $old => $new) {
+            if (
+                ! array_key_exists($new, $data)
+                && array_key_exists($old, $data)
+            ) {
+                $data[$new] = $data[$old];
+            }
+        }
+
+        return $data;
     }
 
     private function normalizeHeader(string $value): string
