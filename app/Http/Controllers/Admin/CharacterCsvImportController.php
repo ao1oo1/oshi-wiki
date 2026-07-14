@@ -98,6 +98,8 @@ class CharacterCsvImportController extends Controller
             'source_checked_at',
             'spoiler_level',
             'status',
+            'tag_ids',
+            'tag_names',
         ];
 
         $sample = [
@@ -139,12 +141,14 @@ class CharacterCsvImportController extends Controller
             date('Y-m-d'),
             'none',
             'draft',
+            '',
+            '主人公,学生',
         ];
 
         $handle = fopen('php://temp', 'r+b');
-        fwrite($handle, "ï»¿");
-        fputcsv($handle, $headers);
-        fputcsv($handle, $sample);
+        fwrite($handle, "\xEF\xBB\xBF");
+        fputcsv($handle, $headers, ',', '"', '');
+        fputcsv($handle, $sample, ',', '"', '');
         rewind($handle);
 
         return stream_get_contents($handle) ?: '';
