@@ -2,7 +2,7 @@
     <div class="oshi-admin-layout">
         @include('admin.partials.navigation')
 
-        <main class="oshi-admin-main">
+        <main class="oshi-admin-main work-editor-page">
             <div class="mb-6 flex flex-wrap items-center justify-between gap-3">
                 <div>
                     <h1 class="oshi-admin-title">作品登録</h1>

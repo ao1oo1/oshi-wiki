@@ -81,10 +81,10 @@
     </div>
 @endif
 
-<div class="space-y-5">
+<div class="work-editor-form space-y-6">
     <details class="oshi-card" open>
         <summary class="cursor-pointer text-lg font-bold">基本情報</summary>
-        <div class="mt-5 grid grid-cols-1 gap-5 md:grid-cols-2">
+        <div class="work-basic-grid mt-6 grid grid-cols-1 gap-6 lg:grid-cols-2">
             <div>
                 <label for="title" class="oshi-label">作品名</label>
                 <input id="title" type="text" name="title" value="{{ old('title', $work->title ?? '') }}" class="oshi-input" required>
@@ -109,9 +109,9 @@
                 <label for="guideline_url" class="oshi-label">ガイドラインURL</label>
                 <input id="guideline_url" type="url" name="guideline_url" value="{{ old('guideline_url', $work->guideline_url ?? '') }}" class="oshi-input">
             </div>
-            <div class="md:col-span-2">
+            <div class="work-form-field-full lg:col-span-2">
                 <label for="description" class="oshi-label">説明</label>
-                <textarea id="description" name="description" rows="5" class="oshi-input">{{ old('description', $work->description ?? '') }}</textarea>
+                <textarea id="description" name="description" rows="7" class="oshi-input work-description-input">{{ old('description', $work->description ?? '') }}</textarea>
             </div>
             <div class="md:col-span-2">
                 <p class="oshi-label">作品タグ</p>
@@ -145,7 +145,7 @@
         <div class="mt-5">
             <label for="timeline_setting" class="oshi-label">時間軸の指定</label>
             <p class="mb-2 text-sm text-gray-500">原作のどの時点を基準にするか記載します。</p>
-            <textarea id="timeline_setting" name="timeline_setting" rows="5" class="oshi-input" placeholder="例：原作〇話以降、〇〇イベント後の時間軸。">{{ old('timeline_setting', $work->timeline_setting ?? '') }}</textarea>
+            <textarea id="timeline_setting" name="timeline_setting" rows="7" class="oshi-input work-long-textarea" placeholder="例：原作〇話以降、〇〇イベント後の時間軸。">{{ old('timeline_setting', $work->timeline_setting ?? '') }}</textarea>
         </div>
 
         <div class="mt-7">
@@ -168,11 +168,11 @@
     @foreach ($workFieldCategories as $category => $fields)
         <details class="oshi-card">
             <summary class="cursor-pointer text-lg font-bold">{{ $category }}</summary>
-            <div class="mt-5 space-y-5">
+            <div class="work-category-fields mt-6 grid grid-cols-1 gap-6 xl:grid-cols-2">
                 @foreach ($fields as [$name, $label, $placeholder])
                     <div>
                         <label for="{{ $name }}" class="oshi-label">{{ $label }}</label>
-                        <textarea id="{{ $name }}" name="{{ $name }}" rows="5" class="oshi-input" placeholder="{{ $placeholder }}">{{ old($name, $work->{$name} ?? '') }}</textarea>
+                        <textarea id="{{ $name }}" name="{{ $name }}" rows="7" class="oshi-input work-long-textarea" placeholder="{{ $placeholder }}">{{ old($name, $work->{$name} ?? '') }}</textarea>
                     </div>
                 @endforeach
             </div>
@@ -198,7 +198,7 @@
         </div>
     </details>
 
-    <div class="sticky bottom-4 z-10 flex flex-wrap justify-end gap-3 rounded-xl border border-gray-200 bg-white/95 p-4 shadow-lg backdrop-blur">
+    <div class="work-form-actions flex flex-wrap justify-end gap-3 rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
         <a href="{{ isset($work) ? route('admin.works.show', $work) : route('admin.works.index') }}" class="oshi-btn oshi-btn-sub">キャンセル</a>
         <button type="submit" class="oshi-btn oshi-btn-main">保存する</button>
     </div>
