@@ -1,40 +1,25 @@
 <x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl">
-            作品編集
-        </h2>
-    </x-slot>
+    <div class="oshi-admin-layout">
+        @include('admin.partials.navigation')
 
-    <div class="p-6">
-        <div class="mx-auto max-w-4xl">
-            @include('admin.partials.navigation')
+        <main class="oshi-admin-main">
+            <div class="mb-6 flex flex-wrap items-center justify-between gap-3">
+                <div>
+                    <h1 class="oshi-admin-title">作品編集</h1>
+                    <p class="oshi-muted">{{ $work->title }}の作品情報を編集します。</p>
+                </div>
 
-            <div class="mb-6 flex flex-wrap gap-3">
-                <a
-                    href="{{ route('admin.works.show', $work) }}"
-                    style="display:inline-block;background:#16a34a;color:#ffffff;padding:10px 18px;border-radius:8px;font-weight:bold;text-decoration:none;"
-                >
-                    作品詳細へ
-                </a>
-
-                <a
-                    href="{{ route('admin.works.index') }}"
-                    style="display:inline-block;background:#4b5563;color:#ffffff;padding:10px 18px;border-radius:8px;font-weight:bold;text-decoration:none;"
-                >
-                    作品一覧へ
-                </a>
+                <div class="flex flex-wrap gap-2">
+                    <a href="{{ route('admin.works.show', $work) }}" class="oshi-btn oshi-btn-sub">作品詳細へ</a>
+                    <a href="{{ route('admin.works.index') }}" class="oshi-btn oshi-btn-sub">作品一覧へ</a>
+                </div>
             </div>
 
-            <div class="rounded bg-white p-6 shadow">
-                <form method="POST" action="{{ route('admin.works.update', $work) }}">
-                    @csrf
-                    @method('PUT')
-
-                    @include('admin.works._form', [
-                        'work' => $work,
-                    ])
-                </form>
-            </div>
-        </div>
+            <form method="POST" action="{{ route('admin.works.update', $work) }}">
+                @csrf
+                @method('PUT')
+                @include('admin.works._form', ['work' => $work])
+            </form>
+        </main>
     </div>
 </x-app-layout>

@@ -43,73 +43,19 @@
 
             {{-- STAFF_HIDE_WORK_CREATE_FORM_FIX --}}
 @if ($canManageWorks)
-<form method="POST" action="{{ route('admin.works.store') }}" class="mb-8 rounded bg-pink-50 p-4 oshi-u-index-create-form">
-                @csrf
-
-                <div class="oshi-work-index-create-section">
-<h2 class="mb-4 text-xl font-bold">
-                    作品を新規登録
-                </h2>
-
-                <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
-                    <div>
-                        <label for="title" class="mb-1 block font-medium">作品名</label>
-                        <input id="title" type="text" name="title" value="{{ old('title') }}" class="w-full" required>
-                    </div>
-
-                    <div>
-                        <label for="title_kana" class="mb-1 block font-medium">読み仮名</label>
-                        <input id="title_kana" type="text" name="title_kana" value="{{ old('title_kana') }}" class="w-full">
-                    </div>
-
-                    <div>
-                        <label for="genre" class="mb-1 block font-medium">ジャンル</label>
-                        <input id="genre" type="text" name="genre" value="{{ old('genre') }}" class="w-full">
-                    </div>
-
-                    <div>
-                        <label for="original_media" class="mb-1 block font-medium">原作媒体</label>
-                        <input id="original_media" type="text" name="original_media" value="{{ old('original_media') }}" class="w-full">
-                    </div>
-
-                    <div class="md:col-span-2">
-                        <label class="mb-2 block font-medium">タグ</label>
-
-                        @if (($tags ?? collect())->count())
-                            <div class="grid grid-cols-1 gap-2 rounded border border-gray-200 bg-white p-3 md:grid-cols-3">
-                                @foreach ($tags as $tag)
-                                    <label class="flex items-center gap-2">
-                                        <input type="checkbox" name="tag_ids[]" value="{{ $tag->id }}" @checked(in_array($tag->id, old('tag_ids', [])))>
-                                        <span>{{ $tag->name }}</span>
-                                    </label>
-                                @endforeach
-                            </div>
-                        @else
-                            <p class="oshi-muted">まだタグが登録されていません。</p>
-                        @endif
-                    </div>
-
-                    <div class="md:col-span-2">
-                        <label for="description" class="mb-1 block font-medium">説明</label>
-                        <textarea id="description" name="description" rows="4" class="w-full">{{ old('description') }}</textarea>
-                    </div>
-
-                    <div>
-                        <label for="status" class="mb-1 block font-medium">状態</label>
-                        <select id="status" name="status" class="w-full">
-                            <option value="draft" @selected(old('status', 'draft') === 'draft')>下書き</option>
-                            <option value="published" @selected(old('status') === 'published')>公開</option>
-                            <option value="private" @selected(old('status') === 'private')>非公開</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="mt-5">
-                    <button type="submit" class="oshi-btn">
-                        作品を登録する
-                    </button>
-                </div>
-            </form>
+    <div class="mb-8 rounded-2xl border border-pink-200 bg-pink-50 p-5">
+        <div class="flex flex-wrap items-center justify-between gap-4">
+            <div>
+                <h2 class="text-xl font-bold">作品を新規登録</h2>
+                <p class="mt-1 text-sm text-gray-600">
+                    基本情報、物語の時間軸、舞台、生活ルール、行事、用語などをカテゴリごとに登録できます。
+                </p>
+            </div>
+            <a href="{{ route('admin.works.create') }}" class="oshi-btn oshi-btn-main">
+                作品登録画面へ
+            </a>
+        </div>
+    </div>
 @endif
 {{-- /STAFF_HIDE_WORK_CREATE_FORM_FIX --}}
 </div>

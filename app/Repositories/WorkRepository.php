@@ -11,8 +11,8 @@ class WorkRepository
     {
         return Work::query()
             ->with('tags')
-            ->when($keyword, function ($query) use ($keyword) {
-                $query->where(function ($query) use ($keyword) {
+            ->when($keyword, function ($query) use ($keyword): void {
+                $query->where(function ($query) use ($keyword): void {
                     $query->where('title', 'like', '%' . $keyword . '%')
                         ->orWhere('title_kana', 'like', '%' . $keyword . '%')
                         ->orWhere('genre', 'like', '%' . $keyword . '%')
@@ -20,8 +20,8 @@ class WorkRepository
                         ->orWhere('description', 'like', '%' . $keyword . '%');
                 });
             })
-            ->when($tagId, function ($query) use ($tagId) {
-                $query->whereHas('tags', function ($query) use ($tagId) {
+            ->when($tagId, function ($query) use ($tagId): void {
+                $query->whereHas('tags', function ($query) use ($tagId): void {
                     $query->where('tags.id', $tagId);
                 });
             })
@@ -49,6 +49,8 @@ class WorkRepository
     {
         return $work->load([
             'tags',
+            'canonEvents',
+            'termUsages',
             'characters.tags',
             'characterRelationships.fromCharacter',
             'characterRelationships.toCharacter',
@@ -58,5 +60,34 @@ class WorkRepository
     public function syncTags(Work $work, array $tagIds): void
     {
         $work->tags()->sync($tagIds);
+    }
+
+    public function syncCanonEvents(Work $work, array $events): void
+    {
+        $work->canonEvents()->delete();
+
+        foreach (array_values($events) as $index => $event) {
+            $work->canonEvents()->create([
+                'sort_order' => $index + 1,
+                'timing' => $event['timing'] ?? null,
+                'event_name' => $event['event_name'],
+                'event_status' => $event['event_status'] ?? null,
+                'notes' => $event['notes'] ?? null,
+            ]);
+        }
+    }
+
+    public function syncTermUsages(Work $work, array $terms): void
+    {
+        $work->termUsages()->delete();
+
+        foreach (array_values($terms) as $index => $term) {
+            $work->termUsages()->create([
+                'sort_order' => $index + 1,
+                'term' => $term['term'],
+                'meaning' => $term['meaning'] ?? null,
+                'usage_example' => $term['usage_example'] ?? null,
+            ]);
+        }
     }
 }
