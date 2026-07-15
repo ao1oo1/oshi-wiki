@@ -72,6 +72,7 @@ class TrashController extends Controller
             'keyword' => $keyword,
             'items' => $items,
             'counts' => $counts,
+            'totalDeletedCount' => array_sum($counts),
         ]);
     }
 
@@ -144,6 +145,55 @@ class TrashController extends Controller
 
         return redirect()
             ->route('admin.trash.index', ['type' => $type])
+            ->with($failed > 0 ? 'error' : 'success', $message);
+    }
+
+    public function destroyAll(): RedirectResponse
+    {
+        $this->authorizeSuperAdmin();
+
+        $deleteOrder = [
+            'relationships',
+            'characters',
+            'works',
+            'tags',
+        ];
+
+        $deleted = 0;
+        $failed = 0;
+        $deletedByType = [];
+
+        foreach ($deleteOrder as $type) {
+            $modelClass = self::TYPES[$type]['model'];
+            $typeDeleted = 0;
+
+            $this->deletedQuery($modelClass)
+                ->orderBy((new $modelClass())->getKeyName())
+                ->chunkById(100, function ($records) use (&$deleted, &$failed, &$typeDeleted): void {
+                    foreach ($records as $record) {
+                        try {
+                            $this->forceDeleteRecord($record);
+                            $deleted++;
+                            $typeDeleted++;
+                        } catch (Throwable $e) {
+                            report($e);
+                            $failed++;
+                        }
+                    }
+                });
+
+            $deletedByType[] = self::TYPES[$type]['label'] . "：{$typeDeleted}件";
+        }
+
+        $message = "ゴミ箱内の{$deleted}件をデータベースから完全削除しました。";
+        $message .= '（' . implode('、', $deletedByType) . '）';
+
+        if ($failed > 0) {
+            $message .= " {$failed}件は関連データ等の理由で削除できませんでした。";
+        }
+
+        return redirect()
+            ->route('admin.trash.index')
             ->with($failed > 0 ? 'error' : 'success', $message);
     }
 

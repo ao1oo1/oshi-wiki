@@ -100,6 +100,9 @@ Route::middleware(['auth', 'admin.user', 'password.changed'])->prefix('admin')->
     Route::post('trash/bulk-destroy', [\App\Http\Controllers\Admin\TrashController::class, 'bulkDestroy'])
         ->name('trash.bulk-destroy');
 
+    Route::post('trash/destroy-all', [\App\Http\Controllers\Admin\TrashController::class, 'destroyAll'])
+        ->name('trash.destroy-all');
+
     Route::delete('trash/{type}/{id}', [\App\Http\Controllers\Admin\TrashController::class, 'destroy'])
         ->name('trash.destroy');
 
