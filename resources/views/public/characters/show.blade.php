@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $character->name }} | {{ $character->work?->title }} | Oshi-Wiki</title>
+    <title>{{ $character->name }} | {{ $character->linkedWorks->first()?->title ?? $character->work?->title ?? '作品未設定' }} | Oshi-Wiki</title>
     <link rel="icon" href="{{ asset('favicon.ico') }}" type="image/x-icon">
     <link rel="shortcut icon" href="{{ asset('favicon.ico') }}" type="image/x-icon">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -27,6 +27,25 @@
             ->map(fn ($url) => trim($url))
             ->filter()
             ->values();
+
+        $publishedLinkedWorks = $character->linkedWorks
+            ->where('status', 'published')
+            ->values();
+
+        $primaryPublishedWork = $publishedLinkedWorks
+            ->first(fn ($work) => (bool) ($work->pivot?->is_primary))
+            ?? $publishedLinkedWorks->first();
+
+        $additionalPublishedWorks = $publishedLinkedWorks
+            ->reject(
+                fn ($work) => $primaryPublishedWork
+                    && (int) $work->id === (int) $primaryPublishedWork->id
+            )
+            ->values();
+
+        $pageWorkTitle = $primaryPublishedWork?->title
+            ?? $publishedLinkedWorks->pluck('title')->first()
+            ?? '作品未設定';
     @endphp
 
     <main class="oshi-container">
@@ -38,9 +57,9 @@
                 作品一覧へ戻る
             </a>
 
-            @if ($character->work)
+            @if ($primaryPublishedWork)
                 <a
-                    href="{{ route('public.works.show', $character->work) }}"
+                    href="{{ route('public.works.show', $primaryPublishedWork) }}"
                     class="oshi-btn oshi-btn-sub"
                 >
                     作品詳細へ戻る
@@ -61,7 +80,7 @@
 
         <section class="oshi-card">
             <p class="mb-2 text-sm text-gray-500">
-                {{ $character->work?->title }}
+                {{ $pageWorkTitle }}
             </p>
 
             <h1 class="mb-1 text-3xl font-bold">
@@ -92,6 +111,35 @@
                     @endforeach
                 </div>
             @endif
+        </section>
+
+        <section class="oshi-card">
+            <h2 class="mb-4 text-2xl font-bold">紐付いている作品</h2>
+
+            <div class="flex flex-wrap gap-2">
+                @foreach ($publishedLinkedWorks as $linkedWork)
+                    <a
+                        href="{{ route('public.works.show', $linkedWork) }}"
+                        class="rounded-full border border-[#FED7E2] bg-[#FFF5F7] px-4 py-2 text-sm font-bold text-[#2D3748]"
+                    >
+                        {{ $linkedWork->title }}
+
+                        @if (
+                            $primaryPublishedWork
+                            && (int) $linkedWork->id
+                                === (int) $primaryPublishedWork->id
+                        )
+                            <span class="ml-1 text-xs text-[#718096]">
+                                主作品
+                            </span>
+                        @else
+                            <span class="ml-1 text-xs text-[#718096]">
+                                追加作品
+                            </span>
+                        @endif
+                    </a>
+                @endforeach
+            </div>
         </section>
 
         <section class="oshi-card">

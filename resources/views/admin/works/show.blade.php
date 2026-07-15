@@ -165,7 +165,7 @@
                         </table>
                     </div>
                 @else
-                    <p class="oshi-muted">この作品にはまだキャラクターが登録されていません。</p>
+                    <p class="oshi-muted">この作品には主作品・追加作品として紐付いているキャラクターがまだありません。</p>
                 @endif
             </div>
 
@@ -195,7 +195,7 @@
 
             @if ($canManageWorks)
                 <form method="POST" action="{{ route('admin.works.destroy', $work) }}" class="mt-6"
-                    onsubmit="return confirm('この作品を削除しますか？紐づくキャラクター・関係性も削除されます。');">
+                    onsubmit="return confirm('この作品を削除しますか？関係性や作品固有データに影響します。追加作品として紐付くキャラクター本体は削除されません。');">
                     @csrf
                     @method('DELETE')
                     <button type="submit" class="oshi-btn bg-red-600 text-white">この作品を削除</button>

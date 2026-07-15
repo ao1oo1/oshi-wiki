@@ -11,10 +11,18 @@ class CharacterController extends Controller
     public function show(Character $character): View
     {
         abort_unless($character->status === 'published', 404);
-        abort_unless($character->work?->status === 'published', 404);
+        abort_unless(
+            $character->linkedWorks()
+                ->where('works.status', 'published')
+                ->exists(),
+            404
+        );
 
         $character->load([
             'work',
+            'linkedWorks' => function ($query): void {
+                $query->where('works.status', 'published');
+            },
             'tags',
             'outgoingRelationships' => function ($query) {
                 $query->where('status', 'published')
