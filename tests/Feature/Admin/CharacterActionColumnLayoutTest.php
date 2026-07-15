@@ -24,7 +24,8 @@ class CharacterActionColumnLayoutTest extends TestCase
             ->assertOk()
             ->assertSee('min-w-[1160px] table-fixed', false)
             ->assertSee("w-[25%]", false)
-            ->assertSee('text-center font-bold whitespace-nowrap">操作', false);
+            ->assertSee('admin-index-action-head', false)
+            ->assertSee('>操作</th>', false);
     }
 
     public function test_character_action_layout_exists_in_blade_source(): void

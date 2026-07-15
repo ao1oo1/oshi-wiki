@@ -181,9 +181,9 @@ $canUseCharacterImports = auth()->user()?->canManageAllAdminFeatures() ?? false;
                                 <th class="px-5 py-4 font-bold whitespace-nowrap">キャラクター名</th>
                                 <th class="px-5 py-4 font-bold whitespace-nowrap">作品</th>
                                 <th class="px-4 py-4 font-bold whitespace-nowrap">所属</th>
-                                <th class="px-4 py-4 font-bold whitespace-nowrap">状態</th>
+                                <th class="px-4 py-4 font-bold whitespace-nowrap admin-index-status-head">状態</th>
                                 <th class="px-4 py-4 font-bold whitespace-nowrap">承認状態</th>
-                                <th class="px-4 py-4 text-center font-bold whitespace-nowrap">操作</th>
+                                <th class="px-4 py-4 text-center font-bold whitespace-nowrap admin-index-action-head">操作</th>
                             </tr>
                         </thead>
 
@@ -218,7 +218,7 @@ $canUseCharacterImports = auth()->user()?->canManageAllAdminFeatures() ?? false;
                                         {{ $character->affiliation ?: '—' }}
                                     </td>
 
-                                    <td class="px-4 py-4 align-middle whitespace-nowrap">
+                                    <td class="px-4 py-4 align-middle whitespace-nowrap admin-index-status-cell">
                                         @include('admin.partials.status-badge', ['status' => $character->status])
                                     </td>
 
@@ -226,7 +226,7 @@ $canUseCharacterImports = auth()->user()?->canManageAllAdminFeatures() ?? false;
                                         {{ $character->review_status ?: '—' }}
                                     </td>
 
-                                    <td class="px-4 py-4 align-middle">
+                                    <td class="px-4 py-4 align-middle admin-index-action-cell">
                                         <div class="flex flex-nowrap items-center justify-center gap-2 whitespace-nowrap">
                                             <a href="{{ route('admin.characters.show', $character) }}" class="oshi-btn oshi-btn-sub px-4 py-2">
                                                 詳細
