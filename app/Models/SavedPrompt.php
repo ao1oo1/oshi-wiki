@@ -22,6 +22,8 @@ class SavedPrompt extends Model
         'work_id',
         'selected_character_refs',
         'include_relationship_timeline',
+        'include_work_worldbuilding',
+        'selected_work_worldbuilding_categories',
 
         'writing_style',
         'writing_style_other',
@@ -52,6 +54,8 @@ class SavedPrompt extends Model
         return [
             'selected_character_refs' => 'array',
             'include_relationship_timeline' => 'boolean',
+            'include_work_worldbuilding' => 'boolean',
+            'selected_work_worldbuilding_categories' => 'array',
             'use_story_length_options' => 'boolean',
             'output_plot_first' => 'boolean',
             'output_in_parts' => 'boolean',
@@ -79,6 +83,21 @@ class SavedPrompt extends Model
             'world' => '世界観',
             'rewrite' => '推敲・調整',
             'other' => 'その他',
+        ];
+    }
+
+    public static function workWorldbuildingCategoryLabels(): array
+    {
+        return [
+            'story_design' => '物語の設計',
+            'buildings' => '建物・空間',
+            'life_rules' => '生活・ルール',
+            'organizations' => '組織・制度',
+            'events_time' => '行事・時間の流れ',
+            'geography' => '地理・周辺環境',
+            'sensory' => '小物・感覚的な情報',
+            'canon_events' => '原作の重要イベント年表',
+            'term_usages' => '用語の使用例',
         ];
     }
 

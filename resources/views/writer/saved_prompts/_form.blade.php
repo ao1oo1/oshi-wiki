@@ -47,6 +47,23 @@
         $prompt?->include_relationship_timeline ?? false
     );
 
+    $includeWorkWorldbuilding = (bool) old(
+        'include_work_worldbuilding',
+        $prompt?->include_work_worldbuilding ?? false
+    );
+
+    $workWorldbuildingCategoryLabels =
+        \App\Models\SavedPrompt::workWorldbuildingCategoryLabels();
+
+    $selectedWorkWorldbuildingCategories = old(
+        'selected_work_worldbuilding_categories',
+        $prompt?->selected_work_worldbuilding_categories ?? []
+    );
+
+    if (! is_array($selectedWorkWorldbuildingCategories)) {
+        $selectedWorkWorldbuildingCategories = [];
+    }
+
     $storyAnalyses = $storyAnalyses ?? collect();
 
     $selectedStoryAnalysisIds = old(
@@ -135,6 +152,74 @@
                       placeholder="例：キャラクター同士の日常会話を書くためのプロンプト">{{ $oldValue('purpose') }}</textarea>
         </div>
     </div>
+</section>
+
+<section
+    id="work-worldbuilding-section"
+    class="rounded-3xl border border-[#E2E8F0] bg-white p-6 shadow-sm md:p-8"
+    style="display: {{ $selectedWorkId ? 'block' : 'none' }};"
+>
+    <div class="mb-6">
+        <p class="text-sm font-bold text-[#A0AEC0]">OPTION</p>
+        <h2 class="mt-1 text-2xl font-bold text-[#2D3748]">
+            作品設定
+        </h2>
+        <p class="mt-2 text-sm font-bold leading-7 text-[#718096]">
+            選択した原作作品に登録されている設定のうち、必要なカテゴリだけをプロンプトへ反映します。
+            空欄の項目は自動的に除外されます。
+        </p>
+    </div>
+
+    <div class="rounded-2xl bg-[#FFF1F5] p-5">
+        <label class="flex items-start gap-3">
+            <input
+                id="include_work_worldbuilding"
+                type="checkbox"
+                name="include_work_worldbuilding"
+                value="1"
+                class="mt-1"
+                @checked($includeWorkWorldbuilding && $selectedWorkId)
+            >
+            <span>
+                <span class="block font-bold text-[#2D3748]">
+                    作品設定をプロンプトに反映する
+                </span>
+                <span class="mt-1 block text-sm font-bold leading-7 text-[#718096]">
+                    全文ではなく、下で選択したカテゴリだけを反映します。
+                </span>
+            </span>
+        </label>
+    </div>
+
+    <div
+        id="work-worldbuilding-categories"
+        class="mt-5 grid gap-3 md:grid-cols-2"
+        style="display: {{ $includeWorkWorldbuilding && $selectedWorkId ? 'grid' : 'none' }};"
+    >
+        @foreach ($workWorldbuildingCategoryLabels as $key => $label)
+            <label class="flex items-start gap-3 rounded-2xl border border-[#E2E8F0] bg-[#F7FAFC] p-4">
+                <input
+                    type="checkbox"
+                    name="selected_work_worldbuilding_categories[]"
+                    value="{{ $key }}"
+                    class="work-worldbuilding-category mt-1"
+                    @checked(
+                        $selectedWorkId
+                        && in_array(
+                            $key,
+                            $selectedWorkWorldbuildingCategories,
+                            true
+                        )
+                    )
+                >
+                <span class="font-bold text-[#2D3748]">{{ $label }}</span>
+            </label>
+        @endforeach
+    </div>
+
+    <p class="mt-4 text-xs font-bold leading-6 text-[#A0AEC0]">
+        原作作品を変更すると、作品設定カテゴリの選択は一度解除されます。
+    </p>
 </section>
 
 <section class="rounded-3xl border border-[#E2E8F0] bg-white p-6 shadow-sm md:p-8">
@@ -796,6 +881,18 @@
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         const workSelect = document.getElementById('work_ref');
+        const workWorldbuildingSection = document.getElementById(
+            'work-worldbuilding-section'
+        );
+        const includeWorkWorldbuilding = document.getElementById(
+            'include_work_worldbuilding'
+        );
+        const workWorldbuildingCategories = document.getElementById(
+            'work-worldbuilding-categories'
+        );
+        const workWorldbuildingCategoryCheckboxes = Array.from(
+            document.querySelectorAll('.work-worldbuilding-category')
+        );
         const writingStyleSelect = document.getElementById('writing_style');
         const writingStyleOtherWrap = document.getElementById('writing-style-other-wrap');
         const genreSelect = document.getElementById('genre');
@@ -985,6 +1082,40 @@
             }
         }
 
+        function refreshWorkWorldbuilding(resetSelection = false) {
+            const hasSelectedWork =
+                workSelect
+                && String(workSelect.value || '').startsWith('work:');
+
+            if (workWorldbuildingSection) {
+                workWorldbuildingSection.style.display =
+                    hasSelectedWork ? 'block' : 'none';
+            }
+
+            if (!hasSelectedWork && includeWorkWorldbuilding) {
+                includeWorkWorldbuilding.checked = false;
+            }
+
+            if (resetSelection || !hasSelectedWork) {
+                workWorldbuildingCategoryCheckboxes.forEach((checkbox) => {
+                    checkbox.checked = false;
+                });
+            }
+
+            const isEnabled =
+                hasSelectedWork
+                && includeWorkWorldbuilding?.checked;
+
+            if (workWorldbuildingCategories) {
+                workWorldbuildingCategories.style.display =
+                    isEnabled ? 'grid' : 'none';
+            }
+
+            workWorldbuildingCategoryCheckboxes.forEach((checkbox) => {
+                checkbox.disabled = !isEnabled;
+            });
+        }
+
         function refreshStoryAnalysisSelection() {
             const selected = storyAnalysisCheckboxes.filter(
                 checkbox => checkbox.checked
@@ -1044,7 +1175,17 @@
 
         workSelect?.addEventListener(
             'change',
-            refreshV1Characters
+            function () {
+                refreshV1Characters();
+                refreshWorkWorldbuilding(true);
+            }
+        );
+
+        includeWorkWorldbuilding?.addEventListener(
+            'change',
+            function () {
+                refreshWorkWorldbuilding(false);
+            }
         );
 
         writingStyleSelect?.addEventListener('change', refreshOtherFields);
@@ -1053,6 +1194,7 @@
         previewCopyButton?.addEventListener('click', copyPreview);
         refreshOtherFields();
         refreshV1Characters();
+        refreshWorkWorldbuilding(false);
         refreshStoryAnalysisSelection();
         refreshStoryLengthOptions();
     });

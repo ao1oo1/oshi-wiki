@@ -31,6 +31,20 @@ class StoreSavedPromptRequest extends FormRequest
                 'max:60',
             ],
             'include_relationship_timeline' => ['nullable', 'boolean'],
+            'include_work_worldbuilding' => ['nullable', 'boolean'],
+            'selected_work_worldbuilding_categories' => [
+                'nullable',
+                'array',
+                'max:9',
+                Rule::requiredIf(
+                    fn () => $this->boolean('include_work_worldbuilding')
+                ),
+            ],
+            'selected_work_worldbuilding_categories.*' => [
+                'string',
+                'distinct',
+                Rule::in(array_keys(SavedPrompt::workWorldbuildingCategoryLabels())),
+            ],
             'selected_character_refs.*' => [
                 'string',
                 'max:100',
