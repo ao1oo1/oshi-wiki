@@ -146,9 +146,9 @@
                                 <th>作品名</th>
                                 <th>ジャンル</th>
                                 <th>原作媒体</th>
-                                <th>状態</th>
+                                <th  class="admin-index-status-head">状態</th>
                                 <th>タグ</th>
-                                <th>操作</th>
+                                <th  class="admin-index-action-head">操作</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -168,7 +168,7 @@
                                     <td>{{ $work->genre ?: '未設定' }}</td>
                                     <td>{{ $work->original_media ?: '未設定' }}</td>
 
-                                    <td>
+                                    <td class="admin-index-status-cell">
                                         @include('admin.partials.status-badge', ['status' => $work->status])
                                     </td>
 
@@ -182,7 +182,7 @@
                                         @endif
                                     </td>
 
-                                    <td>
+                                    <td class="admin-index-action-cell">
                                         <div class="flex flex-wrap gap-2">
                                             <a href="{{ route('admin.works.show', $work) }}" class="oshi-btn oshi-btn-sub">詳細</a>
                                             @if ($canManageWorks)
@@ -226,13 +226,13 @@
                     <th class="p-4 font-bold">ジャンル</th>
                     <th class="p-4 font-bold">原作媒体</th>
                     <th class="p-4 font-bold">タグ</th>
-                    <th class="p-4 font-bold">状態</th>
+                    <th class="p-4 font-bold admin-index-status-head">状態</th>
                 </tr>
             </thead>
             <tbody>
                 @forelse ($works as $work)
                     <tr class="border-t border-[#E2E8F0]">
-                        <td class="p-4 align-top font-bold text-[#2D3748]">
+                        <td class="p-4 align-top font-bold text-[#2D3748] admin-index-action-cell">
                             @if (Route::has('admin.works.show'))
                                 <a href="{{ route('admin.works.show', $work) }}" class="text-[#2D3748] underline-offset-4 hover:underline">
                                     {{ $work->title }}

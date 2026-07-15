@@ -76,7 +76,7 @@
                         <th class="p-4 font-bold">タグ名</th>
                         <th class="p-4 font-bold">種類</th>
                         <th class="p-4 font-bold">説明</th>
-                        <th class="p-4 font-bold">状態</th>
+                        <th class="p-4 font-bold admin-index-status-head">状態</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -291,8 +291,8 @@
                                 <th>タグ名</th>
                                 <th>種類</th>
                                 <th>説明</th>
-                                <th>状態</th>
-                                <th>操作</th>
+                                <th  class="admin-index-status-head">状態</th>
+                                <th  class="admin-index-action-head">操作</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -317,11 +317,11 @@
                                         {{ $tag->description ?: '未設定' }}
                                     </td>
 
-                                    <td>
+                                    <td class="admin-index-status-cell">
                                         @include('admin.partials.status-badge', ['status' => $tag->status])
                                     </td>
 
-                                    <td>
+                                    <td class="admin-index-action-cell">
                                         @if ($canManageTags)
 
                                             <a href="{{ route('admin.tags.edit', $tag) }}" class="oshi-btn oshi-btn-sub">編集</a>

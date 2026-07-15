@@ -6511,3 +6511,35 @@ label:has(> input[type="radio"])
     }
 }
 /* ADMIN_INDEX_UI_UNIFY_END */
+
+
+/* ADMIN_INDEX_STATUS_ACTION_CENTERING_START */
+.admin-index-status-head,
+.admin-index-action-head,
+.admin-index-status-cell,
+.admin-index-action-cell {
+    text-align: center !important;
+    vertical-align: middle !important;
+}
+
+.admin-index-status-cell > *,
+.admin-index-action-cell > * {
+    margin-left: auto !important;
+    margin-right: auto !important;
+}
+
+.admin-index-status-cell .inline-flex,
+.admin-index-status-cell .flex,
+.admin-index-action-cell .inline-flex,
+.admin-index-action-cell .flex {
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+.admin-index-action-cell form {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+}
+/* ADMIN_INDEX_STATUS_ACTION_CENTERING_END */

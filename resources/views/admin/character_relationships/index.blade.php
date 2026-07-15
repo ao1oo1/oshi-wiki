@@ -154,8 +154,8 @@
                                 <th class="px-5 py-4 font-bold">相手</th>
                                 <th class="px-5 py-4 font-bold">呼び方</th>
                                 <th class="px-5 py-4 font-bold">関係性</th>
-                                <th class="px-5 py-4 font-bold">状態</th>
-                                <th class="px-5 py-4 font-bold">操作</th>
+                                <th class="px-5 py-4 font-bold admin-index-status-head">状態</th>
+                                <th class="px-5 py-4 font-bold admin-index-action-head">操作</th>
                             </tr>
                         </thead>
 
@@ -202,11 +202,11 @@
                                         {{ $relation->relationship ?: '未設定' }}
                                     </td>
 
-                                    <td class="px-5 py-4 align-middle">
+                                    <td class="px-5 py-4 align-middle admin-index-status-cell">
                                         @include('admin.partials.status-badge', ['status' => $relation->status])
                                     </td>
 
-                                    <td class="px-5 py-4 align-middle">
+                                    <td class="px-5 py-4 align-middle admin-index-action-cell">
                                         <div class="flex flex-wrap gap-2">
                                             @if ($canModifyRow)
                                                 <a href="{{ route('admin.character-relationships.edit', $relation) }}" class="oshi-btn oshi-btn-sub">
