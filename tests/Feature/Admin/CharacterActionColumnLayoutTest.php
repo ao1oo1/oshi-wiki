@@ -22,8 +22,8 @@ class CharacterActionColumnLayoutTest extends TestCase
 
         $response
             ->assertOk()
-            ->assertSee('min-w-[1160px] table-fixed', false)
-            ->assertSee("w-[25%]", false)
+            ->assertSee('min-w-[1050px] table-fixed', false)
+            ->assertSee("w-[17%]", false)
             ->assertSee('admin-index-action-head', false)
             ->assertSee('>操作</th>', false);
     }
@@ -35,7 +35,7 @@ class CharacterActionColumnLayoutTest extends TestCase
         );
 
         $this->assertStringContainsString(
-            'flex flex-nowrap items-center justify-center gap-2 whitespace-nowrap',
+            'mx-auto inline-flex w-fit flex-col items-stretch justify-center gap-2 whitespace-nowrap',
             $view
         );
 
@@ -45,7 +45,7 @@ class CharacterActionColumnLayoutTest extends TestCase
         );
 
         $this->assertStringContainsString(
-            "? 'w-[25%]' : 'w-[24%]'",
+            "? 'w-[17%]' : 'w-[15%]'",
             $view
         );
     }

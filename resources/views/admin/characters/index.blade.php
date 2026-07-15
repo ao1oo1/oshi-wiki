@@ -156,17 +156,17 @@ $canUseCharacterImports = auth()->user()?->canManageAllAdminFeatures() ?? false;
 
             <div class="staff-mobile-table-shell overflow-hidden rounded-3xl border border-[#E2E8F0] bg-white">
                 <div class="overflow-x-auto">
-                    <table class="w-full min-w-[1160px] table-fixed text-left text-sm">
+                    <table class="w-full min-w-[1050px] table-fixed text-left text-sm">
                         <colgroup>
                             @if ($canUseCharacterImports)
                                 <col class="w-[5%]">
                             @endif
-                            <col class="{{ $canUseCharacterImports ? 'w-[17%]' : 'w-[19%]' }}">
-                            <col class="{{ $canUseCharacterImports ? 'w-[22%]' : 'w-[25%]' }}">
-                            <col class="{{ $canUseCharacterImports ? 'w-[14%]' : 'w-[15%]' }}">
-                            <col class="w-[8%]">
+                            <col class="{{ $canUseCharacterImports ? 'w-[18%]' : 'w-[20%]' }}">
+                            <col class="{{ $canUseCharacterImports ? 'w-[24%]' : 'w-[27%]' }}">
+                            <col class="{{ $canUseCharacterImports ? 'w-[16%]' : 'w-[17%]' }}">
+                            <col class="w-[11%]">
                             <col class="w-[9%]">
-                            <col class="{{ $canUseCharacterImports ? 'w-[25%]' : 'w-[24%]' }}">
+                            <col class="{{ $canUseCharacterImports ? 'w-[17%]' : 'w-[15%]' }}">
                         </colgroup>
                         <thead class="bg-[#FFF5F7] text-[#2D3748]">
                             <tr>
@@ -226,25 +226,26 @@ $canUseCharacterImports = auth()->user()?->canManageAllAdminFeatures() ?? false;
                                         {{ $character->review_status ?: '—' }}
                                     </td>
 
-                                    <td class="px-4 py-4 align-middle admin-index-action-cell">
-                                        <div class="flex flex-nowrap items-center justify-center gap-2 whitespace-nowrap">
-                                            <a href="{{ route('admin.characters.show', $character) }}" class="oshi-btn oshi-btn-sub px-4 py-2">
+                                    <td class="px-3 py-3 align-middle admin-index-action-cell">
+                                        <div class="mx-auto inline-flex w-fit flex-col items-stretch justify-center gap-2 whitespace-nowrap">
+                                            <a href="{{ route('admin.characters.show', $character) }}" class="oshi-btn oshi-btn-sub min-w-[88px] justify-center px-4 py-2">
                                                 詳細
                                             </a>
 
                                             @if ($canModifyCharacter)
-                                                <a href="{{ route('admin.characters.edit', $character) }}" class="oshi-btn oshi-btn-sub px-4 py-2">
+                                                <a href="{{ route('admin.characters.edit', $character) }}" class="oshi-btn oshi-btn-sub min-w-[88px] justify-center px-4 py-2">
                                                     編集
                                                 </a>
 
                                                 <form
                                                     method="POST"
                                                     action="{{ route('admin.characters.destroy', $character) }}"
+                                                    class="w-full"
                                                     onsubmit="return confirm('このキャラクターを削除します。よろしいですか？');"
                                                 >
                                                     @csrf
                                                     @method('DELETE')
-                                                    <button type="submit" class="oshi-btn oshi-btn-sub text-red-600 px-4 py-2">
+                                                    <button type="submit" class="oshi-btn oshi-btn-sub min-w-[88px] justify-center px-4 py-2 text-red-600">
                                                         削除
                                                     </button>
                                                 </form>
