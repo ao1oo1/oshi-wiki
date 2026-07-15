@@ -62,6 +62,10 @@ class CharacterCsvImportController extends Controller
         $headers = [
             'character_id',
             'work_id',
+            'primary_work_id',
+            'work_ids',
+            'primary_work_title',
+            'work_titles',
             'name',
             'name_kana',
             'real_name',

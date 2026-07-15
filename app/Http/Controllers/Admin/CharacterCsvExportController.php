@@ -43,7 +43,7 @@ class CharacterCsvExportController extends Controller
         fputcsv($handle, $headers, ',', '"', '');
 
         $query = Character::query()
-            ->with(['work'])
+            ->with(['work', 'linkedWorks'])
             ->orderBy('id');
 
         if (method_exists(Character::class, 'tags')) {
@@ -68,6 +68,10 @@ class CharacterCsvExportController extends Controller
         $headers = [
             'character_id',
             'work_id',
+            'primary_work_id',
+            'work_ids',
+            'primary_work_title',
+            'work_titles',
             'character_name',
             'name_kana',
             'real_name',
@@ -115,7 +119,14 @@ class CharacterCsvExportController extends Controller
 
         return array_values(array_filter($headers, function (string $header): bool {
             return match ($header) {
-                'character_id', 'character_name', 'tag_ids', 'tag_names' => true,
+                'character_id',
+                'character_name',
+                'primary_work_id',
+                'work_ids',
+                'primary_work_title',
+                'work_titles',
+                'tag_ids',
+                'tag_names' => true,
                 default => Schema::hasColumn('characters', $header),
             };
         }));
@@ -128,6 +139,10 @@ class CharacterCsvExportController extends Controller
         foreach ($headers as $header) {
             $row[] = match ($header) {
                 'character_id' => $character->id,
+                'primary_work_id' => $character->work_id,
+                'work_ids' => $this->workIds($character),
+                'primary_work_title' => $character->work?->title ?? '',
+                'work_titles' => $this->workTitles($character),
                 'character_name' => $character->name,
                 'tag_ids' => $this->tagIds($character),
                 'tag_names' => $this->tagNames($character),
@@ -138,6 +153,29 @@ class CharacterCsvExportController extends Controller
         }
 
         return $row;
+    }
+
+    private function workIds(Character $character): string
+    {
+        if (! $character->relationLoaded('linkedWorks')) {
+            return (string) ($character->work_id ?? '');
+        }
+
+        return $character->linkedWorks
+            ->pluck('id')
+            ->map(fn ($id) => (string) $id)
+            ->implode(',');
+    }
+
+    private function workTitles(Character $character): string
+    {
+        if (! $character->relationLoaded('linkedWorks')) {
+            return $character->work?->title ?? '';
+        }
+
+        return $character->linkedWorks
+            ->pluck('title')
+            ->implode('｜');
     }
 
     private function tagIds(Character $character): string
@@ -169,7 +207,11 @@ class CharacterCsvExportController extends Controller
         }
 
         if ($request->filled('work_id')) {
-            $query->where('work_id', $request->integer('work_id'));
+            $workId = $request->integer('work_id');
+
+            $query->whereHas('linkedWorks', function (Builder $workQuery) use ($workId) {
+                $workQuery->where('works.id', $workId);
+            });
         }
 
         if ($request->filled('status') && Schema::hasColumn('characters', 'status')) {
@@ -228,7 +270,7 @@ class CharacterCsvExportController extends Controller
                     }
                 }
 
-                $keywordQuery->orWhereHas('work', function (Builder $workQuery) use ($keyword) {
+                $keywordQuery->orWhereHas('linkedWorks', function (Builder $workQuery) use ($keyword) {
                     $workQuery->where('title', 'like', '%' . $keyword . '%');
                 });
 
