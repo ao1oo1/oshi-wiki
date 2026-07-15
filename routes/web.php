@@ -278,6 +278,12 @@ Route::get('/contributor/apply', [\App\Http\Controllers\Public\ContributorApplic
 Route::post('/contributor/apply', [\App\Http\Controllers\Public\ContributorApplicationController::class, 'store'])
     ->name('public.contributor.apply.store');
 
+
+Route::get(
+    '/writing-tool',
+    [\App\Http\Controllers\Public\WritingToolController::class, 'show']
+)->name('public.writing-tool.show');
+
 Route::get('/about', [\App\Http\Controllers\Public\AboutController::class, 'show'])
     ->name('public.about.show');
 
