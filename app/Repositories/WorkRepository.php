@@ -56,14 +56,23 @@ class WorkRepository
 
     public function findWithDetails(Work $work): Work
     {
-        return $work->load([
+        $work->load([
             'tags',
             'canonEvents',
             'termUsages',
-            'characters.tags',
+            'linkedCharacters.tags',
             'characterRelationships.fromCharacter',
             'characterRelationships.toCharacter',
         ]);
+
+        // 既存の作品詳細Bladeはcharactersを参照しているため、
+        // 移行期間中は多対多の結果を同名リレーションとして渡す。
+        $work->setRelation(
+            'characters',
+            $work->linkedCharacters
+        );
+
+        return $work;
     }
 
     public function syncTags(Work $work, array $tagIds): void

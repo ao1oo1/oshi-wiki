@@ -16,9 +16,11 @@ class CharacterRepository
         ?string $exactKeyword = null
     ): LengthAwarePaginator {
         return Character::query()
-            ->with(['work', 'tags'])
+            ->with(['work', 'linkedWorks', 'tags'])
             ->when($workId, function ($query) use ($workId) {
-                $query->where('work_id', $workId);
+                $query->whereHas('linkedWorks', function ($query) use ($workId) {
+                    $query->where('works.id', $workId);
+                });
             })
             ->when($keyword, function ($query) use ($keyword) {
                 $query->where(function ($query) use ($keyword) {
@@ -94,6 +96,7 @@ class CharacterRepository
     {
         return $character->load([
             'work',
+            'linkedWorks',
             'tags',
             'outgoingRelationships.toCharacter',
             'incomingRelationships.fromCharacter',
