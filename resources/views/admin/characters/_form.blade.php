@@ -17,19 +17,84 @@
 <section class="{{ $sectionClass }}">
     <h3 class="mb-5 text-xl font-bold text-[#2D3748]">作品・公開設定</h3>
 
-    <div class="mb-4">
-        <label for="work_id" class="mb-1 block font-bold">作品</label>
+    @php
+        $primaryWorkId = (int) old(
+            'work_id',
+            $currentCharacter?->work_id ?? $selectedWorkId ?? 0
+        );
+
+        $linkedWorkIds = collect(old(
+            'linked_work_ids',
+            $currentCharacter
+                ? $currentCharacter->linkedWorks->pluck('id')->all()
+                : []
+        ))
+            ->map(fn ($id) => (int) $id)
+            ->push($primaryWorkId)
+            ->filter()
+            ->unique()
+            ->values()
+            ->all();
+    @endphp
+
+    <div class="mb-5">
+        <label for="work_id" class="mb-1 block font-bold">主作品</label>
+        <p class="mb-2 text-sm text-[#718096]">
+            一覧やキャラクター詳細で代表として表示する作品を1件選択してください。
+        </p>
         <select id="work_id" name="work_id" class="{{ $fieldClass }}" required>
             <option value="">選択してください</option>
             @foreach ($works as $work)
-                <option
-                    value="{{ $work->id }}"
-                    @selected(old('work_id', $currentCharacter?->work_id ?? $selectedWorkId ?? '') == $work->id)
-                >
+                <option value="{{ $work->id }}" @selected($primaryWorkId === (int) $work->id)>
                     {{ $work->title }}
                 </option>
             @endforeach
         </select>
+    </div>
+
+    <div class="mb-5">
+        <label for="linked-work-search" class="mb-1 block font-bold">
+            追加で紐付ける作品
+        </label>
+        <p class="mb-2 text-sm text-[#718096]">
+            同じキャラクターを章・シリーズ・派生作品など複数の作品へ紐付けできます。
+            主作品は自動的に含まれます。
+        </p>
+
+        <input
+            id="linked-work-search"
+            type="search"
+            class="{{ $fieldClass }}"
+            placeholder="作品名で絞り込み"
+            autocomplete="off"
+        >
+
+        <div
+            id="linked-work-options"
+            class="mt-3 max-h-72 overflow-y-auto rounded-2xl border border-[#E2E8F0] bg-white p-4"
+        >
+            <div class="grid grid-cols-1 gap-2 md:grid-cols-2">
+                @foreach ($works as $work)
+                    <label
+                        class="linked-work-option flex items-start gap-3 rounded-xl px-3 py-2 hover:bg-[#FFF5F7]"
+                        data-work-title="{{ mb_strtolower($work->title) }}"
+                    >
+                        <input
+                            type="checkbox"
+                            name="linked_work_ids[]"
+                            value="{{ $work->id }}"
+                            class="linked-work-checkbox mt-1"
+                            @checked(in_array((int) $work->id, $linkedWorkIds, true))
+                        >
+                        <span>{{ $work->title }}</span>
+                    </label>
+                @endforeach
+            </div>
+        </div>
+
+        <p id="linked-work-empty" class="mt-3 hidden text-sm text-[#718096]">
+            該当する作品がありません。
+        </p>
     </div>
 
     @if (auth()->user()?->canManageAllAdminFeatures())
@@ -248,3 +313,50 @@
 >
     保存する
 </button>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const primarySelect = document.getElementById('work_id');
+    const searchInput = document.getElementById('linked-work-search');
+    const options = Array.from(document.querySelectorAll('.linked-work-option'));
+    const emptyMessage = document.getElementById('linked-work-empty');
+
+    const syncPrimaryWork = () => {
+        const primaryId = primarySelect?.value;
+
+        document.querySelectorAll('.linked-work-checkbox').forEach((checkbox) => {
+            const isPrimary = primaryId !== '' && checkbox.value === primaryId;
+
+            if (isPrimary) {
+                checkbox.checked = true;
+            }
+
+            checkbox.disabled = isPrimary;
+        });
+    };
+
+    const filterWorks = () => {
+        const keyword = (searchInput?.value || '').trim().toLowerCase();
+        let visibleCount = 0;
+
+        options.forEach((option) => {
+            const title = option.dataset.workTitle || '';
+            const visible = keyword === '' || title.includes(keyword);
+            option.classList.toggle('hidden', !visible);
+
+            if (visible) {
+                visibleCount += 1;
+            }
+        });
+
+        emptyMessage?.classList.toggle('hidden', visibleCount !== 0);
+    };
+
+    primarySelect?.addEventListener('change', syncPrimaryWork);
+    searchInput?.addEventListener('input', filterWorks);
+
+    syncPrimaryWork();
+    filterWorks();
+});
+</script>
