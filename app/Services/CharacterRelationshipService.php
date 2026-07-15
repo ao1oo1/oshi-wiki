@@ -73,15 +73,15 @@ class CharacterRelationshipService
             ]);
         }
 
-        if ((int) $fromCharacter->work_id !== $workId) {
+        if (! $fromCharacter->isLinkedToWork($workId)) {
             throw ValidationException::withMessages([
-                'from_character_id' => '選択した作品に属していないキャラクターです。',
+                'from_character_id' => '選択した作品に紐付いていないキャラクターです。',
             ]);
         }
 
-        if ((int) $toCharacter->work_id !== $workId) {
+        if (! $toCharacter->isLinkedToWork($workId)) {
             throw ValidationException::withMessages([
-                'to_character_id' => '選択した作品に属していない相手キャラクターです。',
+                'to_character_id' => '選択した作品に紐付いていない相手キャラクターです。',
             ]);
         }
     }

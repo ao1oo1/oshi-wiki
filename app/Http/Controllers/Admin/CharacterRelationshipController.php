@@ -62,9 +62,15 @@ class CharacterRelationshipController extends Controller
         return view('admin.character_relationships.create', [
             'works' => Work::query()->latest()->get(),
             'characters' => Character::query()
-                ->with('work')
+                ->with(['work', 'linkedWorks'])
                 ->when($selectedWorkId, function ($query) use ($selectedWorkId) {
-                    $query->where('work_id', $selectedWorkId);
+                    $query->whereHas(
+                        'linkedWorks',
+                        fn ($workQuery) => $workQuery->where(
+                            'works.id',
+                            $selectedWorkId
+                        )
+                    );
                 })
                 ->latest()
                 ->get(),
@@ -106,8 +112,14 @@ class CharacterRelationshipController extends Controller
             'characterRelationship' => $characterRelationship,
             'works' => Work::query()->latest()->get(),
             'characters' => Character::query()
-                ->with('work')
-                ->where('work_id', $characterRelationship->work_id)
+                ->with(['work', 'linkedWorks'])
+                ->whereHas(
+                    'linkedWorks',
+                    fn ($workQuery) => $workQuery->where(
+                        'works.id',
+                        $characterRelationship->work_id
+                    )
+                )
                 ->latest()
                 ->get(),
             'selectedWorkId' => $characterRelationship->work_id,
