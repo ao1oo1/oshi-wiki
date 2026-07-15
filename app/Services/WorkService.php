@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Work;
 use App\Repositories\WorkRepository;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class WorkService
@@ -21,32 +22,38 @@ class WorkService
 
     public function create(array $data): Work
     {
-        $tagIds = $data['tag_ids'] ?? [];
-        unset($data['tag_ids']);
+        return DB::transaction(function () use ($data): Work {
+            [$workData, $tagIds, $canonEvents, $termUsages] = $this->splitRelatedData($data);
 
-        $data = $this->applyReviewRule($data, false);
-        $data['status'] = $data['status'] ?? 'draft';
-        $data['slug'] = $this->makeSlug($data['title']);
+            $workData = $this->applyReviewRule($workData);
+            $workData['status'] = $workData['status'] ?? 'draft';
+            $workData['slug'] = $this->makeSlug($workData['title']);
 
-        $work = $this->repository->create($data);
-        $this->repository->syncTags($work, $tagIds);
+            $work = $this->repository->create($workData);
+            $this->repository->syncTags($work, $tagIds);
+            $this->repository->syncCanonEvents($work, $canonEvents);
+            $this->repository->syncTermUsages($work, $termUsages);
 
-        return $work;
+            return $work;
+        });
     }
 
     public function update(Work $work, array $data): bool
     {
-        $tagIds = $data['tag_ids'] ?? [];
-        unset($data['tag_ids']);
+        return DB::transaction(function () use ($work, $data): bool {
+            [$workData, $tagIds, $canonEvents, $termUsages] = $this->splitRelatedData($data);
 
-        $data = $this->applyReviewRule($data, true);
-        $data['status'] = $data['status'] ?? $work->status;
-        $data['slug'] = $this->makeSlug($data['title']);
+            $workData = $this->applyReviewRule($workData);
+            $workData['status'] = $workData['status'] ?? $work->status;
+            $workData['slug'] = $this->makeSlug($workData['title'], $work->id);
 
-        $updated = $this->repository->update($work, $data);
-        $this->repository->syncTags($work, $tagIds);
+            $updated = $this->repository->update($work, $workData);
+            $this->repository->syncTags($work, $tagIds);
+            $this->repository->syncCanonEvents($work, $canonEvents);
+            $this->repository->syncTermUsages($work, $termUsages);
 
-        return $updated;
+            return $updated;
+        });
     }
 
     public function delete(Work $work): bool
@@ -59,7 +66,32 @@ class WorkService
         return $this->repository->findWithDetails($work);
     }
 
-    private function makeSlug(string $title): string
+    private function splitRelatedData(array $data): array
+    {
+        $tagIds = $data['tag_ids'] ?? [];
+        $canonEvents = $this->filterCanonEvents($data['canon_events'] ?? []);
+        $termUsages = $this->filterTermUsages($data['term_usages'] ?? []);
+
+        unset($data['tag_ids'], $data['canon_events'], $data['term_usages']);
+
+        return [$data, $tagIds, $canonEvents, $termUsages];
+    }
+
+    private function filterCanonEvents(array $events): array
+    {
+        return array_values(array_filter($events, function (array $event): bool {
+            return trim((string) ($event['event_name'] ?? '')) !== '';
+        }));
+    }
+
+    private function filterTermUsages(array $terms): array
+    {
+        return array_values(array_filter($terms, function (array $term): bool {
+            return trim((string) ($term['term'] ?? '')) !== '';
+        }));
+    }
+
+    private function makeSlug(string $title, ?int $ignoreWorkId = null): string
     {
         $base = Str::slug($title);
 
@@ -70,26 +102,27 @@ class WorkService
         $candidate = $base;
         $count = 1;
 
-        while (Work::query()->where('slug', $candidate)->exists()) {
+        while (Work::query()
+            ->when($ignoreWorkId, fn ($query) => $query->whereKeyNot($ignoreWorkId))
+            ->where('slug', $candidate)
+            ->exists()) {
             $candidate = $base . '-' . $count . '-' . Str::lower(Str::random(4));
             $count++;
         }
 
         return $candidate;
     }
-    private function applyReviewRule(array $data, bool $isUpdate = false): array
+
+    private function applyReviewRule(array $data): array
     {
         if (auth()->check() && auth()->user()?->isSuperAdmin()) {
             return $data;
         }
 
         unset($data['status']);
-
         $data['status'] = 'draft';
         $data['review_status'] = 'pending';
 
         return $data;
     }
-
-
 }

@@ -23,6 +23,31 @@ class Work extends Model
         'official_url',
         'guideline_url',
         'description',
+        'timeline_setting',
+        'building_layout',
+        'character_room_seat',
+        'hangout_places',
+        'restricted_secret_places',
+        'cafeteria_store_menu',
+        'daily_schedule',
+        'school_dorm_rules',
+        'uniform_details',
+        'casual_holiday_rules',
+        'duty_system',
+        'class_grade_system',
+        'organizations_memberships',
+        'ranking_system',
+        'adult_roles',
+        'annual_events',
+        'event_flow',
+        'story_season',
+        'school_location',
+        'commute_environment',
+        'nearby_shops',
+        'climate_nature',
+        'sounds',
+        'symbolic_motifs',
+        'required_belongings',
         'status',
         'review_status',
         'created_by',
@@ -37,11 +62,9 @@ class Work extends Model
         ];
     }
 
-
     public function tags(): BelongsToMany
     {
-        return $this->belongsToMany(Tag::class)
-            ->withTimestamps();
+        return $this->belongsToMany(Tag::class)->withTimestamps();
     }
 
     public function characters(): HasMany
@@ -54,19 +77,27 @@ class Work extends Model
         return $this->hasMany(CharacterRelationship::class);
     }
 
+    public function canonEvents(): HasMany
+    {
+        return $this->hasMany(WorkCanonEvent::class)->orderBy('sort_order')->orderBy('id');
+    }
+
+    public function termUsages(): HasMany
+    {
+        return $this->hasMany(WorkTermUsage::class)->orderBy('sort_order')->orderBy('id');
+    }
+
     public function isPublished(): bool
     {
         return $this->status === 'published' && $this->deleted_at === null;
     }
+
     protected static function booted(): void
     {
-        // OWNER_CREATED_BY_AUTO_SET
-        static::creating(function ($model): void {
+        static::creating(function (self $model): void {
             if (auth()->check() && empty($model->created_by)) {
                 $model->created_by = auth()->id();
             }
         });
-        // /OWNER_CREATED_BY_AUTO_SET
     }
-
 }
