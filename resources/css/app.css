@@ -5700,3 +5700,122 @@ label:has(> input[type="radio"])
     }
 }
 /* /OSHI_WIKI_GLOBAL_RADIO_FIX */
+
+/* 公開ページ：小説執筆補助ツールへのCTA */
+.oshi-writing-tool-cta {
+    margin: 8px 0 48px;
+}
+
+.oshi-writing-tool-cta-inner {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 28px;
+    overflow: hidden;
+    border: 1px solid #F7B8CB;
+    border-radius: 24px;
+    background:
+        radial-gradient(circle at top right, rgba(255, 255, 255, .75), transparent 34%),
+        linear-gradient(135deg, #FFF0F5 0%, #FED7E2 100%);
+    padding: 28px 32px;
+    box-shadow: 0 12px 30px rgba(247, 168, 196, .18);
+}
+
+.oshi-writing-tool-cta-inner::after {
+    content: "✦";
+    position: absolute;
+    top: 12px;
+    right: 22px;
+    color: rgba(45, 55, 72, .10);
+    font-size: 4.5rem;
+    line-height: 1;
+    pointer-events: none;
+}
+
+.oshi-writing-tool-cta-copy {
+    position: relative;
+    z-index: 1;
+    min-width: 0;
+}
+
+.oshi-writing-tool-cta-label {
+    display: inline-flex;
+    margin-bottom: 8px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, .78);
+    padding: 5px 12px;
+    color: var(--oshi-text);
+    font-size: .82rem;
+    font-weight: 700;
+}
+
+.oshi-writing-tool-cta h2 {
+    margin: 0;
+    color: var(--oshi-text);
+    font-size: clamp(1.25rem, 2.4vw, 1.75rem);
+    line-height: 1.45;
+}
+
+.oshi-writing-tool-cta p {
+    margin: 8px 0 0;
+    color: #5F6F86;
+    font-size: .95rem;
+    line-height: 1.8;
+}
+
+.oshi-writing-tool-cta-button {
+    position: relative;
+    z-index: 1;
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    min-height: 52px;
+    border-radius: 999px;
+    background: var(--oshi-text);
+    padding: 13px 24px;
+    color: #FFFFFF;
+    font-weight: 700;
+    box-shadow: 0 8px 18px rgba(45, 55, 72, .18);
+    transition:
+        transform .18s ease,
+        box-shadow .18s ease,
+        background .18s ease;
+}
+
+.oshi-writing-tool-cta-button:hover {
+    transform: translateY(-2px);
+    background: #1F2937;
+    color: #FFFFFF;
+    box-shadow: 0 12px 24px rgba(45, 55, 72, .24);
+}
+
+@media (max-width: 720px) {
+    .oshi-writing-tool-cta {
+        margin-bottom: 38px;
+    }
+
+    .oshi-writing-tool-cta-inner {
+        align-items: stretch;
+        flex-direction: column;
+        gap: 20px;
+        padding: 24px 22px;
+    }
+
+    .oshi-writing-tool-cta-button {
+        width: 100%;
+    }
+}
+
+@media (max-width: 420px) {
+    .oshi-writing-tool-cta-inner {
+        border-radius: 20px;
+        padding: 22px 18px;
+    }
+
+    .oshi-writing-tool-cta p {
+        font-size: .9rem;
+    }
+}

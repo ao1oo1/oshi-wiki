@@ -53,6 +53,24 @@
             @endif
         </section>
 
+        <section class="oshi-writing-tool-cta" aria-labelledby="writing-tool-cta-title">
+            <div class="oshi-writing-tool-cta-inner">
+                <div class="oshi-writing-tool-cta-copy">
+                    <span class="oshi-writing-tool-cta-label">創作をもっと便利に</span>
+                    <h2 id="writing-tool-cta-title">小説執筆補助ツールのご利用はこちら</h2>
+                    <p>
+                        オリジナルキャラクターや関係性を登録し、
+                        小説執筆用のプロンプトを作成・保存できます。
+                    </p>
+                </div>
+
+                <a href="{{ route('register') }}" class="oshi-writing-tool-cta-button">
+                    無料で新規登録する
+                    <span aria-hidden="true">→</span>
+                </a>
+            </div>
+        </section>
+
         <section class="oshi-section">
             <div class="flex flex-wrap items-center justify-between gap-3">
                 <h2 class="oshi-section-title">
