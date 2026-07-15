@@ -109,11 +109,16 @@ class PromptCharacterContextBuilder
         }
 
         return Character::query()
-            ->with('work')
+            ->with([
+                'work',
+                'linkedWorks' => function ($query): void {
+                    $query->where('works.status', 'published');
+                },
+            ])
             ->whereIn('id', $ids)
             ->where('status', 'published')
-            ->whereHas('work', function ($query): void {
-                $query->where('status', 'published');
+            ->whereHas('linkedWorks', function ($query): void {
+                $query->where('works.status', 'published');
             })
             ->orderBy('name')
             ->get();
@@ -246,10 +251,18 @@ class PromptCharacterContextBuilder
                 . $character->name,
         ];
 
+        $workTitles = $character->linkedWorks
+            ->pluck('title')
+            ->filter()
+            ->unique()
+            ->implode('／');
+
         $this->appendIfFilled(
             $lines,
             '原作作品',
-            $character->work?->title
+            $workTitles !== ''
+                ? $workTitles
+                : $character->work?->title
         );
 
         $this->appendIfFilled(
@@ -349,7 +362,9 @@ class PromptCharacterContextBuilder
                     'fromCharacter',
                     'toCharacter',
                     'fromV1Character.work',
+                    'fromV1Character.linkedWorks',
                     'toV1Character.work',
+                    'toV1Character.linkedWorks',
                 ])
                 ->where('user_id', $user->id)
                 ->where('status', 'active')
@@ -435,7 +450,8 @@ class PromptCharacterContextBuilder
     ): bool {
         return $character !== null
             && $character->status === 'published'
-            && $character->work !== null
-            && $character->work->status === 'published';
+            && $character->linkedWorks()
+                ->where('works.status', 'published')
+                ->exists();
     }
 }

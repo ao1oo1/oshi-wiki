@@ -187,15 +187,21 @@ class SavedPromptController extends Controller
 
         $publishedWorks = Work::query()
             ->with([
-                'characters' => function ($query): void {
+                'linkedCharacters' => function ($query): void {
                     $query
-                        ->where('status', 'published')
-                        ->orderBy('name');
+                        ->where('characters.status', 'published')
+                        ->orderBy('characters.name');
                 },
             ])
             ->where('status', 'published')
             ->orderBy('title')
-            ->get();
+            ->get()
+            ->each(function (Work $work): void {
+                $work->setRelation(
+                    'characters',
+                    $work->linkedCharacters
+                );
+            });
 
         $storyAnalyses = WriterStoryAnalysis::query()
             ->forUser($user)

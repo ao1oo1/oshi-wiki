@@ -195,8 +195,8 @@ class OriginalCharacterRelationshipService
 
         $character = Character::query()
             ->where('status', 'published')
-            ->whereHas('work', function ($query): void {
-                $query->where('status', 'published');
+            ->whereHas('linkedWorks', function ($query): void {
+                $query->where('works.status', 'published');
             })
             ->find($id);
 
