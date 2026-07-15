@@ -7,7 +7,6 @@ use App\Models\CharacterRelationship;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Illuminate\Support\Facades\Schema;
 
 class CharacterRelationshipCsvExportController extends Controller
 {
@@ -19,125 +18,88 @@ class CharacterRelationshipCsvExportController extends Controller
             '関係性管理のこの操作は最高管理者のみ可能です。'
         );
 
-        $csv = $this->buildCsv($request);
-
-        return response($csv, 200, [
-            'Content-Type' => 'text/csv; charset=UTF-8',
-            'Content-Disposition' => 'attachment; filename="oshi-wiki-character-relationships-export.csv"',
-        ]);
-    }
-
-    private function buildCsv(Request $request): string
-    {
         $handle = fopen('php://temp', 'r+b');
-
-        // Excelで文字化けしにくいようにBOMを付ける
         fwrite($handle, "\xEF\xBB\xBF");
 
-        $headers = $this->headers();
-
-        fputcsv($handle, $headers);
-
-        $query = CharacterRelationship::query()
-            ->with(['work', 'fromCharacter', 'toCharacter'])
-            ->orderBy('id');
-
-        $this->applyFilters($query, $request);
-
-        $query->chunk(500, function ($relationships) use ($handle, $headers) {
-            foreach ($relationships as $relationship) {
-                fputcsv($handle, $this->row($relationship, $headers));
-            }
-        });
-
-        rewind($handle);
-
-        return stream_get_contents($handle) ?: '';
-    }
-
-    private function headers(): array
-    {
         $headers = [
             'relationship_id',
             'work_id',
+            'work_title',
             'from_character_id',
+            'from_character_name',
             'to_character_id',
+            'to_character_name',
             'called_name',
             'relationship',
             'impression',
             'notes',
             'status',
-            'review_status',
-            'reviewed_at',
-            'reviewed_by',
-            'created_at',
-            'updated_at',
         ];
 
-        return array_values(array_filter($headers, function (string $header): bool {
-            return match ($header) {
-                'relationship_id' => true,
-                default => Schema::hasColumn('character_relationships', $header),
-            };
-        }));
-    }
+        fputcsv($handle, $headers, ',', '"', '');
 
-    private function row(CharacterRelationship $relationship, array $headers): array
-    {
-        $row = [];
+        $query = CharacterRelationship::query()
+            ->with(['work', 'fromCharacter', 'toCharacter'])
+            ->orderBy('id');
 
-        foreach ($headers as $header) {
-            $row[] = match ($header) {
-                'relationship_id' => $relationship->id,
-                'created_at', 'updated_at', 'reviewed_at' => optional($relationship->{$header})->format('Y-m-d H:i:s'),
-                default => $relationship->{$header} ?? '',
-            };
-        }
-
-        return $row;
-    }
-
-    private function applyFilters(Builder $query, Request $request): void
-    {
         if ($request->filled('work_id')) {
             $query->where('work_id', $request->integer('work_id'));
         }
 
-        if ($request->filled('status') && Schema::hasColumn('character_relationships', 'status')) {
+        if ($request->filled('status')) {
             $query->where('status', $request->input('status'));
+        }
+
+        if ($request->filled('exact_keyword')) {
+            $exact = trim((string) $request->input('exact_keyword'));
+
+            $query->where(function (Builder $q) use ($exact): void {
+                $q->where('called_name', $exact)
+                    ->orWhere('relationship', $exact)
+                    ->orWhere('impression', $exact)
+                    ->orWhereHas('fromCharacter', fn (Builder $c) => $c->where('name', $exact))
+                    ->orWhereHas('toCharacter', fn (Builder $c) => $c->where('name', $exact));
+            });
         }
 
         if ($request->filled('keyword')) {
             $keyword = trim((string) $request->input('keyword'));
 
-            $query->where(function (Builder $keywordQuery) use ($keyword) {
-                $columns = [
-                    'called_name',
-                    'relationship',
-                    'impression',
-                    'notes',
-                    'status',
-                    'review_status',
-                ];
-
-                foreach ($columns as $column) {
-                    if (Schema::hasColumn('character_relationships', $column)) {
-                        $keywordQuery->orWhere($column, 'like', '%' . $keyword . '%');
-                    }
-                }
-
-                $keywordQuery->orWhereHas('work', function (Builder $workQuery) use ($keyword) {
-                    $workQuery->where('title', 'like', '%' . $keyword . '%');
-                });
-
-                $keywordQuery->orWhereHas('fromCharacter', function (Builder $characterQuery) use ($keyword) {
-                    $characterQuery->where('name', 'like', '%' . $keyword . '%');
-                });
-
-                $keywordQuery->orWhereHas('toCharacter', function (Builder $characterQuery) use ($keyword) {
-                    $characterQuery->where('name', 'like', '%' . $keyword . '%');
-                });
+            $query->where(function (Builder $q) use ($keyword): void {
+                $q->where('called_name', 'like', "%{$keyword}%")
+                    ->orWhere('relationship', 'like', "%{$keyword}%")
+                    ->orWhere('impression', 'like', "%{$keyword}%")
+                    ->orWhere('notes', 'like', "%{$keyword}%")
+                    ->orWhereHas('fromCharacter', fn (Builder $c) => $c->where('name', 'like', "%{$keyword}%"))
+                    ->orWhereHas('toCharacter', fn (Builder $c) => $c->where('name', 'like', "%{$keyword}%"));
             });
         }
+
+        $query->chunkById(500, function ($relationships) use ($handle): void {
+            foreach ($relationships as $item) {
+                fputcsv($handle, [
+                    $item->id,
+                    $item->work_id,
+                    $item->work?->title ?? '',
+                    $item->from_character_id,
+                    $item->fromCharacter?->name ?? '',
+                    $item->to_character_id,
+                    $item->toCharacter?->name ?? '',
+                    $item->called_name,
+                    $item->relationship,
+                    $item->impression,
+                    $item->notes,
+                    $item->status,
+                ], ',', '"', '');
+            }
+        });
+
+        rewind($handle);
+        $csv = stream_get_contents($handle) ?: '';
+
+        return response($csv, 200, [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => 'attachment; filename="oshi-wiki-character-relationships-export.csv"',
+        ]);
     }
 }

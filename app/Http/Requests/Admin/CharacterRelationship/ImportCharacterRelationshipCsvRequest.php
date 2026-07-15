@@ -8,24 +8,22 @@ class ImportCharacterRelationshipCsvRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return $this->user()?->canManageAllAdminFeatures() ?? false;
+        return auth()->user()?->canManageAllAdminFeatures() ?? false;
     }
 
     public function rules(): array
     {
         return [
-            'work_id' => ['nullable', 'integer', 'exists:works,id'],
-            'default_status' => ['required', 'string', 'in:draft,published,private'],
-            'csv_file' => ['required', 'file', 'mimes:csv,txt', 'max:5120'],
+            'csv_file' => ['required', 'file', 'mimes:csv,txt', 'max:10240'],
+            'default_status' => ['nullable', 'in:draft,published,private'],
         ];
     }
 
     public function attributes(): array
     {
         return [
-            'work_id' => '作品',
-            'default_status' => 'CSV内のstatusが空の場合の状態',
             'csv_file' => 'CSVファイル',
+            'default_status' => '初期状態',
         ];
     }
 }

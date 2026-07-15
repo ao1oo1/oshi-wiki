@@ -31,11 +31,22 @@
                     </p>
                 </div>
 
-                @if ($canCreateRelationships)
-                    <a href="{{ route('admin.character-relationships.create') }}" class="oshi-btn">
-                        関係性登録画面へ
-                    </a>
-                @endif
+                <div class="flex flex-wrap gap-2 admin-index-actions">
+                    @if ($canManageRelationships)
+                        <a href="{{ route('admin.character-relationships.csv-import.create') }}" class="oshi-btn oshi-btn-sub">
+                            CSV取り込み
+                        </a>
+                        <a href="{{ route('admin.character-relationships.csv-export', request()->query()) }}" class="oshi-btn oshi-btn-sub">
+                            CSVエクスポート
+                        </a>
+                    @endif
+
+                    @if ($canCreateRelationships)
+                        <a href="{{ route('admin.character-relationships.create') }}" class="oshi-btn">
+                            関係性登録画面へ
+                        </a>
+                    @endif
+                </div>
             </div>
 
             <form method="GET" action="{{ route('admin.character-relationships.index') }}" class="mb-6 admin-index-filter-form">

@@ -6,255 +6,133 @@ use App\Models\Character;
 use App\Models\CharacterRelationship;
 use App\Models\Work;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
+use RuntimeException;
+use Throwable;
 
 class CharacterRelationshipCsvImportService
 {
-    private const ALLOWED_STATUSES = ['draft', 'published', 'private'];
+    private const HEADERS = [
+        'relationship_id',
+        'work_id',
+        'from_character_id',
+        'to_character_id',
+        'called_name',
+        'relationship',
+        'impression',
+        'notes',
+        'status',
+    ];
 
-    public function import(string $path, ?int $defaultWorkId, string $defaultStatus = 'draft'): array
+    public function import(string $path, string $defaultStatus = 'draft'): array
     {
-        $content = file_get_contents($path);
+        $handle = fopen($path, 'rb');
 
-        if ($content === false) {
-            return [
-                'imported' => 0,
-                'created' => 0,
-                'updated' => 0,
-                'skipped' => 0,
-                'errors' => ['CSVファイルを読み込めませんでした。'],
-            ];
+        if ($handle === false) {
+            throw new RuntimeException('CSVファイルを開けませんでした。');
         }
 
-        $content = preg_replace('/^\xEF\xBB\xBF/', '', $content) ?? $content;
-        $content = mb_convert_encoding($content, 'UTF-8', 'UTF-8,SJIS-win,CP932');
+        $headers = fgetcsv($handle);
 
-        $handle = fopen('php://temp', 'r+b');
-        fwrite($handle, $content);
-        rewind($handle);
-
-        $header = fgetcsv($handle);
-
-        if (! is_array($header)) {
+        if (! is_array($headers)) {
             fclose($handle);
-
-            return [
-                'imported' => 0,
-                'created' => 0,
-                'updated' => 0,
-                'skipped' => 0,
-                'errors' => ['CSVのヘッダー行を読み込めませんでした。'],
-            ];
+            throw new RuntimeException('CSVのヘッダーを読み取れませんでした。');
         }
 
-        $header = array_map(fn ($value) => $this->normalizeHeader((string) $value), $header);
+        $headers = array_map(
+            fn ($header) => trim(preg_replace('/^\xEF\xBB\xBF/', '', (string) $header)),
+            $headers
+        );
 
-        $requiredHeaders = [
-            'work_id',
-            'from_character_id',
-            'to_character_id',
-        ];
-
-        $missingHeaders = array_values(array_diff($requiredHeaders, $header));
-
-        if ($missingHeaders !== []) {
-            fclose($handle);
-
-            return [
-                'imported' => 0,
-                'created' => 0,
-                'updated' => 0,
-                'skipped' => 0,
-                'errors' => ['必須ヘッダーが不足しています: ' . implode(', ', $missingHeaders)],
-            ];
+        foreach (self::HEADERS as $requiredHeader) {
+            if (! in_array($requiredHeader, $headers, true)) {
+                fclose($handle);
+                throw new RuntimeException("必須列「{$requiredHeader}」がありません。");
+            }
         }
 
-        $imported = 0;
         $created = 0;
         $updated = 0;
         $skipped = 0;
         $errors = [];
-        $lineNumber = 1;
+        $line = 1;
 
-        DB::transaction(function () use (
-            $handle,
-            $header,
-            $defaultWorkId,
-            $defaultStatus,
-            &$imported,
-            &$created,
-            &$updated,
-            &$skipped,
-            &$errors,
-            &$lineNumber
-        ) {
-            while (($row = fgetcsv($handle)) !== false) {
-                $lineNumber++;
+        while (($values = fgetcsv($handle)) !== false) {
+            $line++;
 
-                if ($this->isEmptyRow($row)) {
-                    $skipped++;
-                    continue;
-                }
-
-                $row = array_pad($row, count($header), '');
-                $data = array_combine($header, array_slice($row, 0, count($header)));
-
-                if (! is_array($data)) {
-                    $errors[] = "{$lineNumber}行目: CSV行の読み込みに失敗しました。";
-                    continue;
-                }
-
-                $relationshipId = $this->intOrNull($data['relationship_id'] ?? ($data['id'] ?? null));
-
-                // CSV内の work_id を優先し、空の場合だけ画面で選択した作品IDを使う
-                $csvWorkId = $this->intOrNull($data['work_id'] ?? null);
-                $workId = $csvWorkId ?: $defaultWorkId;
-
-                $fromCharacterId = $this->intOrNull($data['from_character_id'] ?? null);
-                $toCharacterId = $this->intOrNull($data['to_character_id'] ?? null);
-
-                if (! $workId) {
-                    $errors[] = "{$lineNumber}行目: work_id は必須です。";
-                    continue;
-                }
-
-                if (! $fromCharacterId) {
-                    $errors[] = "{$lineNumber}行目: from_character_id は必須です。";
-                    continue;
-                }
-
-                if (! $toCharacterId) {
-                    $errors[] = "{$lineNumber}行目: to_character_id は必須です。";
-                    continue;
-                }
-
-                if ($fromCharacterId === $toCharacterId) {
-                    $errors[] = "{$lineNumber}行目: from_character_id と to_character_id には別のキャラクターを指定してください。";
-                    continue;
-                }
-
-                if (! Work::query()->whereKey($workId)->exists()) {
-                    $errors[] = "{$lineNumber}行目: 指定された work_id の作品が存在しません。";
-                    continue;
-                }
-
-                $fromCharacter = Character::query()
-                    ->whereKey($fromCharacterId)
-                    ->where('work_id', $workId)
-                    ->first();
-
-                if (! $fromCharacter) {
-                    $errors[] = "{$lineNumber}行目: from_character_id のキャラクターが指定作品内に存在しません。";
-                    continue;
-                }
-
-                $toCharacter = Character::query()
-                    ->whereKey($toCharacterId)
-                    ->where('work_id', $workId)
-                    ->first();
-
-                if (! $toCharacter) {
-                    $errors[] = "{$lineNumber}行目: to_character_id のキャラクターが指定作品内に存在しません。";
-                    continue;
-                }
-
-                $status = $this->clean($data['status'] ?? '') ?: $defaultStatus;
-
-                if (! in_array($status, self::ALLOWED_STATUSES, true)) {
-                    $errors[] = "{$lineNumber}行目: status は draft / published / private のいずれかを指定してください。";
-                    continue;
-                }
-
-                $payload = [
-                    'work_id' => $workId,
-                    'from_character_id' => $fromCharacterId,
-                    'to_character_id' => $toCharacterId,
-                    'called_name' => $this->nullableText($data['called_name'] ?? null),
-                    'relationship' => $this->nullableText($data['relationship'] ?? null),
-                    'impression' => $this->nullableText($data['impression'] ?? null),
-                    'notes' => $this->nullableText($data['notes'] ?? null),
-                    'status' => $status,
-                ];
-
-                if (array_key_exists('review_status', $data)) {
-                    $payload['review_status'] = $this->nullableText($data['review_status']);
-                }
-
-                if (array_key_exists('reviewed_at', $data)) {
-                    $payload['reviewed_at'] = $this->nullableText($data['reviewed_at']);
-                }
-
-                if (array_key_exists('reviewed_by', $data)) {
-                    $payload['reviewed_by'] = $this->intOrNull($data['reviewed_by']);
-                }
-
-                $existingRelationship = $relationshipId
-                    ? CharacterRelationship::query()->whereKey($relationshipId)->first()
-                    : null;
-
-                if ($existingRelationship) {
-                    $existingRelationship->update($payload);
-                    $updated++;
-                } else {
-                    CharacterRelationship::query()->create($payload);
-                    $created++;
-                }
-
-                $imported++;
+            if ($this->isEmptyRow($values)) {
+                $skipped++;
+                continue;
             }
-        });
 
-        fclose($handle);
+            $values = array_pad($values, count($headers), '');
+            $row = array_combine($headers, array_slice($values, 0, count($headers)));
 
-        return [
-            'imported' => $imported,
-            'created' => $created,
-            'updated' => $updated,
-            'skipped' => $skipped,
-            'errors' => $errors,
-        ];
-    }
+            try {
+                DB::transaction(function () use ($row, $defaultStatus, &$created, &$updated): void {
+                    $workId = (int) ($row['work_id'] ?? 0);
+                    $fromId = (int) ($row['from_character_id'] ?? 0);
+                    $toId = (int) ($row['to_character_id'] ?? 0);
 
-    private function normalizeHeader(string $value): string
-    {
-        return Str::of($value)
-            ->trim()
-            ->lower()
-            ->replace([' ', '-'], '_')
-            ->toString();
-    }
+                    $work = Work::query()->findOrFail($workId);
+                    $from = Character::query()->findOrFail($fromId);
+                    $to = Character::query()->findOrFail($toId);
 
-    private function isEmptyRow(array $row): bool
-    {
-        foreach ($row as $value) {
-            if (trim((string) $value) !== '') {
-                return false;
+                    if ($from->work_id !== $work->id || $to->work_id !== $work->id) {
+                        throw new RuntimeException('作品IDとキャラクターの所属作品が一致しません。');
+                    }
+
+                    if ($from->id === $to->id) {
+                        throw new RuntimeException('同じキャラクター同士は登録できません。');
+                    }
+
+                    $status = trim((string) ($row['status'] ?? '')) ?: $defaultStatus;
+
+                    if (! in_array($status, ['draft', 'published', 'private'], true)) {
+                        throw new RuntimeException('状態はdraft・published・privateのいずれかで指定してください。');
+                    }
+
+                    $data = [
+                        'work_id' => $work->id,
+                        'from_character_id' => $from->id,
+                        'to_character_id' => $to->id,
+                        'called_name' => $this->nullable($row['called_name'] ?? null),
+                        'relationship' => $this->nullable($row['relationship'] ?? null),
+                        'impression' => $this->nullable($row['impression'] ?? null),
+                        'notes' => $this->nullable($row['notes'] ?? null),
+                        'status' => $status,
+                    ];
+
+                    $relationshipId = (int) ($row['relationship_id'] ?? 0);
+
+                    if ($relationshipId > 0) {
+                        $model = CharacterRelationship::query()->findOrFail($relationshipId);
+                        $model->update($data);
+                        $updated++;
+                    } else {
+                        CharacterRelationship::query()->create($data);
+                        $created++;
+                    }
+                });
+            } catch (Throwable $e) {
+                report($e);
+                $errors[] = "{$line}行目：{$e->getMessage()}";
             }
         }
 
-        return true;
+        fclose($handle);
+
+        return compact('created', 'updated', 'skipped', 'errors');
     }
 
-    private function clean(mixed $value): string
+    private function nullable(mixed $value): ?string
     {
-        return trim((string) $value);
-    }
-
-    private function nullableText(mixed $value): ?string
-    {
-        $value = $this->clean($value);
+        $value = trim((string) $value);
 
         return $value === '' ? null : $value;
     }
 
-    private function intOrNull(mixed $value): ?int
+    private function isEmptyRow(array $values): bool
     {
-        $value = $this->clean($value);
-
-        if ($value === '' || ! ctype_digit($value)) {
-            return null;
-        }
-
-        return (int) $value;
+        return collect($values)->every(fn ($value) => trim((string) $value) === '');
     }
 }
