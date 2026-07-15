@@ -133,10 +133,10 @@
                                 @if (
                                     $relationship->from_character_source
                                         === \App\Models\OriginalCharacterRelationship::SOURCE_V1
-                                    && $relationship->fromV1Character?->work
+                                    && $relationship->fromV1Character?->linkedWorks?->isNotEmpty()
                                 )
                                     <p class="mt-2 text-xs font-bold text-[#A0AEC0]">
-                                        {{ $relationship->fromV1Character->work->title }}
+                                        {{ $relationship->fromV1Character->linkedWorks->pluck('title')->implode('／') }}
                                     </p>
                                 @endif
                             </div>
@@ -163,10 +163,10 @@
                                 @if (
                                     $relationship->to_character_source
                                         === \App\Models\OriginalCharacterRelationship::SOURCE_V1
-                                    && $relationship->toV1Character?->work
+                                    && $relationship->toV1Character?->linkedWorks?->isNotEmpty()
                                 )
                                     <p class="mt-2 text-xs font-bold text-[#A0AEC0]">
-                                        {{ $relationship->toV1Character->work->title }}
+                                        {{ $relationship->toV1Character->linkedWorks->pluck('title')->implode('／') }}
                                     </p>
                                 @endif
                             </div>

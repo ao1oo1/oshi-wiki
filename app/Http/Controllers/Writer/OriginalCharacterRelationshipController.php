@@ -77,7 +77,9 @@ class OriginalCharacterRelationshipController extends Controller
                         'fromCharacter',
                         'toCharacter',
                         'fromV1Character.work',
+                        'fromV1Character.linkedWorks',
                         'toV1Character.work',
+                        'toV1Character.linkedWorks',
                     ]),
             ]
         );
@@ -102,7 +104,9 @@ class OriginalCharacterRelationshipController extends Controller
                         'fromCharacter',
                         'toCharacter',
                         'fromV1Character.work',
+                        'fromV1Character.linkedWorks',
                         'toV1Character.work',
+                        'toV1Character.linkedWorks',
                     ]),
                 'characters' =>
                     $this->characterRepository->allForUser($user),
@@ -193,17 +197,23 @@ class OriginalCharacterRelationshipController extends Controller
     {
         return Work::query()
             ->with([
-                'characters' => function ($query): void {
+                'linkedCharacters' => function ($query): void {
                     $query
-                        ->where('status', 'published')
-                        ->orderBy('name');
+                        ->where('characters.status', 'published')
+                        ->orderBy('characters.name');
                 },
             ])
             ->where('status', 'published')
-            ->whereHas('characters', function ($query): void {
-                $query->where('status', 'published');
+            ->whereHas('linkedCharacters', function ($query): void {
+                $query->where('characters.status', 'published');
             })
             ->orderBy('title')
-            ->get();
+            ->get()
+            ->each(function (Work $work): void {
+                $work->setRelation(
+                    'characters',
+                    $work->linkedCharacters
+                );
+            });
     }
 }

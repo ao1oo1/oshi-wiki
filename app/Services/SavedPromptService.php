@@ -347,20 +347,17 @@ class SavedPromptService
                 === SavedPrompt::WORK_SOURCE_V1
             && ! empty($data['work_id'])
         ) {
+            $selectedWorkId = (int) $data['work_id'];
+
             $allowedV1Ids = Character::query()
                 ->whereIn('id', $v1Ids)
-                ->where(
-                    'work_id',
-                    (int) $data['work_id']
-                )
                 ->where('status', 'published')
                 ->whereHas(
-                    'work',
-                    function ($query): void {
-                        $query->where(
-                            'status',
-                            'published'
-                        );
+                    'linkedWorks',
+                    function ($query) use ($selectedWorkId): void {
+                        $query
+                            ->where('works.id', $selectedWorkId)
+                            ->where('works.status', 'published');
                     }
                 )
                 ->pluck('id')
