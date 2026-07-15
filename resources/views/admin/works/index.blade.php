@@ -60,7 +60,7 @@
 {{-- /STAFF_HIDE_WORK_CREATE_FORM_FIX --}}
 </div>
 
-            <form method="GET" action="{{ route('admin.works.index') }}" class="mb-6 flex flex-wrap items-end gap-3 admin-index-filter-form">
+            <form method="GET" action="{{ route('admin.works.index') }}" class="admin-index-filter-form">
                 <div class="admin-index-filter-grid">
                 <div>
                     <label for="keyword" class="mb-1 block font-medium">

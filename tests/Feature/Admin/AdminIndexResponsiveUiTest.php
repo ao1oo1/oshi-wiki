@@ -49,4 +49,27 @@ class AdminIndexResponsiveUiTest extends TestCase
         $this->assertStringContainsString('@media (max-width: 767px)', $css);
         $this->assertStringContainsString('grid-template-columns: 1fr', $css);
     }
+    public function test_work_filter_form_does_not_keep_legacy_flex_layout(): void
+    {
+        $view = file_get_contents(resource_path('views/admin/works/index.blade.php'));
+        $css = file_get_contents(resource_path('css/app.css'));
+
+        $this->assertStringContainsString(
+            'class="admin-index-filter-form"',
+            $view
+        );
+
+        $this->assertStringNotContainsString(
+            'class="mb-6 flex flex-wrap items-end gap-3 admin-index-filter-form"',
+            $view
+        );
+
+        $this->assertStringContainsString('display: block !important', $css);
+        $this->assertStringContainsString('repeat(6, minmax(0, 1fr))', $css);
+        $this->assertStringContainsString(
+            '@media (min-width: 768px) and (max-width: 1279px)',
+            $css
+        );
+    }
+
 }

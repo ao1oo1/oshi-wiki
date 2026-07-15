@@ -6389,7 +6389,9 @@ label:has(> input[type="radio"])
 }
 
 .admin-index-filter-form {
+    display: block !important;
     width: 100%;
+    min-width: 0;
     margin-bottom: 0 !important;
     padding: 1.5rem;
     border: 1px solid #E2E8F0;
@@ -6400,6 +6402,8 @@ label:has(> input[type="radio"])
 
 .admin-index-filter-grid {
     display: grid;
+    width: 100%;
+    min-width: 0;
     grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
     align-items: end;
     gap: 1rem;
@@ -6438,6 +6442,26 @@ label:has(> input[type="radio"])
     align-items: center;
     justify-content: center;
     white-space: nowrap;
+}
+
+.admin-index-filter-form .admin-index-filter-grid {
+    flex: none;
+}
+
+@media (min-width: 1280px) {
+    .admin-index-filter-grid {
+        grid-template-columns: repeat(6, minmax(0, 1fr));
+    }
+
+    .admin-index-filter-grid > div:first-child {
+        grid-column: span 2 / span 2;
+    }
+}
+
+@media (min-width: 768px) and (max-width: 1279px) {
+    .admin-index-filter-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
 }
 
 @media (max-width: 767px) {
