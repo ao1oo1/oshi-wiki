@@ -72,6 +72,15 @@ class Work extends Model
         return $this->hasMany(Character::class);
     }
 
+    public function linkedCharacters(): BelongsToMany
+    {
+        return $this->belongsToMany(Character::class, 'character_work')
+            ->using(CharacterWork::class)
+            ->withPivot(['id','is_primary','appearance_type','sort_order','notes'])
+            ->withTimestamps()
+            ->orderByPivot('sort_order');
+    }
+
     public function characterRelationships(): HasMany
     {
         return $this->hasMany(CharacterRelationship::class);

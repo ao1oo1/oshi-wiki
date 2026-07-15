@@ -8,6 +8,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class Character extends Model
 {
@@ -105,6 +107,27 @@ class Character extends Model
         return $this->belongsTo(Work::class);
     }
 
+    public function linkedWorks(): BelongsToMany
+    {
+        return $this->belongsToMany(Work::class, 'character_work')
+            ->using(CharacterWork::class)
+            ->withPivot(['id','is_primary','appearance_type','sort_order','notes'])
+            ->withTimestamps()
+            ->orderByPivot('is_primary', 'desc')
+            ->orderByPivot('sort_order');
+    }
+
+    public function primaryLinkedWork(): ?Work
+    {
+        return $this->linkedWorks()->wherePivot('is_primary', true)->first()
+            ?? $this->linkedWorks()->first();
+    }
+
+    public function isLinkedToWork(int $workId): bool
+    {
+        return $this->linkedWorks()->whereKey($workId)->exists();
+    }
+
     public function outgoingRelationships(): HasMany
     {
         return $this->hasMany(CharacterRelationship::class, 'from_character_id');
@@ -121,6 +144,23 @@ class Character extends Model
             if (auth()->check() && empty($character->created_by)) {
                 $character->created_by = auth()->id();
             }
+        });
+
+        static::saved(function (Character $character): void {
+            if (empty($character->work_id) || ! Schema::hasTable('character_work')) {
+                return;
+            }
+
+            DB::table('character_work')
+                ->where('character_id', $character->id)
+                ->where('is_primary', true)
+                ->where('work_id', '!=', $character->work_id)
+                ->update(['is_primary'=>false,'updated_at'=>now()]);
+
+            DB::table('character_work')->updateOrInsert(
+                ['character_id'=>$character->id,'work_id'=>$character->work_id],
+                ['is_primary'=>true,'sort_order'=>0,'updated_at'=>now(),'created_at'=>now()]
+            );
         });
     }
 }
