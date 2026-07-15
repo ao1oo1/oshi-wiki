@@ -38,6 +38,37 @@
                 @endforeach
             </div>
 
+            <div class="mb-6 rounded-3xl border-2 border-red-200 bg-red-50 p-5">
+                <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+                    <div>
+                        <h2 class="text-lg font-bold text-red-800">
+                            ゴミ箱内の全データを完全削除
+                        </h2>
+                        <p class="mt-1 text-sm font-medium text-red-700">
+                            作品・キャラクター・関係性・タグの削除フラグ付きデータ、
+                            合計{{ $totalDeletedCount ?? array_sum($counts) }}件をすべて完全削除します。
+                            この操作は元に戻せません。
+                        </p>
+                    </div>
+
+                    <form
+                        method="POST"
+                        action="{{ route('admin.trash.destroy-all') }}"
+                        onsubmit="return confirmTrashDestroyAll({{ $totalDeletedCount ?? array_sum($counts) }});"
+                        class="shrink-0"
+                    >
+                        @csrf
+                        <button
+                            type="submit"
+                            class="oshi-btn w-full bg-red-700 text-white hover:bg-red-800 disabled:cursor-not-allowed disabled:opacity-50 lg:w-auto"
+                            @disabled(($totalDeletedCount ?? array_sum($counts)) === 0)
+                        >
+                            ゴミ箱内の全データを完全削除
+                        </button>
+                    </form>
+                </div>
+            </div>
+
             <form method="GET" action="{{ route('admin.trash.index') }}" class="mb-6 rounded-3xl border border-[#E2E8F0] bg-[#F7FAFC] p-5">
                 <input type="hidden" name="type" value="{{ $type }}">
 
@@ -148,4 +179,27 @@
             </div>
         </div>
     </div>
+
+    <script>
+        function confirmTrashDestroyAll(totalCount) {
+            if (totalCount <= 0) {
+                return false;
+            }
+
+            const firstConfirmed = window.confirm(
+                'ゴミ箱内の削除フラグ付きデータ' + totalCount
+                + '件をすべて完全削除します。\n'
+                + '作品・キャラクター・関係性・タグが対象です。\n'
+                + 'この操作は元に戻せません。続行しますか？'
+            );
+
+            if (! firstConfirmed) {
+                return false;
+            }
+
+            return window.confirm(
+                '最終確認です。ゴミ箱内の全データをデータベースから完全削除します。'
+            );
+        }
+    </script>
 </x-app-layout>
