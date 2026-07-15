@@ -11,6 +11,11 @@ use Illuminate\Support\Str;
 
 class CharacterCsvImportService
 {
+    public function __construct(
+        private readonly CharacterWorkLinkService $workLinkService
+    ) {
+    }
+
     private const ALLOWED_STATUSES = ['draft', 'published', 'private'];
 
     public function import(
@@ -54,8 +59,11 @@ class CharacterCsvImportService
 
         $missingHeaders = [];
 
-        if (! in_array('work_id', $header, true)) {
-            $missingHeaders[] = 'work_id';
+        if (
+            ! in_array('work_id', $header, true)
+            && ! in_array('primary_work_id', $header, true)
+        ) {
+            $missingHeaders[] = 'work_id または primary_work_id';
         }
 
         if (
@@ -118,18 +126,37 @@ class CharacterCsvImportService
                     $data['character_id'] ?? ($data['id'] ?? null)
                 );
 
-                $csvWorkId = $this->intOrNull($data['work_id'] ?? null);
-                $workId = $csvWorkId ?: $defaultWorkId;
+                $csvPrimaryWorkId = $this->intOrNull(
+                    $data['primary_work_id']
+                        ?? ($data['work_id'] ?? null)
+                );
+                $workId = $csvPrimaryWorkId ?: $defaultWorkId;
 
                 if (! $workId) {
                     $result['errors'][] =
-                        "{$lineNumber}行目: work_id は必須です。";
+                        "{$lineNumber}行目: work_id または primary_work_id は必須です。";
                     continue;
                 }
 
-                if (! Work::query()->whereKey($workId)->exists()) {
+                $linkedWorkIds = $this->parseWorkIds(
+                    $data['work_ids'] ?? '',
+                    $workId
+                );
+
+                $existingWorkIds = Work::query()
+                    ->whereIn('id', $linkedWorkIds)
+                    ->pluck('id')
+                    ->map(fn ($id) => (int) $id)
+                    ->all();
+
+                $missingWorkIds = array_values(
+                    array_diff($linkedWorkIds, $existingWorkIds)
+                );
+
+                if ($missingWorkIds !== []) {
                     $result['errors'][] =
-                        "{$lineNumber}行目: 指定された work_id の作品が存在しません。";
+                        "{$lineNumber}行目: 存在しない作品IDがあります: "
+                        . implode(',', $missingWorkIds);
                     continue;
                 }
 
@@ -178,6 +205,11 @@ class CharacterCsvImportService
                 }
 
                 $this->syncTags($character, $data);
+                $this->workLinkService->sync(
+                    $character,
+                    $linkedWorkIds,
+                    $workId
+                );
                 $result['imported']++;
             }
         });
@@ -270,6 +302,25 @@ class CharacterCsvImportService
         }
 
         return $payload;
+    }
+
+    private function parseWorkIds(mixed $value, int $primaryWorkId): array
+    {
+        $ids = collect(
+            preg_split(
+                '/[,、\s]+/u',
+                $this->clean($value)
+            ) ?: []
+        )
+            ->filter(fn (string $id) => ctype_digit($id))
+            ->map(fn (string $id) => (int) $id)
+            ->push($primaryWorkId)
+            ->filter(fn (int $id) => $id > 0)
+            ->unique()
+            ->values()
+            ->all();
+
+        return $ids;
     }
 
     private function syncTags(Character $character, array $data): void

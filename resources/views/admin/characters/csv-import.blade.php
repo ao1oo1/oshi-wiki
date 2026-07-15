@@ -41,6 +41,14 @@
                 </div>
             </div>
 
+
+            <div class="mb-6 rounded-2xl border border-[#FED7E2] bg-[#FFF5F7] p-5 text-sm leading-7 text-[#4A5568]">
+                <p class="font-bold text-[#2D3748]">複数作品の指定方法</p>
+                <p><code>primary_work_id</code>：主作品IDを1件指定します。</p>
+                <p><code>work_ids</code>：紐付ける作品IDをカンマ区切りで指定します。主作品IDは自動的に含まれます。</p>
+                <p>旧形式の<code>work_id</code>のみでも取り込めます。その場合は主作品として登録されます。</p>
+            </div>
+
             <form method="POST" action="{{ route('admin.characters.csv-import.store') }}" enctype="multipart/form-data">
                 @csrf
 
