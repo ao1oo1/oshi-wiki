@@ -6289,3 +6289,66 @@ label:has(> input[type="radio"])
         text-align: center;
     }
 }
+
+/* =========================================================
+   Work tag mobile layout
+========================================================= */
+
+.work-editor-form .work-tag-options {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px 18px;
+    width: 100%;
+}
+
+.work-editor-form .work-tag-option {
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+    margin: 0;
+    cursor: pointer;
+    white-space: nowrap;
+    line-height: 1.4;
+}
+
+.work-editor-form .work-tag-checkbox {
+    appearance: auto;
+    -webkit-appearance: checkbox;
+    display: inline-block;
+    flex: 0 0 16px;
+    width: 16px !important;
+    min-width: 16px !important;
+    max-width: 16px !important;
+    height: 16px !important;
+    min-height: 16px !important;
+    max-height: 16px !important;
+    margin: 0;
+    padding: 0;
+    border-radius: 3px;
+    vertical-align: middle;
+    accent-color: #F7A8C4;
+}
+
+@media (max-width: 640px) {
+    .work-editor-form .work-tag-options {
+        gap: 12px 16px;
+        padding: 16px;
+    }
+
+    .work-editor-form .work-tag-option {
+        font-size: .95rem;
+    }
+
+    .work-editor-form .work-tag-checkbox {
+        flex-basis: 15px;
+        width: 15px !important;
+        min-width: 15px !important;
+        max-width: 15px !important;
+        height: 15px !important;
+        min-height: 15px !important;
+        max-height: 15px !important;
+    }
+}

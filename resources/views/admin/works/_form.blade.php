@@ -115,11 +115,16 @@
             </div>
             <div class="md:col-span-2">
                 <p class="oshi-label">作品タグ</p>
-                <div class="grid grid-cols-1 gap-2 rounded-xl border border-gray-200 bg-white p-4 md:grid-cols-3">
+                <div class="work-tag-options rounded-xl border border-gray-200 bg-white p-4">
                     @forelse (($tags ?? collect()) as $tag)
-                        <label class="flex items-center gap-2">
-                            <input type="checkbox" name="tag_ids[]" value="{{ $tag->id }}"
-                                @checked(in_array($tag->id, old('tag_ids', isset($work) ? $work->tags->pluck('id')->toArray() : [])))>
+                        <label class="work-tag-option">
+                            <input
+                                type="checkbox"
+                                name="tag_ids[]"
+                                value="{{ $tag->id }}"
+                                class="work-tag-checkbox"
+                                @checked(in_array($tag->id, old('tag_ids', isset($work) ? $work->tags->pluck('id')->toArray() : [])))
+                            >
                             <span>{{ $tag->name }}</span>
                         </label>
                     @empty
