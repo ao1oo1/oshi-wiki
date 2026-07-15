@@ -15,9 +15,9 @@ class CharacterRelationshipService
     ) {
     }
 
-    public function paginate(int $perPage = 20, ?int $workId = null, ?string $keyword = null): LengthAwarePaginator
+    public function paginate(int $perPage = 20, ?int $workId = null, ?string $keyword = null, ?string $status = null, ?string $exactKeyword = null): LengthAwarePaginator
     {
-        return $this->repository->paginate($perPage, $workId, $keyword);
+        return $this->repository->paginate($perPage, $workId, $keyword, $status, $exactKeyword);
     }
 
     public function create(array $data): CharacterRelationship

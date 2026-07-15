@@ -21,17 +21,23 @@ class WorkController extends Controller
 
     public function index(): View
     {
-        $keyword = request('keyword');
+        $keyword = trim((string) request('keyword', ''));
         $selectedTagId = request('tag_id');
+        $selectedStatus = request('status');
+        $exactKeyword = trim((string) request('exact_keyword', ''));
 
         return view('admin.works.index', [
             'works' => $this->service->paginate(
                 20,
-                $keyword,
-                $selectedTagId ? (int) $selectedTagId : null
+                $keyword !== '' ? $keyword : null,
+                $selectedTagId ? (int) $selectedTagId : null,
+                $selectedStatus ?: null,
+                $exactKeyword !== '' ? $exactKeyword : null
             ),
             'keyword' => $keyword,
             'selectedTagId' => $selectedTagId,
+            'selectedStatus' => $selectedStatus,
+            'exactKeyword' => $exactKeyword,
             'tags' => app(TagService::class)->all(),
         ]);
     }

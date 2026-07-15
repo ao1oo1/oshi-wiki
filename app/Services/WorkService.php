@@ -15,9 +15,14 @@ class WorkService
     ) {
     }
 
-    public function paginate(int $perPage = 20, ?string $keyword = null, ?int $tagId = null): LengthAwarePaginator
-    {
-        return $this->repository->paginate($perPage, $keyword, $tagId);
+    public function paginate(
+        int $perPage = 20,
+        ?string $keyword = null,
+        ?int $tagId = null,
+        ?string $status = null,
+        ?string $exactKeyword = null
+    ): LengthAwarePaginator {
+        return $this->repository->paginate($perPage, $keyword, $tagId, $status, $exactKeyword);
     }
 
     public function create(array $data): Work

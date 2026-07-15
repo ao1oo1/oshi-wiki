@@ -22,14 +22,18 @@ class CharacterController extends Controller
     public function index(): View
     {
         $selectedWorkId = request('work_id');
-        $keyword = request('keyword');
+        $keyword = trim((string) request('keyword', ''));
         $selectedTagId = request('tag_id');
+        $selectedStatus = request('status');
+        $exactKeyword = trim((string) request('exact_keyword', ''));
 
         $characters = $this->service->paginate(
             20,
             $selectedWorkId ? (int) $selectedWorkId : null,
-            $keyword,
-            $selectedTagId ? (int) $selectedTagId : null
+            $keyword !== '' ? $keyword : null,
+            $selectedTagId ? (int) $selectedTagId : null,
+            $selectedStatus ?: null,
+            $exactKeyword !== '' ? $exactKeyword : null
         );
 
         // CHARACTER_INDEX_CAN_MODIFY_FLAG_FIX
@@ -59,6 +63,8 @@ class CharacterController extends Controller
                 ->get(),
             'selectedWorkId' => $selectedWorkId,
             'selectedTagId' => $selectedTagId,
+            'selectedStatus' => $selectedStatus,
+            'exactKeyword' => $exactKeyword,
             'keyword' => $keyword,
         ]);
     }

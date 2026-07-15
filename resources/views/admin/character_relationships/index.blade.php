@@ -72,6 +72,9 @@
                         </select>
                     </div>
 
+                @include('admin.partials.list-search-extra')
+
+
                     <button type="submit" class="oshi-btn">
                         検索・絞り込み
                     </button>

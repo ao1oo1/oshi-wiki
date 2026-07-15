@@ -56,6 +56,9 @@
                     >
                 </div>
 
+                @include('admin.partials.list-search-extra')
+
+
                 <button type="submit" class="oshi-btn">
                     検索・絞り込み
                 </button>
@@ -135,7 +138,7 @@
 
                         <a href="{{ route('admin.tags.csv-import.create') }}" class="oshi-btn oshi-btn-sub">CSV取り込み</a>
 
-                    
+
                         @if (auth()->user()?->canManageAllAdminFeatures())
                             <a href="{{ route('admin.tags.csv-export', request()->query()) }}" class="oshi-btn oshi-btn-sub">
                                 CSVエクスポート
@@ -210,7 +213,7 @@
             @if ($canManageTags)
 
 
-            
+
             <form method="GET" action="{{ route('admin.tags.index') }}" class="mb-6 rounded-3xl border border-[#E2E8F0] bg-[#F7FAFC] p-5">
                 <div class="grid gap-4 md:grid-cols-[220px_1fr_auto_auto] md:items-end">
                     <div>
@@ -241,7 +244,11 @@
                         >
                     </div>
 
-                    <button type="submit" class="oshi-btn">
+
+
+                @include('admin.partials.list-search-extra')
+
+                <button type="submit" class="oshi-btn">
                         検索
                     </button>
 

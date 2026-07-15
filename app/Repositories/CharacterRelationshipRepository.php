@@ -7,7 +7,7 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 class CharacterRelationshipRepository
 {
-    public function paginate(int $perPage = 20, ?int $workId = null, ?string $keyword = null): LengthAwarePaginator
+    public function paginate(int $perPage = 20, ?int $workId = null, ?string $keyword = null, ?string $status = null, ?string $exactKeyword = null): LengthAwarePaginator
     {
         return CharacterRelationship::query()
             ->with(['work', 'fromCharacter', 'toCharacter'])
@@ -26,6 +26,16 @@ class CharacterRelationshipRepository
                         ->orWhereHas('toCharacter', function ($query) use ($keyword) {
                             $query->where('name', 'like', '%' . $keyword . '%');
                         });
+                });
+            })
+            ->when($status, fn ($query) => $query->where('status', $status))
+            ->when($exactKeyword, function ($query) use ($exactKeyword) {
+                $query->where(function ($query) use ($exactKeyword) {
+                    $query->where('called_name', $exactKeyword)
+                        ->orWhere('relationship', $exactKeyword)
+                        ->orWhere('impression', $exactKeyword)
+                        ->orWhereHas('fromCharacter', fn ($query) => $query->where('name', $exactKeyword))
+                        ->orWhereHas('toCharacter', fn ($query) => $query->where('name', $exactKeyword));
                 });
             })
             ->latest()

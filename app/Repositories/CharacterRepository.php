@@ -11,7 +11,9 @@ class CharacterRepository
         int $perPage = 20,
         ?int $workId = null,
         ?string $keyword = null,
-        ?int $tagId = null
+        ?int $tagId = null,
+        ?string $status = null,
+        ?string $exactKeyword = null
     ): LengthAwarePaginator {
         return Character::query()
             ->with(['work', 'tags'])
@@ -56,6 +58,16 @@ class CharacterRepository
             ->when($tagId, function ($query) use ($tagId) {
                 $query->whereHas('tags', function ($query) use ($tagId) {
                     $query->where('tags.id', $tagId);
+                });
+            })
+            ->when($status, fn ($query) => $query->where('status', $status))
+            ->when($exactKeyword, function ($query) use ($exactKeyword) {
+                $query->where(function ($query) use ($exactKeyword) {
+                    $query->where('name', $exactKeyword)
+                        ->orWhere('name_kana', $exactKeyword)
+                        ->orWhere('real_name', $exactKeyword)
+                        ->orWhere('aliases', $exactKeyword)
+                        ->orWhere('name_english', $exactKeyword);
                 });
             })
             ->latest()

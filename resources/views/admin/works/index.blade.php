@@ -31,7 +31,7 @@
 
                         <a href="{{ route('admin.works.csv-import.create') }}" class="oshi-btn oshi-btn-sub">CSV取り込み</a>
 
-                    
+
                         @if (auth()->user()?->canManageAllAdminFeatures())
                             <a href="{{ route('admin.works.csv-export', request()->query()) }}" class="oshi-btn oshi-btn-sub">
                                 CSVエクスポート
@@ -88,6 +88,9 @@
                         @endforeach
                     </select>
                 </div>
+
+                @include('admin.partials.list-search-extra')
+
 
                 <button type="submit" class="oshi-btn">
                     検索・絞り込み
@@ -199,7 +202,7 @@
                     </table>
                 </div>
 
-                
+
             </form>
 
 
@@ -265,7 +268,7 @@
     </div>
 @endif
 {{-- /STAFF_WORK_LIST_VISIBLE_FIX --}}
-            
+
 
 
 

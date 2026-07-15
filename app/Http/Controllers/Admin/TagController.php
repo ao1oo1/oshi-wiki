@@ -22,6 +22,8 @@ class TagController extends Controller
     {
         $selectedType = request('type');
         $keyword = trim((string) request('keyword', ''));
+        $selectedStatus = request('status');
+        $exactKeyword = trim((string) request('exact_keyword', ''));
 
         $query = \App\Models\Tag::query()
             ->latest();
@@ -33,11 +35,21 @@ class TagController extends Controller
         if ($keyword !== '') {
             $query->where(function ($keywordQuery) use ($keyword) {
                 foreach (Schema::getColumnListing('tags') as $column) {
-                    if (in_array($column, ['id', 'created_at', 'updated_at', 'deleted_at'], true)) {
-                        continue;
-                    }
-
+                    if (in_array($column, ['id', 'created_at', 'updated_at', 'deleted_at'], true)) continue;
                     $keywordQuery->orWhere($column, 'like', '%' . $keyword . '%');
+                }
+            });
+        }
+
+        if ($selectedStatus !== null && $selectedStatus !== '') {
+            $query->where('status', $selectedStatus);
+        }
+
+        if ($exactKeyword !== '') {
+            $query->where(function ($exactQuery) use ($exactKeyword) {
+                foreach (Schema::getColumnListing('tags') as $column) {
+                    if (in_array($column, ['id', 'created_at', 'updated_at', 'deleted_at', 'status'], true)) continue;
+                    $exactQuery->orWhere($column, $exactKeyword);
                 }
             });
         }
@@ -71,6 +83,8 @@ class TagController extends Controller
             'tags' => $tags,
             'tagTypes' => $tagTypes,
             'selectedType' => $selectedType,
+            'selectedStatus' => $selectedStatus,
+            'exactKeyword' => $exactKeyword,
             'keyword' => $keyword,
         ]);
     }
