@@ -2,13 +2,18 @@
 
 namespace App\Services;
 
+use App\Models\Tag;
 use App\Models\Work;
+use App\Models\WorkCanonEvent;
+use App\Models\WorkTermUsage;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
+use JsonException;
 
 class WorkCsvImportService
 {
-    public function __construct(private WorkService $workService)
+    public function __construct(private readonly WorkService $workService)
     {
     }
 
@@ -17,35 +22,44 @@ class WorkCsvImportService
         $handle = fopen($filePath, 'rb');
 
         if ($handle === false) {
-            throw ValidationException::withMessages(['csv_file' => 'CSVファイルを開けませんでした。']);
+            throw ValidationException::withMessages([
+                'csv_file' => 'CSVファイルを開けませんでした。',
+            ]);
         }
 
         $header = fgetcsv($handle);
 
         if ($header === false) {
             fclose($handle);
-            throw ValidationException::withMessages(['csv_file' => 'CSVファイルが空です。']);
+            throw ValidationException::withMessages([
+                'csv_file' => 'CSVファイルが空です。',
+            ]);
         }
 
         $header = $this->normalizeHeader($header);
 
         if (! in_array('title', $header, true)) {
             fclose($handle);
-            throw ValidationException::withMessages(['csv_file' => 'CSVに必須列 title がありません。']);
+            throw ValidationException::withMessages([
+                'csv_file' => 'CSVに必須列 title がありません。',
+            ]);
         }
 
-        $imported = 0;
-        $created = 0;
-        $updated = 0;
-        $skipped = 0;
-        $errors = [];
+        $result = [
+            'imported' => 0,
+            'created' => 0,
+            'updated' => 0,
+            'skipped' => 0,
+            'errors' => [],
+        ];
+
         $rowNumber = 1;
 
         while (($row = fgetcsv($handle)) !== false) {
             $rowNumber++;
 
             if ($this->isEmptyRow($row)) {
-                $skipped++;
+                $result['skipped']++;
                 continue;
             }
 
@@ -53,65 +67,249 @@ class WorkCsvImportService
             $data = array_combine($header, $row);
 
             if ($data === false) {
-                $errors[] = "{$rowNumber}行目：列数が一致しません。";
+                $result['errors'][] = "{$rowNumber}行目：列数が一致しません。";
                 continue;
             }
 
-            $data = $this->normalizeData($data);
-            $data['status'] = $data['status'] ?: $defaultStatus;
+            try {
+                $data = $this->normalizeData($data);
+                $workId = $this->intOrNull($data['work_id'] ?? ($data['id'] ?? null));
+                $existingWork = $workId ? Work::query()->with([
+                    'tags', 'canonEvents', 'termUsages',
+                ])->find($workId) : null;
 
-            $workId = $this->intOrNull($data['work_id'] ?? ($data['id'] ?? null));
+                $payload = $this->buildPayload(
+                    $data,
+                    $header,
+                    $existingWork,
+                    $defaultStatus
+                );
 
-            $workData = [
-                'title' => $data['title'] ?? null,
-                'title_kana' => $data['title_kana'] ?? null,
-                'genre' => $data['genre'] ?? null,
-                'original_media' => $data['original_media'] ?? null,
-                'official_url' => $data['official_url'] ?? null,
-                'guideline_url' => $data['guideline_url'] ?? null,
-                'description' => $data['description'] ?? null,
-                'status' => $data['status'] ?? $defaultStatus,
-            ];
+                $validator = Validator::make(
+                    $payload,
+                    $this->rules(),
+                    [],
+                    ['title' => '作品名']
+                );
 
-            $validator = Validator::make($workData, [
-                'title' => ['required', 'string', 'max:255'],
-                'title_kana' => ['nullable', 'string', 'max:255'],
-                'genre' => ['nullable', 'string', 'max:255'],
-                'original_media' => ['nullable', 'string', 'max:255'],
-                'official_url' => ['nullable', 'url', 'max:1000'],
-                'guideline_url' => ['nullable', 'url', 'max:1000'],
-                'description' => ['nullable', 'string'],
-                'status' => ['required', 'in:draft,published,private'],
-            ], [], ['title' => '作品名']);
+                if ($validator->fails()) {
+                    $result['errors'][] = "{$rowNumber}行目：" .
+                        implode(' / ', $validator->errors()->all());
+                    continue;
+                }
 
-            if ($validator->fails()) {
-                $errors[] = "{$rowNumber}行目：" . implode(' / ', $validator->errors()->all());
-                continue;
+                $validated = $validator->validated();
+
+                if ($existingWork) {
+                    $this->workService->update($existingWork, $validated);
+                    $result['updated']++;
+                } else {
+                    $this->workService->create($validated);
+                    $result['created']++;
+                }
+
+                $result['imported']++;
+            } catch (JsonException $exception) {
+                $result['errors'][] = "{$rowNumber}行目：JSON形式が正しくありません。{$exception->getMessage()}";
+            } catch (\Throwable $exception) {
+                $result['errors'][] = "{$rowNumber}行目：{$exception->getMessage()}";
             }
-
-            $existingWork = $workId
-                ? Work::query()->whereKey($workId)->first()
-                : null;
-
-            if ($existingWork) {
-                $existingWork->update($validator->validated());
-                $updated++;
-            } else {
-                $this->workService->create($validator->validated());
-                $created++;
-            }
-
-            $imported++;
         }
 
         fclose($handle);
 
-        return compact('imported', 'created', 'updated', 'skipped', 'errors');
+        return $result;
+    }
+
+    private function buildPayload(
+        array $data,
+        array $header,
+        ?Work $existingWork,
+        string $defaultStatus
+    ): array {
+        $payload = [];
+
+        foreach ($this->importableWorkColumns() as $column) {
+            if (array_key_exists($column, $data)) {
+                $payload[$column] = $data[$column];
+            } elseif ($existingWork) {
+                $payload[$column] = $existingWork->{$column};
+            }
+        }
+
+        $payload['status'] = $payload['status']
+            ?? $existingWork?->status
+            ?? $defaultStatus;
+
+        $hasTagColumns = in_array('tag_ids', $header, true)
+            || in_array('tag_names', $header, true);
+
+        $payload['tag_ids'] = $hasTagColumns
+            ? $this->resolveTagIds($data)
+            : ($existingWork?->tags->pluck('id')->all() ?? []);
+
+        $payload['canon_events'] = in_array('canon_events_json', $header, true)
+            ? $this->decodeRelationRows(
+                $data['canon_events_json'] ?? null,
+                WorkCanonEvent::class
+            )
+            : $this->existingRelationRows($existingWork, 'canonEvents', WorkCanonEvent::class);
+
+        $payload['term_usages'] = in_array('term_usages_json', $header, true)
+            ? $this->decodeRelationRows(
+                $data['term_usages_json'] ?? null,
+                WorkTermUsage::class
+            )
+            : $this->existingRelationRows($existingWork, 'termUsages', WorkTermUsage::class);
+
+        return $payload;
+    }
+
+    private function rules(): array
+    {
+        $rules = [
+            'title' => ['required', 'string', 'max:255'],
+            'title_kana' => ['nullable', 'string', 'max:255'],
+            'genre' => ['nullable', 'string', 'max:255'],
+            'original_media' => ['nullable', 'string', 'max:255'],
+            'official_url' => ['nullable', 'url', 'max:2048'],
+            'guideline_url' => ['nullable', 'url', 'max:2048'],
+            'description' => ['nullable', 'string'],
+            'status' => ['required', 'in:draft,published,private'],
+            'tag_ids' => ['nullable', 'array'],
+            'tag_ids.*' => ['integer', 'exists:tags,id'],
+            'canon_events' => ['nullable', 'array', 'max:50'],
+            'term_usages' => ['nullable', 'array', 'max:50'],
+        ];
+
+        foreach ($this->importableWorkColumns() as $column) {
+            if (! array_key_exists($column, $rules)) {
+                $rules[$column] = ['nullable', 'string'];
+            }
+        }
+
+        foreach ((new WorkCanonEvent())->getFillable() as $field) {
+            if ($field !== 'work_id') {
+                $rules["canon_events.*.{$field}"] = $field === 'sort_order'
+                    ? ['nullable', 'integer', 'min:0']
+                    : ['nullable', 'string'];
+            }
+        }
+
+        foreach ((new WorkTermUsage())->getFillable() as $field) {
+            if ($field !== 'work_id') {
+                $rules["term_usages.*.{$field}"] = $field === 'sort_order'
+                    ? ['nullable', 'integer', 'min:0']
+                    : ['nullable', 'string'];
+            }
+        }
+
+        return $rules;
+    }
+
+    private function importableWorkColumns(): array
+    {
+        return array_values(array_diff(
+            Schema::getColumnListing('works'),
+            [
+                'id',
+                'slug',
+                'review_status',
+                'created_by',
+                'updated_by',
+                'published_at',
+                'created_at',
+                'updated_at',
+                'deleted_at',
+                'helpful_count',
+                'contributor_application_id',
+            ]
+        ));
+    }
+
+    private function decodeRelationRows(?string $json, string $modelClass): array
+    {
+        if ($json === null || trim($json) === '') {
+            return [];
+        }
+
+        $decoded = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
+
+        if (! is_array($decoded) || ! array_is_list($decoded)) {
+            throw new JsonException('配列形式で指定してください。');
+        }
+
+        if (count($decoded) > 50) {
+            throw new JsonException('登録できる件数は最大50件です。');
+        }
+
+        $fillable = array_values(array_diff(
+            (new $modelClass())->getFillable(),
+            ['work_id']
+        ));
+
+        return collect($decoded)
+            ->filter(fn ($row) => is_array($row))
+            ->map(function (array $row, int $index) use ($fillable): array {
+                $filtered = array_intersect_key($row, array_flip($fillable));
+
+                if (in_array('sort_order', $fillable, true)) {
+                    $filtered['sort_order'] = $filtered['sort_order'] ?? $index;
+                }
+
+                return $filtered;
+            })
+            ->filter(fn (array $row) => collect($row)
+                ->except('sort_order')
+                ->contains(fn ($value) => $value !== null && $value !== ''))
+            ->values()
+            ->all();
+    }
+
+    private function existingRelationRows(
+        ?Work $work,
+        string $relation,
+        string $modelClass
+    ): array {
+        if (! $work) {
+            return [];
+        }
+
+        $fillable = array_values(array_diff(
+            (new $modelClass())->getFillable(),
+            ['work_id']
+        ));
+
+        return $work->{$relation}
+            ->sortBy('sort_order')
+            ->values()
+            ->map(fn ($model) => $model->only($fillable))
+            ->all();
+    }
+
+    private function resolveTagIds(array $data): array
+    {
+        $ids = collect(explode(',', (string) ($data['tag_ids'] ?? '')))
+            ->map(fn ($value) => trim($value))
+            ->filter(fn ($value) => ctype_digit($value))
+            ->map(fn ($value) => (int) $value);
+
+        $names = collect(preg_split('/[,、]/u', (string) ($data['tag_names'] ?? '')))
+            ->map(fn ($value) => trim($value))
+            ->filter();
+
+        if ($names->isNotEmpty()) {
+            $ids = $ids->merge(
+                Tag::query()->whereIn('name', $names->all())->pluck('id')
+            );
+        }
+
+        return $ids->unique()->values()->all();
     }
 
     private function normalizeHeader(array $header): array
     {
-        return array_map(function ($value) {
+        return array_map(function ($value): string {
             $value = preg_replace('/^\xEF\xBB\xBF/', '', (string) $value);
             return trim($value);
         }, $header);
@@ -131,13 +329,9 @@ class WorkCsvImportService
 
     private function isEmptyRow(array $row): bool
     {
-        foreach ($row as $value) {
-            if (trim((string) $value) !== '') {
-                return false;
-            }
-        }
-
-        return true;
+        return collect($row)->every(
+            fn ($value) => trim((string) $value) === ''
+        );
     }
 
     private function fixRowLength(array $row, int $count): array
@@ -151,10 +345,8 @@ class WorkCsvImportService
     {
         $value = trim((string) $value);
 
-        if ($value === '' || ! ctype_digit($value)) {
-            return null;
-        }
-
-        return (int) $value;
+        return $value !== '' && ctype_digit($value)
+            ? (int) $value
+            : null;
     }
 }
