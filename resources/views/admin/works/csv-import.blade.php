@@ -134,6 +134,8 @@
                 work_idが既存データと一致する行は更新されます。
                 tag_idsまたはtag_names列を含めた場合は、作品タグをCSVの内容に同期します。
                 canon_events_jsonとterm_usages_jsonを含めた場合は、年表・用語使用例もCSVの内容に同期します。
+                character_idsまたはcharacter_names列を含めた場合は、作品とキャラクターの紐付けをCSVの内容に同期します。
+                ただし、その作品を主作品にしているキャラクターは解除できません。
             </div>
 
             <div class="oshi-table-wrap">
@@ -164,6 +166,16 @@
                             </tr>
                         @endforeach
 
+                        <tr>
+                            <td>character_ids</td>
+                            <td>既存キャラクターIDをカンマ区切りで指定。列を含めた場合は作品との紐付けをCSVの内容に同期します。主作品として登録されているキャラクターは解除できません。</td>
+                            <td>任意</td>
+                        </tr>
+                        <tr>
+                            <td>character_names</td>
+                            <td>既存キャラクター名を「｜」区切りで指定。同名キャラクターが複数存在する場合はcharacter_idsを使用してください。</td>
+                            <td>任意</td>
+                        </tr>
                         <tr>
                             <td>tag_ids</td>
                             <td>既存の作品タグIDをカンマ区切りで指定。列を含めた場合はCSVの内容に同期。</td>

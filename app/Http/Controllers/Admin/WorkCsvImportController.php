@@ -68,7 +68,7 @@ class WorkCsvImportController extends Controller
         $headers = array_merge(
             ['work_id'],
             $this->workColumns(),
-            ['tag_ids', 'tag_names', 'canon_events_json', 'term_usages_json']
+            ['character_ids', 'character_names', 'tag_ids', 'tag_names', 'canon_events_json', 'term_usages_json']
         );
 
         $sample = array_fill_keys($headers, '');
@@ -81,6 +81,8 @@ class WorkCsvImportController extends Controller
         $sample['guideline_url'] = 'https://example.com/guideline';
         $sample['description'] = '作品の概要です。';
         $sample['status'] = 'draft';
+        $sample['character_ids'] = '1,2';
+        $sample['character_names'] = 'キャラクターA｜キャラクターB';
         $sample['tag_names'] = '学園,ファンタジー';
         $sample['canon_events_json'] = json_encode(
             [$this->sampleRelationRow(WorkCanonEvent::class, '重要イベント')],

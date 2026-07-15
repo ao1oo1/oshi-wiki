@@ -2,10 +2,12 @@
 
 namespace App\Services;
 
+use App\Models\Character;
 use App\Models\Tag;
 use App\Models\Work;
 use App\Models\WorkCanonEvent;
 use App\Models\WorkTermUsage;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
@@ -75,7 +77,7 @@ class WorkCsvImportService
                 $data = $this->normalizeData($data);
                 $workId = $this->intOrNull($data['work_id'] ?? ($data['id'] ?? null));
                 $existingWork = $workId ? Work::query()->with([
-                    'tags', 'canonEvents', 'termUsages',
+                    'linkedCharacters', 'tags', 'canonEvents', 'termUsages',
                 ])->find($workId) : null;
 
                 $payload = $this->buildPayload(
@@ -100,13 +102,51 @@ class WorkCsvImportService
 
                 $validated = $validator->validated();
 
-                if ($existingWork) {
-                    $this->workService->update($existingWork, $validated);
-                    $result['updated']++;
-                } else {
-                    $this->workService->create($validated);
-                    $result['created']++;
+                $hasCharacterColumns =
+                    in_array('character_ids', $header, true)
+                    || in_array('character_names', $header, true);
+
+                $resolvedCharacterIds = $hasCharacterColumns
+                    ? $this->resolveCharacterIds($data)
+                    : null;
+
+                $primaryCharacterIds = $existingWork
+                    ? Character::query()
+                        ->where('work_id', $existingWork->id)
+                        ->pluck('id')
+                        ->map(fn ($id) => (int) $id)
+                        ->all()
+                    : [];
+
+                if (
+                    $hasCharacterColumns
+                    && array_diff($primaryCharacterIds, $resolvedCharacterIds) !== []
+                ) {
+                    throw new \InvalidArgumentException(
+                        'この作品を主作品にしているキャラクターは解除できません。'
+                    );
                 }
+
+                DB::transaction(function () use (
+                    $existingWork,
+                    $validated,
+                    $hasCharacterColumns,
+                    $resolvedCharacterIds,
+                    &$result
+                ): void {
+                    if ($existingWork) {
+                        $this->workService->update($existingWork, $validated);
+                        $work = $existingWork->refresh();
+                        $result['updated']++;
+                    } else {
+                        $work = $this->workService->create($validated);
+                        $result['created']++;
+                    }
+
+                    if ($hasCharacterColumns) {
+                        $this->syncCharacters($work, $resolvedCharacterIds);
+                    }
+                });
 
                 $result['imported']++;
             } catch (JsonException $exception) {
@@ -176,6 +216,8 @@ class WorkCsvImportService
             'guideline_url' => ['nullable', 'url', 'max:2048'],
             'description' => ['nullable', 'string'],
             'status' => ['required', 'in:draft,published,private'],
+            'character_ids' => ['nullable', 'array'],
+            'character_ids.*' => ['integer', 'exists:characters,id'],
             'tag_ids' => ['nullable', 'array'],
             'tag_ids.*' => ['integer', 'exists:tags,id'],
             'canon_events' => ['nullable', 'array', 'max:50'],
@@ -285,6 +327,58 @@ class WorkCsvImportService
             ->values()
             ->map(fn ($model) => $model->only($fillable))
             ->all();
+    }
+
+    private function resolveCharacterIds(array $data): array
+    {
+        $ids = collect(preg_split('/[,、\s]+/u', (string) ($data['character_ids'] ?? '')) ?: [])
+            ->map(fn ($value) => trim((string) $value))
+            ->filter()
+            ->map(function (string $value): int {
+                if (! ctype_digit($value)) {
+                    throw new \InvalidArgumentException("character_ids に数値以外が含まれています: {$value}");
+                }
+                return (int) $value;
+            });
+
+        $missingIds = $ids->isEmpty()
+            ? collect()
+            : $ids->diff(Character::query()->whereIn('id', $ids->all())->pluck('id')->map(fn ($id) => (int) $id));
+
+        if ($missingIds->isNotEmpty()) {
+            throw new \InvalidArgumentException('存在しないキャラクターIDがあります: ' . $missingIds->implode(','));
+        }
+
+        $names = collect(preg_split('/[｜|、,\r\n]+/u', (string) ($data['character_names'] ?? '')) ?: [])
+            ->map(fn ($value) => trim((string) $value))
+            ->filter();
+
+        foreach ($names as $name) {
+            $matches = Character::query()->where('name', $name)->pluck('id');
+            if ($matches->isEmpty()) {
+                throw new \InvalidArgumentException("キャラクター名「{$name}」が見つかりません。");
+            }
+            if ($matches->count() > 1) {
+                throw new \InvalidArgumentException("キャラクター名「{$name}」は同名が複数存在するため、character_idsで指定してください。");
+            }
+            $ids->push((int) $matches->first());
+        }
+
+        return $ids->filter(fn (int $id) => $id > 0)->unique()->values()->all();
+    }
+
+    private function syncCharacters(Work $work, array $characterIds): void
+    {
+        $syncData = [];
+        foreach ($characterIds as $index => $characterId) {
+            $character = Character::query()->findOrFail($characterId);
+            $syncData[$characterId] = [
+                'is_primary' => (int) $character->work_id === (int) $work->id,
+                'sort_order' => $index,
+            ];
+        }
+        $work->linkedCharacters()->sync($syncData);
+        $work->unsetRelation('linkedCharacters');
     }
 
     private function resolveTagIds(array $data): array

@@ -44,6 +44,8 @@ class WorkCsvExportController extends Controller
         }
 
         return array_merge($headers, [
+            'character_ids',
+            'character_names',
             'tag_ids',
             'tag_names',
             'canon_events_json',
@@ -60,7 +62,7 @@ class WorkCsvExportController extends Controller
         fputcsv($handle, $headers, ',', '"', '');
 
         $query = Work::query()
-            ->with(['tags', 'canonEvents', 'termUsages'])
+            ->with(['linkedCharacters', 'tags', 'canonEvents', 'termUsages'])
             ->orderBy('id');
 
         $this->applyFilters($query, $request);
@@ -81,6 +83,8 @@ class WorkCsvExportController extends Controller
         return array_map(function (string $header) use ($work) {
             return match ($header) {
                 'work_id' => $work->id,
+                'character_ids' => $work->linkedCharacters->pluck('id')->implode(','),
+                'character_names' => $work->linkedCharacters->pluck('name')->implode('｜'),
                 'tag_ids' => $work->tags->pluck('id')->implode(','),
                 'tag_names' => $work->tags->pluck('name')->implode(','),
                 'canon_events_json' => $this->relationJson($work->canonEvents, WorkCanonEvent::class),
