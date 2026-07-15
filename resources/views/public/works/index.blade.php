@@ -64,10 +64,16 @@
                     </p>
                 </div>
 
-                <a href="{{ route('register') }}" class="oshi-writing-tool-cta-button">
-                    無料で新規登録する
-                    <span aria-hidden="true">→</span>
-                </a>
+                <div class="oshi-writing-tool-cta-actions">
+                    <a href="{{ route('register') }}" class="oshi-writing-tool-cta-button">
+                        無料で新規登録する
+                        <span aria-hidden="true">→</span>
+                    </a>
+
+                    <a href="{{ route('public.writing-tool.show') }}" class="oshi-writing-tool-cta-detail-link">
+                        小説執筆補助ツールとは？
+                    </a>
+                </div>
             </div>
         </section>
 
