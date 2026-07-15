@@ -22,7 +22,9 @@ class CharacterRelationshipController extends Controller
     public function index(): View
     {
         $selectedWorkId = request('work_id');
-        $keyword = request('keyword');
+        $keyword = trim((string) request('keyword', ''));
+        $selectedStatus = request('status');
+        $exactKeyword = trim((string) request('exact_keyword', ''));
 
 
         $currentUser = auth()->user();
@@ -41,10 +43,14 @@ class CharacterRelationshipController extends Controller
             'characterRelationships' => $this->service->paginate(
                 20,
                 $selectedWorkId ? (int) $selectedWorkId : null,
-                $keyword
+                $keyword !== '' ? $keyword : null,
+                $selectedStatus ?: null,
+                $exactKeyword !== '' ? $exactKeyword : null
             ),
             'works' => Work::query()->latest()->get(),
             'selectedWorkId' => $selectedWorkId,
+            'selectedStatus' => $selectedStatus,
+            'exactKeyword' => $exactKeyword,
             'keyword' => $keyword,
         ]);
     }

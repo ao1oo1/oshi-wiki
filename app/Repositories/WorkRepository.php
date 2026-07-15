@@ -7,7 +7,7 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 class WorkRepository
 {
-    public function paginate(int $perPage = 20, ?string $keyword = null, ?int $tagId = null): LengthAwarePaginator
+    public function paginate(int $perPage = 20, ?string $keyword = null, ?int $tagId = null, ?string $status = null, ?string $exactKeyword = null): LengthAwarePaginator
     {
         return Work::query()
             ->with('tags')
@@ -23,6 +23,15 @@ class WorkRepository
             ->when($tagId, function ($query) use ($tagId): void {
                 $query->whereHas('tags', function ($query) use ($tagId): void {
                     $query->where('tags.id', $tagId);
+                });
+            })
+            ->when($status, fn ($query) => $query->where('status', $status))
+            ->when($exactKeyword, function ($query) use ($exactKeyword): void {
+                $query->where(function ($query) use ($exactKeyword): void {
+                    $query->where('title', $exactKeyword)
+                        ->orWhere('title_kana', $exactKeyword)
+                        ->orWhere('genre', $exactKeyword)
+                        ->orWhere('original_media', $exactKeyword);
                 });
             })
             ->latest()

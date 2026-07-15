@@ -17,9 +17,11 @@ class CharacterService
         int $perPage = 20,
         ?int $workId = null,
         ?string $keyword = null,
-        ?int $tagId = null
+        ?int $tagId = null,
+        ?string $status = null,
+        ?string $exactKeyword = null
     ): LengthAwarePaginator {
-        return $this->repository->paginate($perPage, $workId, $keyword, $tagId);
+        return $this->repository->paginate($perPage, $workId, $keyword, $tagId, $status, $exactKeyword);
     }
 
     public function create(array $data): Character
