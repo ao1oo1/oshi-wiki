@@ -6128,3 +6128,164 @@ label:has(> input[type="radio"])
         margin-left: 0;
     }
 }
+
+/* =========================================================
+   Work editor layout fix
+========================================================= */
+
+.work-editor-page {
+    width: 100%;
+    max-width: 1440px;
+    min-width: 0;
+}
+
+.work-editor-page > form {
+    width: 100%;
+    max-width: none;
+}
+
+.work-editor-form {
+    width: 100%;
+    max-width: none;
+    min-width: 0;
+    padding-bottom: 20px;
+}
+
+.work-editor-form .oshi-card {
+    width: 100%;
+    min-width: 0;
+    padding: 28px 32px;
+}
+
+.work-editor-form summary {
+    padding: 2px 0;
+    font-size: 1.25rem;
+    line-height: 1.5;
+}
+
+.work-editor-form .work-basic-grid,
+.work-editor-form .work-category-fields {
+    width: 100%;
+    min-width: 0;
+    align-items: start;
+}
+
+.work-editor-form .work-basic-grid > div,
+.work-editor-form .work-category-fields > div,
+.work-editor-form [data-canon-event-row] > div,
+.work-editor-form [data-term-usage-row] > div {
+    min-width: 0;
+}
+
+.work-editor-form .oshi-label {
+    display: block;
+    width: 100%;
+    margin-bottom: 8px;
+    line-height: 1.5;
+}
+
+.work-editor-form .oshi-input {
+    display: block;
+    width: 100%;
+    max-width: none;
+    min-width: 0;
+    box-sizing: border-box;
+}
+
+.work-editor-form input.oshi-input,
+.work-editor-form select.oshi-input {
+    min-height: 52px;
+    padding: 11px 16px;
+}
+
+.work-editor-form textarea.oshi-input {
+    width: 100%;
+    min-height: 150px;
+    padding: 14px 16px;
+    line-height: 1.75;
+    resize: vertical;
+}
+
+.work-editor-form .work-description-input {
+    min-height: 210px;
+}
+
+.work-editor-form .work-long-textarea {
+    min-height: 180px;
+}
+
+.work-editor-form [data-canon-event-row],
+.work-editor-form [data-term-usage-row] {
+    width: 100%;
+    min-width: 0;
+    padding: 20px;
+}
+
+.work-editor-form [data-canon-event-row] textarea.oshi-input,
+.work-editor-form [data-term-usage-row] textarea.oshi-input {
+    min-height: 120px;
+}
+
+.work-editor-form .work-form-actions {
+    position: static;
+    width: 100%;
+    margin-top: 28px;
+}
+
+@media (min-width: 1280px) {
+    .work-editor-page {
+        padding-right: 48px;
+    }
+
+    .work-editor-form .work-category-fields > div:nth-child(odd):last-child {
+        grid-column: 1 / -1;
+    }
+}
+
+@media (max-width: 1023px) {
+    .work-editor-form .oshi-card {
+        padding: 24px;
+    }
+
+    .work-editor-form .work-category-fields {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 640px) {
+    .work-editor-page {
+        padding-left: 14px;
+        padding-right: 14px;
+    }
+
+    .work-editor-form {
+        padding-bottom: 12px;
+    }
+
+    .work-editor-form .oshi-card {
+        padding: 18px;
+        border-radius: 18px;
+    }
+
+    .work-editor-form summary {
+        font-size: 1.1rem;
+    }
+
+    .work-editor-form textarea.oshi-input,
+    .work-editor-form .work-description-input,
+    .work-editor-form .work-long-textarea {
+        min-height: 160px;
+    }
+
+    .work-editor-form .work-form-actions {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+        padding: 14px;
+    }
+
+    .work-editor-form .work-form-actions .oshi-btn {
+        width: 100%;
+        text-align: center;
+    }
+}
