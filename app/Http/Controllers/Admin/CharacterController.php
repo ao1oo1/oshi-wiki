@@ -119,7 +119,7 @@ class CharacterController extends Controller
         $this->ensureCanModifyCharacter($character);
 
         return view('admin.characters.edit', [
-            'character' => $character->load('tags'),
+            'character' => $character->load(['tags', 'linkedWorks']),
             'works' => Work::query()->latest()->get(),
             'tags' => \App\Models\Tag::query()
                 ->where('type', 'character')

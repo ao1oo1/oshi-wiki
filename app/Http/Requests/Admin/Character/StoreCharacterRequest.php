@@ -17,6 +17,8 @@ class StoreCharacterRequest extends FormRequest
     {
         return [
             'work_id' => ['required', 'exists:works,id'],
+            'linked_work_ids' => ['nullable', 'array'],
+            'linked_work_ids.*' => ['integer', 'distinct', 'exists:works,id'],
             'name' => ['required', 'string', 'max:255'],
             'name_kana' => ['nullable', 'string', 'max:255'],
             'real_name' => ['nullable', 'string', 'max:255'],
@@ -69,6 +71,7 @@ class StoreCharacterRequest extends FormRequest
     {
         return [
             'work_id' => '作品',
+            'linked_work_ids' => '追加で紐付ける作品',
             'name' => '名前',
             'name_kana' => '読み仮名',
             'real_name' => '本名',

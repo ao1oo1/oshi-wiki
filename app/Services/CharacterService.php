@@ -9,7 +9,8 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 class CharacterService
 {
     public function __construct(
-        private readonly CharacterRepository $repository
+        private readonly CharacterRepository $repository,
+        private readonly CharacterWorkLinkService $workLinkService
     ) {
     }
 
@@ -27,7 +28,8 @@ class CharacterService
     public function create(array $data): Character
     {
         $tagIds = $data['tag_ids'] ?? [];
-        unset($data['tag_ids']);
+        $linkedWorkIds = $data['linked_work_ids'] ?? [];
+        unset($data['tag_ids'], $data['linked_work_ids']);
 
         $data = $this->applyReviewRule($data, false);
 
@@ -40,6 +42,11 @@ class CharacterService
 
         $character = $this->repository->create($data);
         $this->repository->syncTags($character, $tagIds);
+        $this->workLinkService->sync(
+            $character,
+            $linkedWorkIds,
+            (int) $character->work_id
+        );
 
         return $character;
     }
@@ -47,13 +54,22 @@ class CharacterService
     public function update(Character $character, array $data): bool
     {
         $tagIds = $data['tag_ids'] ?? [];
-        unset($data['tag_ids']);
+        $linkedWorkIds = $data['linked_work_ids'] ?? [];
+        unset($data['tag_ids'], $data['linked_work_ids']);
 
         $data = $this->applyReviewRule($data, true);
         $data['status'] = $data['status'] ?? $character->status;
 
         $updated = $this->repository->update($character, $data);
         $this->repository->syncTags($character, $tagIds);
+
+        $character->refresh();
+
+        $this->workLinkService->sync(
+            $character,
+            $linkedWorkIds,
+            (int) $character->work_id
+        );
 
         return $updated;
     }
