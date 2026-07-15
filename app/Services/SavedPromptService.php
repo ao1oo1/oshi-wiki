@@ -18,7 +18,8 @@ class SavedPromptService
 {
     public function __construct(
         private readonly SavedPromptRepository $repository,
-        private readonly PromptCharacterContextBuilder $contextBuilder
+        private readonly PromptCharacterContextBuilder $contextBuilder,
+        private readonly WorkWorldbuildingPromptBuilder $worldbuildingBuilder
     ) {
     }
 
@@ -107,6 +108,8 @@ class SavedPromptService
             'work_id' => null,
             'selected_character_refs' => [],
             'include_relationship_timeline' => false,
+            'include_work_worldbuilding' => false,
+            'selected_work_worldbuilding_categories' => [],
             'writing_style' => 'other',
             'writing_style_other' => '文体分析',
             'genre' => 'other',
@@ -198,6 +201,33 @@ class SavedPromptService
         $data['include_relationship_timeline'] = (bool) (
             $data['include_relationship_timeline'] ?? false
         );
+
+        $data['include_work_worldbuilding'] = (bool) (
+            $data['include_work_worldbuilding'] ?? false
+        );
+
+        $allowedWorldbuildingCategories = array_keys(
+            SavedPrompt::workWorldbuildingCategoryLabels()
+        );
+
+        $data['selected_work_worldbuilding_categories'] = collect(
+            $data['selected_work_worldbuilding_categories'] ?? []
+        )
+            ->filter(fn ($category): bool =>
+                is_string($category)
+                && in_array($category, $allowedWorldbuildingCategories, true)
+            )
+            ->unique()
+            ->values()
+            ->all();
+
+        if (
+            ($data['work_source'] ?? null) !== SavedPrompt::WORK_SOURCE_V1
+            || ! $data['include_work_worldbuilding']
+        ) {
+            $data['include_work_worldbuilding'] = false;
+            $data['selected_work_worldbuilding_categories'] = [];
+        }
 
         $data['use_story_length_options'] = (bool) (
             $data['use_story_length_options'] ?? false
@@ -472,6 +502,16 @@ class SavedPromptService
                 $data['selected_story_analysis_ids'] ?? []
             );
 
+        $workWorldbuildingText = (
+            (bool) ($data['include_work_worldbuilding'] ?? false)
+            && ($data['work_source'] ?? null) === SavedPrompt::WORK_SOURCE_V1
+        )
+            ? $this->worldbuildingBuilder->build(
+                ! empty($data['work_id']) ? (int) $data['work_id'] : null,
+                $data['selected_work_worldbuilding_categories'] ?? []
+            )
+            : '';
+
         $relationshipText =
             $this->buildRelationshipsText(
                 $user,
@@ -488,6 +528,15 @@ class SavedPromptService
             '',
             '【作品】',
             $workName,
+        ];
+
+        if ($workWorldbuildingText !== '') {
+            $lines[] = '';
+            $lines[] = '【作品設定】';
+            $lines[] = $workWorldbuildingText;
+        }
+
+        $lines = array_merge($lines, [
             '',
             '【登場人物詳細】',
             $context['characters'] ?: '指定なし',
@@ -526,7 +575,7 @@ class SavedPromptService
             '・文体分析に記載された文章そのものを転載せず、特徴だけを反映してください。',
             '・登録情報にない設定は断定しないでください。',
             '・不足している情報は、自然な範囲で補ってください。',
-        ];
+        ]);
 
         if ($notes !== '') {
             $lines[] = '';
