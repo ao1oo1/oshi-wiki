@@ -154,18 +154,19 @@
         </div>
 
         <div class="mt-7">
-            <div class="mb-3 flex flex-wrap items-center justify-between gap-3">
-                <div>
-                    <h3 class="font-bold">原作の重要イベント年表</h3>
-                    <p class="text-sm text-gray-500">触れてよい出来事・まだ起きていない出来事を整理します。最大50件です。</p>
-                </div>
-                <button type="button" id="add-canon-event" class="oshi-btn oshi-btn-sub">＋ 年表を追加</button>
+            <div class="mb-3">
+                <h3 class="font-bold">原作の重要イベント年表</h3>
+                <p class="text-sm text-gray-500">触れてよい出来事・まだ起きていない出来事を整理します。最大50件です。</p>
             </div>
 
             <div id="canon-event-list" class="space-y-4">
                 @foreach ($canonEvents as $index => $event)
                     @include('admin.works._canon_event_row', ['index' => $index, 'event' => $event])
                 @endforeach
+            </div>
+
+            <div class="mt-5 flex justify-end">
+                <button type="button" id="add-canon-event" class="oshi-btn oshi-btn-sub">＋ 年表を追加</button>
             </div>
         </div>
     </details>
@@ -187,18 +188,19 @@
     <details class="oshi-card">
         <summary class="cursor-pointer text-lg font-bold">用語</summary>
         <div class="mt-5">
-            <div class="mb-3 flex flex-wrap items-center justify-between gap-3">
-                <div>
-                    <h3 class="font-bold">用語の使用例</h3>
-                    <p class="text-sm text-gray-500">単語の意味だけでなく、作中でどう使われるかも登録します。最大50件です。</p>
-                </div>
-                <button type="button" id="add-term-usage" class="oshi-btn oshi-btn-sub">＋ 用語を追加</button>
+            <div class="mb-3">
+                <h3 class="font-bold">用語の使用例</h3>
+                <p class="text-sm text-gray-500">単語の意味だけでなく、作中でどう使われるかも登録します。最大50件です。</p>
             </div>
 
             <div id="term-usage-list" class="space-y-4">
                 @foreach ($termUsages as $index => $term)
                     @include('admin.works._term_usage_row', ['index' => $index, 'term' => $term])
                 @endforeach
+            </div>
+
+            <div class="mt-5 flex justify-end">
+                <button type="button" id="add-term-usage" class="oshi-btn oshi-btn-sub">＋ 用語を追加</button>
             </div>
         </div>
     </details>
