@@ -211,7 +211,32 @@ $canUseCharacterImports = auth()->user()?->canManageAllAdminFeatures() ?? false;
                                     </td>
 
                                     <td class="px-5 py-4 align-middle leading-7 text-[#4A5568] break-keep">
-                                        {{ $character->work?->title ?? '—' }}
+                                        @php
+                                            $primaryWork = $character->linkedWorks
+                                                ->first(fn ($work) => (bool) $work->pivot?->is_primary)
+                                                ?? $character->work;
+
+                                            $additionalWorks = $character->linkedWorks
+                                                ->reject(fn ($work) => (int) $work->id === (int) $primaryWork?->id)
+                                                ->values();
+                                        @endphp
+
+                                        <div class="font-bold text-[#2D3748]">
+                                            {{ $primaryWork?->title ?? '—' }}
+                                        </div>
+
+                                        @if ($additionalWorks->isNotEmpty())
+                                            <details class="mt-1">
+                                                <summary class="cursor-pointer text-sm text-[#718096]">
+                                                    ほか{{ $additionalWorks->count() }}作品
+                                                </summary>
+                                                <ul class="mt-2 space-y-1 text-sm text-[#4A5568]">
+                                                    @foreach ($additionalWorks as $linkedWork)
+                                                        <li>・{{ $linkedWork->title }}</li>
+                                                    @endforeach
+                                                </ul>
+                                            </details>
+                                        @endif
                                     </td>
 
                                     <td class="px-4 py-4 align-middle text-[#4A5568] break-words">
