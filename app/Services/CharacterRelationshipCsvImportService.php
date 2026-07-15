@@ -77,8 +77,13 @@ class CharacterRelationshipCsvImportService
                     $from = Character::query()->findOrFail($fromId);
                     $to = Character::query()->findOrFail($toId);
 
-                    if ($from->work_id !== $work->id || $to->work_id !== $work->id) {
-                        throw new RuntimeException('作品IDとキャラクターの所属作品が一致しません。');
+                    if (
+                        ! $from->isLinkedToWork($work->id)
+                        || ! $to->isLinkedToWork($work->id)
+                    ) {
+                        throw new RuntimeException(
+                            '指定した作品に両方のキャラクターが紐付いている必要があります。'
+                        );
                     }
 
                     if ($from->id === $to->id) {

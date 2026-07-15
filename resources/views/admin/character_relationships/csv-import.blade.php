@@ -29,7 +29,7 @@
                 <p class="font-bold text-[#2D3748]">CSV仕様</p>
                 <p>relationship_idが空欄の場合は新規登録、入力済みの場合は更新します。</p>
                 <p>work_id、from_character_id、to_character_idは必須です。</p>
-                <p>送信元・送信先キャラクターは、指定した作品に所属している必要があります。</p>
+                <p>送信元・送信先キャラクターは、指定した作品に主作品または追加作品として紐付いている必要があります。</p>
             </div>
 
             @if (session('csv_errors'))
