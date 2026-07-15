@@ -26,8 +26,8 @@
             </p>
         </div>
 
-        <form method="GET" action="{{ route('admin.tags.index') }}" class="mb-6 rounded-3xl border border-[#E2E8F0] bg-[#F7FAFC] p-5">
-            <div class="grid gap-4 md:grid-cols-[220px_1fr_auto_auto] md:items-end">
+        <form method="GET" action="{{ route('admin.tags.index') }}" class="mb-6 rounded-3xl border border-[#E2E8F0] bg-[#F7FAFC] p-5 admin-index-filter-form">
+                <div class="admin-index-filter-grid">
                 <div>
                     <label for="staff_type" class="mb-1 block text-sm font-bold text-[#4A5568]">
                         種類
@@ -67,7 +67,7 @@
                     解除
                 </a>
             </div>
-        </form>
+            </form>
 
         <div class="staff-tag-mobile-table-shell overflow-x-auto rounded-3xl border border-[#E2E8F0]">
             <table class="w-full text-left text-sm">
@@ -118,8 +118,8 @@
 
         {{-- STAFF_HIDE_TAG_HEADER_CARD_FIX --}}
 @if ($canManageTags)
-<div class="oshi-card">
-            <div class="mb-6 flex flex-wrap items-center justify-between gap-3">
+<div class="oshi-card admin-index-shell">
+            <div class="mb-6 flex flex-wrap items-center justify-between gap-3 admin-index-header">
                 <div>
                     <h1 class="text-2xl font-bold">
                         タグ管理
@@ -129,7 +129,7 @@
                     </p>
                 </div>
 
-                <div class="flex flex-wrap gap-2">
+                <div class="flex flex-wrap gap-2 admin-index-actions">
                     @if ($canManageTags)
 <a href="{{ route('admin.tags.import.create') }}" class="oshi-btn oshi-btn-sub">テキスト取り込み</a>
 
@@ -214,8 +214,8 @@
 
 
 
-            <form method="GET" action="{{ route('admin.tags.index') }}" class="mb-6 rounded-3xl border border-[#E2E8F0] bg-[#F7FAFC] p-5">
-                <div class="grid gap-4 md:grid-cols-[220px_1fr_auto_auto] md:items-end">
+            <form method="GET" action="{{ route('admin.tags.index') }}" class="mb-6 rounded-3xl border border-[#E2E8F0] bg-[#F7FAFC] p-5 admin-index-filter-form">
+                <div class="admin-index-filter-grid">
                     <div>
                         <label for="type" class="mb-1 block text-sm font-bold text-[#4A5568]">
                             種類

@@ -11,8 +11,8 @@
     <div class="p-6">
         @include('admin.partials.flash')
 
-        <div class="oshi-card">
-            <div class="mb-6 flex flex-wrap items-center justify-between gap-3">
+        <div class="oshi-card admin-index-shell">
+            <div class="mb-6 flex flex-wrap items-center justify-between gap-3 admin-index-header">
                 <div>
                     <h1 class="text-2xl font-bold">
                         作品管理
@@ -22,7 +22,7 @@
                     </p>
                 </div>
 
-                <div class="flex flex-wrap gap-2">
+                <div class="flex flex-wrap gap-2 admin-index-actions">
                     @if ($canManageWorks)
 <a href="{{ route('admin.works.import.create') }}" class="oshi-btn oshi-btn-sub">テキスト取り込み</a>
 
@@ -60,7 +60,8 @@
 {{-- /STAFF_HIDE_WORK_CREATE_FORM_FIX --}}
 </div>
 
-            <form method="GET" action="{{ route('admin.works.index') }}" class="mb-6 flex flex-wrap items-end gap-3">
+            <form method="GET" action="{{ route('admin.works.index') }}" class="mb-6 flex flex-wrap items-end gap-3 admin-index-filter-form">
+                <div class="admin-index-filter-grid">
                 <div>
                     <label for="keyword" class="mb-1 block font-medium">
                         キーワード
@@ -99,6 +100,7 @@
                 <a href="{{ route('admin.works.index') }}" class="oshi-btn oshi-btn-sub">
                     解除
                 </a>
+            </div>
             </form>
 
             @include('admin.works._staff_mobile_cards')

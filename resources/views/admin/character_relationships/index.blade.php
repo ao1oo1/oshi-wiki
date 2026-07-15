@@ -20,8 +20,8 @@
         @include('admin.partials.flash')
         @include('admin.partials.publish-help')
 
-        <div class="oshi-card">
-            <div class="mb-6 flex flex-wrap items-start justify-between gap-4">
+        <div class="oshi-card admin-index-shell">
+            <div class="mb-6 flex flex-wrap items-start justify-between gap-4 admin-index-header">
                 <div>
                     <h1 class="text-2xl font-bold text-[#2D3748]">
                         関係性管理
@@ -38,8 +38,8 @@
                 @endif
             </div>
 
-            <form method="GET" action="{{ route('admin.character-relationships.index') }}" class="mb-6">
-                <div class="grid gap-4 md:grid-cols-[280px_1fr_auto_auto] md:items-end">
+            <form method="GET" action="{{ route('admin.character-relationships.index') }}" class="mb-6 admin-index-filter-form">
+                <div class="admin-index-filter-grid">
                     <div>
                         <label for="keyword" class="mb-1 block text-sm font-bold text-[#4A5568]">
                             キーワード
