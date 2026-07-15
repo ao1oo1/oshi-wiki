@@ -6352,3 +6352,138 @@ label:has(> input[type="radio"])
         max-height: 15px !important;
     }
 }
+
+/* ADMIN_INDEX_UI_UNIFY_START */
+.admin-index-shell {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    border: 0;
+    background: transparent;
+    padding: 0;
+    box-shadow: none;
+}
+
+.admin-index-header {
+    width: 100%;
+    margin-bottom: 0 !important;
+    padding: 1.75rem;
+    border: 1px solid #E2E8F0;
+    border-radius: 1.5rem;
+    background: #FFFFFF;
+    box-shadow: 0 8px 24px rgba(45, 55, 72, 0.05);
+}
+
+.admin-index-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.75rem;
+}
+
+.admin-index-actions .oshi-btn,
+.admin-index-header > .oshi-btn {
+    min-height: 3rem;
+    white-space: nowrap;
+}
+
+.admin-index-filter-form {
+    width: 100%;
+    margin-bottom: 0 !important;
+    padding: 1.5rem;
+    border: 1px solid #E2E8F0;
+    border-radius: 1.5rem;
+    background: #FFFFFF;
+    box-shadow: 0 8px 24px rgba(45, 55, 72, 0.04);
+}
+
+.admin-index-filter-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+    align-items: end;
+    gap: 1rem;
+}
+
+.admin-index-filter-grid > div {
+    min-width: 0;
+}
+
+.admin-index-filter-grid label {
+    min-height: 1.5rem;
+    margin-bottom: 0.5rem;
+    color: #2D3748;
+    font-size: 0.875rem;
+    font-weight: 700;
+    line-height: 1.4;
+}
+
+.admin-index-filter-grid input,
+.admin-index-filter-grid select {
+    width: 100%;
+    min-width: 0;
+    min-height: 3rem;
+    border: 1px solid #CBD5E0;
+    border-radius: 1rem;
+    background: #FFFFFF;
+    padding: 0.75rem 1rem;
+    color: #2D3748;
+}
+
+.admin-index-filter-grid > .oshi-btn,
+.admin-index-filter-grid > a.oshi-btn {
+    display: inline-flex;
+    width: 100%;
+    min-height: 3rem;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap;
+}
+
+@media (max-width: 767px) {
+    .admin-index-shell {
+        gap: 1rem;
+    }
+
+    .admin-index-header {
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 1.25rem;
+        padding: 1.25rem;
+        border-radius: 1.25rem;
+    }
+
+    .admin-index-actions {
+        display: grid;
+        grid-template-columns: 1fr;
+        width: 100%;
+    }
+
+    .admin-index-actions .oshi-btn,
+    .admin-index-header > .oshi-btn {
+        width: 100%;
+        justify-content: center;
+        text-align: center;
+        white-space: normal;
+    }
+
+    .admin-index-filter-form {
+        padding: 1.25rem;
+        border-radius: 1.25rem;
+    }
+
+    .admin-index-filter-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .admin-index-filter-grid > .oshi-btn,
+    .admin-index-filter-grid > a.oshi-btn {
+        width: 100%;
+    }
+
+    .admin-index-filter-grid label {
+        min-height: 0;
+    }
+}
+/* ADMIN_INDEX_UI_UNIFY_END */
