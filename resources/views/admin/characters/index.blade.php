@@ -156,17 +156,17 @@ $canUseCharacterImports = auth()->user()?->canManageAllAdminFeatures() ?? false;
 
             <div class="staff-mobile-table-shell overflow-hidden rounded-3xl border border-[#E2E8F0] bg-white">
                 <div class="overflow-x-auto">
-                    <table class="w-full min-w-[1120px] table-fixed text-left text-sm">
+                    <table class="w-full min-w-[1160px] table-fixed text-left text-sm">
                         <colgroup>
                             @if ($canUseCharacterImports)
                                 <col class="w-[5%]">
                             @endif
-                            <col class="{{ $canUseCharacterImports ? 'w-[18%]' : 'w-[20%]' }}">
-                            <col class="{{ $canUseCharacterImports ? 'w-[25%]' : 'w-[28%]' }}">
-                            <col class="{{ $canUseCharacterImports ? 'w-[17%]' : 'w-[18%]' }}">
+                            <col class="{{ $canUseCharacterImports ? 'w-[17%]' : 'w-[19%]' }}">
+                            <col class="{{ $canUseCharacterImports ? 'w-[22%]' : 'w-[25%]' }}">
+                            <col class="{{ $canUseCharacterImports ? 'w-[14%]' : 'w-[15%]' }}">
+                            <col class="w-[8%]">
                             <col class="w-[9%]">
-                            <col class="w-[10%]">
-                            <col class="{{ $canUseCharacterImports ? 'w-[16%]' : 'w-[15%]' }}">
+                            <col class="{{ $canUseCharacterImports ? 'w-[25%]' : 'w-[24%]' }}">
                         </colgroup>
                         <thead class="bg-[#FFF5F7] text-[#2D3748]">
                             <tr>
@@ -183,7 +183,7 @@ $canUseCharacterImports = auth()->user()?->canManageAllAdminFeatures() ?? false;
                                 <th class="px-4 py-4 font-bold whitespace-nowrap">所属</th>
                                 <th class="px-4 py-4 font-bold whitespace-nowrap">状態</th>
                                 <th class="px-4 py-4 font-bold whitespace-nowrap">承認状態</th>
-                                <th class="px-4 py-4 font-bold whitespace-nowrap">操作</th>
+                                <th class="px-4 py-4 text-center font-bold whitespace-nowrap">操作</th>
                             </tr>
                         </thead>
 
@@ -227,13 +227,13 @@ $canUseCharacterImports = auth()->user()?->canManageAllAdminFeatures() ?? false;
                                     </td>
 
                                     <td class="px-4 py-4 align-middle">
-                                        <div class="flex flex-wrap gap-2">
-                                            <a href="{{ route('admin.characters.show', $character) }}" class="oshi-btn oshi-btn-sub">
+                                        <div class="flex flex-nowrap items-center justify-center gap-2 whitespace-nowrap">
+                                            <a href="{{ route('admin.characters.show', $character) }}" class="oshi-btn oshi-btn-sub px-4 py-2">
                                                 詳細
                                             </a>
 
                                             @if ($canModifyCharacter)
-                                                <a href="{{ route('admin.characters.edit', $character) }}" class="oshi-btn oshi-btn-sub">
+                                                <a href="{{ route('admin.characters.edit', $character) }}" class="oshi-btn oshi-btn-sub px-4 py-2">
                                                     編集
                                                 </a>
 
@@ -244,7 +244,7 @@ $canUseCharacterImports = auth()->user()?->canManageAllAdminFeatures() ?? false;
                                                 >
                                                     @csrf
                                                     @method('DELETE')
-                                                    <button type="submit" class="oshi-btn oshi-btn-sub text-red-600">
+                                                    <button type="submit" class="oshi-btn oshi-btn-sub text-red-600 px-4 py-2">
                                                         削除
                                                     </button>
                                                 </form>
