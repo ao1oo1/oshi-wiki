@@ -19,7 +19,15 @@ class WorkController extends Controller
         }
 
         $works = Work::query()
-            ->with(['tags', 'characters.tags'])
+            ->with([
+                'tags',
+                'linkedCharacters' => function ($query): void {
+                    $query
+                        ->where('characters.status', 'published')
+                        ->with('tags')
+                        ->orderBy('characters.name');
+                },
+            ])
             ->where('status', 'published')
             ->latest()
             ->limit(9)
@@ -47,6 +55,13 @@ class WorkController extends Controller
             ->where('status', 'published')
             ->count();
 
+        $works->each(function (Work $work): void {
+            $work->setRelation(
+                'characters',
+                $work->linkedCharacters
+            );
+        });
+
         return view('public.works.index', [
             'works' => $works,
             'tags' => $tags,
@@ -68,7 +83,15 @@ class WorkController extends Controller
             ->values();
 
         $works = Work::query()
-            ->with(['tags', 'characters.tags'])
+            ->with([
+                'tags',
+                'linkedCharacters' => function ($query): void {
+                    $query
+                        ->where('characters.status', 'published')
+                        ->with('tags')
+                        ->orderBy('characters.name');
+                },
+            ])
             ->where('status', 'published')
             ->when($tagId, function ($query) use ($tagId) {
                 $query->whereHas('tags', function ($query) use ($tagId) {
@@ -90,7 +113,7 @@ class WorkController extends Controller
                                     ->orWhere('tags.type', 'like', $like)
                                     ->orWhere('tags.description', 'like', $like);
                             })
-                            ->orWhereHas('characters', function ($query) use ($like) {
+                            ->orWhereHas('linkedCharacters', function ($query) use ($like) {
                                 $query->where('characters.status', 'published')
                                     ->where(function ($query) use ($like) {
                                         $query->where('characters.name', 'like', $like)
@@ -150,6 +173,13 @@ class WorkController extends Controller
             ->orderBy('name')
             ->get();
 
+        $works->each(function (Work $work): void {
+            $work->setRelation(
+                'characters',
+                $work->linkedCharacters
+            );
+        });
+
         return view('public.works.index', [
             'works' => $works,
             'tags' => $tags,
@@ -167,10 +197,10 @@ class WorkController extends Controller
 
         $work->load([
             'tags',
-            'characters' => function ($query) {
-                $query->where('status', 'published')
+            'linkedCharacters' => function ($query) {
+                $query->where('characters.status', 'published')
                     ->with('tags')
-                    ->latest();
+                    ->orderBy('characters.name');
             },
             'characterRelationships' => function ($query) {
                 $query->where('status', 'published')
@@ -178,6 +208,11 @@ class WorkController extends Controller
                     ->latest();
             },
         ]);
+
+        $work->setRelation(
+            'characters',
+            $work->linkedCharacters
+        );
 
         return view('public.works.show', [
             'work' => $work,
