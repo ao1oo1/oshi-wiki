@@ -131,6 +131,17 @@ class WorkCsvExportController extends Controller
             );
         }
 
+        if ($request->filled('exact_keyword')) {
+            $exactKeyword = trim((string) $request->input('exact_keyword'));
+
+            $query->where(function (Builder $exactQuery) use ($exactKeyword): void {
+                $exactQuery->where('title', $exactKeyword)
+                    ->orWhere('title_kana', $exactKeyword)
+                    ->orWhere('genre', $exactKeyword)
+                    ->orWhere('original_media', $exactKeyword);
+            });
+        }
+
         if ($request->filled('keyword')) {
             $keyword = trim((string) $request->input('keyword'));
 
