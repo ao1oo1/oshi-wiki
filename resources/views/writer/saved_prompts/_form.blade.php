@@ -135,7 +135,15 @@
                         value="work:{{ $work->id }}"
                         @selected($workRef === 'work:' . $work->id)
                     >
-                        {{ $work->title }}
+                        @if ($work->parentWork)
+
+                            {{ $work->parentWork->title }} ＞ {{ $work->title }}
+
+                        @else
+
+                            {{ $work->title }}
+
+                        @endif
                     </option>
                 @endforeach
             </select>
