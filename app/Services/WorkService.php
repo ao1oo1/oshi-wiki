@@ -21,9 +21,19 @@ class WorkService
         ?string $keyword = null,
         ?int $tagId = null,
         ?string $status = null,
-        ?string $exactKeyword = null
+        ?string $exactKeyword = null,
+        ?string $workType = null,
+        ?int $parentWorkId = null
     ): LengthAwarePaginator {
-        return $this->repository->paginate($perPage, $keyword, $tagId, $status, $exactKeyword);
+        return $this->repository->paginate(
+            $perPage,
+            $keyword,
+            $tagId,
+            $status,
+            $exactKeyword,
+            $workType,
+            $parentWorkId
+        );
     }
 
     public function create(array $data): Work

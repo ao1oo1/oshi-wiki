@@ -68,11 +68,22 @@ class WorkCsvImportController extends Controller
         $headers = array_merge(
             ['work_id'],
             $this->workColumns(),
-            ['character_ids', 'character_names', 'tag_ids', 'tag_names', 'canon_events_json', 'term_usages_json']
+            [
+                'parent_work_title',
+                'character_ids',
+                'character_names',
+                'tag_ids',
+                'tag_names',
+                'canon_events_json',
+                'term_usages_json',
+            ]
         );
 
         $sample = array_fill_keys($headers, '');
 
+        $sample['parent_work_id'] = '';
+        $sample['parent_work_title'] = '';
+        $sample['child_sort_order'] = '0';
         $sample['title'] = '作品タイトル';
         $sample['title_kana'] = 'サクヒンタイトル';
         $sample['genre'] = '学園ファンタジー';

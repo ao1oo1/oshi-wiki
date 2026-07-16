@@ -25,6 +25,8 @@ class WorkController extends Controller
         $selectedTagId = request('tag_id');
         $selectedStatus = request('status');
         $exactKeyword = trim((string) request('exact_keyword', ''));
+        $selectedWorkType = trim((string) request('work_type', ''));
+        $selectedParentWorkId = request('parent_work_id');
 
         return view('admin.works.index', [
             'works' => $this->service->paginate(
@@ -32,12 +34,23 @@ class WorkController extends Controller
                 $keyword !== '' ? $keyword : null,
                 $selectedTagId ? (int) $selectedTagId : null,
                 $selectedStatus ?: null,
-                $exactKeyword !== '' ? $exactKeyword : null
+                $exactKeyword !== '' ? $exactKeyword : null,
+                $selectedWorkType !== '' ? $selectedWorkType : null,
+                $selectedParentWorkId
+                    ? (int) $selectedParentWorkId
+                    : null
             ),
             'keyword' => $keyword,
             'selectedTagId' => $selectedTagId,
             'selectedStatus' => $selectedStatus,
             'exactKeyword' => $exactKeyword,
+            'selectedWorkType' => $selectedWorkType,
+            'selectedParentWorkId' => $selectedParentWorkId,
+            'parentWorkOptions' => Work::query()
+                ->whereNull('parent_work_id')
+                ->whereHas('childWorks')
+                ->orderBy('title')
+                ->get(),
             'tags' => app(TagService::class)->all(),
         ]);
     }

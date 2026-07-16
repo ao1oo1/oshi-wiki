@@ -44,6 +44,7 @@ class WorkCsvExportController extends Controller
         }
 
         return array_merge($headers, [
+            'parent_work_title',
             'character_ids',
             'character_names',
             'tag_ids',
@@ -62,7 +63,13 @@ class WorkCsvExportController extends Controller
         fputcsv($handle, $headers, ',', '"', '');
 
         $query = Work::query()
-            ->with(['linkedCharacters', 'tags', 'canonEvents', 'termUsages'])
+            ->with([
+                'parentWork',
+                'linkedCharacters',
+                'tags',
+                'canonEvents',
+                'termUsages',
+            ])
             ->orderBy('id');
 
         $this->applyFilters($query, $request);
@@ -83,6 +90,7 @@ class WorkCsvExportController extends Controller
         return array_map(function (string $header) use ($work) {
             return match ($header) {
                 'work_id' => $work->id,
+                'parent_work_title' => $work->parentWork?->title ?? '',
                 'character_ids' => $work->linkedCharacters->pluck('id')->implode(','),
                 'character_names' => $work->linkedCharacters->pluck('name')->implode('｜'),
                 'tag_ids' => $work->tags->pluck('id')->implode(','),
