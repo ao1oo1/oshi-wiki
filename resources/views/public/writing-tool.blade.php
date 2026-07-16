@@ -116,6 +116,140 @@
         }
     </style>
 
+    <style>
+        /* WRITING_TOOL_TYPO_FIX_V3 */
+
+        .writing-tool-page-redesign .writing-lp-hero-inner,
+        .writing-tool-page-redesign .writing-lp-hero-copy,
+        .writing-tool-page-redesign .writing-lp-hero-visual,
+        .writing-tool-page-redesign .writing-lp-section-heading,
+        .writing-tool-page-redesign .writing-lp-feature-card,
+        .writing-tool-page-redesign .writing-lp-flow-card,
+        .writing-tool-page-redesign .writing-lp-caution-card,
+        .writing-tool-page-redesign .writing-lp-final-cta-card {
+            text-align: left !important;
+        }
+
+        .writing-tool-page-redesign .writing-lp-hero-copy h1 {
+            max-width: 820px !important;
+            font-size: clamp(42px, 4.8vw, 68px) !important;
+            line-height: 1.18 !important;
+            letter-spacing: -.03em !important;
+        }
+
+        .writing-tool-page-redesign .writing-lp-hero-copy > p {
+            max-width: 820px !important;
+            font-size: 16px !important;
+            line-height: 1.95 !important;
+            text-align: left !important;
+        }
+
+        .writing-tool-page-redesign .writing-lp-hero-visual {
+            justify-items: start !important;
+        }
+
+        .writing-tool-page-redesign .writing-lp-visual-card,
+        .writing-tool-page-redesign .writing-lp-visual-card:nth-child(2),
+        .writing-tool-page-redesign .writing-lp-visual-card-accent {
+            width: 100% !important;
+            max-width: 560px !important;
+            min-height: 176px !important;
+            text-align: left !important;
+        }
+
+        .writing-tool-page-redesign .writing-lp-section-heading {
+            max-width: none !important;
+            text-align: left !important;
+        }
+
+        .writing-tool-page-redesign .writing-lp-section-heading h2 {
+            max-width: none !important;
+            font-size: clamp(28px, 3vw, 44px) !important;
+            line-height: 1.25 !important;
+            letter-spacing: -.02em !important;
+            white-space: nowrap !important;
+            text-align: left !important;
+        }
+
+        .writing-tool-page-redesign .writing-lp-section-heading p {
+            max-width: none !important;
+            font-size: 15px !important;
+            line-height: 1.85 !important;
+            text-align: left !important;
+        }
+
+        .writing-tool-page-redesign .writing-lp-feature-card,
+        .writing-tool-page-redesign .writing-lp-feature-card *,
+        .writing-tool-page-redesign .writing-lp-flow-card,
+        .writing-tool-page-redesign .writing-lp-flow-card * {
+            text-align: left !important;
+        }
+
+        .writing-tool-page-redesign .writing-lp-feature-card h3,
+        .writing-tool-page-redesign .writing-lp-flow-card h3 {
+            font-size: 18px !important;
+            line-height: 1.55 !important;
+        }
+
+        .writing-tool-page-redesign .writing-lp-feature-card p,
+        .writing-tool-page-redesign .writing-lp-flow-card p {
+            font-size: 14px !important;
+            line-height: 1.85 !important;
+        }
+
+        .writing-tool-page-redesign .writing-lp-caution-card {
+            text-align: left !important;
+        }
+
+        .writing-tool-page-redesign .writing-lp-caution-card h2 {
+            font-size: 28px !important;
+            line-height: 1.4 !important;
+            white-space: normal !important;
+            text-align: left !important;
+        }
+
+        .writing-tool-page-redesign .writing-lp-caution-card ul,
+        .writing-tool-page-redesign .writing-lp-caution-card li,
+        .writing-tool-page-redesign .writing-lp-caution-card p {
+            font-size: 14px !important;
+            line-height: 1.9 !important;
+            text-align: left !important;
+        }
+
+        .writing-tool-page-redesign .writing-lp-final-cta-card,
+        .writing-tool-page-redesign .writing-lp-final-cta-card * {
+            text-align: left !important;
+        }
+
+        .writing-tool-page-redesign .writing-lp-final-cta-card h2 {
+            font-size: clamp(28px, 3vw, 42px) !important;
+            line-height: 1.3 !important;
+            white-space: nowrap !important;
+        }
+
+        .writing-tool-page-redesign .writing-lp-final-cta-card p {
+            font-size: 15px !important;
+            line-height: 1.85 !important;
+        }
+
+        @media (max-width: 1100px) {
+            .writing-tool-page-redesign .writing-lp-section-heading h2,
+            .writing-tool-page-redesign .writing-lp-final-cta-card h2 {
+                white-space: normal !important;
+            }
+        }
+
+        @media (max-width: 760px) {
+            .writing-tool-page-redesign .writing-lp-hero-copy h1 {
+                font-size: clamp(36px, 10vw, 52px) !important;
+            }
+
+            .writing-tool-page-redesign .writing-lp-section-heading h2 {
+                font-size: 28px !important;
+                white-space: normal !important;
+            }
+        }
+    </style>
 </head>
 <body class="writing-tool-page-redesign">
     @include('public.partials.header')
