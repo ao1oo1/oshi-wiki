@@ -11,8 +11,56 @@
 
     <link rel="icon" href="{{ asset('favicon.ico') }}" type="image/x-icon">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+    <style>
+        .writing-tool-page-redesign {
+            background: radial-gradient(circle at 12% 0%, rgba(254, 215, 226, .72), transparent 34%), radial-gradient(circle at 92% 18%, rgba(241, 245, 249, .95), transparent 34%), #fffdfd;
+        }
+        .writing-tool-page-redesign .writing-lp-hero { padding: 88px 0 100px; background: transparent; }
+        .writing-tool-page-redesign .writing-lp-hero-inner { gap: 72px; align-items: center; }
+        .writing-tool-page-redesign .writing-lp-hero-copy h1 { max-width: 760px; font-size: clamp(48px, 6vw, 84px); line-height: 1.22; letter-spacing: -.035em; }
+        .writing-tool-page-redesign .writing-lp-hero-copy > p { max-width: 720px; font-size: 18px; line-height: 2; }
+        .writing-tool-page-redesign .writing-lp-actions { gap: 14px; margin-top: 34px; }
+        .writing-tool-page-redesign .writing-lp-primary-button,
+        .writing-tool-page-redesign .writing-lp-secondary-button { min-height: 56px; padding: 14px 28px; border-radius: 18px; }
+        .writing-tool-page-redesign .writing-lp-hero-visual { gap: 18px; }
+        .writing-tool-page-redesign .writing-lp-visual-card { padding: 28px 30px; border-radius: 28px; box-shadow: 0 18px 45px rgba(45,55,72,.09); }
+        .writing-tool-page-redesign .writing-lp-section { padding-top: 92px; padding-bottom: 92px; }
+        .writing-tool-page-redesign .writing-lp-section-heading { max-width: 760px; margin-bottom: 42px; }
+        .writing-tool-page-redesign .writing-lp-section-heading h2 { font-size: clamp(34px, 4vw, 54px); line-height: 1.4; }
+        .writing-tool-page-redesign .writing-lp-section-heading p { font-size: 17px; line-height: 1.9; }
+        .writing-tool-page-redesign .writing-lp-feature-grid { gap: 20px; }
+        .writing-tool-page-redesign .writing-lp-feature-card { min-height: 250px; padding: 28px; border-radius: 26px; box-shadow: 0 14px 36px rgba(45,55,72,.06); }
+        .writing-tool-page-redesign .writing-lp-flow { padding-top: 92px; padding-bottom: 92px; }
+        .writing-tool-page-redesign .writing-lp-flow-grid { gap: 22px; }
+        .writing-tool-page-redesign .writing-lp-flow-card { padding: 30px; border-radius: 28px; }
+        .writing-tool-page-redesign .writing-lp-recommend-grid { gap: 14px; }
+        .writing-tool-page-redesign .writing-lp-recommend-item { padding: 20px 22px; border-radius: 20px; }
+        .writing-tool-page-redesign .writing-lp-caution { padding-top: 92px; padding-bottom: 92px; }
+        .writing-tool-page-redesign .writing-lp-caution-card { padding: 42px; border-radius: 32px; }
+        .writing-lp-ai-disclosure { margin: 24px 0 0; padding: 22px 24px; border-radius: 22px; background: #fff; color: #2D3748; font-size: 15px; font-weight: 700; line-height: 1.9; }
+        .writing-tool-page-redesign .writing-lp-final-cta { padding-bottom: 96px; }
+        .writing-tool-page-redesign .writing-lp-final-cta-card { padding: 52px; border-radius: 34px; box-shadow: 0 24px 60px rgba(45,55,72,.18); }
+        .writing-lp-social-footer { padding: 34px 0 48px; border-top: 1px solid #E2E8F0; background: #fff; }
+        .writing-lp-social-inner { display: flex; justify-content: center; }
+        .writing-lp-x-link { display: inline-flex; align-items: center; gap: 12px; color: #2D3748; font-size: 15px; font-weight: 700; text-decoration: none; }
+        .writing-lp-x-link svg { width: 24px; height: 24px; }
+        @media (max-width: 760px) {
+            .writing-tool-page-redesign .writing-lp-hero { padding: 56px 0 66px; }
+            .writing-tool-page-redesign .writing-lp-hero-copy h1 { font-size: clamp(40px, 13vw, 58px); }
+            .writing-tool-page-redesign .writing-lp-hero-copy > p { font-size: 16px; }
+            .writing-tool-page-redesign .writing-lp-actions { flex-direction: column; }
+            .writing-tool-page-redesign .writing-lp-primary-button,
+            .writing-tool-page-redesign .writing-lp-secondary-button { width: 100%; }
+            .writing-tool-page-redesign .writing-lp-section,
+            .writing-tool-page-redesign .writing-lp-flow,
+            .writing-tool-page-redesign .writing-lp-caution { padding-top: 66px; padding-bottom: 66px; }
+            .writing-tool-page-redesign .writing-lp-caution-card,
+            .writing-tool-page-redesign .writing-lp-final-cta-card { padding: 28px 22px; border-radius: 26px; }
+        }
+    </style>
 </head>
-<body>
+<body class="writing-tool-page-redesign">
     @include('public.partials.header')
 
     <main>
@@ -28,7 +76,7 @@
 
                     <p>
                         Oshi-Wikiの小説執筆補助ツールでは、オリジナルキャラクター、
-                        関係性、ストーリー、文体などを整理し、
+                        関係性、ストーリー、文体などをひとつの場所で整理し、
                         AIへ渡す執筆用プロンプトを簡単に作成できます。
                     </p>
 
@@ -84,7 +132,7 @@
                     ['number' => '03', 'title' => 'ストーリーを保存', 'text' => '自分で書いた小説や参考にしたい文章を保存し、文体整理に活用できます。'],
                     ['number' => '04', 'title' => '文体を分析', 'text' => 'AIへ貼り付けるための文体分析プロンプトを作成し、分析結果も保存できます。'],
                     ['number' => '05', 'title' => 'プロンプトを作成', 'text' => '作品、登場人物、関係性、あらすじ、文体などを選んでひとつの指示文にまとめます。'],
-                    ['number' => '06', 'title' => 'AIの回答を保存', 'text' => 'AIから返ってきたプロットや本文案を、作成したプロンプトと一緒に保存できます。'],
+                    ['number' => '06', 'title' => '何度でもコピー', 'text' => '保存した設定からプロンプトを作り直し、利用中のAIサービスへすぐにコピーできます。'],
                 ] as $feature)
                     <article class="writing-lp-feature-card">
                         <span>{{ $feature['number'] }}</span>
@@ -156,6 +204,15 @@
                         <li>作成したプロンプトは、ご自身で利用するAIサービスへ貼り付けてください。</li>
                         <li>一次創作者や公式ガイドラインへの配慮を忘れず、モラルを守ってご利用ください。</li>
                     </ul>
+
+                    <p class="writing-lp-ai-disclosure">
+                        夢小説をWebサイトや投稿サービスなどで公開する場合は、
+                        AIを使用していることを明記してください。
+                        また、差し支えなければ
+                        <strong>#oshiwiki</strong>
+                        を付けていただけるとうれしいです。
+                        投稿された作品を読みに伺います。
+                    </p>
                 </div>
             </div>
         </section>
@@ -174,5 +231,20 @@
             </div>
         </section>
     </main>
+
+    <footer class="writing-lp-social-footer">
+        <div class="oshi-container writing-lp-social-inner">
+            <a href="https://x.com/Oshi_Wiki"
+               target="_blank"
+               rel="noopener noreferrer"
+               class="writing-lp-x-link"
+               aria-label="Oshi-Wiki公式Xアカウントを開く">
+                <svg viewBox="0 0 24 24" aria-hidden="true" fill="currentColor">
+                    <path d="M18.244 2H21.552L14.325 10.26L22.827 22H16.17L10.956 15.183L4.99 22H1.68L9.413 13.165L1.258 2H8.084L12.797 8.231L18.244 2ZM17.083 19.932H18.916L7.089 3.96H5.122L17.083 19.932Z"/>
+                </svg>
+                <span>@Oshi_Wiki</span>
+            </a>
+        </div>
+    </footer>
 </body>
 </html>
