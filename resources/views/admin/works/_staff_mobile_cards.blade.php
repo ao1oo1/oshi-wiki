@@ -125,6 +125,24 @@
 
                 <div class="staff-work-mobile-card-row">
                     <div class="staff-work-mobile-card-label">
+                        種別
+                    </div>
+                    <div class="staff-work-mobile-card-value">
+                        @if ($work->parentWork)
+                            子作品
+                            <div class="staff-work-mobile-card-sub">
+                                親：{{ $work->parentWork->title }}
+                            </div>
+                        @elseif ($work->childWorks()->exists())
+                            親作品
+                        @else
+                            単独作品
+                        @endif
+                    </div>
+                </div>
+
+                <div class="staff-work-mobile-card-row">
+                    <div class="staff-work-mobile-card-label">
                         ジャンル
                     </div>
                     <div class="staff-work-mobile-card-value">

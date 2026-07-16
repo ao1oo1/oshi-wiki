@@ -90,6 +90,52 @@
                     </select>
                 </div>
 
+                <div>
+                    <label for="work_type" class="mb-1 block font-medium">
+                        作品種別
+                    </label>
+                    <select
+                        id="work_type"
+                        name="work_type"
+                        class="rounded border-gray-300"
+                    >
+                        <option value="">すべて</option>
+                        <option value="parent" @selected(($selectedWorkType ?? '') === 'parent')>
+                            親作品
+                        </option>
+                        <option value="standalone" @selected(($selectedWorkType ?? '') === 'standalone')>
+                            単独作品
+                        </option>
+                        <option value="child" @selected(($selectedWorkType ?? '') === 'child')>
+                            子作品
+                        </option>
+                    </select>
+                </div>
+
+                <div>
+                    <label for="parent_work_id" class="mb-1 block font-medium">
+                        親作品で絞り込み
+                    </label>
+                    <select
+                        id="parent_work_id"
+                        name="parent_work_id"
+                        class="rounded border-gray-300"
+                    >
+                        <option value="">すべての親作品</option>
+                        @foreach (($parentWorkOptions ?? collect()) as $parentOption)
+                            <option
+                                value="{{ $parentOption->id }}"
+                                @selected(
+                                    (int) ($selectedParentWorkId ?? 0)
+                                    === (int) $parentOption->id
+                                )
+                            >
+                                {{ $parentOption->title }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+
                 @include('admin.partials.list-search-extra')
 
 
@@ -144,6 +190,7 @@
                             <tr>
                                 <th><input type="checkbox" id="work_check_all"></th>
                                 <th>作品名</th>
+                                <th>種別・親作品</th>
                                 <th>ジャンル</th>
                                 <th>原作媒体</th>
                                 <th  class="admin-index-status-head">状態</th>
@@ -162,6 +209,19 @@
                                         <div class="font-bold">{{ $work->title }}</div>
                                         @if ($work->title_kana)
                                             <div class="oshi-muted">{{ $work->title_kana }}</div>
+                                        @endif
+                                    </td>
+
+                                    <td>
+                                        @if ($work->parentWork)
+                                            <span class="oshi-chip">子作品</span>
+                                            <div class="mt-1 text-xs text-gray-500">
+                                                親：{{ $work->parentWork->title }}
+                                            </div>
+                                        @elseif ($work->childWorks()->exists())
+                                            <span class="oshi-chip">親作品</span>
+                                        @else
+                                            <span class="oshi-muted">単独作品</span>
                                         @endif
                                     </td>
 
@@ -195,7 +255,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="7">
+                                    <td colspan="8">
                                         <div class="oshi-empty">作品はまだ登録されていません。</div>
                                     </td>
                                 </tr>
@@ -223,6 +283,7 @@
             <thead class="bg-[#FFF5F7] text-[#2D3748]">
                 <tr>
                     <th class="p-4 font-bold">作品名</th>
+                    <th class="p-4 font-bold">種別・親作品</th>
                     <th class="p-4 font-bold">ジャンル</th>
                     <th class="p-4 font-bold">原作媒体</th>
                     <th class="p-4 font-bold">タグ</th>
@@ -239,6 +300,18 @@
                                 </a>
                             @else
                                 {{ $work->title }}
+                            @endif
+                        </td>
+                        <td class="p-4 align-top text-[#4A5568]">
+                            @if ($work->parentWork)
+                                子作品
+                                <div class="mt-1 text-xs text-[#A0AEC0]">
+                                    親：{{ $work->parentWork->title }}
+                                </div>
+                            @elseif ($work->childWorks()->exists())
+                                親作品
+                            @else
+                                単独作品
                             @endif
                         </td>
                         <td class="p-4 align-top text-[#4A5568]">
@@ -260,7 +333,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="5" class="p-8 text-center text-[#718096]">
+                        <td colspan="6" class="p-8 text-center text-[#718096]">
                             作品が登録されていません。
                         </td>
                     </tr>

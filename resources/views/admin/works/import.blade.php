@@ -19,6 +19,50 @@
             <form method="POST" action="{{ route('admin.works.import.store') }}">
                 @csrf
 
+                <div class="mb-5 grid gap-5 md:grid-cols-2">
+                    <div>
+                        <label for="parent_work_id" class="mb-1 block font-medium">
+                            親作品
+                        </label>
+                        <select
+                            id="parent_work_id"
+                            name="parent_work_id"
+                            class="w-full"
+                        >
+                            <option value="">親作品なし（親・単独作品）</option>
+                            @foreach (($parentWorkOptions ?? collect()) as $parentOption)
+                                <option
+                                    value="{{ $parentOption->id }}"
+                                    @selected(
+                                        (int) old('parent_work_id')
+                                        === (int) $parentOption->id
+                                    )
+                                >
+                                    {{ $parentOption->title }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div>
+                        <label for="child_sort_order" class="mb-1 block font-medium">
+                            関連作品の表示順
+                        </label>
+                        <input
+                            id="child_sort_order"
+                            type="number"
+                            min="0"
+                            max="9999"
+                            name="child_sort_order"
+                            value="{{ old('child_sort_order', 0) }}"
+                            class="w-full"
+                        >
+                        <p class="mt-1 text-sm text-gray-600">
+                            数字が小さい作品から順に表示します。
+                        </p>
+                    </div>
+                </div>
+
                 <div class="mb-5">
                     <label for="status" class="mb-1 block font-medium">状態</label>
                     <select id="status" name="status" class="w-full">

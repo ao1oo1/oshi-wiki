@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Work\ImportWorkTextRequest;
+use App\Models\Work;
 use App\Services\WorkService;
 use App\Services\WorkTextParserService;
 use Illuminate\Http\RedirectResponse;
@@ -17,6 +18,10 @@ class WorkTextImportController extends Controller
         abort_unless(auth()->user()?->canManageAllAdminFeatures(), 403, '作品管理のこの操作は最高管理者のみ可能です。');
         return view('admin.works.import', [
             'sampleText' => $this->sampleText(),
+            'parentWorkOptions' => Work::query()
+                ->whereNull('parent_work_id')
+                ->orderBy('title')
+                ->get(),
         ]);
     }
 
@@ -27,9 +32,31 @@ class WorkTextImportController extends Controller
     ): RedirectResponse {
         abort_unless(auth()->user()?->canManageAllAdminFeatures(), 403, '作品管理のこの操作は最高管理者のみ可能です。');
         $parsed = $parser->parse($request->string('raw_text')->toString());
-        $parsed['status'] = $request->input('status', $parsed['status'] ?? 'draft');
+        $parsed['status'] = $request->input(
+            'status',
+            $parsed['status'] ?? 'draft'
+        );
+        $parsed['parent_work_id'] = $request->input(
+            'parent_work_id',
+            $parsed['parent_work_id'] ?? null
+        );
+        $parsed['child_sort_order'] = $request->input(
+            'child_sort_order',
+            $parsed['child_sort_order'] ?? 0
+        );
 
         $validator = Validator::make($parsed, [
+            'parent_work_id' => [
+                'nullable',
+                'integer',
+                'exists:works,id',
+            ],
+            'child_sort_order' => [
+                'nullable',
+                'integer',
+                'min:0',
+                'max:9999',
+            ],
             'title' => ['required', 'string', 'max:255'],
             'title_kana' => ['nullable', 'string', 'max:255'],
             'genre' => ['nullable', 'string', 'max:255'],
@@ -56,6 +83,8 @@ class WorkTextImportController extends Controller
         return <<<TEXT
 ■作品タイトル
 作品名: 作品タイトル
+親作品ID:
+関連作品の表示順: 0
 読み仮名: サクヒンタイトル
 ジャンル: ファンタジー
 原作媒体: 漫画

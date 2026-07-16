@@ -7,6 +7,8 @@
 
     @php
         $columnDescriptions = [
+            'parent_work_id' => ['親作品ID。子作品の場合に指定', '任意'],
+            'child_sort_order' => ['関連作品の表示順。数字が小さい順', '任意'],
             'title' => ['作品名', '必須'],
             'title_kana' => ['読み仮名', '任意'],
             'slug' => ['URL用識別子。空欄の場合は作品名から自動生成', '任意'],
@@ -132,6 +134,9 @@
 
             <div class="mb-4 rounded bg-blue-50 px-4 py-3 text-sm text-blue-900">
                 work_idが既存データと一致する行は更新されます。
+                parent_work_idまたはparent_work_titleで親作品を指定できます。
+                両方を指定した場合はparent_work_idを優先します。
+                親作品名は既存作品と完全一致する必要があります。
                 tag_idsまたはtag_names列を含めた場合は、作品タグをCSVの内容に同期します。
                 canon_events_jsonとterm_usages_jsonを含めた場合は、年表・用語使用例もCSVの内容に同期します。
                 character_idsまたはcharacter_names列を含めた場合は、作品とキャラクターの紐付けをCSVの内容に同期します。
@@ -166,6 +171,14 @@
                             </tr>
                         @endforeach
 
+                        <tr>
+                            <td>parent_work_title</td>
+                            <td>
+                                親作品名を完全一致で指定します。
+                                同名作品がある場合はparent_work_idを使用してください。
+                            </td>
+                            <td>任意</td>
+                        </tr>
                         <tr>
                             <td>character_ids</td>
                             <td>既存キャラクターIDをカンマ区切りで指定。列を含めた場合は作品との紐付けをCSVの内容に同期します。主作品として登録されているキャラクターは解除できません。</td>
