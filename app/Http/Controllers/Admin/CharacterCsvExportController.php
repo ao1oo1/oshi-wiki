@@ -224,6 +224,21 @@ class CharacterCsvExportController extends Controller
             });
         }
 
+        if ($request->filled('exact_keyword')) {
+            $exactKeyword = trim(
+                (string) $request->input('exact_keyword')
+            );
+
+            $query->where(function (Builder $exactQuery) use ($exactKeyword) {
+                $exactQuery
+                    ->where('name', $exactKeyword)
+                    ->orWhere('name_kana', $exactKeyword)
+                    ->orWhere('real_name', $exactKeyword)
+                    ->orWhere('aliases', $exactKeyword)
+                    ->orWhere('name_english', $exactKeyword);
+            });
+        }
+
         if ($request->filled('keyword')) {
             $keyword = trim((string) $request->input('keyword'));
 
