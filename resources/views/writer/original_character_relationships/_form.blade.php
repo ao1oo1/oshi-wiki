@@ -32,6 +32,51 @@
     $characters = $characters ?? collect();
     $publishedWorks = $publishedWorks ?? collect();
 
+    $publishedCharacters = $publishedWorks
+        ->flatMap(fn ($work) => $work->characters)
+        ->unique('id')
+        ->sortBy('name')
+        ->values();
+
+    $resolveWorkRef = function (?string $characterRef) use (
+        $publishedWorks
+    ): string {
+        if (! $characterRef) {
+            return '';
+        }
+
+        if (str_starts_with($characterRef, 'original:')) {
+            return 'original';
+        }
+
+        if (! str_starts_with($characterRef, 'v1:')) {
+            return '';
+        }
+
+        $characterId = (int) str_replace('v1:', '', $characterRef);
+
+        $matchedWork = $publishedWorks->first(
+            fn ($work) => $work->characters->contains(
+                fn ($character) =>
+                    (int) $character->id === $characterId
+            )
+        );
+
+        return $matchedWork
+            ? 'work:' . $matchedWork->id
+            : '';
+    };
+
+    $fromWorkRef = old(
+        'from_work_ref',
+        $resolveWorkRef($fromRef)
+    );
+
+    $toWorkRef = old(
+        'to_work_ref',
+        $resolveWorkRef($toRef)
+    );
+
     $timelineItems = old(
         'timeline_items',
         $relationship?->timeline_items ?? []
@@ -117,120 +162,137 @@
             </ul>
         </div>
 
-        <div class="grid gap-5 md:grid-cols-2">
-            <div>
-                <label for="from_character_ref">
-                    From：関係元キャラクター
-                    <span class="text-red-500">必須</span>
-                </label>
+        <div class="grid gap-6 md:grid-cols-2">
+            @foreach ([
+                [
+                    'side' => 'from',
+                    'label' => 'From：関係元',
+                    'workRef' => $fromWorkRef,
+                    'characterRef' => $fromRef,
+                    'help' => '呼び方・印象・気持ちを向ける側です。',
+                ],
+                [
+                    'side' => 'to',
+                    'label' => 'To：関係先',
+                    'workRef' => $toWorkRef,
+                    'characterRef' => $toRef,
+                    'help' => '呼び方・印象・気持ちを向けられる側です。',
+                ],
+            ] as $selector)
+                <div class="rounded-3xl bg-[#F7FAFC] p-5">
+                    <div>
+                        <label for="{{ $selector['side'] }}_work_ref">
+                            {{ $selector['label'] }}の作品
+                            <span class="text-red-500">必須</span>
+                        </label>
 
-                <select
-                    id="from_character_ref"
-                    name="from_character_ref"
-                    required
-                >
-                    <option value="">
-                        選択してください
-                    </option>
+                        <select
+                            id="{{ $selector['side'] }}_work_ref"
+                            name="{{ $selector['side'] }}_work_ref"
+                            class="relationship-work-select"
+                            data-side="{{ $selector['side'] }}"
+                            required
+                        >
+                            <option value="">選択してください</option>
+                            <option
+                                value="original"
+                                @selected($selector['workRef'] === 'original')
+                            >
+                                オリジナルキャラクター
+                            </option>
 
-                    @if ($characters->isNotEmpty())
-                        <optgroup label="自分のオリジナルキャラクター">
+                            @foreach ($publishedWorks as $work)
+                                <option
+                                    value="work:{{ $work->id }}"
+                                    @selected(
+                                        $selector['workRef']
+                                            === 'work:' . $work->id
+                                    )
+                                >
+                                    {{ $work->title }}
+                                </option>
+                            @endforeach
+                        </select>
+
+                        <p class="mt-2 text-xs font-bold leading-6 text-[#A0AEC0]">
+                            作品を選ぶと、その作品に登録されている公開キャラクターを選択できます。
+                        </p>
+                    </div>
+
+                    <div class="mt-5">
+                        <label for="{{ $selector['side'] }}_character_ref">
+                            {{ $selector['label'] }}キャラクター
+                            <span class="text-red-500">必須</span>
+                        </label>
+
+                        <select
+                            id="{{ $selector['side'] }}_character_ref"
+                            name="{{ $selector['side'] }}_character_ref"
+                            class="relationship-character-select"
+                            data-side="{{ $selector['side'] }}"
+                            required
+                        >
+                            <option value="">選択してください</option>
+
                             @foreach ($characters as $character)
                                 @php
                                     $ref = 'original:' . $character->id;
                                 @endphp
-
                                 <option
                                     value="{{ $ref }}"
-                                    @selected($fromRef === $ref)
+                                    data-work-refs="original"
+                                    @selected(
+                                        $selector['characterRef'] === $ref
+                                    )
                                 >
                                     {{ $character->name }}
                                 </option>
                             @endforeach
-                        </optgroup>
-                    @endif
 
-                    @foreach ($publishedWorks as $work)
-                        @if ($work->characters->isNotEmpty())
-                            <optgroup label="登録済み：{{ $work->title }}">
-                                @foreach ($work->characters as $character)
-                                    @php
-                                        $ref = 'v1:' . $character->id;
-                                    @endphp
-
-                                    <option
-                                        value="{{ $ref }}"
-                                        @selected($fromRef === $ref)
-                                    >
-                                        {{ $character->name }}
-                                    </option>
-                                @endforeach
-                            </optgroup>
-                        @endif
-                    @endforeach
-                </select>
-
-                <p class="mt-2 text-xs font-bold leading-6 text-[#A0AEC0]">
-                    呼び方・印象・気持ちを向ける側です。
-                </p>
-            </div>
-
-            <div>
-                <label for="to_character_ref">
-                    To：関係先キャラクター
-                    <span class="text-red-500">必須</span>
-                </label>
-
-                <select
-                    id="to_character_ref"
-                    name="to_character_ref"
-                    required
-                >
-                    <option value="">
-                        選択してください
-                    </option>
-
-                    @if ($characters->isNotEmpty())
-                        <optgroup label="自分のオリジナルキャラクター">
-                            @foreach ($characters as $character)
+                            @foreach ($publishedCharacters as $character)
                                 @php
-                                    $ref = 'original:' . $character->id;
-                                @endphp
+                                    $ref = 'v1:' . $character->id;
 
+                                    $characterWorkRefs = $publishedWorks
+                                        ->filter(
+                                            fn ($work) =>
+                                                $work->characters->contains(
+                                                    fn ($item) =>
+                                                        (int) $item->id
+                                                            === (int) $character->id
+                                                )
+                                        )
+                                        ->map(
+                                            fn ($work) =>
+                                                'work:' . $work->id
+                                        )
+                                        ->implode('|');
+                                @endphp
                                 <option
                                     value="{{ $ref }}"
-                                    @selected($toRef === $ref)
+                                    data-work-refs="{{ $characterWorkRefs }}"
+                                    @selected(
+                                        $selector['characterRef'] === $ref
+                                    )
                                 >
                                     {{ $character->name }}
                                 </option>
                             @endforeach
-                        </optgroup>
-                    @endif
+                        </select>
 
-                    @foreach ($publishedWorks as $work)
-                        @if ($work->characters->isNotEmpty())
-                            <optgroup label="登録済み：{{ $work->title }}">
-                                @foreach ($work->characters as $character)
-                                    @php
-                                        $ref = 'v1:' . $character->id;
-                                    @endphp
+                        <p
+                            id="{{ $selector['side'] }}_character_empty"
+                            class="mt-2 hidden text-xs font-bold leading-6 text-[#A0AEC0]"
+                        >
+                            選択した作品に登録されているキャラクターがありません。
+                        </p>
 
-                                    <option
-                                        value="{{ $ref }}"
-                                        @selected($toRef === $ref)
-                                    >
-                                        {{ $character->name }}
-                                    </option>
-                                @endforeach
-                            </optgroup>
-                        @endif
-                    @endforeach
-                </select>
-
-                <p class="mt-2 text-xs font-bold leading-6 text-[#A0AEC0]">
-                    呼び方・印象・気持ちを向けられる側です。
-                </p>
-            </div>
+                        <p class="mt-2 text-xs font-bold leading-6 text-[#A0AEC0]">
+                            {{ $selector['help'] }}
+                        </p>
+                    </div>
+                </div>
+            @endforeach
         </div>
 
         <div class="mt-5 rounded-2xl bg-[#F7FAFC] p-5">
@@ -403,6 +465,81 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
+        function setupRelationshipSelector(side) {
+            const workSelect = document.getElementById(
+                `${side}_work_ref`
+            );
+            const characterSelect = document.getElementById(
+                `${side}_character_ref`
+            );
+            const emptyMessage = document.getElementById(
+                `${side}_character_empty`
+            );
+
+            if (! workSelect || ! characterSelect) {
+                return;
+            }
+
+            const options = Array.from(
+                characterSelect.querySelectorAll(
+                    'option[data-work-refs]'
+                )
+            );
+
+            function refreshCharacters(keepCurrent = true) {
+                const selectedWorkRef = workSelect.value;
+                const currentValue = keepCurrent
+                    ? characterSelect.value
+                    : '';
+
+                let visibleCount = 0;
+                let currentIsVisible = false;
+
+                options.forEach((option) => {
+                    const workRefs = (
+                        option.dataset.workRefs || ''
+                    ).split('|');
+
+                    const isVisible = selectedWorkRef !== ''
+                        && workRefs.includes(selectedWorkRef);
+
+                    option.hidden = ! isVisible;
+                    option.disabled = ! isVisible;
+
+                    if (isVisible) {
+                        visibleCount += 1;
+
+                        if (option.value === currentValue) {
+                            currentIsVisible = true;
+                        }
+                    }
+                });
+
+                if (! currentIsVisible) {
+                    characterSelect.value = '';
+                }
+
+                characterSelect.disabled = selectedWorkRef === ''
+                    || visibleCount === 0;
+
+                if (emptyMessage) {
+                    emptyMessage.classList.toggle(
+                        'hidden',
+                        selectedWorkRef === '' || visibleCount > 0
+                    );
+                }
+            }
+
+            workSelect.addEventListener('change', function () {
+                refreshCharacters(false);
+            });
+
+            refreshCharacters(true);
+        }
+
+        setupRelationshipSelector('from');
+        setupRelationshipSelector('to');
+
         const list = document.getElementById('relationship-timeline-list');
         const addButton = document.getElementById('relationship-timeline-add');
         const countLabel = document.getElementById('relationship-timeline-count');

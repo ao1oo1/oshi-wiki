@@ -24,6 +24,18 @@ class StoreOriginalCharacterRelationshipRequest extends FormRequest
         );
 
         return [
+            'from_work_ref' => [
+                'nullable',
+                'string',
+                'max:100',
+                'regex:/^(original|work:\d+)$/',
+            ],
+            'to_work_ref' => [
+                'nullable',
+                'string',
+                'max:100',
+                'regex:/^(original|work:\d+)$/',
+            ],
             'from_character_ref' => [
                 'required',
                 'string',
@@ -83,6 +95,8 @@ class StoreOriginalCharacterRelationshipRequest extends FormRequest
     public function attributes(): array
     {
         return [
+            'from_work_ref' => '関係元の作品',
+            'to_work_ref' => '関係先の作品',
             'from_character_ref' => '関係元キャラクター',
             'to_character_ref' => '関係先キャラクター',
             'called_name' => '呼び方',
@@ -96,6 +110,10 @@ class StoreOriginalCharacterRelationshipRequest extends FormRequest
     public function messages(): array
     {
         return [
+            'from_work_ref.regex' =>
+                '関係元の作品を正しく選択してください。',
+            'to_work_ref.regex' =>
+                '関係先の作品を正しく選択してください。',
             'from_character_ref.regex' =>
                 '関係元キャラクターを正しく選択してください。',
             'to_character_ref.regex' =>
