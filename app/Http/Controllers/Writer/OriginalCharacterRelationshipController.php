@@ -197,6 +197,7 @@ class OriginalCharacterRelationshipController extends Controller
     {
         return Work::query()
             ->with([
+                'parentWork',
                 'linkedCharacters' => function ($query): void {
                     $query
                         ->where('characters.status', 'published')
@@ -207,6 +208,23 @@ class OriginalCharacterRelationshipController extends Controller
             ->whereHas('linkedCharacters', function ($query): void {
                 $query->where('characters.status', 'published');
             })
+            ->where(function ($query): void {
+                $query
+                    ->whereNull('parent_work_id')
+                    ->orWhereHas(
+                        'parentWork',
+                        fn ($parentQuery) =>
+                            $parentQuery->where(
+                                'status',
+                                'published'
+                            )
+                    );
+            })
+            ->orderByRaw(
+                'COALESCE(parent_work_id, id)'
+            )
+            ->orderBy('parent_work_id')
+            ->orderBy('child_sort_order')
             ->orderBy('title')
             ->get()
             ->each(function (Work $work): void {

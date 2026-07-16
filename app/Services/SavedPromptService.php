@@ -274,10 +274,18 @@ class SavedPromptService
             )
         ) {
             $work = Work::query()
+                ->with('parentWork')
                 ->where('status', 'published')
                 ->find((int) $matches[1]);
 
-            if (! $work) {
+            if (
+                ! $work
+                || (
+                    $work->parent_work_id !== null
+                    && $work->parentWork?->status
+                        !== 'published'
+                )
+            ) {
                 throw ValidationException::withMessages([
                     'work_ref' =>
                         '選択した公開作品が見つかりません。',
@@ -598,11 +606,27 @@ class SavedPromptService
             return 'オリジナル';
         }
 
-        return Work::query()
+        $work = Work::query()
+            ->with('parentWork')
             ->where('status', 'published')
-            ->find((int) $data['work_id'])
-            ?->title
-            ?? '参照できない作品';
+            ->find((int) $data['work_id']);
+
+        if (
+            ! $work
+            || (
+                $work->parent_work_id !== null
+                && $work->parentWork?->status
+                    !== 'published'
+            )
+        ) {
+            return '参照できない作品';
+        }
+
+        return $work->parentWork
+            ? $work->parentWork->title
+                . ' ＞ '
+                . $work->title
+            : $work->title;
     }
 
     private function buildStoryAnalysisText(

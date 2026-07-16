@@ -222,6 +222,25 @@ class OriginalCharacterRelationshipService
 
             $workId = (int) $workMatches[1];
 
+            $work = \App\Models\Work::query()
+                ->with('parentWork')
+                ->where('status', 'published')
+                ->find($workId);
+
+            if (
+                ! $work
+                || (
+                    $work->parent_work_id !== null
+                    && $work->parentWork?->status
+                        !== 'published'
+                )
+            ) {
+                throw ValidationException::withMessages([
+                    $field =>
+                        '選択した公開作品が見つかりません。',
+                ]);
+            }
+
             $characterQuery->whereHas(
                 'linkedWorks',
                 function ($query) use ($workId): void {
