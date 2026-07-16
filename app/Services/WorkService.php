@@ -6,6 +6,7 @@ use App\Models\Work;
 use App\Repositories\WorkRepository;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Str;
 
 class WorkService
@@ -31,6 +32,8 @@ class WorkService
             [$workData, $tagIds, $canonEvents, $termUsages] = $this->splitRelatedData($data);
 
             $workData = $this->applyReviewRule($workData);
+            $workData = $this->normalizeParentData($workData);
+            $this->validateParentWork($workData['parent_work_id'] ?? null);
             $workData['status'] = $workData['status'] ?? 'draft';
             $workData['slug'] = $this->makeSlug($workData['title']);
 
@@ -49,6 +52,11 @@ class WorkService
             [$workData, $tagIds, $canonEvents, $termUsages] = $this->splitRelatedData($data);
 
             $workData = $this->applyReviewRule($workData);
+            $workData = $this->normalizeParentData($workData);
+            $this->validateParentWork(
+                $workData['parent_work_id'] ?? null,
+                $work
+            );
             $workData['status'] = $workData['status'] ?? $work->status;
             $workData['slug'] = $this->makeSlug($workData['title'], $work->id);
 
@@ -63,6 +71,15 @@ class WorkService
 
     public function delete(Work $work): bool
     {
+        if ($work->childWorks()->exists()) {
+            throw ValidationException::withMessages([
+                'work' =>
+                    '関連作品が登録されているため削除できません。'
+                    . '先に子作品の親作品設定を解除するか、'
+                    . '別の親作品へ変更してください。',
+            ]);
+        }
+
         return $this->repository->delete($work);
     }
 
@@ -80,6 +97,67 @@ class WorkService
         unset($data['tag_ids'], $data['canon_events'], $data['term_usages']);
 
         return [$data, $tagIds, $canonEvents, $termUsages];
+    }
+
+    private function normalizeParentData(array $data): array
+    {
+        $parentWorkId = $data['parent_work_id'] ?? null;
+
+        $data['parent_work_id'] = filled($parentWorkId)
+            ? (int) $parentWorkId
+            : null;
+
+        $data['child_sort_order'] = max(
+            0,
+            (int) ($data['child_sort_order'] ?? 0)
+        );
+
+        return $data;
+    }
+
+    private function validateParentWork(
+        ?int $parentWorkId,
+        ?Work $currentWork = null
+    ): void {
+        if (! $parentWorkId) {
+            return;
+        }
+
+        if (
+            $currentWork
+            && $parentWorkId === (int) $currentWork->id
+        ) {
+            throw ValidationException::withMessages([
+                'parent_work_id' =>
+                    '自分自身を親作品に設定することはできません。',
+            ]);
+        }
+
+        $parentWork = Work::query()->find($parentWorkId);
+
+        if (! $parentWork) {
+            throw ValidationException::withMessages([
+                'parent_work_id' =>
+                    '選択した親作品が見つかりません。',
+            ]);
+        }
+
+        if ($parentWork->parent_work_id !== null) {
+            throw ValidationException::withMessages([
+                'parent_work_id' =>
+                    '子作品を親作品として選択することはできません。',
+            ]);
+        }
+
+        if (
+            $currentWork
+            && $currentWork->childWorks()->exists()
+        ) {
+            throw ValidationException::withMessages([
+                'parent_work_id' =>
+                    '子作品を持つ作品を別作品の子にすることはできません。',
+            ]);
+        }
     }
 
     private function filterCanonEvents(array $events): array

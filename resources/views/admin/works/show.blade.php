@@ -169,6 +169,51 @@
                 @endif
             </div>
 
+            <section class="oshi-card mb-6">
+                <h2 class="mb-4 text-xl font-bold">
+                    作品の親子関係
+                </h2>
+
+                @if ($work->parentWork)
+                    <div class="mb-5">
+                        <p class="oshi-label">親作品</p>
+                        <a
+                            href="{{ route('admin.works.show', $work->parentWork) }}"
+                            class="text-[#2D3748] underline hover:no-underline"
+                        >
+                            {{ $work->parentWork->title }}
+                        </a>
+                    </div>
+                @endif
+
+                <div>
+                    <p class="oshi-label">関連作品</p>
+
+                    @if ($work->childWorks->isNotEmpty())
+                        <div class="mt-3 grid gap-3 md:grid-cols-2">
+                            @foreach ($work->childWorks as $childWork)
+                                <a
+                                    href="{{ route('admin.works.show', $childWork) }}"
+                                    class="rounded-xl border border-[#E2E8F0] bg-white p-4 hover:bg-[#FFF7FA]"
+                                >
+                                    <span class="font-bold text-[#2D3748]">
+                                        {{ $childWork->title }}
+                                    </span>
+
+                                    <span class="mt-1 block text-xs text-[#718096]">
+                                        表示順：{{ $childWork->child_sort_order }}
+                                    </span>
+                                </a>
+                            @endforeach
+                        </div>
+                    @else
+                        <p class="mt-2 text-[#718096]">
+                            関連作品は登録されていません。
+                        </p>
+                    @endif
+                </div>
+            </section>
+
             <div class="oshi-card">
                 <h2 class="mb-4 text-lg font-bold">キャラクター関係性</h2>
                 @if ($work->characterRelationships->count())

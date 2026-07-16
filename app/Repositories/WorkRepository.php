@@ -10,7 +10,7 @@ class WorkRepository
     public function paginate(int $perPage = 20, ?string $keyword = null, ?int $tagId = null, ?string $status = null, ?string $exactKeyword = null): LengthAwarePaginator
     {
         return Work::query()
-            ->with('tags')
+            ->with(['tags', 'parentWork'])
             ->when($keyword, function ($query) use ($keyword): void {
                 $query->where(function ($query) use ($keyword): void {
                     $query->where('title', 'like', '%' . $keyword . '%')
@@ -58,6 +58,9 @@ class WorkRepository
     {
         $work->load([
             'tags',
+            'parentWork',
+            'childWorks',
+            'publishedChildWorks',
             'canonEvents',
             'termUsages',
             'linkedCharacters.tags',

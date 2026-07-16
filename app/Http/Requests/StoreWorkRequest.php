@@ -43,6 +43,17 @@ class StoreWorkRequest extends FormRequest
     public function rules(): array
     {
         $rules = [
+            'parent_work_id' => [
+                'nullable',
+                'integer',
+                'exists:works,id',
+            ],
+            'child_sort_order' => [
+                'nullable',
+                'integer',
+                'min:0',
+                'max:9999',
+            ],
             'title' => ['required', 'string', 'max:255'],
             'title_kana' => ['nullable', 'string', 'max:255'],
             'genre' => ['nullable', 'string', 'max:255'],
@@ -75,6 +86,8 @@ class StoreWorkRequest extends FormRequest
     public function attributes(): array
     {
         return [
+            'parent_work_id' => '親作品',
+            'child_sort_order' => '関連作品の表示順',
             'title' => '作品名',
             'title_kana' => '読み仮名',
             'genre' => 'ジャンル',

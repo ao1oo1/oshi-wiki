@@ -129,6 +129,7 @@ class WorkCsvWorldbuildingRoundTripTest extends TestCase
                 'created_by', 'updated_by', 'published_at',
                 'created_at', 'updated_at', 'deleted_at',
                 'helpful_count', 'contributor_application_id',
+                'parent_work_id', 'child_sort_order',
             ]
         ));
     }
