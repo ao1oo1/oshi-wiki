@@ -55,6 +55,10 @@ class WorkController extends Controller
                 ->whereNull('deleted_at')
                 ->orderBy('name')
                 ->get(),
+            'parentWorkOptions' => Work::query()
+                ->whereNull('parent_work_id')
+                ->orderBy('title')
+                ->get(),
         ]);
     }
 
@@ -91,8 +95,19 @@ class WorkController extends Controller
         );
 
         return view('admin.works.edit', [
-            'work' => $work->load(['tags', 'canonEvents', 'termUsages']),
+            'work' => $work->load([
+                'tags',
+                'parentWork',
+                'childWorks',
+                'canonEvents',
+                'termUsages',
+            ]),
             'tags' => app(TagService::class)->all(),
+            'parentWorkOptions' => Work::query()
+                ->whereNull('parent_work_id')
+                ->whereKeyNot($work->id)
+                ->orderBy('title')
+                ->get(),
         ]);
     }
 
@@ -123,7 +138,12 @@ class WorkController extends Controller
             '作品管理のこの操作は最高管理者のみ可能です。'
         );
 
-        $this->service->delete($work);
+        try {
+            $this->service->delete($work);
+        } catch (\Illuminate\Validation\ValidationException $exception) {
+            return back()
+                ->withErrors($exception->errors());
+        }
 
         return redirect()
             ->route('admin.works.index')

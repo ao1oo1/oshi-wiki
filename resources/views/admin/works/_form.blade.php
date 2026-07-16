@@ -85,6 +85,91 @@
     <details class="oshi-card" open>
         <summary class="cursor-pointer text-lg font-bold">基本情報</summary>
         <div class="work-basic-grid mt-6 grid grid-cols-1 gap-6 lg:grid-cols-2">
+            <div class="work-form-field-full lg:col-span-2">
+                <div class="rounded-2xl border border-[#FED7E2] bg-[#FFF7FA] p-5">
+                    <h3 class="font-bold text-[#2D3748]">
+                        作品の親子関係
+                    </h3>
+
+                    <p class="mt-2 text-sm leading-7 text-[#718096]">
+                        章・シリーズなどを子作品として登録する場合は、
+                        親作品を選択してください。
+                        親子関係は2階層までです。
+                    </p>
+
+                    <div class="mt-5 grid gap-5 md:grid-cols-2">
+                        <div>
+                            <label for="parent_work_id" class="oshi-label">
+                                親作品
+                            </label>
+
+                            <select
+                                id="parent_work_id"
+                                name="parent_work_id"
+                                class="oshi-input"
+                            >
+                                <option value="">親作品なし（親・単独作品）</option>
+
+                                @foreach (($parentWorkOptions ?? collect()) as $parentOption)
+                                    <option
+                                        value="{{ $parentOption->id }}"
+                                        @selected(
+                                            (int) old(
+                                                'parent_work_id',
+                                                $work->parent_work_id ?? 0
+                                            ) === (int) $parentOption->id
+                                        )
+                                    >
+                                        {{ $parentOption->title }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div>
+                            <label for="child_sort_order" class="oshi-label">
+                                関連作品の表示順
+                            </label>
+
+                            <input
+                                id="child_sort_order"
+                                type="number"
+                                min="0"
+                                max="9999"
+                                name="child_sort_order"
+                                value="{{ old(
+                                    'child_sort_order',
+                                    $work->child_sort_order ?? 0
+                                ) }}"
+                                class="oshi-input"
+                            >
+
+                            <p class="mt-2 text-xs text-[#718096]">
+                                数字が小さい作品から順に表示します。
+                            </p>
+                        </div>
+                    </div>
+
+                    @if (isset($work) && $work->childWorks->isNotEmpty())
+                        <div class="mt-5 rounded-xl bg-white p-4">
+                            <p class="font-bold text-[#2D3748]">
+                                現在の関連作品
+                            </p>
+
+                            <ul class="mt-2 list-disc pl-5 text-sm leading-7 text-[#718096]">
+                                @foreach ($work->childWorks as $childWork)
+                                    <li>{{ $childWork->title }}</li>
+                                @endforeach
+                            </ul>
+
+                            <p class="mt-2 text-xs text-red-600">
+                                関連作品を持つ作品は、別作品の子には設定できません。
+                            </p>
+                        </div>
+                    @endif
+                </div>
+            </div>
+
             <div>
                 <label for="title" class="oshi-label">作品名</label>
                 <input id="title" type="text" name="title" value="{{ old('title', $work->title ?? '') }}" class="oshi-input" required>

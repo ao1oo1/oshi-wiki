@@ -208,6 +208,17 @@ class WorkCsvImportService
     private function rules(): array
     {
         $rules = [
+            'parent_work_id' => [
+                'nullable',
+                'integer',
+                'exists:works,id',
+            ],
+            'child_sort_order' => [
+                'nullable',
+                'integer',
+                'min:0',
+                'max:9999',
+            ],
             'title' => ['required', 'string', 'max:255'],
             'title_kana' => ['nullable', 'string', 'max:255'],
             'genre' => ['nullable', 'string', 'max:255'],

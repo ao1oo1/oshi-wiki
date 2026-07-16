@@ -29,6 +29,7 @@ class WorkController extends Controller
                 },
             ])
             ->where('status', 'published')
+            ->whereNull('parent_work_id')
             ->latest()
             ->limit(9)
             ->get();
@@ -93,6 +94,7 @@ class WorkController extends Controller
                 },
             ])
             ->where('status', 'published')
+            ->whereNull('parent_work_id')
             ->when($tagId, function ($query) use ($tagId) {
                 $query->whereHas('tags', function ($query) use ($tagId) {
                     $query->where('tags.id', $tagId);
@@ -193,6 +195,19 @@ class WorkController extends Controller
 
     public function show(Work $work): View
     {
+        $work->loadMissing([
+            'parentWork',
+            'publishedChildWorks',
+        ]);
+
+        if (
+            $work->parentWork
+            && ! $work->parentWork->isPublished()
+        ) {
+            abort(404);
+        }
+
+
         abort_unless($work->status === 'published', 404);
 
         $work->load([

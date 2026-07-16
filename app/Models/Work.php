@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -13,6 +14,8 @@ class Work extends Model
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
+        'parent_work_id',
+        'child_sort_order',
         'contributor_application_id',
         'helpful_count',
         'title',
@@ -59,7 +62,43 @@ class Work extends Model
     {
         return [
             'published_at' => 'datetime',
+            'parent_work_id' => 'integer',
+            'child_sort_order' => 'integer',
         ];
+    }
+
+    public function parentWork(): BelongsTo
+    {
+        return $this->belongsTo(
+            self::class,
+            'parent_work_id'
+        );
+    }
+
+    public function childWorks(): HasMany
+    {
+        return $this->hasMany(
+            self::class,
+            'parent_work_id'
+        )
+            ->orderBy('child_sort_order')
+            ->orderBy('id');
+    }
+
+    public function publishedChildWorks(): HasMany
+    {
+        return $this->childWorks()
+            ->where('status', 'published');
+    }
+
+    public function isChildWork(): bool
+    {
+        return $this->parent_work_id !== null;
+    }
+
+    public function isRootWork(): bool
+    {
+        return $this->parent_work_id === null;
     }
 
     public function tags(): BelongsToMany

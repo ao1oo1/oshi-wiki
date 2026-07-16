@@ -59,6 +59,58 @@
             </div>
         </section>
 
+        @if ($work->parentWork)
+            <section class="oshi-card">
+                <p class="mb-2 text-sm font-bold text-[#A0AEC0]">
+                    親作品
+                </p>
+
+                <a
+                    href="{{ route('public.works.show', $work->parentWork) }}"
+                    class="inline-flex font-bold text-[#2D3748] underline hover:no-underline"
+                >
+                    {{ $work->parentWork->title }}
+                </a>
+            </section>
+        @endif
+
+        @if ($work->publishedChildWorks->isNotEmpty())
+            <section class="oshi-card">
+                <div class="mb-5">
+                    <h2 class="text-2xl font-bold">
+                        関連作品
+                    </h2>
+
+                    <p class="mt-2 text-sm leading-7 text-[#718096]">
+                        この作品に紐づく章・シリーズ作品です。
+                    </p>
+                </div>
+
+                <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+                    @foreach ($work->publishedChildWorks as $childWork)
+                        <a
+                            href="{{ route('public.works.show', $childWork) }}"
+                            class="block rounded-2xl border border-[#E2E8F0] bg-white p-5 transition hover:border-[#FED7E2] hover:bg-[#FFF7FA]"
+                        >
+                            <span class="text-xs font-bold text-[#E879A0]">
+                                関連作品
+                            </span>
+
+                            <h3 class="mt-2 text-lg font-bold text-[#2D3748]">
+                                {{ $childWork->title }}
+                            </h3>
+
+                            @if ($childWork->description)
+                                <p class="mt-3 line-clamp-3 text-sm leading-7 text-[#718096]">
+                                    {{ $childWork->description }}
+                                </p>
+                            @endif
+                        </a>
+                    @endforeach
+                </div>
+            </section>
+        @endif
+
         <section class="oshi-card">
             <h2 class="mb-4 text-2xl font-bold">
                 キャラクター
