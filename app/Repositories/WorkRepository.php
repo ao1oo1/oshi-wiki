@@ -7,7 +7,15 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 class WorkRepository
 {
-    public function paginate(int $perPage = 20, ?string $keyword = null, ?int $tagId = null, ?string $status = null, ?string $exactKeyword = null): LengthAwarePaginator
+    public function paginate(
+        int $perPage = 20,
+        ?string $keyword = null,
+        ?int $tagId = null,
+        ?string $status = null,
+        ?string $exactKeyword = null,
+        ?string $workType = null,
+        ?int $parentWorkId = null
+    ): LengthAwarePaginator
     {
         return Work::query()
             ->with(['tags', 'parentWork'])
@@ -26,6 +34,26 @@ class WorkRepository
                 });
             })
             ->when($status, fn ($query) => $query->where('status', $status))
+            ->when($workType, function ($query) use ($workType): void {
+                match ($workType) {
+                    'parent' => $query
+                        ->whereNull('parent_work_id')
+                        ->whereHas('childWorks'),
+                    'standalone' => $query
+                        ->whereNull('parent_work_id')
+                        ->whereDoesntHave('childWorks'),
+                    'child' => $query
+                        ->whereNotNull('parent_work_id'),
+                    default => null,
+                };
+            })
+            ->when(
+                $parentWorkId,
+                fn ($query) => $query->where(
+                    'parent_work_id',
+                    $parentWorkId
+                )
+            )
             ->when($exactKeyword, function ($query) use ($exactKeyword): void {
                 $query->where(function ($query) use ($exactKeyword): void {
                     $query->where('title', $exactKeyword)

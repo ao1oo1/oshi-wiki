@@ -87,6 +87,17 @@ class WorkCsvImportService
                     $defaultStatus
                 );
 
+                if (
+                    in_array('parent_work_title', $header, true)
+                    && ! filled($payload['parent_work_id'] ?? null)
+                ) {
+                    $payload['parent_work_id'] =
+                        $this->resolveParentWorkIdByTitle(
+                            $data['parent_work_title'] ?? null,
+                            $existingWork
+                        );
+                }
+
                 $validator = Validator::make(
                     $payload,
                     $this->rules(),
@@ -338,6 +349,42 @@ class WorkCsvImportService
             ->values()
             ->map(fn ($model) => $model->only($fillable))
             ->all();
+    }
+
+    private function resolveParentWorkIdByTitle(
+        mixed $title,
+        ?Work $existingWork = null
+    ): ?int {
+        $title = trim((string) $title);
+
+        if ($title === '') {
+            return null;
+        }
+
+        $query = Work::query()
+            ->whereNull('parent_work_id')
+            ->where('title', $title);
+
+        if ($existingWork) {
+            $query->whereKeyNot($existingWork->id);
+        }
+
+        $matches = $query->get();
+
+        if ($matches->isEmpty()) {
+            throw new \InvalidArgumentException(
+                "親作品「{$title}」が見つかりません。"
+            );
+        }
+
+        if ($matches->count() > 1) {
+            throw new \InvalidArgumentException(
+                "親作品「{$title}」は同名が複数存在するため、"
+                . "parent_work_idで指定してください。"
+            );
+        }
+
+        return (int) $matches->first()->id;
     }
 
     private function resolveCharacterIds(array $data): array
