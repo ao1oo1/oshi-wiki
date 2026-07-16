@@ -53,6 +53,8 @@ class OriginalCharacterRelationshipService
         $payload = array_merge($data, $resolved);
 
         unset(
+            $payload['from_work_ref'],
+            $payload['to_work_ref'],
             $payload['from_character_ref'],
             $payload['to_character_ref']
         );
@@ -78,6 +80,8 @@ class OriginalCharacterRelationshipService
         $payload = array_merge($data, $resolved);
 
         unset(
+            $payload['from_work_ref'],
+            $payload['to_work_ref'],
             $payload['from_character_ref'],
             $payload['to_character_ref']
         );
@@ -100,12 +104,14 @@ class OriginalCharacterRelationshipService
     ): array {
         $from = $this->resolveCharacterRef(
             $user,
+            (string) ($data['from_work_ref'] ?? ''),
             (string) ($data['from_character_ref'] ?? ''),
             'from_character_ref'
         );
 
         $to = $this->resolveCharacterRef(
             $user,
+            (string) ($data['to_work_ref'] ?? ''),
             (string) ($data['to_character_ref'] ?? ''),
             'to_character_ref'
         );
@@ -152,6 +158,7 @@ class OriginalCharacterRelationshipService
 
     private function resolveCharacterRef(
         User $user,
+        string $workRef,
         string $ref,
         string $field
     ): array {
@@ -175,6 +182,13 @@ class OriginalCharacterRelationshipService
             $source
             === OriginalCharacterRelationship::SOURCE_ORIGINAL
         ) {
+            if ($workRef !== '' && $workRef !== 'original') {
+                throw ValidationException::withMessages([
+                    $field =>
+                        '選択した作品とキャラクターが一致しません。',
+                ]);
+            }
+
             $character = OriginalCharacter::query()
                 ->where('user_id', $user->id)
                 ->find($id);
@@ -193,17 +207,45 @@ class OriginalCharacterRelationshipService
             ];
         }
 
-        $character = Character::query()
-            ->where('status', 'published')
-            ->whereHas('linkedWorks', function ($query): void {
-                $query->where('works.status', 'published');
-            })
-            ->find($id);
+        $characterQuery = Character::query()
+            ->where('status', 'published');
+
+        if ($workRef !== '') {
+            if (
+                ! preg_match('/^work:(\d+)$/', $workRef, $workMatches)
+            ) {
+                throw ValidationException::withMessages([
+                    $field =>
+                        '登録済みキャラクターの作品を選択してください。',
+                ]);
+            }
+
+            $workId = (int) $workMatches[1];
+
+            $characterQuery->whereHas(
+                'linkedWorks',
+                function ($query) use ($workId): void {
+                    $query
+                        ->where('works.id', $workId)
+                        ->where('works.status', 'published');
+                }
+            );
+        } else {
+            // 旧画面・既存テストとの互換用。
+            $characterQuery->whereHas(
+                'linkedWorks',
+                function ($query): void {
+                    $query->where('works.status', 'published');
+                }
+            );
+        }
+
+        $character = $characterQuery->find($id);
 
         if (! $character) {
             throw ValidationException::withMessages([
                 $field =>
-                    '公開中の登録済みキャラクターが見つかりません。',
+                    '選択した作品に登録されている公開キャラクターが見つかりません。',
             ]);
         }
 
