@@ -6543,3 +6543,57 @@ label:has(> input[type="radio"])
     margin: 0;
 }
 /* ADMIN_INDEX_STATUS_ACTION_CENTERING_END */
+
+/* =========================================================
+   管理画面：作品一覧の右端切れ防止
+========================================================= */
+.oshi-admin-layout {
+    min-width: 0;
+}
+
+.oshi-admin-main {
+    width: 100%;
+    max-width: none;
+    min-width: 0;
+    box-sizing: border-box;
+    overflow-x: hidden;
+}
+
+.admin-index-shell {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+}
+
+.admin-index-shell .oshi-table-wrap,
+.admin-index-shell .staff-work-mobile-table-shell {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    -webkit-overflow-scrolling: touch;
+}
+
+.admin-index-shell .oshi-table {
+    min-width: 1040px;
+}
+
+@media (max-width: 1024px) {
+    .oshi-admin-main {
+        padding-right: 24px;
+        padding-left: 24px;
+    }
+}
+
+@media (max-width: 767px) {
+    .oshi-admin-main {
+        padding-right: 16px;
+        padding-left: 16px;
+    }
+
+    .admin-index-shell .oshi-table {
+        min-width: 920px;
+    }
+}
