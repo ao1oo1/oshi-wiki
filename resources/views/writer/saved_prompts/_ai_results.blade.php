@@ -18,8 +18,10 @@
 @endphp
 
 @if ($prompt)
-    <section
-        id="saved-prompt-ai-results"
+    {{-- AI回答保存機能は一時停止中。再開時は false を機能フラグへ戻す。 --}}
+    @if (false)
+        <section
+            id="saved-prompt-ai-results"
         class="mt-8 rounded-3xl border border-[#FED7E2] bg-white p-5 shadow-sm sm:p-6 md:p-8"
     >
         <div class="mb-6">
@@ -148,7 +150,8 @@
                     : 'AIが出した結論を保存する' }}
             </button>
         </form>
-    </section>
+        </section>
+    @endif
 
     {{-- V3_RECOMMENDED_FOLLOWUP_PROMPTS --}}
     <section class="mt-8 rounded-3xl border border-[#E2E8F0] bg-white p-5 shadow-sm sm:p-6 md:p-8">
