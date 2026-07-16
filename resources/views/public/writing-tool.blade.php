@@ -250,6 +250,105 @@
             }
         }
     </style>
+    <style>
+        /* WRITING_TOOL_CTA_CAUTION_FIX_V4 */
+
+        .writing-tool-page-redesign .writing-lp-caution-card {
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: center !important;
+            justify-content: center !important;
+            text-align: center !important;
+        }
+
+        .writing-tool-page-redesign .writing-lp-caution-card > * {
+            text-align: center !important;
+        }
+
+        .writing-tool-page-redesign .writing-lp-caution-card h2,
+        .writing-tool-page-redesign .writing-lp-caution-card h3,
+        .writing-tool-page-redesign .writing-lp-caution-card p,
+        .writing-tool-page-redesign .writing-lp-caution-card ul,
+        .writing-tool-page-redesign .writing-lp-caution-card li,
+        .writing-tool-page-redesign .writing-lp-caution-card .writing-lp-ai-disclosure,
+        .writing-tool-page-redesign .writing-lp-caution-card .writing-lp-ai-disclosure-line {
+            text-align: center !important;
+        }
+
+        .writing-tool-page-redesign .writing-lp-caution-card ul {
+            margin-left: auto !important;
+            margin-right: auto !important;
+            padding-left: 0 !important;
+            list-style-position: inside !important;
+        }
+
+        .writing-tool-page-redesign .writing-lp-final-cta-card {
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: flex-start !important;
+            justify-content: center !important;
+            gap: 20px !important;
+            padding: 72px 88px !important;
+            border-radius: 40px !important;
+            border: 1px solid #f3b8ca !important;
+            background: #fde7ef !important;
+            text-align: left !important;
+        }
+
+        .writing-tool-page-redesign .writing-lp-final-cta-card > * {
+            text-align: left !important;
+        }
+
+        .writing-tool-page-redesign .writing-lp-final-cta-card .writing-lp-badge,
+        .writing-tool-page-redesign .writing-lp-final-cta-card .writing-lp-chip,
+        .writing-tool-page-redesign .writing-lp-final-cta-card .writing-lp-section-badge {
+            align-self: flex-start !important;
+            margin-bottom: 8px !important;
+        }
+
+        .writing-tool-page-redesign .writing-lp-final-cta-card h2 {
+            max-width: none !important;
+            margin: 0 !important;
+            font-size: clamp(42px, 5.4vw, 74px) !important;
+            line-height: 1.14 !important;
+            letter-spacing: -.03em !important;
+            white-space: normal !important;
+            text-align: left !important;
+        }
+
+        .writing-tool-page-redesign .writing-lp-final-cta-card p {
+            max-width: 980px !important;
+            margin: 0 !important;
+            font-size: 17px !important;
+            line-height: 1.8 !important;
+            text-align: left !important;
+        }
+
+        .writing-tool-page-redesign .writing-lp-final-cta-card .writing-lp-button-row,
+        .writing-tool-page-redesign .writing-lp-final-cta-card .writing-lp-actions,
+        .writing-tool-page-redesign .writing-lp-final-cta-card .writing-lp-cta-actions {
+            display: flex !important;
+            justify-content: flex-start !important;
+            align-items: center !important;
+            gap: 16px !important;
+            width: 100% !important;
+        }
+
+        @media (max-width: 900px) {
+            .writing-tool-page-redesign .writing-lp-final-cta-card {
+                padding: 48px 32px !important;
+                border-radius: 28px !important;
+            }
+
+            .writing-tool-page-redesign .writing-lp-final-cta-card h2 {
+                font-size: clamp(34px, 8vw, 52px) !important;
+            }
+
+            .writing-tool-page-redesign .writing-lp-final-cta-card p {
+                font-size: 15px !important;
+            }
+        }
+    </style>
 </head>
 <body class="writing-tool-page-redesign">
     @include('public.partials.header')
