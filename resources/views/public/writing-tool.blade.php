@@ -59,6 +59,63 @@
             .writing-tool-page-redesign .writing-lp-final-cta-card { padding: 28px 22px; border-radius: 26px; }
         }
     </style>
+
+    <style>
+        /* WRITING_TOOL_LAYOUT_FIX_V2 */
+        .writing-tool-page-redesign .writing-lp-hero-visual {
+            display: grid !important;
+            grid-template-columns: 1fr !important;
+            gap: 18px !important;
+            align-items: stretch !important;
+        }
+
+        .writing-tool-page-redesign .writing-lp-visual-card,
+        .writing-tool-page-redesign .writing-lp-visual-card:nth-child(2),
+        .writing-tool-page-redesign .writing-lp-visual-card-accent {
+            width: 100% !important;
+            min-height: 194px !important;
+            margin-left: 0 !important;
+        }
+
+        .writing-tool-page-redesign .writing-lp-caution-card {
+            display: block !important;
+        }
+
+        .writing-tool-page-redesign .writing-lp-caution-card > div {
+            width: 100% !important;
+        }
+
+        .writing-tool-page-redesign .writing-lp-caution-card > div + div {
+            margin-top: 28px !important;
+        }
+
+        .writing-tool-page-redesign .writing-lp-caution-card ul {
+            max-width: none !important;
+            margin: 0 !important;
+            padding-left: 1.4em !important;
+        }
+
+        .writing-tool-page-redesign .writing-lp-ai-disclosure-line {
+            display: block !important;
+        }
+
+        @media (max-width: 760px) {
+            .writing-tool-page-redesign .writing-lp-visual-card,
+            .writing-tool-page-redesign .writing-lp-visual-card:nth-child(2),
+            .writing-tool-page-redesign .writing-lp-visual-card-accent {
+                min-height: 0 !important;
+            }
+
+            .writing-tool-page-redesign .writing-lp-ai-disclosure-line {
+                display: inline !important;
+            }
+
+            .writing-tool-page-redesign .writing-lp-ai-disclosure-line + .writing-lp-ai-disclosure-line::before {
+                content: " ";
+            }
+        }
+    </style>
+
 </head>
 <body class="writing-tool-page-redesign">
     @include('public.partials.header')
@@ -206,12 +263,12 @@
                     </ul>
 
                     <p class="writing-lp-ai-disclosure">
-                        夢小説をWebサイトや投稿サービスなどで公開する場合は、
-                        AIを使用していることを明記してください。
-                        また、差し支えなければ
-                        <strong>#oshiwiki</strong>
-                        を付けていただけるとうれしいです。
-                        投稿された作品を読みに伺います。
+                        <span class="writing-lp-ai-disclosure-line">
+                            夢小説をWebサイトや投稿サービスなどで公開する場合は、AIを使用していることを明記してください。
+                        </span>
+                        <span class="writing-lp-ai-disclosure-line">
+                            また、差し支えなければ <strong>#oshiwiki</strong> を付けていただけるとうれしいです。投稿された作品を読みに伺います。
+                        </span>
                     </p>
                 </div>
             </div>
