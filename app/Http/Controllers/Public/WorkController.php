@@ -36,6 +36,7 @@ class WorkController extends Controller
 
         $worksCount = Work::query()
             ->where('status', 'published')
+            ->whereNull('parent_work_id')
             ->count();
 
         $tags = Tag::query()
@@ -96,68 +97,53 @@ class WorkController extends Controller
             ->where('status', 'published')
             ->whereNull('parent_work_id')
             ->when($tagId, function ($query) use ($tagId) {
-                $query->whereHas('tags', function ($query) use ($tagId) {
-                    $query->where('tags.id', $tagId);
+                $query->where(function ($query) use ($tagId): void {
+                    $query
+                        ->whereHas(
+                            'tags',
+                            fn ($tagQuery) =>
+                                $tagQuery->where(
+                                    'tags.id',
+                                    $tagId
+                                )
+                        )
+                        ->orWhereHas(
+                            'publishedChildWorks.tags',
+                            fn ($tagQuery) =>
+                                $tagQuery->where(
+                                    'tags.id',
+                                    $tagId
+                                )
+                        );
                 });
             })
-            ->when($keywords->count(), function ($query) use ($keywords) {
-                foreach ($keywords as $word) {
-                    $query->where(function ($query) use ($word) {
-                        $like = '%' . $word . '%';
+            ->when(
+                $keywords->count(),
+                function ($query) use ($keywords): void {
+                    foreach ($keywords as $word) {
+                        $query->where(
+                            function ($query) use ($word): void {
+                                $like = '%' . $word . '%';
 
-                        $query->where('title', 'like', $like)
-                            ->orWhere('title_kana', 'like', $like)
-                            ->orWhere('genre', 'like', $like)
-                            ->orWhere('original_media', 'like', $like)
-                            ->orWhere('description', 'like', $like)
-                            ->orWhereHas('tags', function ($query) use ($like) {
-                                $query->where('tags.name', 'like', $like)
-                                    ->orWhere('tags.type', 'like', $like)
-                                    ->orWhere('tags.description', 'like', $like);
-                            })
-                            ->orWhereHas('linkedCharacters', function ($query) use ($like) {
-                                $query->where('characters.status', 'published')
-                                    ->where(function ($query) use ($like) {
-                                        $query->where('characters.name', 'like', $like)
-                                            ->orWhere('characters.name_kana', 'like', $like)
-                                            ->orWhere('characters.real_name', 'like', $like)
-                                            ->orWhere('characters.aliases', 'like', $like)
-                                            ->orWhere('characters.name_english', 'like', $like)
-                                            ->orWhere('characters.gender', 'like', $like)
-                                            ->orWhere('characters.age', 'like', $like)
-                                            ->orWhere('characters.birthday', 'like', $like)
-                                            ->orWhere('characters.height', 'like', $like)
-                                            ->orWhere('characters.weight', 'like', $like)
-                                            ->orWhere('characters.blood_type', 'like', $like)
-                                            ->orWhere('characters.birthplace', 'like', $like)
-                                            ->orWhere('characters.species', 'like', $like)
-                                            ->orWhere('characters.affiliation', 'like', $like)
-                                            ->orWhere('characters.school_grade_class', 'like', $like)
-                                            ->orWhere('characters.occupation_position', 'like', $like)
-                                            ->orWhere('characters.family_structure', 'like', $like)
-                                            ->orWhere('characters.first_person', 'like', $like)
-                                            ->orWhere('characters.second_person', 'like', $like)
-                                            ->orWhere('characters.basic_tone', 'like', $like)
-                                            ->orWhere('characters.catchphrases', 'like', $like)
-                                            ->orWhere('characters.distinctive_speech', 'like', $like)
-                                            ->orWhere('characters.tone_by_relationship', 'like', $like)
-                                            ->orWhere('characters.short_quote_examples', 'like', $like)
-                                            ->orWhere('characters.personality', 'like', $like)
-                                            ->orWhere('characters.appearance', 'like', $like)
-                                            ->orWhere('characters.abilities', 'like', $like)
-                                            ->orWhere('characters.background', 'like', $like)
-                                            ->orWhere('characters.story_activities', 'like', $like)
-                                            ->orWhere('characters.source_title', 'like', $like)
-                                            ->orWhereHas('tags', function ($query) use ($like) {
-                                                $query->where('tags.name', 'like', $like)
-                                                    ->orWhere('tags.type', 'like', $like)
-                                                    ->orWhere('tags.description', 'like', $like);
-                                            });
-                                    });
-                            });
-                    });
+                                $this->applyWorkSearchMatch(
+                                    $query,
+                                    $like
+                                );
+
+                                $query->orWhereHas(
+                                    'publishedChildWorks',
+                                    function ($childQuery) use ($like): void {
+                                        $this->applyWorkSearchMatch(
+                                            $childQuery,
+                                            $like
+                                        );
+                                    }
+                                );
+                            }
+                        );
+                    }
                 }
-            })
+            )
             ->latest()
             ->paginate(20)
             ->withQueryString();
@@ -191,6 +177,217 @@ class WorkController extends Controller
             'worksCount' => null,
             'tagsCount' => null,
         ]);
+    }
+
+    private function applyWorkSearchMatch(
+        $query,
+        string $like
+    ): void {
+        $query
+            ->where('title', 'like', $like)
+            ->orWhere('title_kana', 'like', $like)
+            ->orWhere('genre', 'like', $like)
+            ->orWhere('original_media', 'like', $like)
+            ->orWhere('description', 'like', $like)
+            ->orWhereHas(
+                'tags',
+                function ($tagQuery) use ($like): void {
+                    $tagQuery
+                        ->where('tags.name', 'like', $like)
+                        ->orWhere('tags.type', 'like', $like)
+                        ->orWhere(
+                            'tags.description',
+                            'like',
+                            $like
+                        );
+                }
+            )
+            ->orWhereHas(
+                'linkedCharacters',
+                function ($characterQuery) use ($like): void {
+                    $characterQuery
+                        ->where(
+                            'characters.status',
+                            'published'
+                        )
+                        ->where(
+                            function ($characterQuery) use ($like): void {
+                                $characterQuery
+                                    ->where(
+                                        'characters.name',
+                                        'like',
+                                        $like
+                                    )
+                                    ->orWhere(
+                                        'characters.name_kana',
+                                        'like',
+                                        $like
+                                    )
+                                    ->orWhere(
+                                        'characters.real_name',
+                                        'like',
+                                        $like
+                                    )
+                                    ->orWhere(
+                                        'characters.aliases',
+                                        'like',
+                                        $like
+                                    )
+                                    ->orWhere(
+                                        'characters.name_english',
+                                        'like',
+                                        $like
+                                    )
+                                    ->orWhere(
+                                        'characters.gender',
+                                        'like',
+                                        $like
+                                    )
+                                    ->orWhere(
+                                        'characters.age',
+                                        'like',
+                                        $like
+                                    )
+                                    ->orWhere(
+                                        'characters.birthday',
+                                        'like',
+                                        $like
+                                    )
+                                    ->orWhere(
+                                        'characters.height',
+                                        'like',
+                                        $like
+                                    )
+                                    ->orWhere(
+                                        'characters.weight',
+                                        'like',
+                                        $like
+                                    )
+                                    ->orWhere(
+                                        'characters.blood_type',
+                                        'like',
+                                        $like
+                                    )
+                                    ->orWhere(
+                                        'characters.birthplace',
+                                        'like',
+                                        $like
+                                    )
+                                    ->orWhere(
+                                        'characters.species',
+                                        'like',
+                                        $like
+                                    )
+                                    ->orWhere(
+                                        'characters.affiliation',
+                                        'like',
+                                        $like
+                                    )
+                                    ->orWhere(
+                                        'characters.school_grade_class',
+                                        'like',
+                                        $like
+                                    )
+                                    ->orWhere(
+                                        'characters.occupation_position',
+                                        'like',
+                                        $like
+                                    )
+                                    ->orWhere(
+                                        'characters.family_structure',
+                                        'like',
+                                        $like
+                                    )
+                                    ->orWhere(
+                                        'characters.first_person',
+                                        'like',
+                                        $like
+                                    )
+                                    ->orWhere(
+                                        'characters.second_person',
+                                        'like',
+                                        $like
+                                    )
+                                    ->orWhere(
+                                        'characters.basic_tone',
+                                        'like',
+                                        $like
+                                    )
+                                    ->orWhere(
+                                        'characters.catchphrases',
+                                        'like',
+                                        $like
+                                    )
+                                    ->orWhere(
+                                        'characters.distinctive_speech',
+                                        'like',
+                                        $like
+                                    )
+                                    ->orWhere(
+                                        'characters.tone_by_relationship',
+                                        'like',
+                                        $like
+                                    )
+                                    ->orWhere(
+                                        'characters.short_quote_examples',
+                                        'like',
+                                        $like
+                                    )
+                                    ->orWhere(
+                                        'characters.personality',
+                                        'like',
+                                        $like
+                                    )
+                                    ->orWhere(
+                                        'characters.appearance',
+                                        'like',
+                                        $like
+                                    )
+                                    ->orWhere(
+                                        'characters.abilities',
+                                        'like',
+                                        $like
+                                    )
+                                    ->orWhere(
+                                        'characters.background',
+                                        'like',
+                                        $like
+                                    )
+                                    ->orWhere(
+                                        'characters.story_activities',
+                                        'like',
+                                        $like
+                                    )
+                                    ->orWhere(
+                                        'characters.source_title',
+                                        'like',
+                                        $like
+                                    )
+                                    ->orWhereHas(
+                                        'tags',
+                                        function ($tagQuery) use ($like): void {
+                                            $tagQuery
+                                                ->where(
+                                                    'tags.name',
+                                                    'like',
+                                                    $like
+                                                )
+                                                ->orWhere(
+                                                    'tags.type',
+                                                    'like',
+                                                    $like
+                                                )
+                                                ->orWhere(
+                                                    'tags.description',
+                                                    'like',
+                                                    $like
+                                                );
+                                        }
+                                    );
+                            }
+                        );
+                }
+            );
     }
 
     public function show(Work $work): View
