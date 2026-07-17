@@ -52,7 +52,7 @@ class StoreSavedPromptRequest extends FormRequest
             ],
             'selected_character_refs.*' => [
                 'string',
-                'max:500',
+                'max:2000',
                 'regex:/^(original|v1):\\d+$/',
             ],
 
