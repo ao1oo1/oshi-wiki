@@ -202,6 +202,38 @@ Route::middleware(['auth', 'admin.user', 'password.changed'])->prefix('admin')->
         \App\Http\Controllers\Admin\WorkStorySectionBulkActionController::class
     )->name('works.story-sections.bulk-action');
 
+    Route::get(
+        'works/{work}/story-sections/{storySection}/events/csv',
+        [
+            \App\Http\Controllers\Admin\WorkStorySectionEventCsvController::class,
+            'create',
+        ]
+    )->name('works.story-sections.events.csv.create');
+
+    Route::post(
+        'works/{work}/story-sections/{storySection}/events/csv',
+        [
+            \App\Http\Controllers\Admin\WorkStorySectionEventCsvController::class,
+            'store',
+        ]
+    )->name('works.story-sections.events.csv.store');
+
+    Route::get(
+        'works/{work}/story-sections/{storySection}/events/csv/export',
+        [
+            \App\Http\Controllers\Admin\WorkStorySectionEventCsvController::class,
+            'export',
+        ]
+    )->name('works.story-sections.events.csv.export');
+
+    Route::get(
+        'story-section-events/csv/sample',
+        [
+            \App\Http\Controllers\Admin\WorkStorySectionEventCsvController::class,
+            'sample',
+        ]
+    )->name('story-section-events.csv.sample');
+
     Route::resource(
         'works.story-sections',
         \App\Http\Controllers\Admin\WorkStorySectionController::class
