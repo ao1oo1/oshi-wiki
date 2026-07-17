@@ -64,9 +64,40 @@
             </div>
 
             <div class="oshi-card mb-5">
-                <h2 class="mb-4 text-lg font-bold">
-                    物語詳細（{{ $section->events->count() }}件）
-                </h2>
+                <div class="mb-4 flex flex-wrap items-center justify-between gap-3">
+                    <div>
+                        <h2 class="text-lg font-bold">
+                            物語詳細（{{ $section->events->count() }}件）
+                        </h2>
+                        <p class="mt-1 text-sm text-[#718096]">
+                            この章で起きる出来事を時系列で管理します。
+                        </p>
+                    </div>
+
+                    @if (auth()->user()?->canManageAllAdminFeatures())
+                        <div class="flex flex-wrap gap-2">
+                            <a
+                                href="{{ route(
+                                    'admin.works.story-sections.events.csv.create',
+                                    [$work, $section]
+                                ) }}"
+                                class="oshi-btn"
+                            >
+                                CSVで追加・更新
+                            </a>
+
+                            <a
+                                href="{{ route(
+                                    'admin.works.story-sections.events.csv.export',
+                                    [$work, $section]
+                                ) }}"
+                                class="oshi-btn oshi-btn-sub"
+                            >
+                                この章をCSV出力
+                            </a>
+                        </div>
+                    @endif
+                </div>
 
                 @forelse ($section->events as $event)
                     <div class="mb-4 rounded-xl border border-gray-200 p-4">
