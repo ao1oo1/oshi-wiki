@@ -448,7 +448,7 @@ class WorkStorySectionCsvService
                         >= WorkStorySectionService::MAX_EVENTS_PER_SECTION
                 ) {
                     throw new \RuntimeException(
-                        '1章につき物語詳細は最大100件です。'
+                        '1章につき物語詳細は最大500件です。'
                     );
                 }
 

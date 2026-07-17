@@ -128,14 +128,14 @@ class WorkStorySectionPhase1Test extends TestCase
         );
     }
 
-    public function test_event_limit_is_one_hundred(): void
+    public function test_event_limit_is_five_hundred(): void
     {
         $user = $this->superAdmin();
         $work = Work::factory()->create();
 
         $events = [];
 
-        for ($i = 1; $i <= 101; $i++) {
+        for ($i = 1; $i <= 501; $i++) {
             $events[] = ['title' => '出来事' . $i];
         }
 

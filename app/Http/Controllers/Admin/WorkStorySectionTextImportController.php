@@ -39,7 +39,7 @@ class WorkStorySectionTextImportController extends Controller
             'raw_text' => [
                 'required',
                 'string',
-                'max:100000',
+                'max:500000',
             ],
             'status' => [
                 'required',
@@ -137,7 +137,7 @@ class WorkStorySectionTextImportController extends Controller
                 'short_label' => [
                     'nullable',
                     'string',
-                    'max:100',
+                    'max:500',
                 ],
                 'synopsis' => [
                     'nullable',
@@ -168,7 +168,7 @@ class WorkStorySectionTextImportController extends Controller
                 'events' => [
                     'nullable',
                     'array',
-                    'max:100',
+                    'max:500',
                 ],
                 'section_characters' => [
                     'nullable',
