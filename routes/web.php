@@ -162,6 +162,41 @@ Route::middleware(['auth', 'admin.user', 'password.changed'])->prefix('admin')->
     Route::post('review-requests/reject', [\App\Http\Controllers\Admin\ReviewRequestController::class, 'reject'])
         ->name('review-requests.reject');
 
+    Route::get(
+        'works/{work}/story-sections/csv',
+        [\App\Http\Controllers\Admin\WorkStorySectionCsvController::class, 'create']
+    )->name('works.story-sections.csv.create');
+
+    Route::post(
+        'works/{work}/story-sections/csv',
+        [\App\Http\Controllers\Admin\WorkStorySectionCsvController::class, 'import']
+    )->name('works.story-sections.csv.import');
+
+    Route::get(
+        'works/{work}/story-sections/csv/export/{type}',
+        [\App\Http\Controllers\Admin\WorkStorySectionCsvController::class, 'export']
+    )->name('works.story-sections.csv.export');
+
+    Route::get(
+        'story-sections/csv/sample/{type}',
+        [\App\Http\Controllers\Admin\WorkStorySectionCsvController::class, 'sample']
+    )->name('works.story-sections.csv.sample');
+
+    Route::get(
+        'works/{work}/story-sections/text-import',
+        [\App\Http\Controllers\Admin\WorkStorySectionTextImportController::class, 'create']
+    )->name('works.story-sections.text-import.create');
+
+    Route::post(
+        'works/{work}/story-sections/text-import',
+        [\App\Http\Controllers\Admin\WorkStorySectionTextImportController::class, 'store']
+    )->name('works.story-sections.text-import.store');
+
+    Route::post(
+        'works/{work}/story-sections/bulk-action',
+        \App\Http\Controllers\Admin\WorkStorySectionBulkActionController::class
+    )->name('works.story-sections.bulk-action');
+
     Route::resource(
         'works.story-sections',
         \App\Http\Controllers\Admin\WorkStorySectionController::class
