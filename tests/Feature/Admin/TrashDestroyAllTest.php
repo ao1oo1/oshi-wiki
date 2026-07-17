@@ -79,6 +79,7 @@ class TrashDestroyAllTest extends TestCase
             ->get(route('admin.trash.index'))
             ->assertOk()
             ->assertSee('ゴミ箱内の全データを完全削除')
+            ->assertSee('章・編')
             ->assertSee('合計1件')
             ->assertSee(route('admin.trash.destroy-all'), false)
             ->assertSee('confirmTrashDestroyAll', false);
