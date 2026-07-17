@@ -20,6 +20,7 @@ class SavedPrompt extends Model
 
         'work_source',
         'work_id',
+        'work_story_section_id',
         'selected_character_refs',
         'include_relationship_timeline',
         'include_work_worldbuilding',
@@ -171,6 +172,14 @@ class SavedPrompt extends Model
     public function work(): BelongsTo
     {
         return $this->belongsTo(Work::class);
+    }
+
+    public function workStorySection(): BelongsTo
+    {
+        return $this->belongsTo(
+            WorkStorySection::class,
+            'work_story_section_id'
+        );
     }
 
     public function workLabel(): string
