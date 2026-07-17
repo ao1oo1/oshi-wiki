@@ -203,6 +203,43 @@ class WorkController extends Controller
                 }
             )
             ->orWhereHas(
+                'allPublishedStorySections',
+                function ($sectionQuery) use ($like): void {
+                    $sectionQuery
+                        ->where('work_story_sections.title', 'like', $like)
+                        ->orWhere('work_story_sections.title_kana', 'like', $like)
+                        ->orWhere('work_story_sections.short_label', 'like', $like)
+                        ->orWhere('work_story_sections.synopsis', 'like', $like)
+                        ->orWhere('work_story_sections.cumulative_settings', 'like', $like)
+                        ->orWhere('work_story_sections.notes', 'like', $like)
+                        ->orWhereHas('events', function ($eventQuery) use ($like): void {
+                            $eventQuery
+                                ->where('work_story_section_events.title', 'like', $like)
+                                ->orWhere('work_story_section_events.timing', 'like', $like)
+                                ->orWhere('work_story_section_events.summary', 'like', $like)
+                                ->orWhere('work_story_section_events.location', 'like', $like)
+                                ->orWhere('work_story_section_events.outcome', 'like', $like)
+                                ->orWhere('work_story_section_events.notes', 'like', $like);
+                        })
+                        ->orWhereHas('characters', function ($characterQuery) use ($like): void {
+                            $characterQuery
+                                ->where('characters.status', 'published')
+                                ->where(function ($characterQuery) use ($like): void {
+                                    $characterQuery
+                                        ->where('characters.name', 'like', $like)
+                                        ->orWhere('characters.name_kana', 'like', $like)
+                                        ->orWhere('character_work_story_section.age_at_section', 'like', $like)
+                                        ->orWhere('character_work_story_section.school_grade_at_section', 'like', $like)
+                                        ->orWhere('character_work_story_section.class_at_section', 'like', $like)
+                                        ->orWhere('character_work_story_section.affiliation_at_section', 'like', $like)
+                                        ->orWhere('character_work_story_section.position_at_section', 'like', $like)
+                                        ->orWhere('character_work_story_section.character_state', 'like', $like)
+                                        ->orWhere('character_work_story_section.notes', 'like', $like);
+                                });
+                        });
+                }
+            )
+            ->orWhereHas(
                 'linkedCharacters',
                 function ($characterQuery) use ($like): void {
                     $characterQuery
@@ -418,6 +455,28 @@ class WorkController extends Controller
                 $query->where('status', 'published')
                     ->with(['fromCharacter', 'toCharacter'])
                     ->latest();
+            },
+            'publishedStorySections' => function ($query) {
+                $query->with([
+                    'events',
+                    'characters' => function ($characterQuery) {
+                        $characterQuery
+                            ->where('characters.status', 'published')
+                            ->orderByPivot('sort_order');
+                    },
+                    'childSections' => function ($childQuery) {
+                        $childQuery
+                            ->where('status', 'published')
+                            ->with([
+                                'events',
+                                'characters' => function ($characterQuery) {
+                                    $characterQuery
+                                        ->where('characters.status', 'published')
+                                        ->orderByPivot('sort_order');
+                                },
+                            ]);
+                    },
+                ]);
             },
         ]);
 
