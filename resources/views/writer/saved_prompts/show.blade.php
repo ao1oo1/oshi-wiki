@@ -10,7 +10,10 @@
         && $prompt->work_source
             === \App\Models\SavedPrompt::WORK_SOURCE_V1
     ) {
-        $prompt->loadMissing('work');
+        $prompt->loadMissing([
+            'work',
+            'workStorySection.parentSection',
+        ]);
     }
 @endphp
 
@@ -75,6 +78,17 @@
             <span class="rounded-full bg-[#F7FAFC] px-3 py-1 text-xs font-bold text-[#4A5568]">
                 {{ $prompt->genreLabel() ?: 'ジャンル指定なし' }}
             </span>
+
+            @if ($prompt->workStorySection)
+                <span class="oshi-chip">
+                    参照章：
+                    @if ($prompt->workStorySection->parentSection)
+                        {{ $prompt->workStorySection->parentSection->title }}
+                        ＞
+                    @endif
+                    {{ $prompt->workStorySection->title }}
+                </span>
+            @endif
 
             @if ($prompt->include_relationship_timeline)
                 <span class="rounded-full bg-[#FFF1F5] px-3 py-1 text-xs font-bold text-[#2D3748]">

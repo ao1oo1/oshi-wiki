@@ -25,6 +25,11 @@ class StoreSavedPromptRequest extends FormRequest
                 'string',
                 'regex:/^(original|work:\d+)$/',
             ],
+            'work_story_section_id' => [
+                'nullable',
+                'integer',
+                'exists:work_story_sections,id',
+            ],
             'selected_character_refs' => [
                 'nullable',
                 'array',

@@ -8,6 +8,7 @@ use App\Models\OriginalCharacterRelationship;
 use App\Models\SavedPrompt;
 use App\Models\User;
 use App\Models\Work;
+use App\Models\WorkStorySection;
 use App\Models\WriterStoryAnalysis;
 use App\Repositories\SavedPromptRepository;
 use App\Support\WritingAssistLimits;
@@ -19,7 +20,8 @@ class SavedPromptService
     public function __construct(
         private readonly SavedPromptRepository $repository,
         private readonly PromptCharacterContextBuilder $contextBuilder,
-        private readonly WorkWorldbuildingPromptBuilder $worldbuildingBuilder
+        private readonly WorkWorldbuildingPromptBuilder $worldbuildingBuilder,
+        private readonly WorkStorySectionPromptBuilder $storySectionBuilder
     ) {
     }
 
@@ -106,6 +108,7 @@ class SavedPromptService
             'purpose' => 'ストーリーの文体・構成分析',
             'work_source' => SavedPrompt::WORK_SOURCE_ORIGINAL,
             'work_id' => null,
+            'work_story_section_id' => null,
             'selected_character_refs' => [],
             'include_relationship_timeline' => false,
             'include_work_worldbuilding' => false,
@@ -195,6 +198,7 @@ class SavedPromptService
         array $data
     ): array {
         $this->normalizeWork($data);
+        $this->normalizeStorySection($data);
         $this->normalizeCharacterReferences($user, $data);
         $this->normalizeStoryAnalysisIds($user, $data);
 
@@ -304,6 +308,66 @@ class SavedPromptService
             SavedPrompt::WORK_SOURCE_ORIGINAL;
 
         $data['work_id'] = null;
+    }
+
+    private function normalizeStorySection(
+        array &$data
+    ): void {
+        $sectionId = (int) (
+            $data['work_story_section_id'] ?? 0
+        );
+
+        if (
+            ($data['work_source'] ?? null)
+                !== SavedPrompt::WORK_SOURCE_V1
+            || empty($data['work_id'])
+            || $sectionId <= 0
+        ) {
+            $data['work_story_section_id'] = null;
+
+            return;
+        }
+
+        $workId = (int) $data['work_id'];
+
+        $section = WorkStorySection::query()
+            ->whereKey($sectionId)
+            ->where('work_id', $workId)
+            ->where('status', 'published')
+            ->whereHas(
+                'work',
+                function ($query): void {
+                    $query
+                        ->where('status', 'published')
+                        ->where(
+                            function ($query): void {
+                                $query
+                                    ->whereNull(
+                                        'parent_work_id'
+                                    )
+                                    ->orWhereHas(
+                                        'parentWork',
+                                        fn ($parentQuery) =>
+                                            $parentQuery->where(
+                                                'status',
+                                                'published'
+                                            )
+                                    );
+                            }
+                        );
+                }
+            )
+            ->first();
+
+        if (! $section) {
+            throw ValidationException::withMessages([
+                'work_story_section_id' =>
+                    '選択した作品で利用できる公開章・編が'
+                    . '見つかりません。',
+            ]);
+        }
+
+        $data['work_story_section_id'] = $section->id;
     }
 
     private function normalizeCharacterReferences(
@@ -517,6 +581,13 @@ class SavedPromptService
             )
             : '';
 
+        $storySectionText =
+            $this->storySectionBuilder->build(
+                ! empty($data['work_story_section_id'])
+                    ? (int) $data['work_story_section_id']
+                    : null
+            );
+
         $relationshipText =
             $this->buildRelationshipsText(
                 $user,
@@ -539,6 +610,12 @@ class SavedPromptService
             $lines[] = '';
             $lines[] = '【作品設定】';
             $lines[] = $workWorldbuildingText;
+        }
+
+        if ($storySectionText !== '') {
+            $lines[] = '';
+            $lines[] = '【参照する章・編】';
+            $lines[] = $storySectionText;
         }
 
         $lines = array_merge($lines, [
