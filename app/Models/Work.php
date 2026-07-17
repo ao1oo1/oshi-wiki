@@ -140,6 +140,23 @@ class Work extends Model
             ->orderBy('id');
     }
 
+    public function publishedStorySections(): HasMany
+    {
+        return $this->hasMany(WorkStorySection::class)
+            ->whereNull('parent_section_id')
+            ->where('status', 'published')
+            ->orderBy('sort_order')
+            ->orderBy('id');
+    }
+
+    public function allPublishedStorySections(): HasMany
+    {
+        return $this->hasMany(WorkStorySection::class)
+            ->where('status', 'published')
+            ->orderBy('sort_order')
+            ->orderBy('id');
+    }
+
     public function canonEvents(): HasMany
     {
         return $this->hasMany(WorkCanonEvent::class)->orderBy('sort_order')->orderBy('id');

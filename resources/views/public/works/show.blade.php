@@ -111,6 +111,71 @@
             </section>
         @endif
 
+        @if ($work->publishedStorySections->isNotEmpty())
+            <section class="oshi-card">
+                <div class="mb-6">
+                    <h2 class="text-2xl font-bold">章・編ごとの物語詳細</h2>
+                    <p class="mt-2 text-sm leading-7 text-[#718096]">公開中の章・編、物語の進行、登場キャラクターの時点情報を確認できます。</p>
+                </div>
+                <div class="space-y-5">
+                    @foreach ($work->publishedStorySections as $section)
+                        @php($sectionIsMajorSpoiler = ($section->spoiler_level ?? 'none') === 'major')
+                        <details class="rounded-2xl border border-[#E2E8F0] bg-white p-5" @if (! $sectionIsMajorSpoiler) open @endif>
+                            <summary class="cursor-pointer">
+                                <div class="inline-flex flex-wrap items-center gap-3">
+                                    <span class="text-xs font-bold text-[#E879A0]">{{ $section->typeLabel() }}</span>
+                                    <span class="text-lg font-bold text-[#2D3748]">{{ $section->title }}</span>
+                                    @if ($section->short_label)<span class="oshi-chip">{{ $section->short_label }}</span>@endif
+                                    @if ($sectionIsMajorSpoiler)<span class="rounded-full bg-amber-100 px-3 py-1 text-xs font-bold text-amber-800">重大なネタバレ</span>@endif
+                                </div>
+                            </summary>
+                            <div class="mt-5 space-y-5">
+                                @if ($sectionIsMajorSpoiler)<div class="rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm font-bold text-amber-900">この章・編には重大なネタバレが含まれます。</div>@endif
+                                @if ($section->synopsis)<div><h3 class="mb-2 font-bold">章・編の概要</h3><div class="whitespace-pre-wrap rounded-xl bg-[#F7FAFC] p-4 leading-8">{{ $section->synopsis }}</div></div>@endif
+                                @if ($section->cumulative_settings)<details class="rounded-xl border border-[#FED7E2] bg-[#FFF7FA] p-4"><summary class="cursor-pointer font-bold">この章までに登場する設定</summary><div class="mt-3 whitespace-pre-wrap leading-8">{{ $section->cumulative_settings }}</div></details>@endif
+                                @if ($section->events->isNotEmpty())
+                                    <div><h3 class="mb-3 font-bold">物語詳細</h3><div class="space-y-3">
+                                        @foreach ($section->events as $event)
+                                            @php($eventIsMajorSpoiler = ($event->spoiler_level ?? 'none') === 'major')
+                                            <details class="rounded-xl border border-[#E2E8F0] p-4" @if (! $eventIsMajorSpoiler) open @endif>
+                                                <summary class="cursor-pointer font-bold">{{ $event->title }} @if ($event->timing)<span class="oshi-chip">{{ $event->timing }}</span>@endif @if ($event->location)<span class="oshi-chip">{{ $event->location }}</span>@endif @if ($eventIsMajorSpoiler)<span class="ml-2 text-xs text-amber-700">重大なネタバレ</span>@endif</summary>
+                                                <div class="mt-3 space-y-3">@if ($event->summary)<div class="whitespace-pre-wrap leading-8">{{ $event->summary }}</div>@endif @if ($event->outcome)<div class="rounded-lg bg-[#F7FAFC] p-3"><strong>結果</strong><p class="mt-1 whitespace-pre-wrap leading-8">{{ $event->outcome }}</p></div>@endif @if ($event->notes)<div class="text-sm text-[#718096]"><strong>備考：</strong><span class="whitespace-pre-wrap">{{ $event->notes }}</span></div>@endif</div>
+                                            </details>
+                                        @endforeach
+                                    </div></div>
+                                @endif
+                                @if ($section->characters->isNotEmpty())
+                                    <div><h3 class="mb-3 font-bold">登場キャラクター</h3><div class="grid gap-4 md:grid-cols-2">
+                                        @foreach ($section->characters as $character)
+                                            <article class="rounded-xl border border-[#E2E8F0] p-4">
+                                                <div class="flex flex-wrap items-center gap-2"><a href="{{ route('public.characters.show', $character) }}" class="font-bold underline-offset-4 hover:underline">{{ $character->name }}</a>@if ($character->pivot->first_appearance)<span class="oshi-chip">初登場</span>@endif</div>
+                                                @php($snapshot = collect([$character->pivot->age_at_section ? '年齢：'.$character->pivot->age_at_section : null,$character->pivot->school_grade_at_section ? '学年：'.$character->pivot->school_grade_at_section : null,$character->pivot->class_at_section ? 'クラス：'.$character->pivot->class_at_section : null,$character->pivot->affiliation_at_section ? '所属：'.$character->pivot->affiliation_at_section : null,$character->pivot->position_at_section ? '役職：'.$character->pivot->position_at_section : null])->filter())
+                                                @if ($snapshot->isNotEmpty())<div class="mt-3 flex flex-wrap gap-2 text-sm text-[#4A5568]">@foreach ($snapshot as $item)<span class="rounded-full bg-[#F7FAFC] px-3 py-1">{{ $item }}</span>@endforeach</div>@endif
+                                                @if ($character->pivot->character_state)<p class="mt-3 whitespace-pre-wrap text-sm leading-7 text-[#4A5568]">{{ $character->pivot->character_state }}</p>@endif
+                                                @if ($character->pivot->notes)<p class="mt-3 whitespace-pre-wrap text-xs leading-6 text-[#718096]">備考：{{ $character->pivot->notes }}</p>@endif
+                                            </article>
+                                        @endforeach
+                                    </div></div>
+                                @endif
+                                @if ($section->childSections->isNotEmpty())
+                                    <div><h3 class="mb-3 font-bold">この編・部に含まれる章・話</h3><div class="space-y-4">
+                                        @foreach ($section->childSections as $childSection)
+                                            @php($childIsMajorSpoiler = ($childSection->spoiler_level ?? 'none') === 'major')
+                                            <details class="rounded-xl border-l-4 border-[#FED7E2] bg-[#FFFDFE] p-4" @if (! $childIsMajorSpoiler) open @endif>
+                                                <summary class="cursor-pointer font-bold">{{ $childSection->title }} @if ($childSection->short_label)<span class="oshi-chip">{{ $childSection->short_label }}</span>@endif @if ($childIsMajorSpoiler)<span class="ml-2 text-xs text-amber-700">重大なネタバレ</span>@endif</summary>
+                                                <div class="mt-4 space-y-4">@if ($childSection->synopsis)<div class="whitespace-pre-wrap leading-8">{{ $childSection->synopsis }}</div>@endif @if ($childSection->cumulative_settings)<details class="rounded-lg bg-[#FFF7FA] p-3"><summary class="cursor-pointer font-bold">この章までに登場する設定</summary><div class="mt-2 whitespace-pre-wrap leading-8">{{ $childSection->cumulative_settings }}</div></details>@endif @if ($childSection->events->isNotEmpty())<div class="space-y-3">@foreach ($childSection->events as $event)<details class="rounded-lg border border-[#E2E8F0] p-3"><summary class="cursor-pointer font-bold">{{ $event->title }}</summary>@if ($event->summary)<div class="mt-2 whitespace-pre-wrap leading-8">{{ $event->summary }}</div>@endif</details>@endforeach</div>@endif @if ($childSection->characters->isNotEmpty())<div class="flex flex-wrap gap-2">@foreach ($childSection->characters as $character)<span class="oshi-badge">{{ $character->name }}</span>@endforeach</div>@endif</div>
+                                            </details>
+                                        @endforeach
+                                    </div></div>
+                                @endif
+                                @if ($section->notes)<div class="rounded-xl bg-[#F7FAFC] p-4 text-sm text-[#718096]"><strong>備考</strong><div class="mt-2 whitespace-pre-wrap leading-7">{{ $section->notes }}</div></div>@endif
+                            </div>
+                        </details>
+                    @endforeach
+                </div>
+            </section>
+        @endif
+
         <section class="oshi-card">
             <h2 class="mb-4 text-2xl font-bold">
                 キャラクター
