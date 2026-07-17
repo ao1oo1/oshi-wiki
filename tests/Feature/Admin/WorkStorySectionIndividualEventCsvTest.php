@@ -173,11 +173,11 @@ class WorkStorySectionIndividualEventCsvTest extends TestCase
         );
     }
 
-    public function test_import_rejects_more_than_five_hundred_events(): void
+    public function test_import_rejects_more_than_two_thousand_events(): void
     {
         [$work, $section] = $this->workAndSection();
 
-        for ($i = 1; $i <= 500; $i++) {
+        for ($i = 1; $i <= 2000; $i++) {
             $section->events()->create([
                 'title' => "既存{$i}",
                 'sort_order' => $i,
@@ -186,7 +186,7 @@ class WorkStorySectionIndividualEventCsvTest extends TestCase
 
         $csv = implode("\n", [
             'story_event_id,title',
-            ',501件目',
+            ',2001件目',
         ]);
 
         $this->actingAs($this->superAdmin())
@@ -204,7 +204,7 @@ class WorkStorySectionIndividualEventCsvTest extends TestCase
             ->assertSessionHasErrors('csv_file');
 
         $this->assertSame(
-            500,
+            2000,
             $section->events()->count()
         );
     }

@@ -97,7 +97,7 @@ class WorkStorySectionEventCsvService
 
         $currentCount = $section->events()->count();
 
-        $remainingCount = max(0, 500 - $currentCount);
+        $remainingCount = max(0, 2000 - $currentCount);
         $newRowCount = 0;
 
         foreach ($rows as [$line, $data]) {
@@ -116,7 +116,7 @@ class WorkStorySectionEventCsvService
         ) {
             throw ValidationException::withMessages([
                 'csv_file' =>
-                    '取り込み後の物語詳細が500件を超えます。'
+                    '取り込み後の物語詳細が2000件を超えます。'
                     . " 現在{$currentCount}件、"
                     . "新規行{$newRowCount}件です。",
             ]);
