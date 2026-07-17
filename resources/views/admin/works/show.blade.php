@@ -264,7 +264,7 @@
 
             @if ($canManageWorks)
                 <form method="POST" action="{{ route('admin.works.destroy', $work) }}" class="mt-6"
-                    onsubmit="return confirm('この作品を削除しますか？関係性や作品固有データに影響します。追加作品として紐付くキャラクター本体は削除されません。');">
+                    onsubmit="return confirm('この作品を削除しますか？公開画面・Writerから非表示になります。章・編は作品とともに非表示になりますが、作品を復元すると再利用できます。追加作品として紐付くキャラクター本体は削除されません。');">
                     @csrf
                     @method('DELETE')
                     <button type="submit" class="oshi-btn bg-red-600 text-white">この作品を削除</button>
