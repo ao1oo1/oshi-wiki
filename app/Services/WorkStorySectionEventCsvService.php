@@ -96,6 +96,8 @@ class WorkStorySectionEventCsvService
         ];
 
         $currentCount = $section->events()->count();
+
+        $remainingCount = max(0, 500 - $currentCount);
         $newRowCount = 0;
 
         foreach ($rows as [$line, $data]) {
