@@ -128,6 +128,28 @@ class Character extends Model
         return $this->linkedWorks()->whereKey($workId)->exists();
     }
 
+    public function storySections(): BelongsToMany
+    {
+        return $this->belongsToMany(
+            WorkStorySection::class,
+            'character_work_story_section'
+        )
+            ->withPivot([
+                'id',
+                'appearance_type',
+                'age_at_section',
+                'school_grade_at_section',
+                'class_at_section',
+                'affiliation_at_section',
+                'position_at_section',
+                'character_state',
+                'first_appearance',
+                'notes',
+                'sort_order',
+            ])
+            ->withTimestamps();
+    }
+
     public function outgoingRelationships(): HasMany
     {
         return $this->hasMany(CharacterRelationship::class, 'from_character_id');

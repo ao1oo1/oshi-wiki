@@ -91,6 +91,7 @@ class WorkRepository
             'publishedChildWorks',
             'canonEvents',
             'termUsages',
+            'allStorySections',
             'linkedCharacters.tags',
             'characterRelationships.fromCharacter',
             'characterRelationships.toCharacter',

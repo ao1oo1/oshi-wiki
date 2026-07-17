@@ -162,6 +162,13 @@ Route::middleware(['auth', 'admin.user', 'password.changed'])->prefix('admin')->
     Route::post('review-requests/reject', [\App\Http\Controllers\Admin\ReviewRequestController::class, 'reject'])
         ->name('review-requests.reject');
 
+    Route::resource(
+        'works.story-sections',
+        \App\Http\Controllers\Admin\WorkStorySectionController::class
+    )->parameters([
+        'story-sections' => 'storySection',
+    ]);
+
     Route::resource('works', WorkController::class);
 });
 
