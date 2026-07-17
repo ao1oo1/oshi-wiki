@@ -34,7 +34,7 @@ class StoreWorkStorySectionRequest extends FormRequest
             ],
             'title' => ['required', 'string', 'max:255'],
             'title_kana' => ['nullable', 'string', 'max:255'],
-            'short_label' => ['nullable', 'string', 'max:100'],
+            'short_label' => ['nullable', 'string', 'max:500'],
             'synopsis' => ['nullable', 'string', 'max:20000'],
             'cumulative_settings' => [
                 'nullable',
@@ -61,7 +61,7 @@ class StoreWorkStorySectionRequest extends FormRequest
                 Rule::in(['draft', 'published', 'private']),
             ],
 
-            'events' => ['nullable', 'array', 'max:100'],
+            'events' => ['nullable', 'array', 'max:500'],
             'events.*.event_number' => [
                 'nullable',
                 'integer',
@@ -104,7 +104,7 @@ class StoreWorkStorySectionRequest extends FormRequest
             'events.*.notes' => [
                 'nullable',
                 'string',
-                'max:10000',
+                'max:50000',
             ],
             'events.*.sort_order' => [
                 'nullable',
@@ -136,17 +136,17 @@ class StoreWorkStorySectionRequest extends FormRequest
             'section_characters.*.age_at_section' => [
                 'nullable',
                 'string',
-                'max:100',
+                'max:500',
             ],
             'section_characters.*.school_grade_at_section' => [
                 'nullable',
                 'string',
-                'max:100',
+                'max:500',
             ],
             'section_characters.*.class_at_section' => [
                 'nullable',
                 'string',
-                'max:100',
+                'max:500',
             ],
             'section_characters.*.affiliation_at_section' => [
                 'nullable',
@@ -161,7 +161,7 @@ class StoreWorkStorySectionRequest extends FormRequest
             'section_characters.*.character_state' => [
                 'nullable',
                 'string',
-                'max:10000',
+                'max:50000',
             ],
             'section_characters.*.first_appearance' => [
                 'nullable',
@@ -170,7 +170,7 @@ class StoreWorkStorySectionRequest extends FormRequest
             'section_characters.*.notes' => [
                 'nullable',
                 'string',
-                'max:10000',
+                'max:50000',
             ],
             'section_characters.*.sort_order' => [
                 'nullable',
