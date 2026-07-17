@@ -125,6 +125,38 @@ class Work extends Model
         return $this->hasMany(CharacterRelationship::class);
     }
 
+    public function storySections(): HasMany
+    {
+        return $this->hasMany(WorkStorySection::class)
+            ->whereNull('parent_section_id')
+            ->orderBy('sort_order')
+            ->orderBy('id');
+    }
+
+    public function allStorySections(): HasMany
+    {
+        return $this->hasMany(WorkStorySection::class)
+            ->orderBy('sort_order')
+            ->orderBy('id');
+    }
+
+    public function publishedStorySections(): HasMany
+    {
+        return $this->hasMany(WorkStorySection::class)
+            ->whereNull('parent_section_id')
+            ->where('status', 'published')
+            ->orderBy('sort_order')
+            ->orderBy('id');
+    }
+
+    public function allPublishedStorySections(): HasMany
+    {
+        return $this->hasMany(WorkStorySection::class)
+            ->where('status', 'published')
+            ->orderBy('sort_order')
+            ->orderBy('id');
+    }
+
     public function canonEvents(): HasMany
     {
         return $this->hasMany(WorkCanonEvent::class)->orderBy('sort_order')->orderBy('id');

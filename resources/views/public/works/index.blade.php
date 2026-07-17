@@ -42,7 +42,7 @@
                     検索
                 </button>
             </form>
-                <p class="oshi-public-hero-search-note">作品名・キャラクター名・タグ・説明文をまとめて検索できます。スペース区切りでAND検索できます。</p>
+                <p class="oshi-public-hero-search-note">作品名・キャラクター名・タグ・説明文・章名・物語詳細をまとめて検索できます。スペース区切りでAND検索できます。</p>
 
 @if (!empty($keyword) || !empty($selectedTagId))
                 <div style="margin-top:16px;">

@@ -12,6 +12,14 @@
 
     $publishedWorks = $publishedWorks ?? collect();
 
+    $publishedStorySections =
+        $publishedStorySections ?? collect();
+
+    $selectedStorySectionId = (int) old(
+        'work_story_section_id',
+        $prompt?->work_story_section_id ?? 0
+    );
+
     $selectedCharacterRefs = old(
         'selected_character_refs',
         $prompt?->selected_character_refs ?? []
@@ -160,6 +168,68 @@
                       placeholder="例：キャラクター同士の日常会話を書くためのプロンプト">{{ $oldValue('purpose') }}</textarea>
         </div>
     </div>
+</section>
+
+<section
+    id="work-story-section-selector"
+    class="rounded-3xl border border-[#E2E8F0] bg-white p-6 shadow-sm md:p-8"
+    style="display: {{ $selectedWorkId ? 'block' : 'none' }};"
+>
+    <div class="mb-6">
+        <p class="text-sm font-bold text-[#A0AEC0]">
+            OPTION
+        </p>
+        <h2 class="mt-1 text-2xl font-bold text-[#2D3748]">
+            参照する章・編
+        </h2>
+        <p class="mt-2 text-sm font-bold leading-7 text-[#718096]">
+            選択した作品の公開中の章・編を1件指定できます。
+            指定すると、その時点の設定・出来事・年齢・学年・所属を
+            プロンプトへ反映します。
+        </p>
+    </div>
+
+    <label for="work_story_section_id">
+        章・編
+    </label>
+
+    <select
+        id="work_story_section_id"
+        name="work_story_section_id"
+    >
+        <option value="">章・編を指定しない</option>
+
+        @foreach ($publishedStorySections as $storySection)
+            <option
+                value="{{ $storySection->id }}"
+                data-work-id="{{ $storySection->work_id }}"
+                @selected(
+                    $selectedWorkId === (int) $storySection->work_id
+                    && $selectedStorySectionId
+                        === (int) $storySection->id
+                )
+            >
+                @if ($storySection->parentSection)
+                    {{ $storySection->parentSection->title }} ＞
+                @endif
+                {{ $storySection->short_label
+                    ? $storySection->short_label . ' '
+                    : '' }}{{ $storySection->title }}
+            </option>
+        @endforeach
+    </select>
+
+    <div
+        id="work-story-section-empty"
+        class="mt-3 rounded-2xl bg-[#F7FAFC] p-4 text-sm font-bold text-[#A0AEC0]"
+        style="display:none;"
+    >
+        この作品には選択できる公開章・編がありません。
+    </div>
+
+    <p class="mt-3 text-xs font-bold leading-6 text-[#A0AEC0]">
+        原作作品を変更すると、章・編の選択は解除されます。
+    </p>
 </section>
 
 <section
@@ -889,6 +959,86 @@
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         const workSelect = document.getElementById('work_ref');
+        const storySectionBox =
+            document.getElementById(
+                'work-story-section-selector'
+            );
+        const storySectionSelect =
+            document.getElementById(
+                'work_story_section_id'
+            );
+        const storySectionEmpty =
+            document.getElementById(
+                'work-story-section-empty'
+            );
+
+        const updateStorySectionOptions = (
+            resetSelection = false
+        ) => {
+            if (! storySectionBox || ! storySectionSelect) {
+                return;
+            }
+
+            const match = (
+                workSelect?.value || ''
+            ).match(/^work:(\d+)$/);
+
+            const selectedWorkId = match
+                ? Number(match[1])
+                : null;
+
+            storySectionBox.style.display =
+                selectedWorkId ? 'block' : 'none';
+
+            if (! selectedWorkId) {
+                storySectionSelect.value = '';
+
+                return;
+            }
+
+            let visibleCount = 0;
+
+            Array.from(storySectionSelect.options)
+                .forEach((option, index) => {
+                    if (index === 0) {
+                        option.hidden = false;
+                        option.disabled = false;
+
+                        return;
+                    }
+
+                    const belongs =
+                        Number(option.dataset.workId)
+                            === selectedWorkId;
+
+                    option.hidden = ! belongs;
+                    option.disabled = ! belongs;
+
+                    if (belongs) {
+                        visibleCount += 1;
+                    }
+                });
+
+            if (
+                resetSelection
+                || (
+                    storySectionSelect.value
+                    && storySectionSelect
+                        .selectedOptions[0]
+                        ?.disabled
+                )
+            ) {
+                storySectionSelect.value = '';
+            }
+
+            if (storySectionEmpty) {
+                storySectionEmpty.style.display =
+                    visibleCount === 0
+                        ? 'block'
+                        : 'none';
+            }
+        };
+
         const workWorldbuildingSection = document.getElementById(
             'work-worldbuilding-section'
         );

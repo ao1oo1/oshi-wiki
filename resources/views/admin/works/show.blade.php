@@ -108,6 +108,30 @@
                         @endforeach
 
                         @if ($category === '物語の設計')
+                            <div class="rounded-2xl border border-[#FED7E2] bg-[#FFF7FA] p-5">
+                                <div class="flex flex-wrap items-center justify-between gap-3">
+                                    <div>
+                                        <p class="font-bold text-[#2D3748]">
+                                            章・編ごとの物語詳細
+                                        </p>
+                                        <p class="mt-1 text-sm text-[#718096]">
+                                            章・編、物語詳細、登場キャラクターの時点情報を管理します。
+                                        </p>
+                                    </div>
+
+                                    <a
+                                        href="{{ route('admin.works.story-sections.index', $work) }}"
+                                        class="oshi-btn"
+                                    >
+                                        章・編を管理する
+                                    </a>
+                                </div>
+
+                                <p class="mt-3 text-sm text-[#718096]">
+                                    登録数：{{ $work->allStorySections->count() }} / 30件
+                                </p>
+                            </div>
+
                             <div>
                                 <p class="oshi-label">原作の重要イベント年表</p>
                                 @forelse ($work->canonEvents as $event)
@@ -240,7 +264,7 @@
 
             @if ($canManageWorks)
                 <form method="POST" action="{{ route('admin.works.destroy', $work) }}" class="mt-6"
-                    onsubmit="return confirm('この作品を削除しますか？関係性や作品固有データに影響します。追加作品として紐付くキャラクター本体は削除されません。');">
+                    onsubmit="return confirm('この作品を削除しますか？公開画面・Writerから非表示になります。章・編は作品とともに非表示になりますが、作品を復元すると再利用できます。追加作品として紐付くキャラクター本体は削除されません。');">
                     @csrf
                     @method('DELETE')
                     <button type="submit" class="oshi-btn bg-red-600 text-white">この作品を削除</button>

@@ -9,6 +9,7 @@ use App\Http\Requests\Writer\SavedPrompt\UpdateSavedPromptRequest;
 use App\Models\OriginalCharacter;
 use App\Models\SavedPrompt;
 use App\Models\Work;
+use App\Models\WorkStorySection;
 use App\Models\WriterStoryAnalysis;
 use App\Services\SavedPromptAiResultService;
 use App\Services\SavedPromptService;
@@ -230,6 +231,44 @@ class SavedPromptController extends Controller
         return [
             'originalCharacters' => $originalCharacters,
             'publishedWorks' => $publishedWorks,
+            'publishedStorySections' =>
+                WorkStorySection::query()
+                    ->with([
+                        'work.parentWork',
+                        'parentSection',
+                    ])
+                    ->where('status', 'published')
+                    ->whereHas(
+                        'work',
+                        function ($query): void {
+                            $query
+                                ->where(
+                                    'status',
+                                    'published'
+                                )
+                                ->where(
+                                    function ($query): void {
+                                        $query
+                                            ->whereNull(
+                                                'parent_work_id'
+                                            )
+                                            ->orWhereHas(
+                                                'parentWork',
+                                                fn ($parentQuery) =>
+                                                    $parentQuery
+                                                        ->where(
+                                                            'status',
+                                                            'published'
+                                                        )
+                                            );
+                                    }
+                                );
+                        }
+                    )
+                    ->orderBy('work_id')
+                    ->orderBy('sort_order')
+                    ->orderBy('id')
+                    ->get(),
             'storyAnalyses' => $storyAnalyses,
             'categoryLabels' => SavedPrompt::categoryLabels(),
             'writingStyleLabels' => SavedPrompt::writingStyleLabels(),
