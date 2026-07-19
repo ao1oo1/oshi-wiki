@@ -30,6 +30,16 @@ class StoreSavedPromptRequest extends FormRequest
                 'integer',
                 'exists:work_story_sections,id',
             ],
+            'selected_story_event_ranges' => [
+                'nullable',
+                'array',
+                'max:100',
+            ],
+            'selected_story_event_ranges.*' => [
+                'string',
+                'distinct',
+                'regex:/^\\d+:\\d+:\\d+$/',
+            ],
             'selected_character_refs' => [
                 'nullable',
                 'array',

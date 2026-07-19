@@ -265,6 +265,7 @@ class SavedPromptController extends Controller
                                 );
                         }
                     )
+                    ->withCount('events')
                     ->orderBy('work_id')
                     ->orderBy('sort_order')
                     ->orderBy('id')

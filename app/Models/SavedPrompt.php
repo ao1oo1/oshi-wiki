@@ -21,6 +21,7 @@ class SavedPrompt extends Model
         'work_source',
         'work_id',
         'work_story_section_id',
+        'selected_story_event_ranges',
         'selected_character_refs',
         'include_relationship_timeline',
         'include_work_worldbuilding',
@@ -53,6 +54,7 @@ class SavedPrompt extends Model
     protected function casts(): array
     {
         return [
+            'selected_story_event_ranges' => 'array',
             'selected_character_refs' => 'array',
             'include_relationship_timeline' => 'boolean',
             'include_work_worldbuilding' => 'boolean',

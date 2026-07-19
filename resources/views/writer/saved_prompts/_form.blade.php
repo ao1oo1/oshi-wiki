@@ -19,6 +19,18 @@
         'work_story_section_id',
         $prompt?->work_story_section_id ?? 0
     );
+    $selectedStoryEventRanges = old(
+        'selected_story_event_ranges',
+        collect(
+            $prompt?->selected_story_event_ranges ?? []
+        )->map(
+            fn ($range) => is_array($range)
+                ? ($range['section_id'] ?? 0)
+                    . ':' . ($range['start'] ?? 0)
+                    . ':' . ($range['end'] ?? 0)
+                : $range
+        )->all()
+    );
 
     $selectedCharacterRefs = old(
         'selected_character_refs',
@@ -189,35 +201,97 @@
         </p>
     </div>
 
-    <label for="work_story_section_id">
-        章・編
-    </label>
+    <div id="story-section-box">
+        <div class="mb-2">
+            <span class="oshi-label">
+                参照する章・編と物語詳細
+            </span>
+            <p class="mt-1 text-sm text-[#718096]">
+                章を開き、プロンプトへ挿入する物語詳細を
+                20件単位で選択してください。
+            </p>
+        </div>
 
-    <select
-        id="work_story_section_id"
-        name="work_story_section_id"
-    >
-        <option value="">章・編を指定しない</option>
+        <input
+            type="hidden"
+            name="work_story_section_id"
+            value="{{ $selectedStorySectionId ?: '' }}"
+            id="work_story_section_id"
+        >
 
-        @foreach ($publishedStorySections as $storySection)
-            <option
-                value="{{ $storySection->id }}"
-                data-work-id="{{ $storySection->work_id }}"
-                @selected(
-                    $selectedWorkId === (int) $storySection->work_id
-                    && $selectedStorySectionId
-                        === (int) $storySection->id
-                )
-            >
-                @if ($storySection->parentSection)
-                    {{ $storySection->parentSection->title }} ＞
-                @endif
-                {{ $storySection->short_label
-                    ? $storySection->short_label . ' '
-                    : '' }}{{ $storySection->title }}
-            </option>
-        @endforeach
-    </select>
+        <div class="space-y-3" id="story-section-range-list">
+            @forelse ($publishedStorySections as $storySection)
+                @php
+                    $eventCount = (int) $storySection->events_count;
+                    $rangeCount = (int) ceil($eventCount / 20);
+                    $sectionLabel = (
+                        $storySection->parentSection
+                            ? $storySection->parentSection->title . ' ＞ '
+                            : ''
+                    )
+                    . (
+                        $storySection->short_label
+                            ? $storySection->short_label . ' '
+                            : ''
+                    )
+                    . $storySection->title;
+                @endphp
+
+                <details
+                    class="story-section-range-item rounded-2xl border border-[#E2E8F0] bg-white"
+                    data-work-id="{{ $storySection->work_id }}"
+                >
+                    <summary class="cursor-pointer px-4 py-3 font-bold text-[#2D3748]">
+                        {{ $sectionLabel }}
+                        <span class="ml-2 text-sm font-normal text-[#718096]">
+                            （物語詳細{{ number_format($eventCount) }}件）
+                        </span>
+                    </summary>
+
+                    <div class="border-t border-[#E2E8F0] px-4 py-4">
+                        @if ($eventCount === 0)
+                            <p class="text-sm text-[#A0AEC0]">
+                                登録済みの物語詳細はありません。
+                            </p>
+                        @else
+                            <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                                @for ($rangeIndex = 0; $rangeIndex < $rangeCount; $rangeIndex++)
+                                    @php
+                                        $start = $rangeIndex * 20 + 1;
+                                        $end = min($start + 19, $eventCount);
+                                        $rangeRef = $storySection->id
+                                            . ':' . $start
+                                            . ':' . $end;
+                                    @endphp
+
+                                    <label class="flex cursor-pointer items-center gap-3 rounded-xl border border-[#E2E8F0] px-3 py-3">
+                                        <input
+                                            type="checkbox"
+                                            name="selected_story_event_ranges[]"
+                                            value="{{ $rangeRef }}"
+                                            class="story-event-range-checkbox h-5 w-5 rounded border-[#A0AEC0]"
+                                            @checked(in_array(
+                                                $rangeRef,
+                                                $selectedStoryEventRanges,
+                                                true
+                                            ))
+                                        >
+                                        <span class="font-bold text-[#4A5568]">
+                                            {{ $start }}～{{ $end }}を挿入
+                                        </span>
+                                    </label>
+                                @endfor
+                            </div>
+                        @endif
+                    </div>
+                </details>
+            @empty
+                <p id="story-section-empty" class="text-sm text-[#A0AEC0]">
+                    選択できる公開章・編はありません。
+                </p>
+            @endforelse
+        </div>
+    </div>
 
     <div
         id="work-story-section-empty"
@@ -960,101 +1034,71 @@
     document.addEventListener('DOMContentLoaded', function () {
         const workSelect = document.getElementById('work_ref');
         const storySectionBox =
-            document.getElementById(
-                'work-story-section-selector'
-            );
-        const storySectionSelect =
-            document.getElementById(
-                'work_story_section_id'
-            );
-        const storySectionEmpty =
-            document.getElementById(
-                'work-story-section-empty'
-            );
+            document.getElementById('story-section-box');
+        const storySectionLegacyInput =
+            document.getElementById('work_story_section_id');
+        const storySectionItems = Array.from(
+            document.querySelectorAll(
+                '.story-section-range-item'
+            )
+        );
+        const storyEventRangeCheckboxes = Array.from(
+            document.querySelectorAll(
+                '.story-event-range-checkbox'
+            )
+        );
 
-        const updateStorySectionOptions = (
-            resetSelection = false
-        ) => {
-            if (! storySectionBox || ! storySectionSelect) {
+        function updateStorySectionRanges() {
+            if (! storySectionBox || ! workSelect) {
                 return;
             }
 
-            const match = (
-                workSelect?.value || ''
-            ).match(/^work:(\d+)$/);
+            const workValue = workSelect.value || '';
+            const selectedWorkId = workValue.startsWith('work:')
+                ? workValue.replace('work:', '')
+                : '';
 
-            const selectedWorkId = match
-                ? Number(match[1])
-                : null;
-
+            const isOriginal = workValue === 'original';
             storySectionBox.style.display =
-                selectedWorkId ? 'block' : 'none';
+                isOriginal ? 'none' : '';
 
-            if (! selectedWorkId) {
-                storySectionSelect.value = '';
+            storySectionItems.forEach(function (item) {
+                const visible =
+                    selectedWorkId !== ''
+                    && item.dataset.workId === selectedWorkId;
 
-                return;
-            }
+                item.style.display = visible ? '' : 'none';
 
-            let visibleCount = 0;
+                if (! visible) {
+                    item.open = false;
+                    item.querySelectorAll(
+                        '.story-event-range-checkbox'
+                    ).forEach(function (checkbox) {
+                        checkbox.checked = false;
+                    });
+                }
+            });
 
-            Array.from(storySectionSelect.options)
-                .forEach((option, index) => {
-                    if (index === 0) {
-                        option.hidden = false;
-                        option.disabled = false;
-
-                        return;
+            if (isOriginal || selectedWorkId === '') {
+                storyEventRangeCheckboxes.forEach(
+                    function (checkbox) {
+                        checkbox.checked = false;
                     }
+                );
 
-                    const belongs =
-                        Number(option.dataset.workId)
-                            === selectedWorkId;
-
-                    option.hidden = ! belongs;
-                    option.disabled = ! belongs;
-
-                    if (belongs) {
-                        visibleCount += 1;
-                    }
-                });
-
-            if (
-                resetSelection
-                || (
-                    storySectionSelect.value
-                    && storySectionSelect
-                        .selectedOptions[0]
-                        ?.disabled
-                )
-            ) {
-                storySectionSelect.value = '';
+                if (storySectionLegacyInput) {
+                    storySectionLegacyInput.value = '';
+                }
             }
+        }
 
-            if (storySectionEmpty) {
-                storySectionEmpty.style.display =
-                    visibleCount === 0
-                        ? 'block'
-                        : 'none';
-            }
-        };
+        workSelect?.addEventListener(
+            'change',
+            updateStorySectionRanges
+        );
 
-        const workWorldbuildingSection = document.getElementById(
-            'work-worldbuilding-section'
-        );
-        const includeWorkWorldbuilding = document.getElementById(
-            'include_work_worldbuilding'
-        );
-        const workWorldbuildingCategories = document.getElementById(
-            'work-worldbuilding-categories'
-        );
-        const workWorldbuildingCategoryCheckboxes = Array.from(
-            document.querySelectorAll('.work-worldbuilding-category')
-        );
-        const writingStyleSelect = document.getElementById('writing_style');
-        const writingStyleOtherWrap = document.getElementById('writing-style-other-wrap');
-        const genreSelect = document.getElementById('genre');
-        const genreOtherWrap = document.getElementById('genre-other-wrap');
+        updateStorySectionRanges();
+
         const previewButton = document.getElementById('preview-button');
         const previewCopyButton = document.getElementById('preview-copy-button');
         const previewTextarea = document.getElementById('prompt-preview');
