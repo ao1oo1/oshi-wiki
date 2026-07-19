@@ -132,6 +132,45 @@ class AdminListResultCountLayoutTest extends TestCase
         );
     }
 
+    public function test_relationship_count_is_outside_table_shell(): void
+    {
+        $contents = file_get_contents(
+            resource_path(
+                'views/admin/character_relationships/index.blade.php'
+            )
+        );
+
+        $includePosition = strpos(
+            $contents,
+            'admin.partials.list-result-count'
+        );
+
+        $shellPosition = strpos(
+            $contents,
+            'overflow-hidden rounded-3xl border'
+        );
+
+        $tablePosition = strpos(
+            $contents,
+            '<table',
+            $shellPosition
+        );
+
+        $this->assertNotFalse($includePosition);
+        $this->assertNotFalse($shellPosition);
+        $this->assertNotFalse($tablePosition);
+
+        $this->assertLessThan(
+            $shellPosition,
+            $includePosition
+        );
+
+        $this->assertLessThan(
+            $tablePosition,
+            $shellPosition
+        );
+    }
+
     public function test_tag_counts_are_before_both_tables(): void
     {
         $contents = file_get_contents(
