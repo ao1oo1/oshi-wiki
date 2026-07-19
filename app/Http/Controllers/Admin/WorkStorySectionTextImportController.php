@@ -168,7 +168,7 @@ class WorkStorySectionTextImportController extends Controller
                 'events' => [
                     'nullable',
                     'array',
-                    'max:2000',
+                    'max:3000',
                 ],
                 'section_characters' => [
                     'nullable',

@@ -61,7 +61,7 @@ class StoreWorkStorySectionRequest extends FormRequest
                 Rule::in(['draft', 'published', 'private']),
             ],
 
-            'events' => ['nullable', 'array', 'max:2000'],
+            'events' => ['nullable', 'array', 'max:3000'],
             'events.*.event_number' => [
                 'nullable',
                 'integer',
