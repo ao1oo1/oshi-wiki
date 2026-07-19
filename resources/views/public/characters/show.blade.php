@@ -9,14 +9,14 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body>
+    @include('public.partials.header')
+
     <div id="page-top"></div>
 
     @include(
         'partials.page-jump-navigation',
         ['position' => 'top']
     )
-
-    @include('public.partials.header')
 
     @php
         $sourceTypeLabel = \App\Models\Character::SOURCE_TYPES[$character->source_type] ?? null;

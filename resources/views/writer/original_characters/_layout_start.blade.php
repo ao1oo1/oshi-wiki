@@ -165,13 +165,6 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="bg-[#F8FAFC] text-[#2D3748]">
-    <div id="page-top"></div>
-
-    @include(
-        'partials.page-jump-navigation',
-        ['position' => 'top']
-    )
-
     <div class="min-h-screen md:flex">
         <aside class="w-full border-b border-[#E2E8F0] bg-white md:min-h-screen md:w-80 md:border-b-0 md:border-r">
             <div class="px-5 py-8">
@@ -242,6 +235,12 @@
 
         <main class="flex-1 px-5 py-8 md:px-12 md:py-12">
             <div class="mx-auto max-w-6xl">
+                <div id="page-top"></div>
+
+                @include(
+                    'partials.page-jump-navigation',
+                    ['position' => 'top']
+                )
                 @if (session('success'))
                     <div class="mb-6 rounded-2xl border border-green-200 bg-green-50 px-5 py-4 text-sm font-bold text-green-700">
                         {{ session('success') }}
