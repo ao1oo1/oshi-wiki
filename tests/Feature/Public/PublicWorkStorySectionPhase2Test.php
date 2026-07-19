@@ -12,12 +12,83 @@ class PublicWorkStorySectionPhase2Test extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_public_work_detail_shows_only_published_story_sections(): void
+    public function test_public_work_detail_shows_draft_and_published_sections(): void
     {
-        $work = Work::factory()->create(['status' => 'published']);
-        WorkStorySection::query()->create(['work_id' => $work->id, 'section_type' => 'chapter', 'title' => '公開章', 'status' => 'published']);
-        WorkStorySection::query()->create(['work_id' => $work->id, 'section_type' => 'chapter', 'title' => '非公開章', 'status' => 'private']);
-        $this->get(route('public.works.show', $work))->assertOk()->assertSee('公開章')->assertDontSee('非公開章');
+        $work = Work::factory()->create([
+            'status' => 'published',
+        ]);
+
+        WorkStorySection::query()->create([
+            'work_id' => $work->id,
+            'section_type' => 'chapter',
+            'title' => '公開章',
+            'status' => 'published',
+        ]);
+
+        WorkStorySection::query()->create([
+            'work_id' => $work->id,
+            'section_type' => 'chapter',
+            'title' => '下書き章',
+            'status' => 'draft',
+        ]);
+
+        WorkStorySection::query()->create([
+            'work_id' => $work->id,
+            'section_type' => 'chapter',
+            'title' => '非公開章',
+            'status' => 'private',
+        ]);
+
+        $deleted = WorkStorySection::query()->create([
+            'work_id' => $work->id,
+            'section_type' => 'chapter',
+            'title' => '削除済み章',
+            'status' => 'published',
+        ]);
+        $deleted->delete();
+
+        $this->get(route('public.works.show', $work))
+            ->assertOk()
+            ->assertSee('公開章')
+            ->assertSee('下書き章')
+            ->assertDontSee('非公開章')
+            ->assertDontSee('削除済み章');
+    }
+
+    public function test_public_work_detail_shows_draft_child_sections(): void
+    {
+        $work = Work::factory()->create([
+            'status' => 'published',
+        ]);
+
+        $parent = WorkStorySection::query()->create([
+            'work_id' => $work->id,
+            'section_type' => 'arc',
+            'title' => '親編',
+            'status' => 'published',
+        ]);
+
+        WorkStorySection::query()->create([
+            'work_id' => $work->id,
+            'parent_section_id' => $parent->id,
+            'section_type' => 'chapter',
+            'title' => '下書き子章',
+            'status' => 'draft',
+        ]);
+
+        WorkStorySection::query()->create([
+            'work_id' => $work->id,
+            'parent_section_id' => $parent->id,
+            'section_type' => 'chapter',
+            'title' => '非公開子章',
+            'status' => 'private',
+        ]);
+
+        $this->get(route('public.works.show', $work))
+            ->assertOk()
+            ->assertSee('親編')
+            ->assertSee('下書き子章')
+            ->assertDontSee('非公開子章');
     }
 
     public function test_major_spoiler_section_is_collapsed_by_default(): void

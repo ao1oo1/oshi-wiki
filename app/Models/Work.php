@@ -144,7 +144,7 @@ class Work extends Model
     {
         return $this->hasMany(WorkStorySection::class)
             ->whereNull('parent_section_id')
-            ->where('status', 'published')
+            ->whereIn('status', ['draft', 'published'])
             ->orderBy('sort_order')
             ->orderBy('id');
     }

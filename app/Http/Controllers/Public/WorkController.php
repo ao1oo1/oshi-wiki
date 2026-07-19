@@ -466,7 +466,10 @@ class WorkController extends Controller
                     },
                     'childSections' => function ($childQuery) {
                         $childQuery
-                            ->where('status', 'published')
+                            ->whereIn(
+                                'status',
+                                ['draft', 'published']
+                            )
                             ->with([
                                 'events',
                                 'characters' => function ($characterQuery) {
