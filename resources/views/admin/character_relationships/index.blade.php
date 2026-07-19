@@ -19,20 +19,6 @@
         $adminListTotalCount = \App\Models\CharacterRelationship::query()->count();
     @endphp
 
-    <div class="mx-auto mt-4 w-full max-w-7xl px-4 sm:px-6 lg:px-8"
-         data-admin-result-count>
-        <div class="rounded-lg border border-slate-200 bg-white px-4 py-3 shadow-sm">
-            <p class="text-sm font-semibold text-slate-700">
-                検索結果
-                <span class="text-base text-slate-900">{{ number_format($relationships->total()) }}</span>件
-                <span class="mx-1 text-slate-400">／</span>
-                全体
-                <span class="text-base text-slate-900">{{ number_format($adminListTotalCount) }}</span>件
-            </p>
-        </div>
-    </div>
-
-
     <div class="p-6">
         @include('admin.partials.flash')
         @include('admin.partials.publish-help')
@@ -153,7 +139,15 @@
             @endif
 
             <div class="overflow-hidden rounded-3xl border border-[#E2E8F0] bg-white">
-                <div class="overflow-x-auto">
+                @include(
+                'admin.partials.list-result-count',
+                [
+                    'items' => $relationships,
+                    'totalCount' => $adminListTotalCount,
+                ]
+            )
+
+            <div class="overflow-x-auto">
                     <table class="w-full min-w-[900px] text-left text-sm">
                         <thead class="bg-[#FFF5F7] text-[#2D3748]">
                             <tr>
