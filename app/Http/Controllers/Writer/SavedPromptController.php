@@ -237,7 +237,10 @@ class SavedPromptController extends Controller
                         'work.parentWork',
                         'parentSection',
                     ])
-                    ->where('status', 'published')
+                    ->whereIn(
+                        'status',
+                        ['draft', 'published']
+                    )
                     ->whereHas(
                         'work',
                         function ($query): void {

@@ -371,7 +371,7 @@ class SavedPromptService
                     ]);
                 }
 
-                $section = $this->publishedSectionForWork(
+                $section = $this->availableSectionForWork(
                     $sectionId,
                     $workId
                 );
@@ -422,7 +422,7 @@ class SavedPromptService
             return;
         }
 
-        $section = $this->publishedSectionForWork(
+        $section = $this->availableSectionForWork(
             $legacySectionId,
             $workId
         );
@@ -430,7 +430,7 @@ class SavedPromptService
         if (! $section) {
             throw ValidationException::withMessages([
                 'work_story_section_id' =>
-                    '選択した作品で利用できる公開章・編が'
+                    '選択した作品で利用できる章・編が'
                     . '見つかりません。',
             ]);
         }
@@ -438,14 +438,17 @@ class SavedPromptService
         $data['work_story_section_id'] = $section->id;
     }
 
-    private function publishedSectionForWork(
+    private function availableSectionForWork(
         int $sectionId,
         int $workId
     ): ?WorkStorySection {
         return WorkStorySection::query()
             ->whereKey($sectionId)
             ->where('work_id', $workId)
-            ->where('status', 'published')
+            ->whereIn(
+                'status',
+                ['draft', 'published']
+            )
             ->whereHas(
                 'work',
                 function ($query): void {
