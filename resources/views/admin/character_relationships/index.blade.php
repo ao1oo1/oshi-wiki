@@ -138,15 +138,15 @@
                 </form>
             @endif
 
-            <div class="overflow-hidden rounded-3xl border border-[#E2E8F0] bg-white">
-                @include(
-                'admin.partials.list-result-count',
-                [
-                    'items' => $relationships,
-                    'totalCount' => $adminListTotalCount,
-                ]
-            )
+                        @include(
+                            'admin.partials.list-result-count',
+                            [
+                                'items' => $relationships,
+                                'totalCount' => $adminListTotalCount,
+                            ]
+                        )
 
+<div class="overflow-hidden rounded-3xl border border-[#E2E8F0] bg-white">
             <div class="overflow-x-auto">
                     <table class="w-full min-w-[900px] text-left text-sm">
                         <thead class="bg-[#FFF5F7] text-[#2D3748]">
