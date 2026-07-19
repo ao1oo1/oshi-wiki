@@ -11,6 +11,23 @@ $canUseCharacterImports = auth()->user()?->canManageAllAdminFeatures() ?? false;
             キャラクター管理
         </h2>
     </x-slot>
+    @php
+        $adminListTotalCount = \App\Models\Character::query()->count();
+    @endphp
+
+    <div class="mx-auto mt-4 w-full max-w-7xl px-4 sm:px-6 lg:px-8"
+         data-admin-result-count>
+        <div class="rounded-lg border border-slate-200 bg-white px-4 py-3 shadow-sm">
+            <p class="text-sm font-semibold text-slate-700">
+                検索結果
+                <span class="text-base text-slate-900">{{ number_format($characters->total()) }}</span>件
+                <span class="mx-1 text-slate-400">／</span>
+                全体
+                <span class="text-base text-slate-900">{{ number_format($adminListTotalCount) }}</span>件
+            </p>
+        </div>
+    </div>
+
 
     <div class="p-6">
         @include('admin.partials.flash')
@@ -170,6 +187,8 @@ $canUseCharacterImports = auth()->user()?->canManageAllAdminFeatures() ?? false;
                         </colgroup>
                         <thead class="bg-[#FFF5F7] text-[#2D3748]">
                             <tr>
+                                <th class="whitespace-nowrap px-3 py-3 text-left text-xs font-semibold"
+                                    data-admin-id-column>ID</th>
                                 @if ($canUseCharacterImports)
                                     <th class="px-5 py-4 font-bold">
                                         <input
@@ -194,6 +213,8 @@ $canUseCharacterImports = auth()->user()?->canManageAllAdminFeatures() ?? false;
                                 @endphp
 
                                 <tr class="border-t border-[#E2E8F0]">
+                                    <td class="whitespace-nowrap px-3 py-3 text-sm font-semibold text-slate-600"
+                                        data-admin-id-value>{{ $character->id }}</td>
                                     @if ($canUseCharacterImports)
                                         <td class="px-5 py-4 align-middle">
                                             <input
