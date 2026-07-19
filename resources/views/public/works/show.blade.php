@@ -124,14 +124,14 @@
                     <h2 class="text-2xl font-bold">章・編ごとの物語詳細</h2>
                     <p class="mt-2 text-sm leading-7 text-[#718096]">登録されている章・編、物語の進行、登場キャラクターの時点情報を確認できます。</p>
                 </div>
-                <div class="space-y-5">
+                <div class="grid grid-cols-1 gap-4 lg:grid-cols-2 lg:items-start">
                     @foreach ($work->publishedStorySections as $section)
                         @php($sectionIsMajorSpoiler = ($section->spoiler_level ?? 'none') === 'major')
-                        <details class="rounded-2xl border border-[#E2E8F0] bg-white p-5" @if (! $sectionIsMajorSpoiler) open @endif>
+                        <details class="min-w-0 rounded-2xl border border-[#E2E8F0] bg-white p-4 lg:p-5">
                             <summary class="cursor-pointer">
-                                <div class="inline-flex flex-wrap items-center gap-3">
+                                <div class="inline-flex flex-wrap items-center gap-2 lg:gap-3">
                                     <span class="text-xs font-bold text-[#E879A0]">{{ $section->typeLabel() }}</span>
-                                    <span class="text-lg font-bold text-[#2D3748]">{{ $section->title }}</span>
+                                    <span class="text-base font-bold text-[#2D3748] lg:text-[0.95rem]">{{ $section->title }}</span>
                                     @if ($section->short_label)<span class="oshi-chip">{{ $section->short_label }}</span>@endif
                                     @if ($sectionIsMajorSpoiler)<span class="rounded-full bg-amber-100 px-3 py-1 text-xs font-bold text-amber-800">重大なネタバレ</span>@endif
                                 </div>
