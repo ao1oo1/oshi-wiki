@@ -122,7 +122,7 @@
             <section class="oshi-card">
                 <div class="mb-6">
                     <h2 class="text-2xl font-bold">章・編ごとの物語詳細</h2>
-                    <p class="mt-2 text-sm leading-7 text-[#718096]">公開中の章・編、物語の進行、登場キャラクターの時点情報を確認できます。</p>
+                    <p class="mt-2 text-sm leading-7 text-[#718096]">登録されている章・編、物語の進行、登場キャラクターの時点情報を確認できます。</p>
                 </div>
                 <div class="space-y-5">
                     @foreach ($work->publishedStorySections as $section)
