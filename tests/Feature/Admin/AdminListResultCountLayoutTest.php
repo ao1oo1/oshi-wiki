@@ -105,6 +105,33 @@ class AdminListResultCountLayoutTest extends TestCase
         }
     }
 
+    public function test_character_count_is_outside_table_shell(): void
+    {
+        $contents = file_get_contents(
+            resource_path(
+                'views/admin/characters/index.blade.php'
+            )
+        );
+
+        $includePosition = strpos(
+            $contents,
+            'admin.partials.list-result-count'
+        );
+
+        $shellPosition = strpos(
+            $contents,
+            'staff-mobile-table-shell'
+        );
+
+        $this->assertNotFalse($includePosition);
+        $this->assertNotFalse($shellPosition);
+
+        $this->assertLessThan(
+            $shellPosition,
+            $includePosition
+        );
+    }
+
     public function test_tag_counts_are_before_both_tables(): void
     {
         $contents = file_get_contents(

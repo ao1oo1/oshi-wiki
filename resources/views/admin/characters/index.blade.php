@@ -154,15 +154,15 @@ $canUseCharacterImports = auth()->user()?->canManageAllAdminFeatures() ?? false;
                 </form>
             @endif
 
-<div class="staff-mobile-table-shell overflow-hidden rounded-3xl border border-[#E2E8F0] bg-white">
-                @include(
-                'admin.partials.list-result-count',
-                [
-                    'items' => $characters,
-                    'totalCount' => $adminListTotalCount,
-                ]
-            )
+            @include(
+                            'admin.partials.list-result-count',
+                            [
+                                'items' => $characters,
+                                'totalCount' => $adminListTotalCount,
+                            ]
+                        )
 
+<div class="staff-mobile-table-shell overflow-hidden rounded-3xl border border-[#E2E8F0] bg-white">
             <div class="overflow-x-auto">
                     <table class="w-full min-w-[1050px] table-fixed text-left text-sm">
                         <colgroup>
