@@ -6825,3 +6825,75 @@ input[type="number"].oshi-input {
         min-height: 150px;
     }
 }
+
+/* admin全ページ共通：ページ上下移動 */
+.admin-page-jump {
+    display: flex;
+    width: 100%;
+}
+
+.admin-page-jump-top {
+    justify-content: flex-end;
+    margin-bottom: 1rem;
+}
+
+.admin-page-jump-bottom {
+    justify-content: flex-end;
+    margin-top: 1.5rem;
+    padding-bottom: 0.25rem;
+}
+
+.admin-page-jump-link {
+    display: inline-flex;
+    min-height: 2.75rem;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+    border: 1px solid #cbd5e0;
+    border-radius: 0.85rem;
+    background: #ffffff;
+    padding: 0.65rem 1rem;
+    color: #2d3748;
+    font-size: 0.875rem;
+    font-weight: 700;
+    line-height: 1.25;
+    text-decoration: none;
+    box-shadow: 0 1px 2px rgb(45 55 72 / 8%);
+    transition:
+        border-color 0.2s ease,
+        background-color 0.2s ease,
+        transform 0.2s ease;
+}
+
+.admin-page-jump-link:hover {
+    border-color: #fed7e2;
+    background: #fff5f7;
+    transform: translateY(-1px);
+}
+
+.admin-page-jump-link:focus-visible {
+    outline: 3px solid rgb(254 215 226 / 70%);
+    outline-offset: 2px;
+}
+
+#admin-page-top,
+#admin-page-bottom {
+    scroll-margin-top: 1rem;
+}
+
+@media (max-width: 767px) {
+    .admin-page-jump-top,
+    .admin-page-jump-bottom {
+        justify-content: stretch;
+    }
+
+    .admin-page-jump-link {
+        width: 100%;
+    }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    html:has([data-admin-page-jump]) {
+        scroll-behavior: smooth;
+    }
+}

@@ -50,7 +50,19 @@
             </form>
         </aside>
 
-        <main class="oshi-admin-main">
+        <main
+            class="oshi-admin-main"
+            @if (request()->routeIs('admin.*'))
+                id="admin-page-top"
+            @endif
+        >
+            @if (request()->routeIs('admin.*'))
+                @include(
+                    'admin.partials.page-jump-navigation',
+                    ['position' => 'top']
+                )
+            @endif
+
             @isset($header)
                 <div class="oshi-admin-title">
                     {{ $header }}
@@ -58,6 +70,15 @@
             @endisset
 
             {{ $slot }}
+
+            @if (request()->routeIs('admin.*'))
+                <div id="admin-page-bottom"></div>
+
+                @include(
+                    'admin.partials.page-jump-navigation',
+                    ['position' => 'bottom']
+                )
+            @endif
         </main>
     </div>
     @include('admin.partials.staff-mobile-ui')
