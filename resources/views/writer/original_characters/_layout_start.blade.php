@@ -165,6 +165,13 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="bg-[#F8FAFC] text-[#2D3748]">
+    <div id="page-top"></div>
+
+    @include(
+        'partials.page-jump-navigation',
+        ['position' => 'top']
+    )
+
     <div class="min-h-screen md:flex">
         <aside class="w-full border-b border-[#E2E8F0] bg-white md:min-h-screen md:w-80 md:border-b-0 md:border-r">
             <div class="px-5 py-8">

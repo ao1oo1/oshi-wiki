@@ -11,6 +11,13 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body>
+    <div id="page-top"></div>
+
+    @include(
+        'partials.page-jump-navigation',
+        ['position' => 'top']
+    )
+
     @include('public.partials.header')
 
     <main class="oshi-container space-y-8">
@@ -316,5 +323,12 @@
             'helpfulCount' => $work->helpful_count ?? 0,
         ])
     </main>
+
+    <div id="page-bottom"></div>
+
+    @include(
+        'partials.page-jump-navigation',
+        ['position' => 'bottom']
+    )
 </body>
 </html>

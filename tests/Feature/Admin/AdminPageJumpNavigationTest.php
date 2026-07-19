@@ -18,12 +18,12 @@ class AdminPageJumpNavigationTest extends TestCase
         $this->actingAs($user)
             ->get(route('admin.works.index'))
             ->assertOk()
-            ->assertSee('id="admin-page-top"', false)
-            ->assertSee('id="admin-page-bottom"', false)
-            ->assertSee('href="#admin-page-bottom"', false)
-            ->assertSee('href="#admin-page-top"', false)
+            ->assertSee('id="page-top"', false)
+            ->assertSee('id="page-bottom"', false)
+            ->assertSee('href="#page-bottom"', false)
+            ->assertSee('href="#page-top"', false)
             ->assertSee('最下部へ')
-            ->assertSee('上部へ');
+            ->assertSee('最上部へ');
     }
 
     public function test_admin_detail_page_has_top_and_bottom_jump_buttons(): void
@@ -34,10 +34,10 @@ class AdminPageJumpNavigationTest extends TestCase
         $this->actingAs($user)
             ->get(route('admin.works.show', $work))
             ->assertOk()
-            ->assertSee('id="admin-page-top"', false)
-            ->assertSee('id="admin-page-bottom"', false)
+            ->assertSee('id="page-top"', false)
+            ->assertSee('id="page-bottom"', false)
             ->assertSee('最下部へ')
-            ->assertSee('上部へ');
+            ->assertSee('最上部へ');
     }
 
     public function test_admin_form_page_has_top_and_bottom_jump_buttons(): void
@@ -47,13 +47,13 @@ class AdminPageJumpNavigationTest extends TestCase
         $this->actingAs($user)
             ->get(route('admin.works.create'))
             ->assertOk()
-            ->assertSee('id="admin-page-top"', false)
-            ->assertSee('id="admin-page-bottom"', false)
+            ->assertSee('id="page-top"', false)
+            ->assertSee('id="page-bottom"', false)
             ->assertSee('最下部へ')
-            ->assertSee('上部へ');
+            ->assertSee('最上部へ');
     }
 
-    public function test_writer_page_does_not_show_admin_jump_buttons(): void
+    public function test_writer_page_shows_shared_jump_buttons(): void
     {
         $user = User::factory()->create([
             'status' => 'active',
@@ -65,8 +65,8 @@ class AdminPageJumpNavigationTest extends TestCase
 
         if ($response->status() === 200) {
             $response
-                ->assertDontSee('id="admin-page-top"', false)
-                ->assertDontSee('id="admin-page-bottom"', false);
+                ->assertDontSee('id="page-top"', false)
+                ->assertDontSee('id="page-bottom"', false);
         } else {
             $this->assertContains(
                 $response->status(),
@@ -82,7 +82,7 @@ class AdminPageJumpNavigationTest extends TestCase
         );
         $partial = file_get_contents(
             resource_path(
-                'views/admin/partials/'
+                'views/partials/'
                 . 'page-jump-navigation.blade.php'
             )
         );
@@ -95,11 +95,11 @@ class AdminPageJumpNavigationTest extends TestCase
             $layout
         );
         $this->assertStringContainsString(
-            'admin-page-bottom',
+            'page-bottom',
             $layout
         );
         $this->assertStringContainsString(
-            'admin-page-top',
+            'page-top',
             $layout
         );
         $this->assertStringContainsString(
@@ -107,11 +107,11 @@ class AdminPageJumpNavigationTest extends TestCase
             $partial
         );
         $this->assertStringContainsString(
-            '上部へ',
+            '最上部へ',
             $partial
         );
         $this->assertStringContainsString(
-            '.admin-page-jump-link',
+            '.page-jump-link',
             $css
         );
     }

@@ -351,6 +351,13 @@
     </style>
 </head>
 <body class="writing-tool-page-redesign">
+    <div id="page-top"></div>
+
+    @include(
+        'partials.page-jump-navigation',
+        ['position' => 'top']
+    )
+
     @include('public.partials.header')
 
     <main>
@@ -536,5 +543,12 @@
             </a>
         </div>
     </footer>
+
+    <div id="page-bottom"></div>
+
+    @include(
+        'partials.page-jump-navigation',
+        ['position' => 'bottom']
+    )
 </body>
 </html>

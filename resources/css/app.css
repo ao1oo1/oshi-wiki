@@ -6897,3 +6897,77 @@ input[type="number"].oshi-input {
         scroll-behavior: smooth;
     }
 }
+
+/* 全画面共通：ページ最上部・最下部への移動 */
+.page-jump {
+    display: flex;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.page-jump-top {
+    justify-content: flex-end;
+    margin-bottom: 1rem;
+    padding: 0.75rem 1rem 0;
+}
+
+.page-jump-bottom {
+    justify-content: flex-end;
+    margin-top: 1.5rem;
+    padding: 0 1rem 1rem;
+}
+
+.page-jump-link {
+    display: inline-flex;
+    min-height: 2.75rem;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+    border: 1px solid #cbd5e0;
+    border-radius: 0.85rem;
+    background: #ffffff;
+    padding: 0.65rem 1rem;
+    color: #2d3748;
+    font-size: 0.875rem;
+    font-weight: 700;
+    line-height: 1.25;
+    text-decoration: none;
+    box-shadow: 0 1px 2px rgb(45 55 72 / 8%);
+    transition:
+        border-color 0.2s ease,
+        background-color 0.2s ease,
+        transform 0.2s ease;
+}
+
+.page-jump-link:hover {
+    border-color: #fed7e2;
+    background: #fff5f7;
+    transform: translateY(-1px);
+}
+
+.page-jump-link:focus-visible {
+    outline: 3px solid rgb(254 215 226 / 70%);
+    outline-offset: 2px;
+}
+
+#page-top,
+#page-bottom {
+    scroll-margin-top: 1rem;
+}
+
+@media (max-width: 767px) {
+    .page-jump-top,
+    .page-jump-bottom {
+        justify-content: stretch;
+    }
+
+    .page-jump-link {
+        width: 100%;
+    }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    html:has([data-page-jump]) {
+        scroll-behavior: smooth;
+    }
+}
