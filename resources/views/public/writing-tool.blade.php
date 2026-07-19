@@ -351,14 +351,14 @@
     </style>
 </head>
 <body class="writing-tool-page-redesign">
+    @include('public.partials.header')
+
     <div id="page-top"></div>
 
     @include(
         'partials.page-jump-navigation',
         ['position' => 'top']
     )
-
-    @include('public.partials.header')
 
     <main>
         <section class="writing-lp-hero">
