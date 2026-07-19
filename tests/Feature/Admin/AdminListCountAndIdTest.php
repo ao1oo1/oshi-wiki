@@ -32,6 +32,24 @@ class AdminListCountAndIdTest extends TestCase
         }
     }
 
+    public function test_result_count_partial_defines_single_result_count_marker(): void
+    {
+        $content = file_get_contents(
+            resource_path(
+                'views/admin/partials/'
+                . 'list-result-count.blade.php'
+            )
+        );
+
+        $this->assertSame(
+            1,
+            substr_count(
+                $content,
+                'data-admin-result-count'
+            )
+        );
+    }
+
     public function test_four_views_have_single_id_column_and_value_definition(): void
     {
         $files = [
@@ -46,9 +64,17 @@ class AdminListCountAndIdTest extends TestCase
         foreach ($files as $file) {
             $content = file_get_contents($file);
 
+            $expectedCountPartialUses = str_contains(
+                $file,
+                'tags/index.blade.php'
+            ) ? 2 : 1;
+
             $this->assertSame(
-                1,
-                substr_count($content, 'data-admin-result-count'),
+                $expectedCountPartialUses,
+                substr_count(
+                    $content,
+                    'admin.partials.list-result-count'
+                ),
                 $file
             );
 

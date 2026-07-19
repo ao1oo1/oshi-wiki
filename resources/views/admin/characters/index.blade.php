@@ -4,6 +4,7 @@ $canUseCharacterImports = auth()->user()?->canManageAllAdminFeatures() ?? false;
         $canCreateCharacters = $canUseCharacterImports || auth()->user()?->isStaff();
         $currentAdminUser = auth()->user();
         $currentAdminUserId = $currentAdminUser?->id;
+        $adminListTotalCount = \App\Models\Character::query()->count();
 @endphp
 
     <x-slot name="header">
@@ -11,24 +12,6 @@ $canUseCharacterImports = auth()->user()?->canManageAllAdminFeatures() ?? false;
             キャラクター管理
         </h2>
     </x-slot>
-    @php
-        $adminListTotalCount = \App\Models\Character::query()->count();
-    @endphp
-
-    <div class="mx-auto mt-4 w-full max-w-7xl px-4 sm:px-6 lg:px-8"
-         data-admin-result-count>
-        <div class="rounded-lg border border-slate-200 bg-white px-4 py-3 shadow-sm">
-            <p class="text-sm font-semibold text-slate-700">
-                検索結果
-                <span class="text-base text-slate-900">{{ number_format($characters->total()) }}</span>件
-                <span class="mx-1 text-slate-400">／</span>
-                全体
-                <span class="text-base text-slate-900">{{ number_format($adminListTotalCount) }}</span>件
-            </p>
-        </div>
-    </div>
-
-
     <div class="p-6">
         @include('admin.partials.flash')
         @include('admin.partials.publish-help')
@@ -171,8 +154,16 @@ $canUseCharacterImports = auth()->user()?->canManageAllAdminFeatures() ?? false;
                 </form>
             @endif
 
-            <div class="staff-mobile-table-shell overflow-hidden rounded-3xl border border-[#E2E8F0] bg-white">
-                <div class="overflow-x-auto">
+<div class="staff-mobile-table-shell overflow-hidden rounded-3xl border border-[#E2E8F0] bg-white">
+                @include(
+                'admin.partials.list-result-count',
+                [
+                    'items' => $characters,
+                    'totalCount' => $adminListTotalCount,
+                ]
+            )
+
+            <div class="overflow-x-auto">
                     <table class="w-full min-w-[1050px] table-fixed text-left text-sm">
                         <colgroup>
                             @if ($canUseCharacterImports)
