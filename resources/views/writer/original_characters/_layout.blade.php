@@ -7,6 +7,13 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="bg-[#FFFFFF] text-[#2D3748]">
+    <div id="page-top"></div>
+
+    @include(
+        'partials.page-jump-navigation',
+        ['position' => 'top']
+    )
+
     <header class="border-b border-[#E2E8F0] bg-white">
         <div class="mx-auto flex max-w-6xl items-center justify-between px-4 py-4">
             <div class="flex items-center gap-5">
@@ -43,5 +50,12 @@
 
         {{ $slot }}
     </main>
+
+    <div id="page-bottom"></div>
+
+    @include(
+        'partials.page-jump-navigation',
+        ['position' => 'bottom']
+    )
 </body>
 </html>

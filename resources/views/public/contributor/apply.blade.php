@@ -14,6 +14,13 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body>
+    <div id="page-top"></div>
+
+    @include(
+        'partials.page-jump-navigation',
+        ['position' => 'top']
+    )
+
     @include('public.partials.header')
 
     <main class="oshi-container">
@@ -107,5 +114,12 @@
             </div>
         </section>
     </main>
+
+    <div id="page-bottom"></div>
+
+    @include(
+        'partials.page-jump-navigation',
+        ['position' => 'bottom']
+    )
 </body>
 </html>

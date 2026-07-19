@@ -8,6 +8,13 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body>
+    <div id="page-top"></div>
+
+    @include(
+        'partials.page-jump-navigation',
+        ['position' => 'top']
+    )
+
     @include('public.partials.header')
     <main class="oshi-container py-10">
         <div class="rounded bg-white p-6 shadow">
@@ -41,5 +48,12 @@
             @endif
         </section>
     </main>
+
+    <div id="page-bottom"></div>
+
+    @include(
+        'partials.page-jump-navigation',
+        ['position' => 'bottom']
+    )
 </body>
 </html>

@@ -208,6 +208,13 @@
     </style>
 </head>
 <body>
+    <div id="page-top"></div>
+
+    @include(
+        'partials.page-jump-navigation',
+        ['position' => 'top']
+    )
+
     <div class="page">
         <main class="wrap">
             <section class="card">
@@ -232,5 +239,12 @@
             <div class="footer">© Oshi-Wiki</div>
         </main>
     </div>
+
+    <div id="page-bottom"></div>
+
+    @include(
+        'partials.page-jump-navigation',
+        ['position' => 'bottom']
+    )
 </body>
 </html>

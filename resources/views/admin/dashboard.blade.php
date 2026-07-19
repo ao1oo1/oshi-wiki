@@ -6,7 +6,7 @@
     </x-slot>
 
     <div class="p-6">
-        
+
 {{-- STAFF_DASHBOARD_NOTICE --}}
 @if (auth()->user()?->isStaff())
     <div class="mb-6 rounded-3xl border border-[#FED7E2] bg-[#FFF5F7] p-6 shadow-sm">
