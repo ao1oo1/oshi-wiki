@@ -12,7 +12,7 @@ class WorkStorySectionEventLimitDisplayTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_csv_page_displays_two_thousand_event_limit(): void
+    public function test_csv_page_displays_three_thousand_event_limit(): void
     {
         $user = User::factory()->create([
             'is_super_admin' => true,
@@ -36,7 +36,7 @@ class WorkStorySectionEventLimitDisplayTest extends TestCase
                 [$work, $section]
             ))
             ->assertOk()
-            ->assertSee('最大2000件')
+            ->assertSee('最大3000件')
             ->assertDontSee('最大500件');
     }
 }

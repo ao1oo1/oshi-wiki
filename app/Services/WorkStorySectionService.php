@@ -12,7 +12,7 @@ use Illuminate\Validation\ValidationException;
 class WorkStorySectionService
 {
     public const MAX_SECTIONS_PER_WORK = 30;
-    public const MAX_EVENTS_PER_SECTION = 2000;
+    public const MAX_EVENTS_PER_SECTION = 3000;
 
     public function __construct(
         private readonly WorkStorySectionRepository $repository
