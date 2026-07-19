@@ -313,24 +313,136 @@ class SavedPromptService
     private function normalizeStorySection(
         array &$data
     ): void {
-        $sectionId = (int) (
+        $legacySectionId = (int) (
             $data['work_story_section_id'] ?? 0
         );
+
+        $requestedRanges = collect(
+            $data['selected_story_event_ranges'] ?? []
+        )
+            ->filter(fn ($value): bool => is_string($value))
+            ->unique()
+            ->values();
 
         if (
             ($data['work_source'] ?? null)
                 !== SavedPrompt::WORK_SOURCE_V1
             || empty($data['work_id'])
-            || $sectionId <= 0
         ) {
             $data['work_story_section_id'] = null;
+            $data['selected_story_event_ranges'] = [];
 
             return;
         }
 
         $workId = (int) $data['work_id'];
 
-        $section = WorkStorySection::query()
+        if ($requestedRanges->isNotEmpty()) {
+            $normalizedRanges = [];
+
+            foreach ($requestedRanges as $rangeRef) {
+                if (
+                    ! preg_match(
+                        '/^(\d+):(\d+):(\d+)$/',
+                        $rangeRef,
+                        $matches
+                    )
+                ) {
+                    throw ValidationException::withMessages([
+                        'selected_story_event_ranges' =>
+                            '物語詳細の選択範囲が不正です。',
+                    ]);
+                }
+
+                $sectionId = (int) $matches[1];
+                $start = (int) $matches[2];
+                $end = (int) $matches[3];
+
+                if (
+                    $sectionId <= 0
+                    || $start <= 0
+                    || $end < $start
+                    || $end > $start + 19
+                    || (($start - 1) % 20) !== 0
+                ) {
+                    throw ValidationException::withMessages([
+                        'selected_story_event_ranges' =>
+                            '物語詳細は20件単位で選択してください。',
+                    ]);
+                }
+
+                $section = $this->publishedSectionForWork(
+                    $sectionId,
+                    $workId
+                );
+
+                if (! $section) {
+                    throw ValidationException::withMessages([
+                        'selected_story_event_ranges' =>
+                            '選択した作品で利用できない'
+                            . '章・編が含まれています。',
+                    ]);
+                }
+
+                $eventCount = $section->events()->count();
+
+                if ($start > $eventCount || $end > $eventCount) {
+                    throw ValidationException::withMessages([
+                        'selected_story_event_ranges' =>
+                            '物語詳細の選択範囲が'
+                            . '登録件数を超えています。',
+                    ]);
+                }
+
+                $normalizedRanges[] = [
+                    'section_id' => $section->id,
+                    'start' => $start,
+                    'end' => $end,
+                ];
+            }
+
+            $data['work_story_section_id'] = null;
+            $data['selected_story_event_ranges'] =
+                collect($normalizedRanges)
+                    ->sortBy([
+                        ['section_id', 'asc'],
+                        ['start', 'asc'],
+                    ])
+                    ->values()
+                    ->all();
+
+            return;
+        }
+
+        $data['selected_story_event_ranges'] = [];
+
+        if ($legacySectionId <= 0) {
+            $data['work_story_section_id'] = null;
+
+            return;
+        }
+
+        $section = $this->publishedSectionForWork(
+            $legacySectionId,
+            $workId
+        );
+
+        if (! $section) {
+            throw ValidationException::withMessages([
+                'work_story_section_id' =>
+                    '選択した作品で利用できる公開章・編が'
+                    . '見つかりません。',
+            ]);
+        }
+
+        $data['work_story_section_id'] = $section->id;
+    }
+
+    private function publishedSectionForWork(
+        int $sectionId,
+        int $workId
+    ): ?WorkStorySection {
+        return WorkStorySection::query()
             ->whereKey($sectionId)
             ->where('work_id', $workId)
             ->where('status', 'published')
@@ -358,16 +470,6 @@ class SavedPromptService
                 }
             )
             ->first();
-
-        if (! $section) {
-            throw ValidationException::withMessages([
-                'work_story_section_id' =>
-                    '選択した作品で利用できる公開章・編が'
-                    . '見つかりません。',
-            ]);
-        }
-
-        $data['work_story_section_id'] = $section->id;
     }
 
     private function normalizeCharacterReferences(
@@ -585,7 +687,8 @@ class SavedPromptService
             $this->storySectionBuilder->build(
                 ! empty($data['work_story_section_id'])
                     ? (int) $data['work_story_section_id']
-                    : null
+                    : null,
+                $data['selected_story_event_ranges'] ?? []
             );
 
         $relationshipText =
