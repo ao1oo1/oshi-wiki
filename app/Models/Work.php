@@ -23,8 +23,13 @@ class Work extends Model
         'slug',
         'genre',
         'original_media',
+        'media_types',
         'official_url',
         'guideline_url',
+        'monetization_enabled',
+        'monetization_inheritance',
+        'isbn',
+        'official_store_url',
         'description',
         'timeline_setting',
         'building_layout',
@@ -64,6 +69,8 @@ class Work extends Model
             'published_at' => 'datetime',
             'parent_work_id' => 'integer',
             'child_sort_order' => 'integer',
+            'media_types' => 'array',
+            'monetization_enabled' => 'boolean',
         ];
     }
 
@@ -155,6 +162,18 @@ class Work extends Model
             ->where('status', 'published')
             ->orderBy('sort_order')
             ->orderBy('id');
+    }
+
+    public function monetizationLinks(): HasMany
+    {
+        return $this->hasMany(WorkMonetizationLink::class)
+            ->orderBy('priority')
+            ->orderBy('id');
+    }
+
+    public function displayableMonetizationLinks(): HasMany
+    {
+        return $this->monetizationLinks()->displayable();
     }
 
     public function canonEvents(): HasMany
