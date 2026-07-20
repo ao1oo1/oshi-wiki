@@ -23,7 +23,11 @@
                 <a href="{{ route('admin.contact-messages.index') }}">お問い合わせ</a>
             @endif
 
-                        @if (auth()->user()?->canManageAllAdminFeatures())
+                        @if (auth()->user()?->isSuperAdmin())
+                <a href="{{ route('admin.monetization.services.index') }}">収益管理</a>
+            @endif
+
+            @if (auth()->user()?->canManageAllAdminFeatures())
                 <a href="{{ route('admin.trash.index') }}">ゴミ箱</a>
             @endif
 

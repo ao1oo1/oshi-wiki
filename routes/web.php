@@ -302,6 +302,13 @@ Route::middleware(['auth', 'admin.user', 'password.changed'])->prefix('admin')->
 });
 
 Route::middleware(['auth', 'admin.user', 'password.changed'])->prefix('admin')->name('admin.')->group(function () {
+    Route::resource(
+        'monetization/services',
+        \App\Http\Controllers\Admin\MonetizationServiceController::class
+    )->except(['create', 'show'])->names('monetization.services');
+});
+
+Route::middleware(['auth', 'admin.user', 'password.changed'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/', \App\Http\Controllers\Admin\DashboardController::class)
         ->name('dashboard');
 });

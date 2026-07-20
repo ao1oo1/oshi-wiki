@@ -27,6 +27,12 @@
         タグ管理
     </a>
 @if (auth()->user()?->isSuperAdmin())
+        <a href="{{ route('admin.monetization.services.index') }}" class="{{ request()->routeIs('admin.monetization.*') ? 'active' : '' }}">
+            収益管理
+        </a>
+    @endif
+
+@if (auth()->user()?->isSuperAdmin())
         <a href="{{ route('admin.contact-messages.index') }}" class="{{ request()->routeIs('admin.contact-messages.*') ? 'active' : '' }}">
             お問い合わせ受信箱
         </a>
