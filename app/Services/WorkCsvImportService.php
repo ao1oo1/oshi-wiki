@@ -236,6 +236,19 @@ class WorkCsvImportService
             'original_media' => ['nullable', 'string', 'max:255'],
             'official_url' => ['nullable', 'url', 'max:2048'],
             'guideline_url' => ['nullable', 'url', 'max:2048'],
+            'media_types' => ['nullable', 'array'],
+            'media_types.*' => [
+                'string',
+                'in:anime,manga,game,novel,goods,app,other',
+            ],
+            'monetization_enabled' => ['nullable', 'boolean'],
+            'monetization_inheritance' => [
+                'nullable',
+                'string',
+                'in:self,parent,self_then_parent,disabled',
+            ],
+            'isbn' => ['nullable', 'string', 'max:32'],
+            'official_store_url' => ['nullable', 'url', 'max:2048'],
             'description' => ['nullable', 'string'],
             'status' => ['required', 'in:draft,published,private'],
             'character_ids' => ['nullable', 'array'],
@@ -473,10 +486,99 @@ class WorkCsvImportService
 
         foreach ($data as $key => $value) {
             $value = is_string($value) ? trim($value) : $value;
-            $normalized[$key] = $value === '' ? null : $value;
+            $value = $value === '' ? null : $value;
+
+            if ($key === 'media_types') {
+                $value = $this->normalizeMediaTypes($value);
+            }
+
+            if ($key === 'monetization_enabled') {
+                $value = $this->normalizeBoolean($value);
+            }
+
+            $normalized[$key] = $value;
         }
 
         return $normalized;
+    }
+
+    private function normalizeMediaTypes(mixed $value): ?array
+    {
+        if ($value === null || $value === []) {
+            return null;
+        }
+
+        if (is_array($value)) {
+            return collect($value)
+                ->map(fn ($item) => trim((string) $item))
+                ->filter()
+                ->unique()
+                ->values()
+                ->all();
+        }
+
+        $value = trim((string) $value);
+
+        if ($value === '') {
+            return null;
+        }
+
+        if (str_starts_with($value, '[')) {
+            $decoded = json_decode(
+                $value,
+                true,
+                512,
+                JSON_THROW_ON_ERROR
+            );
+
+            if (! is_array($decoded) || ! array_is_list($decoded)) {
+                throw new JsonException(
+                    'media_typesはJSON配列で指定してください。'
+                );
+            }
+
+            return collect($decoded)
+                ->map(fn ($item) => trim((string) $item))
+                ->filter()
+                ->unique()
+                ->values()
+                ->all();
+        }
+
+        return collect(
+            preg_split('/[,、|｜]+/u', $value) ?: []
+        )
+            ->map(fn ($item) => trim((string) $item))
+            ->filter()
+            ->unique()
+            ->values()
+            ->all();
+    }
+
+    private function normalizeBoolean(mixed $value): ?bool
+    {
+        if ($value === null || $value === '') {
+            return null;
+        }
+
+        if (is_bool($value)) {
+            return $value;
+        }
+
+        if (is_int($value)) {
+            return $value === 1;
+        }
+
+        $normalized = mb_strtolower(trim((string) $value));
+
+        return match ($normalized) {
+            '1', 'true', 'yes', 'on', '有効', 'はい' => true,
+            '0', 'false', 'no', 'off', '無効', 'いいえ' => false,
+            default => throw new \InvalidArgumentException(
+                'monetization_enabledは'
+                . '1/0、true/false、有効/無効のいずれかで指定してください。'
+            ),
+        };
     }
 
     private function isEmptyRow(array $row): bool

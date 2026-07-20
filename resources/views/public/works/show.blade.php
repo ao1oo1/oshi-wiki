@@ -66,6 +66,10 @@
             </div>
         </section>
 
+        @include('public.works._monetization', [
+            'monetization' => $monetization,
+        ])
+
         @if ($work->parentWork)
             <section class="oshi-card">
                 <p class="mb-2 text-sm font-bold text-[#A0AEC0]">

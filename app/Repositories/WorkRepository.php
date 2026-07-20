@@ -95,6 +95,8 @@ class WorkRepository
             'linkedCharacters.tags',
             'characterRelationships.fromCharacter',
             'characterRelationships.toCharacter',
+            'monetizationLinks.service',
+            'monetizationLinks.affiliateProgram',
         ]);
 
         // 既存の作品詳細Bladeはcharactersを参照しているため、

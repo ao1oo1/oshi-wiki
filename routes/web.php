@@ -302,6 +302,54 @@ Route::middleware(['auth', 'admin.user', 'password.changed'])->prefix('admin')->
 });
 
 Route::middleware(['auth', 'admin.user', 'password.changed'])->prefix('admin')->name('admin.')->group(function () {
+    Route::resource(
+        'monetization/services',
+        \App\Http\Controllers\Admin\MonetizationServiceController::class
+    )->except(['create', 'show'])->names('monetization.services');
+
+    Route::resource(
+        'monetization/programs',
+        \App\Http\Controllers\Admin\AffiliateProgramController::class
+    )->except(['create', 'show'])->names('monetization.programs');
+
+    Route::get(
+        'monetization/analytics',
+        \App\Http\Controllers\Admin\LinkClickAnalyticsController::class
+    )->name('monetization.analytics.index');
+
+    Route::post(
+        'works/{work}/monetization-links/{monetizationLink}/verify',
+        [
+            \App\Http\Controllers\Admin\WorkMonetizationLinkController::class,
+            'verify',
+        ]
+    )->name('works.monetization-links.verify');
+
+    Route::post(
+        'monetization/links/verify-all',
+        [
+            \App\Http\Controllers\Admin\WorkMonetizationLinkController::class,
+            'verifyAll',
+        ]
+    )->name('monetization.links.verify-all');
+
+    Route::patch(
+        'works/{work}/monetization-settings',
+        [
+            \App\Http\Controllers\Admin\WorkMonetizationLinkController::class,
+            'updateSettings',
+        ]
+    )->name('works.monetization-settings.update');
+
+    Route::resource(
+        'works.monetization-links',
+        \App\Http\Controllers\Admin\WorkMonetizationLinkController::class
+    )->except(['create', 'show'])->parameters([
+        'monetization-links' => 'monetizationLink',
+    ]);
+});
+
+Route::middleware(['auth', 'admin.user', 'password.changed'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/', \App\Http\Controllers\Admin\DashboardController::class)
         ->name('dashboard');
 });
@@ -329,6 +377,13 @@ Route::middleware(['auth', 'admin.user', 'password.changed'])->prefix('admin')->
 });
 
 
+
+Route::get(
+    '/go/{publicKey}',
+    \App\Http\Controllers\Public\MonetizationRedirectController::class
+)
+    ->middleware('throttle:60,1')
+    ->name('public.monetization.redirect');
 
 Route::get('/works/{work}', [\App\Http\Controllers\Public\WorkController::class, 'show'])
     ->name('public.works.show');

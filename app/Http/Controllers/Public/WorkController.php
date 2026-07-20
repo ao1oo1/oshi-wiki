@@ -427,8 +427,10 @@ class WorkController extends Controller
             );
     }
 
-    public function show(Work $work): View
-    {
+    public function show(
+        Work $work,
+        \App\Services\MonetizationDisplayService $monetizationDisplay
+    ): View {
         $work->loadMissing([
             'parentWork',
             'publishedChildWorks',
@@ -490,6 +492,7 @@ class WorkController extends Controller
 
         return view('public.works.show', [
             'work' => $work,
+            'monetization' => $monetizationDisplay->forWork($work),
         ]);
     }
 }
