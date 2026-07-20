@@ -247,5 +247,6 @@
         'partials.page-jump-navigation',
         ['position' => 'bottom']
     )
+@include('public.partials.legal-footer')
 </body>
 </html>

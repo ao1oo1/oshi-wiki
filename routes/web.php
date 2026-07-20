@@ -8,6 +8,17 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+
+Route::controller(\App\Http\Controllers\Public\LegalPageController::class)
+    ->group(function (): void {
+        Route::get('/privacy', 'privacy')->name('public.privacy');
+        Route::get('/terms', 'terms')->name('public.terms');
+        Route::get('/legal', 'legal')->name('public.legal');
+        Route::get('/billing-policy', 'billingPolicy')
+            ->name('public.billing-policy');
+        Route::get('/pricing', 'pricing')->name('public.pricing');
+    });
+
 Route::get('/dashboard', function () {
     $user = request()->user();
 

@@ -43,6 +43,16 @@
         </nav>
 
         <div class="mt-auto border-t border-gray-100 pt-5">
+            <a href="{{ route('public.pricing') }}"
+               class="block rounded-2xl px-5 py-3 text-sm font-bold text-[#2D3748] hover:bg-[#FFF1F5]">
+                料金・契約
+            </a>
+
+            <a href="{{ route('public.privacy') }}#writing-tool"
+               class="block rounded-2xl px-5 py-3 text-sm font-bold text-[#2D3748] hover:bg-[#FFF1F5]">
+                データの取扱い
+            </a>
+
             <a href="{{ route('public.home') }}"
                class="block rounded-2xl px-5 py-3 text-sm font-bold text-[#2D3748] hover:bg-[#FFF1F5]">
                 公開サイトを見る
