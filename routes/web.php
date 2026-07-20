@@ -312,6 +312,11 @@ Route::middleware(['auth', 'admin.user', 'password.changed'])->prefix('admin')->
         \App\Http\Controllers\Admin\AffiliateProgramController::class
     )->except(['create', 'show'])->names('monetization.programs');
 
+    Route::get(
+        'monetization/analytics',
+        \App\Http\Controllers\Admin\LinkClickAnalyticsController::class
+    )->name('monetization.analytics.index');
+
     Route::patch(
         'works/{work}/monetization-settings',
         [
@@ -356,6 +361,13 @@ Route::middleware(['auth', 'admin.user', 'password.changed'])->prefix('admin')->
 });
 
 
+
+Route::get(
+    '/go/{publicKey}',
+    \App\Http\Controllers\Public\MonetizationRedirectController::class
+)
+    ->middleware('throttle:60,1')
+    ->name('public.monetization.redirect');
 
 Route::get('/works/{work}', [\App\Http\Controllers\Public\WorkController::class, 'show'])
     ->name('public.works.show');

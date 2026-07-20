@@ -35,6 +35,13 @@ class PublicWorkMonetizationDisplayTest extends TestCase
             ->assertSee('広告・アフィリエイトリンク')
             ->assertSee('Amazonで見る')
             ->assertSee(
+                route(
+                    'public.monetization.redirect',
+                    WorkMonetizationLink::query()->firstOrFail()->public_key
+                ),
+                false
+            )
+            ->assertDontSee(
                 'https://www.amazon.co.jp/dp/B012345678?tag=oshi-22',
                 false
             )

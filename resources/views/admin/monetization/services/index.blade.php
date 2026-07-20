@@ -16,6 +16,12 @@
             >
                 提携プログラム
             </a>
+            <a
+                href="{{ route('admin.monetization.analytics.index') }}"
+                class="oshi-btn oshi-btn-sub"
+            >
+                クリック集計
+            </a>
         </div>
         <div class="oshi-card admin-index-shell">
             <div class="mb-6">

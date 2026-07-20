@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
 
@@ -66,5 +67,13 @@ class WorkMonetizationLink extends Model
     public function affiliateProgram(): BelongsTo
     {
         return $this->belongsTo(AffiliateProgram::class, 'affiliate_program_id');
+    }
+
+    public function clicks(): HasMany
+    {
+        return $this->hasMany(
+            LinkClick::class,
+            'work_monetization_link_id'
+        );
     }
 }

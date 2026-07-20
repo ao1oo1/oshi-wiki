@@ -128,7 +128,10 @@ class MonetizationDisplayService
             'button_label' => $link->button_label
                 ?: $service->default_button_label
                 ?: $service->name . 'で見る',
-            'url' => $url,
+            'url' => route(
+                'public.monetization.redirect',
+                $link->public_key
+            ),
             'is_affiliate' => $program->is_affiliate,
             'source_work_id' => $sourceWork->id,
             'source_work_title' => $sourceWork->title,
