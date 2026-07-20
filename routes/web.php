@@ -19,6 +19,12 @@ Route::controller(\App\Http\Controllers\Public\LegalPageController::class)
         Route::get('/pricing', 'pricing')->name('public.pricing');
     });
 
+
+Route::post(
+    '/stripe/webhook',
+    \App\Http\Controllers\StripeWebhookController::class
+)->name('stripe.webhook');
+
 Route::get('/dashboard', function () {
     $user = request()->user();
 
@@ -32,6 +38,22 @@ Route::get('/dashboard', function () {
 Route::middleware(['auth', 'writer.user'])->prefix('writer')->name('writer.')->group(function () {
     Route::get('dashboard', \App\Http\Controllers\Writer\DashboardController::class)
         ->name('dashboard');
+
+
+    Route::get(
+        'billing',
+        [\App\Http\Controllers\Writer\BillingController::class, 'index']
+    )->name('billing.index');
+
+    Route::post(
+        'billing/checkout',
+        [\App\Http\Controllers\Writer\BillingController::class, 'checkout']
+    )->name('billing.checkout');
+
+    Route::post(
+        'billing/portal',
+        [\App\Http\Controllers\Writer\BillingController::class, 'portal']
+    )->name('billing.portal');
 
     Route::get('guide', \App\Http\Controllers\Writer\GuideController::class)
         ->name('guide');
