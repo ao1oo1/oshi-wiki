@@ -311,6 +311,21 @@ Route::middleware(['auth', 'admin.user', 'password.changed'])->prefix('admin')->
         'monetization/programs',
         \App\Http\Controllers\Admin\AffiliateProgramController::class
     )->except(['create', 'show'])->names('monetization.programs');
+
+    Route::patch(
+        'works/{work}/monetization-settings',
+        [
+            \App\Http\Controllers\Admin\WorkMonetizationLinkController::class,
+            'updateSettings',
+        ]
+    )->name('works.monetization-settings.update');
+
+    Route::resource(
+        'works.monetization-links',
+        \App\Http\Controllers\Admin\WorkMonetizationLinkController::class
+    )->except(['create', 'show'])->parameters([
+        'monetization-links' => 'monetizationLink',
+    ]);
 });
 
 Route::middleware(['auth', 'admin.user', 'password.changed'])->prefix('admin')->name('admin.')->group(function () {

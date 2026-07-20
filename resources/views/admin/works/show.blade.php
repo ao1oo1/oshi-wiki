@@ -67,6 +67,12 @@
                     <a href="{{ route('admin.works.index') }}" class="oshi-btn oshi-btn-sub">作品一覧へ</a>
                     @if ($canManageWorks)
                         <a href="{{ route('admin.works.edit', $work) }}" class="oshi-btn oshi-btn-main">作品編集</a>
+                        <a
+                            href="{{ route('admin.works.monetization-links.index', $work) }}"
+                            class="oshi-btn oshi-btn-sub"
+                        >
+                            商品リンク管理
+                        </a>
                     @endif
                     <a href="{{ route('admin.characters.create', ['work_id' => $work->id]) }}" class="oshi-btn oshi-btn-sub">キャラクター追加</a>
                     <a href="{{ route('admin.character-relationships.create', ['work_id' => $work->id]) }}" class="oshi-btn oshi-btn-sub">関係性追加</a>
