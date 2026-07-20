@@ -306,6 +306,11 @@ Route::middleware(['auth', 'admin.user', 'password.changed'])->prefix('admin')->
         'monetization/services',
         \App\Http\Controllers\Admin\MonetizationServiceController::class
     )->except(['create', 'show'])->names('monetization.services');
+
+    Route::resource(
+        'monetization/programs',
+        \App\Http\Controllers\Admin\AffiliateProgramController::class
+    )->except(['create', 'show'])->names('monetization.programs');
 });
 
 Route::middleware(['auth', 'admin.user', 'password.changed'])->prefix('admin')->name('admin.')->group(function () {

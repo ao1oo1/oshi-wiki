@@ -2,6 +2,21 @@
     <x-slot name="header"><h2 class="font-semibold text-xl">収益管理：配信・販売サービス</h2></x-slot>
     <div class="p-6">
         @include('admin.partials.flash')
+
+        <div class="mb-5 flex flex-wrap gap-3">
+            <a
+                href="{{ route('admin.monetization.services.index') }}"
+                class="oshi-btn"
+            >
+                配信・販売サービス
+            </a>
+            <a
+                href="{{ route('admin.monetization.programs.index') }}"
+                class="oshi-btn oshi-btn-sub"
+            >
+                提携プログラム
+            </a>
+        </div>
         <div class="oshi-card admin-index-shell">
             <div class="mb-6">
                 <h1 class="text-2xl font-bold text-[#2D3748]">配信・販売サービス管理</h1>
