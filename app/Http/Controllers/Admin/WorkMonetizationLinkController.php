@@ -10,6 +10,7 @@ use App\Models\AffiliateProgram;
 use App\Models\MonetizationService;
 use App\Models\Work;
 use App\Models\WorkMonetizationLink;
+use App\Services\LinkVerificationService;
 use App\Services\WorkMonetizationLinkManagementService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Validation\ValidationException;
@@ -130,6 +131,54 @@ class WorkMonetizationLinkController extends Controller
         return redirect()
             ->route('admin.works.monetization-links.index', $work)
             ->with('success', '作品商品リンクを削除しました。');
+    }
+
+    public function verify(
+        Work $work,
+        WorkMonetizationLink $monetizationLink,
+        LinkVerificationService $verificationService
+    ): RedirectResponse {
+        $this->ensureSuperAdmin();
+        $this->ensureLinkBelongsToWork($work, $monetizationLink);
+
+        $result = $verificationService->verify(
+            $monetizationLink,
+            'manual'
+        );
+
+        return redirect()
+            ->route('admin.works.monetization-links.index', $work)
+            ->with(
+                'success',
+                'リンク検証が完了しました。結果：'
+                . WorkMonetizationLinkManagementService::AVAILABILITY_STATUSES[
+                    $result['status']
+                ]
+            );
+    }
+
+    public function verifyAll(
+        LinkVerificationService $verificationService
+    ): RedirectResponse {
+        $this->ensureSuperAdmin();
+
+        $summary = $verificationService->verifyActiveLinks(
+            'manual_bulk'
+        );
+
+        return redirect()
+            ->route('admin.monetization.analytics.index')
+            ->with(
+                'success',
+                sprintf(
+                    '全件検証が完了しました。対象%d件／利用可能%d件／確認中%d件／未確認%d件／終了%d件',
+                    $summary['total'],
+                    $summary['available'],
+                    $summary['checking'],
+                    $summary['unknown'],
+                    $summary['ended']
+                )
+            );
     }
 
     public function updateSettings(

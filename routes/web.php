@@ -317,6 +317,22 @@ Route::middleware(['auth', 'admin.user', 'password.changed'])->prefix('admin')->
         \App\Http\Controllers\Admin\LinkClickAnalyticsController::class
     )->name('monetization.analytics.index');
 
+    Route::post(
+        'works/{work}/monetization-links/{monetizationLink}/verify',
+        [
+            \App\Http\Controllers\Admin\WorkMonetizationLinkController::class,
+            'verify',
+        ]
+    )->name('works.monetization-links.verify');
+
+    Route::post(
+        'monetization/links/verify-all',
+        [
+            \App\Http\Controllers\Admin\WorkMonetizationLinkController::class,
+            'verifyAll',
+        ]
+    )->name('monetization.links.verify-all');
+
     Route::patch(
         'works/{work}/monetization-settings',
         [

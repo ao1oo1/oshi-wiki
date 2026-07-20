@@ -160,6 +160,7 @@
                             <th class="px-4 py-3">商品</th>
                             <th class="px-4 py-3">コード</th>
                             <th class="px-4 py-3 text-center">提供状況</th>
+                            <th class="px-4 py-3">最終検証</th>
                             <th class="px-4 py-3 text-center">状態</th>
                             <th class="px-4 py-3 text-center">優先順位</th>
                             <th class="px-4 py-3 text-center">操作</th>
@@ -186,6 +187,16 @@
                                 <td class="px-4 py-4 text-center">
                                     {{ $availabilityStatuses[$link->availability_status] ?? $link->availability_status }}
                                 </td>
+                                <td class="px-4 py-4 text-xs leading-6">
+                                    <p>
+                                        {{ $link->last_verified_at?->format('Y-m-d H:i') ?: '未検証' }}
+                                    </p>
+                                    @if ($link->verification_note)
+                                        <p class="mt-1 max-w-xs text-[#718096]">
+                                            {{ $link->verification_note }}
+                                        </p>
+                                    @endif
+                                </td>
                                 <td class="px-4 py-4 text-center">
                                     {{ $link->is_active ? '有効' : '無効' }}
                                 </td>
@@ -193,7 +204,16 @@
                                     {{ $link->priority }}
                                 </td>
                                 <td class="px-4 py-4">
-                                    <div class="flex justify-center gap-2">
+                                    <div class="flex flex-wrap justify-center gap-2">
+                                        <form
+                                            method="POST"
+                                            action="{{ route('admin.works.monetization-links.verify', [$work, $link]) }}"
+                                        >
+                                            @csrf
+                                            <button type="submit" class="oshi-btn oshi-btn-sub">
+                                                リンク確認
+                                            </button>
+                                        </form>
                                         <a
                                             href="{{ route('admin.works.monetization-links.edit', [$work, $link]) }}"
                                             class="oshi-btn oshi-btn-sub"
@@ -216,7 +236,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="8" class="p-8 text-center text-[#718096]">
+                                <td colspan="9" class="p-8 text-center text-[#718096]">
                                     商品リンクは登録されていません。
                                 </td>
                             </tr>

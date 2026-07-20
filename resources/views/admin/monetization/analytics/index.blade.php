@@ -19,15 +19,28 @@
         </div>
 
         <div class="oshi-card admin-index-shell">
-            <div class="mb-6">
-                <h1 class="text-2xl font-bold text-[#2D3748]">
-                    クリック集計
-                </h1>
-                <p class="mt-2 text-sm leading-7 text-[#718096]">
-                    生のIPアドレスやユーザーエージェントは保存していません。
-                    短時間の同一クリックは重複として集計から除外します。
-                </p>
+            <div class="mb-6 flex flex-wrap items-start justify-between gap-4">
+                <div>
+                    <h1 class="text-2xl font-bold text-[#2D3748]">
+                        クリック集計
+                    </h1>
+                    <p class="mt-2 text-sm leading-7 text-[#718096]">
+                        生のIPアドレスやユーザーエージェントは保存していません。
+                        短時間の同一クリックは重複として集計から除外します。
+                    </p>
+                </div>
+                <form
+                    method="POST"
+                    action="{{ route('admin.monetization.links.verify-all') }}"
+                    onsubmit="return confirm('有効な商品リンクをすべて検証しますか？');"
+                >
+                    @csrf
+                    <button type="submit" class="oshi-btn">
+                        商品リンクを全件確認
+                    </button>
+                </form>
             </div>
+
 
             <form method="GET" action="{{ route('admin.monetization.analytics.index') }}" class="mb-6 rounded-3xl border border-[#E2E8F0] bg-[#F7FAFC] p-5">
                 <div class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
