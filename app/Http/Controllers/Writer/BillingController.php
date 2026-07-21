@@ -39,7 +39,35 @@ class BillingController extends Controller
         if ($this->entitlements->hasPlusAccess($user)) {
             return redirect()
                 ->route('writer.billing.index')
-                ->with('status', 'すでにPlusを利用中です。');
+                ->with(
+                    'status',
+                    'すでにPlusを利用中です。'
+                    .'契約内容の確認・変更をご利用ください。'
+                );
+        }
+
+        if (
+            filled(
+                $user->billingProfile?->stripe_subscription_id
+            )
+            && in_array(
+                $user->billingProfile?->status,
+                [
+                    'active',
+                    'trialing',
+                    'past_due_grace',
+                    'canceling',
+                ],
+                true
+            )
+        ) {
+            return redirect()
+                ->route('writer.billing.index')
+                ->with(
+                    'status',
+                    'すでにPlus契約が登録されています。'
+                    .'契約内容の確認・変更をご利用ください。'
+                );
         }
 
         try {
