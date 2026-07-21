@@ -22,6 +22,8 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'admin.user' => EnsureAdminUser::class,
             'writer.user' => EnsureWriterUser::class,
+            'writer.data.writable' =>
+                \App\Http\Middleware\EnsureWriterDataWritable::class,
             'password.changed' => EnsurePasswordChanged::class,
             'security.ip' => \App\Http\Middleware\BlockSuspiciousIp::class,
         ]);

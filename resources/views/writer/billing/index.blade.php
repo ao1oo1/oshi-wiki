@@ -74,6 +74,20 @@
                 </div>
             @endif
         </div>
+    @elseif ($profile?->isInRetentionPeriod())
+        <div class="mt-5 rounded-2xl border-2 border-amber-300 bg-amber-50 p-5 text-amber-950">
+            <p class="text-base font-bold">
+                Plus終了後のデータ保管期間です。
+            </p>
+            <p class="mt-2 text-sm font-bold leading-7">
+                創作データは
+                {{ $profile->retention_ends_at->format('Y年n月j日') }}
+                まで保管されます。現在は閲覧とCSVエクスポートのみ利用できます。
+            </p>
+            <p class="mt-2 text-sm font-bold leading-7 text-red-700">
+                保管期限を過ぎると創作データは自動削除され、復元できません。
+            </p>
+        </div>
     @elseif ($profile?->status === 'past_due_grace')
         <p class="mt-4 rounded-xl bg-red-50 p-3 text-sm font-bold text-red-800">
             お支払いを確認できません。猶予期限は{{ $profile->grace_period_ends_at?->format('Y年n月j日') }}です。
@@ -283,7 +297,7 @@
     <h2 class="text-xl font-bold text-amber-950">Plusを解約した後のデータについて</h2>
     <div class="mt-4 space-y-3 text-sm font-bold leading-7 text-amber-950">
         <p>解約後も現在の支払期間が終了するまではPlusを利用できます。期間終了後は無料プランへ切り替わります。</p>
-        <p>無料プランの上限を超えているデータをOshi-Wikiが自動的に削除することはありません。上限超過中は新規登録・複製ができませんが、既存データの閲覧・編集・削除・CSVエクスポートは利用できます。</p>
+        <p>Oshi-Wiki Plusの利用期間終了後も、創作データは3か月間保管されます。保管期間中はデータの閲覧とCSVエクスポートを利用できますが、新規登録・編集・複製・削除・CSVインポートは利用できません。利用期間終了から3か月を過ぎると創作データは自動的に削除され、復元できません。削除予定日までにCSVエクスポートなどで保存してください。3か月以内にPlusへ再加入した場合は、保存されているデータを引き続き利用できます。</p>
         <p>大切な創作データは定期的にCSVエクスポートし、ご自身の端末やクラウドストレージにも保管することをおすすめします。</p>
     </div>
 </section>

@@ -173,6 +173,21 @@ class StripeWebhookService
             $profile->canceled_at =
                 $this->timestamp($subscription['canceled_at'] ?? null);
 
+            if ($status === 'canceled') {
+                $retentionStart = now();
+
+                $profile->retention_started_at = $retentionStart;
+                $profile->retention_ends_at =
+                    $retentionStart->copy()->addMonthsNoOverflow(3);
+                $profile->writer_data_deleted_at = null;
+            } elseif (
+                in_array($status, ['active', 'trialing'], true)
+            ) {
+                $profile->retention_started_at = null;
+                $profile->retention_ends_at = null;
+                $profile->writer_data_deleted_at = null;
+            }
+
             if ($status === 'past_due') {
                 $profile->grace_period_ends_at =
                     now()->addDays(
