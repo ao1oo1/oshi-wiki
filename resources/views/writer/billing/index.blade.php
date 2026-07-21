@@ -1,9 +1,11 @@
 @include('writer.original_characters._layout_start', ['title' => '料金・契約'])
 
-<div class="mb-8 rounded-2xl bg-[#FED7E2] px-6 py-5">
-    <h1 class="text-2xl font-bold text-[#2D3748]">料金・契約</h1>
-    <p class="mt-2 text-sm font-bold text-[#4A5568]">
-        現在のプラン、登録上限、次回更新予定を確認できます。
+<div class="mb-8 rounded-3xl bg-gradient-to-r from-[#FED7E2] via-[#FFF1F5] to-white px-6 py-7 md:px-8">
+    <p class="text-sm font-bold tracking-wide text-[#A05A70]">Oshi-Wiki MEMBERSHIP</p>
+    <h1 class="mt-2 text-3xl font-bold text-[#2D3748]">料金・契約</h1>
+    <p class="mt-3 max-w-3xl text-sm font-bold leading-7 text-[#4A5568]">
+        登録できるキャラクターや関係性、ストーリーを増やして、
+        長編の創作もひとつの場所で整理できます。
     </p>
 </div>
 
@@ -25,70 +27,191 @@
     </div>
 @endif
 
-<div class="grid gap-6 lg:grid-cols-2">
-    <section class="rounded-3xl border border-[#E2E8F0] bg-white p-6 shadow-sm">
-        <p class="text-sm font-bold text-[#A0AEC0]">現在のプラン</p>
-        <h2 class="mt-2 text-2xl font-bold text-[#2D3748]">
-            {{ $hasPlus ? 'Oshi-Wiki Plus' : '無料プラン' }}
-        </h2>
+<section class="mb-8 rounded-3xl border border-[#E2E8F0] bg-white p-6 shadow-sm">
+    <div class="flex flex-col justify-between gap-4 md:flex-row md:items-center">
+        <div>
+            <p class="text-sm font-bold text-[#A0AEC0]">現在のプラン</p>
+            <div class="mt-2 flex flex-wrap items-center gap-3">
+                <h2 class="text-2xl font-bold text-[#2D3748]">
+                    {{ $hasPlus ? 'Oshi-Wiki Plus' : '無料プラン' }}
+                </h2>
+                <span class="rounded-full px-3 py-1 text-xs font-bold {{ $hasPlus ? 'bg-[#FED7E2] text-[#2D3748]' : 'bg-[#EDF2F7] text-[#4A5568]' }}">
+                    {{ $hasPlus ? '利用中' : 'FREE' }}
+                </span>
+            </div>
+        </div>
 
-        @if ($profile?->status === 'canceling')
-            <p class="mt-4 rounded-xl bg-amber-50 p-3 text-sm font-bold text-amber-900">
-                解約予約済みです。{{ $profile->current_period_end?->format('Y年n月j日') }}まではPlusを利用できます。
-            </p>
-        @elseif ($profile?->status === 'past_due_grace')
-            <p class="mt-4 rounded-xl bg-red-50 p-3 text-sm font-bold text-red-800">
-                お支払いを確認できません。猶予期限は{{ $profile->grace_period_ends_at?->format('Y年n月j日') }}です。
-            </p>
+        @if ($hasPlus && $profile?->stripe_customer_id)
+            <form method="POST" action="{{ route('writer.billing.portal') }}">
+                @csrf
+                <button class="rounded-2xl bg-[#2D3748] px-5 py-3 font-bold text-white hover:opacity-90">
+                    契約・支払い方法を管理
+                </button>
+            </form>
         @endif
+    </div>
 
-        @if ($profile?->current_period_end && $hasPlus)
-            <p class="mt-4 text-sm text-[#4A5568]">
-                現在の利用期間：{{ $profile->current_period_end->format('Y年n月j日') }}まで
+    @if ($profile?->status === 'canceling')
+        <p class="mt-4 rounded-xl bg-amber-50 p-3 text-sm font-bold text-amber-900">
+            解約予約済みです。{{ $profile->current_period_end?->format('Y年n月j日') }}まではPlusを利用できます。
+        </p>
+    @elseif ($profile?->status === 'past_due_grace')
+        <p class="mt-4 rounded-xl bg-red-50 p-3 text-sm font-bold text-red-800">
+            お支払いを確認できません。猶予期限は{{ $profile->grace_period_ends_at?->format('Y年n月j日') }}です。
+        </p>
+    @endif
+
+    @if ($profile?->current_period_end && $hasPlus)
+        <p class="mt-4 text-sm text-[#4A5568]">
+            現在の利用期間：{{ $profile->current_period_end->format('Y年n月j日') }}まで
+        </p>
+    @endif
+</section>
+
+<div class="mx-auto grid max-w-5xl items-stretch gap-6 lg:grid-cols-[0.88fr_1.12fr]">
+    <section class="order-2 rounded-3xl border border-[#CBD5E0] bg-white p-6 shadow-sm lg:order-1 lg:my-8">
+        <div class="text-center">
+            <p class="text-sm font-bold tracking-wider text-[#A0AEC0]">FREE</p>
+            <h2 class="mt-2 text-2xl font-bold text-[#2D3748]">無料プラン</h2>
+            <p class="mt-4 text-4xl font-bold text-[#718096]">
+                0<span class="ml-1 text-base">円／月</span>
             </p>
-        @endif
+            <p class="mt-3 text-sm font-bold text-[#718096]">
+                まずは気軽に創作を始めたい方へ
+            </p>
+        </div>
 
-        <div class="mt-6 flex flex-wrap gap-3">
-            @if ($hasPlus && $profile?->stripe_customer_id)
-                <form method="POST" action="{{ route('writer.billing.portal') }}">
-                    @csrf
-                    <button class="rounded-2xl bg-[#2D3748] px-5 py-3 font-bold text-white">
-                        契約・支払い方法を管理
-                    </button>
-                </form>
-            @elseif (! $hasPlus)
-                <form method="POST" action="{{ route('writer.billing.checkout') }}">
+        <dl class="mt-8 divide-y divide-[#E2E8F0] rounded-2xl border border-[#E2E8F0] bg-[#F8FAFC] px-5">
+            <div class="flex items-center justify-between py-4">
+                <dt class="font-bold text-[#4A5568]">オリジナルキャラクター</dt>
+                <dd class="font-bold text-[#718096]">{{ number_format($freePlan['limits']['original_characters']) }}件</dd>
+            </div>
+            <div class="flex items-center justify-between py-4">
+                <dt class="font-bold text-[#4A5568]">関係性</dt>
+                <dd class="font-bold text-[#718096]">{{ number_format($freePlan['limits']['relationships']) }}件</dd>
+            </div>
+            <div class="flex items-center justify-between py-4">
+                <dt class="font-bold text-[#4A5568]">保存プロンプト</dt>
+                <dd class="font-bold text-[#718096]">{{ number_format($freePlan['limits']['prompts']) }}件</dd>
+            </div>
+            <div class="flex items-center justify-between py-4">
+                <dt class="font-bold text-[#4A5568]">ストーリー</dt>
+                <dd class="font-bold text-[#718096]">{{ number_format($freePlan['limits']['stories']) }}件</dd>
+            </div>
+        </dl>
+
+        <div class="mt-6 rounded-2xl bg-[#F7FAFC] px-5 py-4 text-center text-sm font-bold text-[#718096]">
+            現在の基本機能をそのまま利用できます
+        </div>
+    </section>
+
+    <section class="relative order-1 overflow-hidden rounded-[2rem] border-4 border-[#F2A7BC] bg-white shadow-xl shadow-pink-100/80 lg:order-2">
+        <div class="bg-gradient-to-r from-[#E98FA9] to-[#F5B7C8] px-5 py-3 text-center">
+            <p class="text-sm font-bold tracking-[0.18em] text-white">★ おすすめ ★</p>
+        </div>
+
+        <div class="p-7 md:p-9">
+            <div class="text-center">
+                <p class="text-sm font-bold tracking-wider text-[#C45E7D]">PREMIUM</p>
+                <h2 class="mt-2 text-3xl font-bold text-[#2D3748]">Oshi-Wiki Plus</h2>
+                <p class="mt-4 text-5xl font-bold text-[#D95F82]">
+                    {{ number_format($plusPlan['monthly_price']) }}
+                    <span class="ml-1 text-base text-[#2D3748]">円／月（税込）</span>
+                </p>
+                <p class="mt-3 text-sm font-bold leading-6 text-[#4A5568]">
+                    1日あたり約16円で、創作データの登録上限を大幅に拡張
+                </p>
+            </div>
+
+            <div class="mt-7 rounded-2xl bg-[#FFF1F5] px-5 py-4 text-center">
+                <p class="text-sm font-bold text-[#A05A70]">無料プランと比べて</p>
+                <p class="mt-1 text-xl font-bold text-[#2D3748]">
+                    最大20倍の登録容量
+                </p>
+            </div>
+
+            <dl class="mt-7 divide-y divide-[#F3D6DE] rounded-2xl border border-[#F3D6DE] bg-white px-5">
+                <div class="flex items-center justify-between py-4">
+                    <dt class="font-bold text-[#2D3748]">オリジナルキャラクター</dt>
+                    <dd class="text-right">
+                        <span class="text-xl font-bold text-[#D95F82]">{{ number_format($plusPlan['limits']['original_characters']) }}件</span>
+                        <span class="ml-2 rounded-full bg-[#FED7E2] px-2 py-1 text-xs font-bold text-[#A05A70]">5倍</span>
+                    </dd>
+                </div>
+                <div class="flex items-center justify-between py-4">
+                    <dt class="font-bold text-[#2D3748]">関係性</dt>
+                    <dd class="text-right">
+                        <span class="text-xl font-bold text-[#D95F82]">{{ number_format($plusPlan['limits']['relationships']) }}件</span>
+                        <span class="ml-2 rounded-full bg-[#FED7E2] px-2 py-1 text-xs font-bold text-[#A05A70]">10倍</span>
+                    </dd>
+                </div>
+                <div class="flex items-center justify-between py-4">
+                    <dt class="font-bold text-[#2D3748]">保存プロンプト</dt>
+                    <dd class="text-right">
+                        <span class="text-xl font-bold text-[#D95F82]">{{ number_format($plusPlan['limits']['prompts']) }}件</span>
+                        <span class="ml-2 rounded-full bg-[#FED7E2] px-2 py-1 text-xs font-bold text-[#A05A70]">10倍</span>
+                    </dd>
+                </div>
+                <div class="flex items-center justify-between py-4">
+                    <dt class="font-bold text-[#2D3748]">ストーリー</dt>
+                    <dd class="text-right">
+                        <span class="text-xl font-bold text-[#D95F82]">{{ number_format($plusPlan['limits']['stories']) }}件</span>
+                        <span class="ml-2 rounded-full bg-[#FED7E2] px-2 py-1 text-xs font-bold text-[#A05A70]">20倍</span>
+                    </dd>
+                </div>
+            </dl>
+
+            @if (! $hasPlus)
+                <form class="mt-8" method="POST" action="{{ route('writer.billing.checkout') }}">
                     @csrf
                     <button
-                        class="rounded-2xl px-5 py-3 font-bold {{ $stripeConfigured ? 'bg-[#FED7E2] text-[#2D3748]' : 'cursor-not-allowed bg-[#EDF2F7] text-[#A0AEC0]' }}"
+                        class="w-full rounded-2xl px-6 py-4 text-lg font-bold shadow-lg transition hover:-translate-y-0.5 hover:opacity-95 {{ $stripeConfigured ? 'bg-[#D95F82] text-white shadow-pink-200' : 'cursor-not-allowed bg-[#EDF2F7] text-[#A0AEC0] shadow-none' }}"
                         {{ $stripeConfigured ? '' : 'disabled' }}>
                         月額480円でPlusを始める
                     </button>
                 </form>
+
+                <p class="mt-3 text-center text-xs font-bold text-[#718096]">
+                    いつでも解約可能・解約金なし
+                </p>
+            @else
+                <div class="mt-8 rounded-2xl bg-green-50 px-5 py-4 text-center font-bold text-green-700">
+                    Oshi-Wiki Plusを利用中です
+                </div>
             @endif
+
+            @unless ($stripeConfigured)
+                <p class="mt-4 text-center text-sm font-bold text-amber-700">
+                    現在は決済テストの準備中です。Stripe設定後に申込みできます。
+                </p>
+            @endunless
         </div>
-
-        @unless ($stripeConfigured)
-            <p class="mt-4 text-sm font-bold text-amber-700">
-                現在は決済テストの準備中です。Stripe設定後に申込みできます。
-            </p>
-        @endunless
-    </section>
-
-    <section class="rounded-3xl border border-[#FED7E2] bg-[#FFF7FA] p-6 shadow-sm">
-        <p class="text-sm font-bold text-[#A0AEC0]">Oshi-Wiki Plus</p>
-        <p class="mt-3 text-3xl font-bold text-[#2D3748]">
-            月額{{ number_format($plusPlan['monthly_price']) }}円
-            <span class="text-sm">（税込）</span>
-        </p>
-        <dl class="mt-6 space-y-3 text-sm">
-            <div class="flex justify-between"><dt>オリジナルキャラクター</dt><dd class="font-bold">{{ number_format($plusPlan['limits']['original_characters']) }}件</dd></div>
-            <div class="flex justify-between"><dt>関係性</dt><dd class="font-bold">{{ number_format($plusPlan['limits']['relationships']) }}件</dd></div>
-            <div class="flex justify-between"><dt>保存プロンプト</dt><dd class="font-bold">{{ number_format($plusPlan['limits']['prompts']) }}件</dd></div>
-            <div class="flex justify-between"><dt>ストーリー</dt><dd class="font-bold">{{ number_format($plusPlan['limits']['stories']) }}件</dd></div>
-        </dl>
     </section>
 </div>
+
+<section class="mt-10 rounded-3xl border border-[#E2E8F0] bg-white p-6 md:p-8">
+    <h2 class="text-xl font-bold text-[#2D3748]">Plusがおすすめの方</h2>
+    <div class="mt-5 grid gap-4 md:grid-cols-3">
+        <div class="rounded-2xl bg-[#FFF7FA] p-5">
+            <p class="font-bold text-[#2D3748]">長編作品を作りたい</p>
+            <p class="mt-2 text-sm font-bold leading-6 text-[#718096]">
+                登場人物やストーリーが増えても、上限を気にせず整理できます。
+            </p>
+        </div>
+        <div class="rounded-2xl bg-[#FFF7FA] p-5">
+            <p class="font-bold text-[#2D3748]">複数作品を管理したい</p>
+            <p class="mt-2 text-sm font-bold leading-6 text-[#718096]">
+                キャラクターや関係性を作品ごとにたっぷり登録できます。
+            </p>
+        </div>
+        <div class="rounded-2xl bg-[#FFF7FA] p-5">
+            <p class="font-bold text-[#2D3748]">設定を残して使い続けたい</p>
+            <p class="mt-2 text-sm font-bold leading-6 text-[#718096]">
+                保存プロンプトやストーリーを多く蓄積して、執筆に活用できます。
+            </p>
+        </div>
+    </div>
+</section>
 
 <div class="mt-6 rounded-2xl border border-[#E2E8F0] bg-white p-5 text-sm leading-7 text-[#4A5568]">
     <p>有料プランは自動更新です。いつでも解約でき、現在の支払期間終了まではPlusを利用できます。</p>
