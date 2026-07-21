@@ -2,18 +2,24 @@
 
 namespace App\Console\Commands;
 
+use App\Services\ScopedMaintenanceService;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Artisan;
+use InvalidArgumentException;
 
 class SiteMaintenanceCommand extends Command
 {
     protected $signature = 'site:maintenance
         {state : on / off / status}
-        {--refresh=15 : ブラウザの再試行秒数}
-        {--retry=60 : Retry-After秒数}';
+        {scopes?* : public / writer / contributor / all}';
 
     protected $description =
-        'Oshi-Wiki全体のメンテナンスモードを切り替えます。';
+        'Oshi-Wikiの範囲別メンテナンス状態を切り替えます。';
+
+    public function __construct(
+        private readonly ScopedMaintenanceService $maintenance
+    ) {
+        parent::__construct();
+    }
 
     public function handle(): int
     {
@@ -21,68 +27,87 @@ class SiteMaintenanceCommand extends Command
             trim((string) $this->argument('state'))
         );
 
-        return match ($state) {
-            'on' => $this->enable(),
-            'off' => $this->disable(),
-            'status' => $this->showStatus(),
-            default => $this->invalidState(),
-        };
+        try {
+            return match ($state) {
+                'on' => $this->enable(),
+                'off' => $this->disable(),
+                'status' => $this->status(),
+                default => $this->invalidState(),
+            };
+        } catch (InvalidArgumentException $exception) {
+            $this->error($exception->getMessage());
+
+            return self::FAILURE;
+        }
     }
 
     private function enable(): int
     {
-        if (app()->isDownForMaintenance()) {
-            $this->warn(
-                'すでにメンテナンスモードです。'
-            );
+        $active = $this->maintenance->enable(
+            $this->scopes()
+        );
 
-            return self::SUCCESS;
-        }
-
-        Artisan::call('down', [
-            '--refresh' => (int) $this->option('refresh'),
-            '--retry' => (int) $this->option('retry'),
-        ]);
-
-        $this->newLine();
         $this->warn(
-            'メンテナンスモードを有効にしました。'
+            'メンテナンス対象を更新しました。'
         );
-        $this->line(
-            'URL直打ち・ページ更新を含むすべての画面が'
-            .'メンテナンスページになります。'
-        );
-        $this->line(
-            '保存されていない入力内容は保持されません。'
-        );
+        $this->showActive($active);
 
         return self::SUCCESS;
     }
 
     private function disable(): int
     {
-        Artisan::call('up');
+        $active = $this->maintenance->disable(
+            $this->scopes()
+        );
 
         $this->info(
-            'メンテナンスモードを解除しました。'
+            'メンテナンス対象を解除しました。'
+        );
+        $this->showActive($active);
+
+        return self::SUCCESS;
+    }
+
+    private function status(): int
+    {
+        $this->showActive(
+            $this->maintenance->activeScopes()
         );
 
         return self::SUCCESS;
     }
 
-    private function showStatus(): int
+    private function showActive(array $active): void
     {
-        if (app()->isDownForMaintenance()) {
-            $this->warn(
-                '現在：メンテナンスモード ON'
-            );
-        } else {
+        if ($active === []) {
             $this->info(
-                '現在：メンテナンスモード OFF'
+                '現在：すべて通常公開'
             );
+
+            return;
         }
 
-        return self::SUCCESS;
+        $this->line(
+            '現在のメンテナンス対象：'
+        );
+
+        foreach (
+            $this->maintenance->labels($active)
+            as $label
+        ) {
+            $this->warn('・'.$label);
+        }
+
+        $this->newLine();
+        $this->line(
+            '最高管理者のadmin画面は常に対象外です。'
+        );
+    }
+
+    private function scopes(): array
+    {
+        return $this->argument('scopes') ?: ['all'];
     }
 
     private function invalidState(): int

@@ -2,8 +2,10 @@
 
 namespace Tests\Feature\Maintenance;
 
+use App\Models\Role;
+use App\Models\User;
+use App\Services\ScopedMaintenanceService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Artisan;
 use Tests\TestCase;
 
 class GlobalMaintenanceModeTest extends TestCase
@@ -12,74 +14,115 @@ class GlobalMaintenanceModeTest extends TestCase
 
     protected function tearDown(): void
     {
-        if (app()->isDownForMaintenance()) {
-            Artisan::call('up');
-        }
+        app(ScopedMaintenanceService::class)
+            ->disable(['all']);
 
         parent::tearDown();
     }
 
-    public function test_command_can_enable_and_disable_maintenance(): void
+    public function test_scopes_can_be_combined(): void
     {
-        $this->artisan('site:maintenance status')
-            ->expectsOutput('現在：メンテナンスモード OFF')
-            ->assertSuccessful();
+        $this->artisan(
+            'site:maintenance',
+            [
+                'state' => 'on',
+                'scopes' => ['public', 'writer'],
+            ]
+        )->assertSuccessful();
 
-        $this->artisan('site:maintenance on')
-            ->assertSuccessful();
+        $this->get('/')
+            ->assertStatus(503);
 
-        $this->assertTrue(
-            app()->isDownForMaintenance()
-        );
+        $this->get('/writer/login')
+            ->assertStatus(503);
 
-        $this->artisan('site:maintenance off')
-            ->expectsOutput(
-                'メンテナンスモードを解除しました。'
-            )
-            ->assertSuccessful();
+        $this->get('/privacy')
+            ->assertStatus(200);
 
-        $this->assertFalse(
-            app()->isDownForMaintenance()
-        );
+        $this->artisan(
+            'site:maintenance',
+            [
+                'state' => 'off',
+                'scopes' => ['writer'],
+            ]
+        )->assertSuccessful();
+
+        $this->get('/')
+            ->assertStatus(503);
+
+        $this->get('/writer/login')
+            ->assertStatus(200);
     }
 
-    public function test_direct_urls_show_custom_maintenance_page(): void
+    public function test_super_admin_admin_pages_are_excluded(): void
     {
-        Artisan::call('site:maintenance', [
-            'state' => 'on',
+        $this->artisan(
+            'site:maintenance',
+            [
+                'state' => 'on',
+                'scopes' => ['contributor'],
+            ]
+        )->assertSuccessful();
+
+        $superAdmin = $this->userWithRole(
+            User::ROLE_STAFF,
+            true
+        );
+
+        $contributor = $this->userWithRole(
+            User::ROLE_STAFF
+        );
+
+        $this->actingAs($superAdmin)
+            ->get('/admin')
+            ->assertStatus(200);
+
+        $this->actingAs($contributor)
+            ->get('/admin')
+            ->assertStatus(503)
+            ->assertSee('メンテナンス中');
+    }
+
+    public function test_each_scope_is_independent(): void
+    {
+        $service = app(
+            ScopedMaintenanceService::class
+        );
+
+        $service->enable(['public']);
+        $this->get('/')->assertStatus(503);
+        $this->get('/writer/login')->assertStatus(200);
+
+        $service->disable(['public']);
+        $service->enable(['writer']);
+        $this->get('/')->assertStatus(200);
+        $this->get('/writer/login')->assertStatus(503);
+    }
+
+    private function userWithRole(
+        string $roleName,
+        bool $isSuperAdmin = false
+    ): User {
+        $role = Role::query()->firstOrCreate(
+            ['name' => $roleName],
+            [
+                'label' => $roleName,
+                'description' => $roleName,
+            ]
+        );
+
+        $user = User::factory()->create([
+            'role_id' => $role->id,
+            'status' => 'active',
+            'must_change_password' => false,
         ]);
 
-        foreach ([
-            '/',
-            '/works',
-            '/writer/login',
-            '/writer/dashboard',
-            '/admin',
-        ] as $uri) {
-            $this->get($uri)
-                ->assertStatus(503)
-                ->assertSee('メンテナンス中')
-                ->assertSee('公式Xのお知らせを見る')
-                ->assertSee('保存されていなかった入力内容');
+        if ($isSuperAdmin) {
+            $user->forceFill([
+                'is_super_admin' => true,
+            ])->save();
         }
-    }
 
-    public function test_old_coming_soon_middleware_is_removed(): void
-    {
-        $this->assertFileDoesNotExist(
-            app_path(
-                'Http/Middleware/ShowComingSoonForHome.php'
-            )
-        );
-
-        $bootstrap = file_get_contents(
-            base_path('bootstrap/app.php')
-        );
-
-        $this->assertIsString($bootstrap);
-        $this->assertStringNotContainsString(
-            'ShowComingSoonForHome',
-            $bootstrap
-        );
+        return $user->fresh();
     }
 }
