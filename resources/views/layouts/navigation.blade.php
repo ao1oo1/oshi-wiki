@@ -43,7 +43,15 @@
                         </x-dropdown-link>
 
                         <!-- Authentication -->
-                        <form method="POST" action="{{ route('logout') }}">
+
+            @if (auth()->user()?->isSuperAdmin())
+                <a href="{{ route('admin.analytics.index') }}"
+                   class="block rounded-2xl px-5 py-4 text-sm font-bold text-[#2D3748] hover:bg-[#FFF1F5]">
+                    アナリティクス
+                </a>
+            @endif
+
+<form method="POST" action="{{ route('logout') }}">
                             @csrf
 
                             <x-dropdown-link :href="route('logout')"
