@@ -13,3 +13,8 @@ Schedule::command('monetization:verify-links --limit=200')
     ->dailyAt('03:30')
     ->withoutOverlapping()
     ->onOneServer();
+
+Schedule::command('billing:purge-expired-writer-data')
+    ->dailyAt('04:00')
+    ->withoutOverlapping()
+    ->onOneServer();

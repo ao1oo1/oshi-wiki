@@ -25,6 +25,9 @@ class UserBillingProfile extends Model
         'current_period_end',
         'cancel_at',
         'canceled_at',
+        'retention_started_at',
+        'retention_ends_at',
+        'writer_data_deleted_at',
         'grace_period_ends_at',
         'last_payment_succeeded_at',
         'last_payment_failed_at',
@@ -38,6 +41,9 @@ class UserBillingProfile extends Model
             'current_period_end' => 'datetime',
             'cancel_at' => 'datetime',
             'canceled_at' => 'datetime',
+            'retention_started_at' => 'datetime',
+            'retention_ends_at' => 'datetime',
+            'writer_data_deleted_at' => 'datetime',
             'grace_period_ends_at' => 'datetime',
             'last_payment_succeeded_at' => 'datetime',
             'last_payment_failed_at' => 'datetime',
@@ -47,6 +53,18 @@ class UserBillingProfile extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function isInRetentionPeriod(): bool
+    {
+        return $this->retention_ends_at?->isFuture()
+            && $this->writer_data_deleted_at === null;
+    }
+
+    public function retentionHasExpired(): bool
+    {
+        return $this->retention_ends_at?->isPast()
+            && $this->writer_data_deleted_at === null;
     }
 
     public function plan(): BelongsTo

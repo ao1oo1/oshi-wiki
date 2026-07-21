@@ -35,7 +35,11 @@ Route::get('/dashboard', function () {
     return redirect()->route('writer.dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
-Route::middleware(['auth', 'writer.user'])->prefix('writer')->name('writer.')->group(function () {
+Route::middleware([
+    'auth',
+    'writer.user',
+    'writer.data.writable',
+])->prefix('writer')->name('writer.')->group(function () {
     Route::get('dashboard', \App\Http\Controllers\Writer\DashboardController::class)
         ->name('dashboard');
 
