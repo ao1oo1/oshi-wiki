@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Services\LoginAttemptLimiter;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -23,19 +24,41 @@ class AdminAuthenticatedSessionController extends Controller
             'password' => ['required', 'string'],
         ]);
 
+        $email = (string) $credentials['email'];
+        $limiter = app(LoginAttemptLimiter::class);
+
+        $limiter->ensureNotLocked(
+            $request,
+            $email
+        );
+
         $remember = (bool) $request->boolean('remember');
 
         if (! Auth::attempt($credentials, $remember)) {
+            $limiter->hit(
+                $request,
+                $email
+            );
+
             throw ValidationException::withMessages([
                 'email' => 'ログイン情報が正しくありません。',
             ]);
         }
 
+        $limiter->clear(
+            $request,
+            $email
+        );
+
         $request->session()->regenerate();
 
         $user = $request->user();
 
-        if (! $user || ! method_exists($user, 'canAccessAdmin') || ! $user->canAccessAdmin()) {
+        if (
+            ! $user
+            || ! method_exists($user, 'canAccessAdmin')
+            || ! $user->canAccessAdmin()
+        ) {
             Auth::logout();
 
             $request->session()->invalidate();
@@ -49,9 +72,14 @@ class AdminAuthenticatedSessionController extends Controller
         if ($user->must_change_password) {
             return redirect()
                 ->route('profile.edit')
-                ->with('status', '初回ログインのため、新しいパスワードを設定してください。');
+                ->with(
+                    'status',
+                    '初回ログインのため、新しいパスワードを設定してください。'
+                );
         }
 
-        return redirect()->intended(route('admin.dashboard', absolute: false));
+        return redirect()->intended(
+            route('admin.dashboard', absolute: false)
+        );
     }
 }

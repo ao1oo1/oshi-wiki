@@ -23,6 +23,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'admin.user' => EnsureAdminUser::class,
             'writer.user' => EnsureWriterUser::class,
             'password.changed' => EnsurePasswordChanged::class,
+            'security.ip' => \App\Http\Middleware\BlockSuspiciousIp::class,
         ]);
 
         $middleware->web(prepend: [
