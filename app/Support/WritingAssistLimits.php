@@ -3,6 +3,7 @@
 namespace App\Support;
 
 use App\Models\User;
+use App\Services\BillingEntitlementService;
 
 class WritingAssistLimits
 {
@@ -11,42 +12,39 @@ class WritingAssistLimits
         return (bool) $user?->isSuperAdmin();
     }
 
-    public static function originalCharactersPerUser(?User $user = null): ?int
-    {
-        if (self::isUnlimited($user)) {
-            return null;
-        }
-
-        return (int) config('writing_assist.limits.original_characters_per_user', 30);
+    public static function originalCharactersPerUser(
+        ?User $user
+    ): ?int {
+        return self::billingLimit(
+            $user,
+            'original_characters'
+        );
     }
 
-    public static function relationshipsPerUser(?User $user = null): ?int
-    {
-        if (self::isUnlimited($user)) {
-            return null;
-        }
-
-        return (int) config('writing_assist.limits.relationships_per_user', 100);
+    public static function relationshipsPerUser(
+        ?User $user
+    ): ?int {
+        return self::billingLimit(
+            $user,
+            'relationships'
+        );
     }
 
-    public static function promptsPerUser(?User $user = null): ?int
-    {
-        if (self::isUnlimited($user)) {
-            return null;
-        }
-
-        return (int) config('writing_assist.limits.prompts_per_user', 50);
+    public static function promptsPerUser(
+        ?User $user
+    ): ?int {
+        return self::billingLimit(
+            $user,
+            'prompts'
+        );
     }
 
-    public static function storiesPerUser(?User $user = null): ?int
-    {
-        if (self::isUnlimited($user)) {
-            return null;
-        }
-
-        return (int) config(
-            'writing_assist.limits.stories_per_user',
-            10
+    public static function storiesPerUser(
+        ?User $user
+    ): ?int {
+        return self::billingLimit(
+            $user,
+            'stories'
         );
     }
 
@@ -146,4 +144,17 @@ class WritingAssistLimits
     {
         return $limit === null ? '制限なし' : number_format($limit);
     }
+
+    private static function billingLimit(
+        ?User $user,
+        string $resource
+    ): ?int {
+        if (! $user) {
+            return 0;
+        }
+
+        return app(BillingEntitlementService::class)
+            ->limit($user, $resource);
+    }
+
 }
