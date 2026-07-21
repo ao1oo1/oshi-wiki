@@ -15,6 +15,33 @@ class WriterCsvFeatureTest extends TestCase
 {
     use RefreshDatabase;
 
+    public function test_csv_guide_is_available_for_writer(): void
+    {
+        $user = $this->writer();
+
+        $this->actingAs($user)
+            ->get(route('writer.csv.guide'))
+            ->assertOk()
+            ->assertSee('CSVインポート・エクスポートの使い方')
+            ->assertSee('そもそもCSVとは？')
+            ->assertSee('エクスポートの使い方')
+            ->assertSee('インポートの使い方')
+            ->assertSee('CSV UTF-8')
+            ->assertSee('2,000行')
+            ->assertSee('CSV管理画面へ戻る');
+    }
+
+    public function test_csv_index_links_to_guide(): void
+    {
+        $user = $this->writer();
+
+        $this->actingAs($user)
+            ->get(route('writer.csv.index'))
+            ->assertOk()
+            ->assertSee('はじめての方向け：CSV機能の使い方')
+            ->assertSee(route('writer.csv.guide'));
+    }
+
     public function test_free_user_can_export_but_cannot_import(): void
     {
         $user = $this->writer();
