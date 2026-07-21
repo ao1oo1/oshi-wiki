@@ -241,6 +241,12 @@
                         プロンプト管理
                     </a>
 
+                    <a href="{{ route('writer.csv.index') }}"
+                       class="block rounded-2xl px-5 py-4 {{ request()->routeIs('writer.csv.*') ? 'bg-[#FED7E2] text-[#2D3748]' : 'text-[#2D3748] hover:bg-[#FFF1F5]' }}">
+                        CSV管理
+                        <span class="ml-2 rounded-full bg-[#D95F82] px-2 py-1 text-xs text-white">Plus</span>
+                    </a>
+
                     <a href="{{ route('writer.guide') }}"
                        class="block rounded-2xl px-5 py-4 {{ request()->routeIs('writer.guide') ? 'bg-[#FED7E2] text-[#2D3748]' : 'text-[#2D3748] hover:bg-[#FFF1F5]' }}">
                         使い方ガイド
