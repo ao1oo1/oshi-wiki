@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Writer;
 use App\Http\Controllers\Controller;
 use App\Services\BillingEntitlementService;
 use App\Services\StripeApiService;
+use App\Services\WriterBillingUsageService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -14,7 +15,8 @@ class BillingController extends Controller
 {
     public function __construct(
         private readonly StripeApiService $stripe,
-        private readonly BillingEntitlementService $entitlements
+        private readonly BillingEntitlementService $entitlements,
+        private readonly WriterBillingUsageService $billingUsage
     ) {
     }
 
@@ -29,6 +31,8 @@ class BillingController extends Controller
             'stripeConfigured' => $this->stripe->configured(),
             'freePlan' => config('billing.plans.free'),
             'plusPlan' => config('billing.plans.plus'),
+            'usageRows' => $this->billingUsage->forUser($user),
+            'hasFreePlanOverage' => $this->billingUsage->hasOverage($user),
         ]);
     }
 

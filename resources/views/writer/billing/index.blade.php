@@ -52,9 +52,28 @@
     </div>
 
     @if ($profile?->status === 'canceling')
-        <p class="mt-4 rounded-xl bg-amber-50 p-3 text-sm font-bold text-amber-900">
-            解約予約済みです。{{ $profile->current_period_end?->format('Y年n月j日') }}まではPlusを利用できます。
-        </p>
+        <div class="mt-5 rounded-2xl border-2 border-amber-300 bg-amber-50 p-5 text-amber-950">
+            <p class="text-base font-bold">Plusは解約予約済みです。</p>
+            <p class="mt-2 text-sm font-bold leading-7">
+                {{ $profile->current_period_end?->format('Y年n月j日') }}まではPlusを利用できます。期日後は無料プランへ切り替わります。
+            </p>
+            @if ($hasFreePlanOverage)
+                <p class="mt-3 rounded-xl bg-white p-4 text-sm font-bold leading-7">
+                    無料プランの上限を超えているデータは自動削除されません。上限超過中は新規登録・複製ができませんが、既存データの閲覧・編集・削除・CSVエクスポートは利用できます。
+                </p>
+                <div class="mt-4 grid gap-3 sm:grid-cols-2">
+                    @foreach ($usageRows as $usage)
+                        @if ($usage['is_over'])
+                            <div class="rounded-xl border border-amber-200 bg-white px-4 py-3">
+                                <p class="text-sm font-bold">{{ $usage['label'] }}</p>
+                                <p class="mt-1 text-sm">現在 {{ number_format($usage['count']) }}件 / 無料上限 {{ number_format($usage['free_limit']) }}件</p>
+                                <p class="mt-1 font-bold text-red-700">{{ number_format($usage['overage']) }}件超過</p>
+                            </div>
+                        @endif
+                    @endforeach
+                </div>
+            @endif
+        </div>
     @elseif ($profile?->status === 'past_due_grace')
         <p class="mt-4 rounded-xl bg-red-50 p-3 text-sm font-bold text-red-800">
             お支払いを確認できません。猶予期限は{{ $profile->grace_period_ends_at?->format('Y年n月j日') }}です。
@@ -210,6 +229,15 @@
                 保存プロンプトやストーリーを多く蓄積して、執筆に活用できます。
             </p>
         </div>
+    </div>
+</section>
+
+<section class="mt-8 rounded-3xl border-2 border-amber-200 bg-amber-50 p-6 md:p-8">
+    <h2 class="text-xl font-bold text-amber-950">Plusを解約した後のデータについて</h2>
+    <div class="mt-4 space-y-3 text-sm font-bold leading-7 text-amber-950">
+        <p>解約後も現在の支払期間が終了するまではPlusを利用できます。期間終了後は無料プランへ切り替わります。</p>
+        <p>無料プランの上限を超えているデータをOshi-Wikiが自動的に削除することはありません。上限超過中は新規登録・複製ができませんが、既存データの閲覧・編集・削除・CSVエクスポートは利用できます。</p>
+        <p>大切な創作データは定期的にCSVエクスポートし、ご自身の端末やクラウドストレージにも保管することをおすすめします。</p>
     </div>
 </section>
 
