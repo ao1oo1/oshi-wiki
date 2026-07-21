@@ -58,6 +58,11 @@ Route::middleware(['auth', 'writer.user'])->prefix('writer')->name('writer.')->g
     Route::get('guide', \App\Http\Controllers\Writer\GuideController::class)
         ->name('guide');
 
+    Route::get('csv', [\App\Http\Controllers\Writer\WriterCsvController::class, 'index'])->name('csv.index');
+    Route::get('csv/{type}/export', [\App\Http\Controllers\Writer\WriterCsvController::class, 'export'])->name('csv.export');
+    Route::get('csv/{type}/sample', [\App\Http\Controllers\Writer\WriterCsvController::class, 'sample'])->name('csv.sample');
+    Route::post('csv/{type}/import', [\App\Http\Controllers\Writer\WriterCsvController::class, 'import'])->name('csv.import');
+
     Route::get(
         'original-characters/{original_character}/image',
         [\App\Http\Controllers\Writer\OriginalCharacterController::class, 'image']
