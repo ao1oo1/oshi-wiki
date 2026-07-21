@@ -75,20 +75,13 @@ class WriterAnalyticsTest extends TestCase
             )
         );
 
-        $viewFiles = [
-            resource_path('views/layouts/navigation.blade.php'),
-            resource_path(
-                'views/layouts/admin-navigation.blade.php'
-            ),
-            resource_path(
-                'views/admin/partials/navigation.blade.php'
-            ),
-            resource_path(
-                'views/admin/partials/sidebar.blade.php'
-            ),
-        ];
+        $bladeFiles = collect(
+            glob(resource_path('views/admin/**/*.blade.php'))
+        )->merge(
+            glob(resource_path('views/admin/**/**/*.blade.php'))
+        )->unique();
 
-        $source = collect($viewFiles)
+        $source = $bladeFiles
             ->filter(fn (string $path) => is_file($path))
             ->map(fn (string $path) => file_get_contents($path))
             ->implode("\n");
@@ -101,5 +94,27 @@ class WriterAnalyticsTest extends TestCase
             'アナリティクス',
             $source
         );
+        $this->assertStringContainsString(
+            'isSuperAdmin()',
+            $source
+        );
     }
+
+    public function test_super_admin_sidebar_contains_analytics_link(): void
+    {
+        $bladeFiles = collect(glob(resource_path('views/**/*.blade.php')))
+            ->merge(glob(resource_path('views/**/**/*.blade.php')))
+            ->unique();
+
+        $matches = $bladeFiles->filter(function (string $path): bool {
+            $source = file_get_contents($path);
+
+            return str_contains($source, "route('admin.analytics.index')")
+                && str_contains($source, 'アナリティクス')
+                && str_contains($source, 'isSuperAdmin()');
+        });
+
+        $this->assertNotEmpty($matches);
+    }
+
 }

@@ -23,7 +23,28 @@
                 <a href="{{ route('admin.contact-messages.index') }}">お問い合わせ</a>
             @endif
 
-                        @if (auth()->user()?->isSuperAdmin())
+                                @if (auth()->user()?->isSuperAdmin())
+            <a href="{{ route('admin.analytics.index') }}"
+               class="{{ request()->routeIs('admin.analytics.*')
+                    ? 'bg-[#FED7E2] text-[#2D3748]'
+                    : 'text-[#4A5568] hover:bg-[#FFF1F5]' }}
+                      flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-bold transition">
+                <svg class="h-5 w-5 shrink-0"
+                     viewBox="0 0 24 24"
+                     fill="none"
+                     stroke="currentColor"
+                     stroke-width="2"
+                     aria-hidden="true">
+                    <path d="M4 19V9" />
+                    <path d="M10 19V5" />
+                    <path d="M16 19v-7" />
+                    <path d="M22 19V3" />
+                </svg>
+                <span>アナリティクス</span>
+            </a>
+        @endif
+
+@if (auth()->user()?->isSuperAdmin())
                 <a href="{{ route('admin.monetization.services.index') }}">収益管理</a>
             @endif
 
