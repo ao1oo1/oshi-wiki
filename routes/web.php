@@ -467,3 +467,26 @@ Route::middleware(['auth', 'admin.user', 'password.changed'])->prefix('admin')->
 Route::get('/staff/{staffPublicId}', [\App\Http\Controllers\Public\StaffProfileController::class, 'show'])->name('public.staff.show');
 Route::post('/helpful', [\App\Http\Controllers\Public\HelpfulVoteController::class, 'store'])->name('public.helpful.store');
 
+
+
+Route::middleware([
+    'auth',
+    'admin.user',
+    'password.changed',
+])->prefix('admin')->name('admin.')->group(function (): void {
+    Route::get(
+        'analytics',
+        [
+            \App\Http\Controllers\Admin\WriterAnalyticsController::class,
+            'index',
+        ]
+    )->name('analytics.index');
+
+    Route::get(
+        'analytics/export',
+        [
+            \App\Http\Controllers\Admin\WriterAnalyticsController::class,
+            'export',
+        ]
+    )->name('analytics.export');
+});
