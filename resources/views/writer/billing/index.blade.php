@@ -119,8 +119,24 @@
             </div>
         </dl>
 
-        <div class="mt-6 rounded-2xl bg-[#F7FAFC] px-5 py-4 text-center text-sm font-bold text-[#718096]">
-            現在の基本機能をそのまま利用できます
+        <div class="mt-6 space-y-3">
+            <div class="rounded-2xl bg-[#F7FAFC] px-5 py-4 text-center text-sm font-bold text-[#718096]">
+                現在の基本機能をそのまま利用できます
+            </div>
+
+            <div class="rounded-2xl border border-[#E2E8F0] bg-white px-5 py-4">
+                <div class="flex items-center justify-between gap-3">
+                    <p class="font-bold text-[#4A5568]">
+                        CSVエクスポート
+                    </p>
+                    <span class="rounded-full bg-[#EDF2F7] px-3 py-1 text-xs font-bold text-[#4A5568]">
+                        利用可能
+                    </span>
+                </div>
+                <p class="mt-2 text-sm font-bold leading-6 text-[#718096]">
+                    登録データをCSVで保存し、バックアップできます。
+                </p>
+            </div>
         </div>
     </section>
 
@@ -179,6 +195,37 @@
                     </dd>
                 </div>
             </dl>
+
+            <div class="mt-7 overflow-hidden rounded-2xl border-2 border-[#F2A7BC] bg-gradient-to-r from-[#FFF1F5] to-white">
+                <div class="flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between">
+                    <div>
+                        <div class="flex flex-wrap items-center gap-2">
+                            <p class="text-lg font-bold text-[#2D3748]">
+                                CSV一括インポート
+                            </p>
+                            <span class="rounded-full bg-[#D95F82] px-3 py-1 text-xs font-bold text-white">
+                                Plus限定
+                            </span>
+                        </div>
+                        <p class="mt-2 text-sm font-bold leading-7 text-[#718096]">
+                            キャラクター・関係性・保存プロンプト・ストーリーを
+                            CSVからまとめて新規登録できます。
+                        </p>
+                        <p class="mt-1 text-xs font-bold leading-6 text-[#A05A70]">
+                            CSVエクスポートにも対応。大量データの登録とバックアップがかんたんです。
+                        </p>
+                    </div>
+
+                    <div class="shrink-0 rounded-2xl bg-white px-4 py-3 text-center shadow-sm">
+                        <p class="text-xs font-bold text-[#A05A70]">
+                            まとめて登録
+                        </p>
+                        <p class="mt-1 text-xl font-bold text-[#D95F82]">
+                            最大2,000行
+                        </p>
+                    </div>
+                </div>
+            </div>
 
             @if (! $hasPlus)
                 <form class="mt-8" method="POST" action="{{ route('writer.billing.checkout') }}">
