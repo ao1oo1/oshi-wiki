@@ -284,8 +284,12 @@ Route::middleware(['auth', 'admin.user', 'password.changed'])->prefix('admin')->
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::patch('/profile', [ProfileController::class, 'update'])
+        ->middleware(['security.ip', 'throttle:10,10'])
+        ->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])
+        ->middleware(['security.ip', 'throttle:5,10'])
+        ->name('profile.destroy');
 });
 
 require __DIR__.'/auth.php';
@@ -466,7 +470,9 @@ Route::get('/about', [\App\Http\Controllers\Public\AboutController::class, 'show
 // Staff profile
 Route::middleware(['auth', 'admin.user', 'password.changed'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/staff-profile', [\App\Http\Controllers\Admin\StaffProfileController::class, 'edit'])->name('staff-profile.edit');
-    Route::patch('/staff-profile', [\App\Http\Controllers\Admin\StaffProfileController::class, 'update'])->name('staff-profile.update');
+    Route::patch('/staff-profile', [\App\Http\Controllers\Admin\StaffProfileController::class, 'update'])
+        ->middleware(['security.ip', 'throttle:10,10'])
+        ->name('staff-profile.update');
 });
 
 Route::get('/staff/{staffPublicId}', [\App\Http\Controllers\Public\StaffProfileController::class, 'show'])->name('public.staff.show');
