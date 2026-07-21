@@ -55,9 +55,10 @@ class StripeBillingFlowTest extends TestCase
         ]);
 
         $user = $this->writer();
-        BillingPlan::query()->create([
-            'name' => 'Oshi-Wiki Plus',
-            'slug' => 'plus',
+        BillingPlan::query()->updateOrCreate(
+            ['slug' => 'plus'],
+            [
+                'name' => 'Oshi-Wiki Plus',
             'monthly_price' => 480,
             'yearly_price' => 4800,
             'limits' => config('billing.plans.plus.limits'),
