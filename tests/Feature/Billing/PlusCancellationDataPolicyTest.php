@@ -20,9 +20,8 @@ class PlusCancellationDataPolicyTest extends TestCase
             ->get(route('writer.billing.index'))
             ->assertOk()
             ->assertSee('Plusを解約した後のデータについて')
-            ->assertSee('創作データは3か月間保管されます')
-            ->assertSee('閲覧とCSVエクスポート')
-            ->assertSee('自動的に削除され、復元できません');
+            ->assertSee('期間終了次第データは削除されます')
+            ->assertSee('CSVインポート・エクスポートも使用できなくなります');
     }
 
     public function test_canceling_user_sees_end_date_notice(): void
