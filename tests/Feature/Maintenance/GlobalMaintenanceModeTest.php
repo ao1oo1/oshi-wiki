@@ -37,7 +37,8 @@ class GlobalMaintenanceModeTest extends TestCase
             ->assertStatus(503);
 
         $this->get('/privacy')
-            ->assertStatus(200);
+            ->assertStatus(503)
+            ->assertSee('メンテナンス中');
 
         $this->artisan(
             'site:maintenance',
@@ -81,6 +82,36 @@ class GlobalMaintenanceModeTest extends TestCase
             ->get('/admin')
             ->assertStatus(503)
             ->assertSee('メンテナンス中');
+    }
+
+    public function test_public_scope_covers_all_public_pages(): void
+    {
+        $this->artisan(
+            'site:maintenance',
+            [
+                'state' => 'on',
+                'scopes' => ['public'],
+            ]
+        )->assertSuccessful();
+
+        foreach ([
+            '/',
+            '/works',
+            '/works/10',
+            '/privacy',
+            '/terms',
+            '/pricing',
+        ] as $uri) {
+            $this->get($uri)
+                ->assertStatus(503)
+                ->assertSee('メンテナンス中');
+        }
+
+        $this->get('/writer/login')
+            ->assertStatus(200);
+
+        $this->get('/login')
+            ->assertStatus(200);
     }
 
     public function test_each_scope_is_independent(): void
