@@ -114,9 +114,32 @@ class StripeWebhookService
             $subscription['cancel_at_period_end'] ?? false
         );
 
-        $plan = BillingPlan::query()
-            ->where('slug', 'plus')
-            ->first();
+        $plan = BillingPlan::query()->updateOrCreate(
+            ['slug' => 'plus'],
+            [
+                'name' => config(
+                    'billing.plans.plus.name',
+                    'Oshi-Wiki Plus'
+                ),
+                'monthly_price' => (int) config(
+                    'billing.plans.plus.monthly_price',
+                    480
+                ),
+                'yearly_price' => (int) config(
+                    'billing.plans.plus.yearly_price',
+                    4800
+                ),
+                'limits' => config(
+                    'billing.plans.plus.limits',
+                    []
+                ),
+                'stripe_monthly_price_id' => config(
+                    'services.stripe.monthly_price_id'
+                ),
+                'priority' => 20,
+                'is_active' => true,
+            ]
+        );
 
         DB::transaction(function () use (
             $profile,

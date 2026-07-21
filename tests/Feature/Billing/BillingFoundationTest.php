@@ -24,9 +24,10 @@ class BillingFoundationTest extends TestCase
     public function test_active_plus_profile_has_paid_access(): void
     {
         $user = User::factory()->create();
-        $plan = BillingPlan::query()->create([
-            'name' => 'Oshi-Wiki Plus',
-            'slug' => 'plus',
+        $plan = BillingPlan::query()->updateOrCreate(
+            ['slug' => 'plus'],
+            [
+                'name' => 'Oshi-Wiki Plus',
             'monthly_price' => 480,
             'yearly_price' => 4800,
             'limits' => config('billing.plans.plus.limits'),
@@ -54,9 +55,10 @@ class BillingFoundationTest extends TestCase
     public function test_expired_profile_falls_back_to_free(): void
     {
         $user = User::factory()->create();
-        $plan = BillingPlan::query()->create([
-            'name' => 'Oshi-Wiki Plus',
-            'slug' => 'plus',
+        $plan = BillingPlan::query()->updateOrCreate(
+            ['slug' => 'plus'],
+            [
+                'name' => 'Oshi-Wiki Plus',
             'monthly_price' => 480,
             'yearly_price' => 4800,
             'limits' => config('billing.plans.plus.limits'),
