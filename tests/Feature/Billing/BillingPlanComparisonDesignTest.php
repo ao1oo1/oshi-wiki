@@ -54,4 +54,32 @@ class BillingPlanComparisonDesignTest extends TestCase
             $source
         );
     }
+    public function test_billing_page_recommends_csv_features(): void
+    {
+        $view = file_get_contents(
+            resource_path('views/writer/billing/index.blade.php')
+        );
+
+        $this->assertStringContainsString(
+            'CSV一括インポート',
+            $view
+        );
+        $this->assertStringContainsString(
+            'Plus限定',
+            $view
+        );
+        $this->assertStringContainsString(
+            '最大2,000行',
+            $view
+        );
+        $this->assertStringContainsString(
+            'CSVエクスポート',
+            $view
+        );
+        $this->assertStringContainsString(
+            '大量データの登録とバックアップがかんたんです。',
+            $view
+        );
+    }
+
 }
