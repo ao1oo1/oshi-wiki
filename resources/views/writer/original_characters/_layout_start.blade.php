@@ -1,6 +1,12 @@
 @php
     $currentWriterUser = auth()->user();
 
+    $writerBillingProfile = $currentWriterUser?->billingProfile;
+    $writerHasPlus = $writerBillingProfile?->hasPaidAccess() ?? false;
+    $writerPlanName = $writerHasPlus
+        ? 'Oshi-Wiki Plus'
+        : '無料プラン';
+
     $writerCharacterLimit = $currentWriterUser
         ? \App\Support\WritingAssistLimits::originalCharactersPerUser($currentWriterUser)
         : null;
@@ -181,6 +187,27 @@
                     <p class="mt-2 text-sm font-bold text-[#A0AEC0]">
                         {{ auth()->user()?->isSuperAdmin() ? '最高管理者' : 'AI執筆補助ユーザー' }}
                     </p>
+
+                    <div class="writer-plan-summary mt-5 border-t border-[#FED7E2] pt-4">
+                        <p class="text-xs font-bold tracking-wide text-[#718096]">
+                            現在のプラン
+                        </p>
+
+                        <div class="mt-2">
+                            <span class="inline-flex items-center rounded-full px-3 py-1 text-sm font-bold
+                                {{ $writerHasPlus
+                                    ? 'bg-[#FED7E2] text-[#2D3748]'
+                                    : 'bg-[#EDF2F7] text-[#4A5568]' }}">
+                                {{ $writerPlanName }}
+                            </span>
+                        </div>
+
+                        <a href="{{ route('writer.billing.index') }}"
+                           class="mt-3 inline-flex items-center gap-1 text-sm font-bold text-[#2D3748] underline decoration-[#FED7E2] decoration-2 underline-offset-4 hover:opacity-70">
+                            プラン管理
+                            <span aria-hidden="true">→</span>
+                        </a>
+                    </div>
                 </div>
 
                 <nav class="space-y-3 text-lg font-bold">
