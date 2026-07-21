@@ -6,29 +6,24 @@ use Tests\TestCase;
 
 class PlusCancellationCopyTest extends TestCase
 {
-    public function test_billing_page_contains_retention_copy(): void
+    public function test_billing_page_contains_requested_cancellation_copy(): void
     {
         $view = file_get_contents(
             resource_path('views/writer/billing/index.blade.php')
         );
 
         $this->assertStringContainsString(
-            '創作データは3か月間保管されます。',
+            '有料プランをキャンセルした場合、期間終了次第データは削除されます。',
             $view
         );
 
         $this->assertStringContainsString(
-            '閲覧とCSVエクスポート',
+            '期間までにデータを別で保存することをお勧めします。',
             $view
         );
 
         $this->assertStringContainsString(
-            '自動的に削除され、復元できません。',
-            $view
-        );
-
-        $this->assertStringContainsString(
-            '3か月以内にPlusへ再加入した場合',
+            '閲覧・編集・削除・CSVインポート・エクスポートも使用できなくなります。',
             $view
         );
     }
