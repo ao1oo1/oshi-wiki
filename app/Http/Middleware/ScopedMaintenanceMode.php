@@ -36,7 +36,7 @@ class ScopedMaintenanceMode
     ): bool {
         if (
             $this->maintenance->isActive('public')
-            && $request->is('/')
+            && $this->isPublicArea($request)
         ) {
             return true;
         }
@@ -72,5 +72,38 @@ class ScopedMaintenanceMode
         }
 
         return false;
+    }
+
+    private function isPublicArea(Request $request): bool
+    {
+        $excludedPatterns = [
+            'admin',
+            'admin/*',
+            'writer',
+            'writer/*',
+            'dashboard',
+            'login',
+            'logout',
+            'register',
+            'forgot-password',
+            'reset-password/*',
+            'verify-email',
+            'verify-email/*',
+            'email/verification-notification',
+            'confirm-password',
+            'password',
+            'profile',
+            'profile/*',
+            'stripe/webhook',
+            'up',
+        ];
+
+        foreach ($excludedPatterns as $pattern) {
+            if ($request->is($pattern)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }

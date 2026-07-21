@@ -4,7 +4,7 @@
 
 以下の3区分を個別または組み合わせて切り替えられる。
 
-- `public`：公開トップページ `/`
+- `public`：公開サイト全体（`/`、`/works/*`、`/characters/*`、固定ページ等）
 - `writer`：`/writer` 配下とWriter用ダッシュボード
 - `contributor`：コントリビューターが利用する `/admin` 配下
 
@@ -47,3 +47,15 @@ php artisan site:maintenance status
 Laravel標準の全面停止状態は使用しない。
 これにより、最高管理者の管理画面を維持したまま
 各範囲だけをメンテナンス表示へ切り替えられる。
+
+## public範囲の除外
+
+最高管理者やWriterがログインできるよう、以下はpublic範囲から除外する。
+
+- `/login`などの共通認証画面
+- `/writer`配下
+- `/admin`配下
+- `/dashboard`
+- `/profile`配下
+- Stripe Webhook
+- ヘルスチェック `/up`
