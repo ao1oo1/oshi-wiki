@@ -37,3 +37,5 @@ Thumbs.db
 # /OSHI_WIKI_LOCAL_BACKUPS
 
 .env.testing
+
+/storage/framework/oshi-wiki-maintenance.json
