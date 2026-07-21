@@ -29,6 +29,11 @@ class WriterCsvController extends Controller
         ]);
     }
 
+    public function guide(): View
+    {
+        return view('writer.csv.guide');
+    }
+
     public function export(
         Request $request,
         string $type

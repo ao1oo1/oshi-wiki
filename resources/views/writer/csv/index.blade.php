@@ -14,6 +14,11 @@
         キャラクター、関係性、保存プロンプト、ストーリーを
         CSVでバックアップ・一括登録できます。
     </p>
+
+    <a href="{{ route('writer.csv.guide') }}"
+       class="mt-5 inline-flex items-center rounded-2xl border-2 border-[#FED7E2] bg-white px-5 py-3 text-sm font-bold text-[#2D3748] shadow-sm hover:bg-[#FFF1F5]">
+        はじめての方向け：CSV機能の使い方
+    </a>
 </div>
 
 @if (! $hasPlus)
