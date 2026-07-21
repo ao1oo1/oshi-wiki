@@ -1,38 +1,49 @@
-# 全画面メンテナンスモード
+# 範囲別メンテナンスモード
 
-## 概要
+## 対象範囲
 
-従来のトップページ限定Coming Soon機能を廃止し、
-Laravel標準のメンテナンスモードへ置き換える。
+以下の3区分を個別または組み合わせて切り替えられる。
 
-メンテナンス中は公開画面、Writer画面、管理画面を含む
-Oshi-Wiki配下の画面を503メンテナンスページへ切り替える。
+- `public`：公開トップページ `/`
+- `writer`：`/writer` 配下とWriter用ダッシュボード
+- `contributor`：コントリビューターが利用する `/admin` 配下
 
-URL直打ちやページ更新でも通常画面には入れない。
-メンテナンス開始前に保存されていない入力内容は保持されない。
+最高管理者でログインしている場合、`/admin` 配下は常に
+メンテナンス対象外とする。
 
-## コマンド
+最高管理者がログインするための通常ログイン画面も利用できる。
+
+## コマンド例
 
 ```bash
-php artisan site:maintenance on
-php artisan site:maintenance off
+php artisan site:maintenance on public
+php artisan site:maintenance on writer
+php artisan site:maintenance on contributor
+php artisan site:maintenance on public writer
+php artisan site:maintenance on public writer contributor
+php artisan site:maintenance on all
+
+php artisan site:maintenance off writer
+php artisan site:maintenance off public contributor
+php artisan site:maintenance off all
+
 php artisan site:maintenance status
 ```
 
-本番環境ではPHPの絶対パスを使用する。
+本番環境では次のPHPを使用する。
 
 ```bash
-/usr/local/bin/php artisan site:maintenance on
-/usr/local/bin/php artisan site:maintenance off
+/usr/local/bin/php artisan site:maintenance on public writer
+/usr/local/bin/php artisan site:maintenance off all
 /usr/local/bin/php artisan site:maintenance status
 ```
 
-## メンテナンスページ
+## 保存場所
 
-`resources/views/errors/503.blade.php`
+状態は以下へJSONで保存する。
 
-外部CSSやJavaScriptへ依存しない。
-メンテナンス中でも単体で表示できるインラインCSS構成とする。
+`storage/framework/oshi-wiki-maintenance.json`
 
-公式X:
-`https://x.com/Oshi_Wiki`
+Laravel標準の全面停止状態は使用しない。
+これにより、最高管理者の管理画面を維持したまま
+各範囲だけをメンテナンス表示へ切り替えられる。

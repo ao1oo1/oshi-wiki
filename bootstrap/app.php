@@ -24,6 +24,10 @@ return Application::configure(basePath: dirname(__DIR__))
             'writer.user' => EnsureWriterUser::class,
             'password.changed' => EnsurePasswordChanged::class,
         ]);
+
+        $middleware->web(prepend: [
+            \App\Http\Middleware\ScopedMaintenanceMode::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(
