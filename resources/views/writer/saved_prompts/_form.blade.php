@@ -1140,6 +1140,33 @@
             'story-length-options-panel'
         );
 
+        const writingStyleSelect = document.getElementById(
+            'writing_style'
+        );
+        const writingStyleOtherWrap = document.getElementById(
+            'writing-style-other-wrap'
+        );
+        const genreSelect = document.getElementById(
+            'genre'
+        );
+        const genreOtherWrap = document.getElementById(
+            'genre-other-wrap'
+        );
+        const workWorldbuildingSection = document.getElementById(
+            'work-worldbuilding-section'
+        );
+        const includeWorkWorldbuilding = document.getElementById(
+            'include_work_worldbuilding'
+        );
+        const workWorldbuildingCategories = document.getElementById(
+            'work-worldbuilding-categories'
+        );
+        const workWorldbuildingCategoryCheckboxes = Array.from(
+            document.querySelectorAll(
+                '.work-worldbuilding-category'
+            )
+        );
+
         function escapeHtml(value) {
             return String(value ?? '')
                 .replaceAll('&', '&amp;')
@@ -1457,10 +1484,22 @@
             }
         );
 
-        writingStyleSelect?.addEventListener('change', refreshOtherFields);
-        genreSelect?.addEventListener('change', refreshOtherFields);
+        /*
+         * プレビュー操作は他の補助UIより先に登録する。
+         * 補助UI側で予期しないエラーが起きても、
+         * プレビュー機能自体を利用できる状態に保つ。
+         */
         previewButton?.addEventListener('click', generatePreview);
         previewCopyButton?.addEventListener('click', copyPreview);
+
+        writingStyleSelect?.addEventListener(
+            'change',
+            refreshOtherFields
+        );
+        genreSelect?.addEventListener(
+            'change',
+            refreshOtherFields
+        );
         refreshOtherFields();
         refreshV1Characters();
         refreshWorkWorldbuilding(false);
