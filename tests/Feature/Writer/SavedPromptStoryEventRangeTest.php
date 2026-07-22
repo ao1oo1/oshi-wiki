@@ -80,20 +80,28 @@ class SavedPromptStoryEventRangeTest extends TestCase
             '参照範囲：物語詳細21～40',
             $prompt->prompt_body
         );
-        $this->assertStringContainsString(
+        $this->assertStringNotContainsString(
             '出来事21',
             $prompt->prompt_body
         );
         $this->assertStringContainsString(
+            '詳細：詳細21',
+            $prompt->prompt_body
+        );
+        $this->assertStringNotContainsString(
             '出来事40',
             $prompt->prompt_body
         );
-        $this->assertStringNotContainsString(
-            '出来事20',
+        $this->assertStringContainsString(
+            '詳細：詳細40',
             $prompt->prompt_body
         );
         $this->assertStringNotContainsString(
-            '出来事41',
+            '詳細：詳細20',
+            $prompt->prompt_body
+        );
+        $this->assertStringNotContainsString(
+            '詳細：詳細41',
             $prompt->prompt_body
         );
     }
@@ -170,12 +178,20 @@ class SavedPromptStoryEventRangeTest extends TestCase
             $section->id,
             $prompt->work_story_section_id
         );
-        $this->assertStringContainsString(
+        $this->assertStringNotContainsString(
             '出来事1',
             $prompt->prompt_body
         );
         $this->assertStringContainsString(
+            '詳細：詳細1',
+            $prompt->prompt_body
+        );
+        $this->assertStringNotContainsString(
             '出来事2',
+            $prompt->prompt_body
+        );
+        $this->assertStringContainsString(
+            '詳細：詳細2',
             $prompt->prompt_body
         );
     }

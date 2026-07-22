@@ -145,15 +145,44 @@ class WorkStorySectionPromptBuilder
                     ? $start + $index
                     : $index + 1;
 
-                $lines[] =
-                    $number . '. '
-                    . ($event->title ?: '名称未設定');
+                /*
+                 * 管理用のタイトル・備考はプロンプトへ含めない。
+                 * 項番と、物語本文に必要な情報だけを出力する。
+                 */
+                $eventLines = [];
 
-                $this->append($lines, 'タイミング', $event->timing, '  ');
-                $this->append($lines, '場所', $event->location, '  ');
-                $this->append($lines, '詳細', $event->summary, '  ');
-                $this->append($lines, '結果', $event->outcome, '  ');
-                $this->append($lines, '備考', $event->notes, '  ');
+                $this->append(
+                    $eventLines,
+                    'タイミング',
+                    $event->timing,
+                    '  '
+                );
+                $this->append(
+                    $eventLines,
+                    '場所',
+                    $event->location,
+                    '  '
+                );
+                $this->append(
+                    $eventLines,
+                    '詳細',
+                    $event->summary,
+                    '  '
+                );
+                $this->append(
+                    $eventLines,
+                    '結果',
+                    $event->outcome,
+                    '  '
+                );
+
+                if ($eventLines !== []) {
+                    $lines[] = $number . '.';
+
+                    foreach ($eventLines as $eventLine) {
+                        $lines[] = $eventLine;
+                    }
+                }
             }
         }
 
