@@ -179,33 +179,49 @@
                 </p>
             </div>
 
-            <dl class="mt-7 divide-y divide-[#F3D6DE] rounded-2xl border border-[#F3D6DE] bg-white px-5">
-                <div class="flex items-center justify-between py-4">
-                    <dt class="font-bold text-[#2D3748]">オリジナルキャラクター</dt>
-                    <dd class="text-right">
-                        <span class="text-xl font-bold text-[#D95F82]">{{ number_format($plusPlan['limits']['original_characters']) }}件</span>
-                        <span class="ml-2 rounded-full bg-[#FED7E2] px-2 py-1 text-xs font-bold text-[#A05A70]">5倍</span>
+            <dl class="mt-7 divide-y divide-[#F3D6DE] rounded-2xl border border-[#F3D6DE] bg-white px-4 sm:px-5">
+                <div class="grid grid-cols-[minmax(0,1fr)_auto_auto] items-center gap-x-2 py-4 sm:gap-x-3">
+                    <dt class="min-w-0 pr-1 text-sm font-bold leading-6 text-[#2D3748] sm:text-base">
+                        オリジナルキャラクター
+                    </dt>
+                    <dd class="whitespace-nowrap text-right text-lg font-bold text-[#D95F82] sm:text-xl">
+                        {{ number_format($plusPlan['limits']['original_characters']) }}件
+                    </dd>
+                    <dd class="whitespace-nowrap rounded-full bg-[#FED7E2] px-2 py-1 text-xs font-bold text-[#A05A70]">
+                        5倍
                     </dd>
                 </div>
-                <div class="flex items-center justify-between py-4">
-                    <dt class="font-bold text-[#2D3748]">関係性</dt>
-                    <dd class="text-right">
-                        <span class="text-xl font-bold text-[#D95F82]">{{ number_format($plusPlan['limits']['relationships']) }}件</span>
-                        <span class="ml-2 rounded-full bg-[#FED7E2] px-2 py-1 text-xs font-bold text-[#A05A70]">10倍</span>
+                <div class="grid grid-cols-[minmax(0,1fr)_auto_auto] items-center gap-x-2 py-4 sm:gap-x-3">
+                    <dt class="min-w-0 pr-1 text-sm font-bold leading-6 text-[#2D3748] sm:text-base">
+                        関係性
+                    </dt>
+                    <dd class="whitespace-nowrap text-right text-lg font-bold text-[#D95F82] sm:text-xl">
+                        {{ number_format($plusPlan['limits']['relationships']) }}件
+                    </dd>
+                    <dd class="whitespace-nowrap rounded-full bg-[#FED7E2] px-2 py-1 text-xs font-bold text-[#A05A70]">
+                        10倍
                     </dd>
                 </div>
-                <div class="flex items-center justify-between py-4">
-                    <dt class="font-bold text-[#2D3748]">保存プロンプト</dt>
-                    <dd class="text-right">
-                        <span class="text-xl font-bold text-[#D95F82]">{{ number_format($plusPlan['limits']['prompts']) }}件</span>
-                        <span class="ml-2 rounded-full bg-[#FED7E2] px-2 py-1 text-xs font-bold text-[#A05A70]">10倍</span>
+                <div class="grid grid-cols-[minmax(0,1fr)_auto_auto] items-center gap-x-2 py-4 sm:gap-x-3">
+                    <dt class="min-w-0 pr-1 text-sm font-bold leading-6 text-[#2D3748] sm:text-base">
+                        保存プロンプト
+                    </dt>
+                    <dd class="whitespace-nowrap text-right text-lg font-bold text-[#D95F82] sm:text-xl">
+                        {{ number_format($plusPlan['limits']['prompts']) }}件
+                    </dd>
+                    <dd class="whitespace-nowrap rounded-full bg-[#FED7E2] px-2 py-1 text-xs font-bold text-[#A05A70]">
+                        10倍
                     </dd>
                 </div>
-                <div class="flex items-center justify-between py-4">
-                    <dt class="font-bold text-[#2D3748]">ストーリー</dt>
-                    <dd class="text-right">
-                        <span class="text-xl font-bold text-[#D95F82]">{{ number_format($plusPlan['limits']['stories']) }}件</span>
-                        <span class="ml-2 rounded-full bg-[#FED7E2] px-2 py-1 text-xs font-bold text-[#A05A70]">20倍</span>
+                <div class="grid grid-cols-[minmax(0,1fr)_auto_auto] items-center gap-x-2 py-4 sm:gap-x-3">
+                    <dt class="min-w-0 pr-1 text-sm font-bold leading-6 text-[#2D3748] sm:text-base">
+                        ストーリー
+                    </dt>
+                    <dd class="whitespace-nowrap text-right text-lg font-bold text-[#D95F82] sm:text-xl">
+                        {{ number_format($plusPlan['limits']['stories']) }}件
+                    </dd>
+                    <dd class="whitespace-nowrap rounded-full bg-[#FED7E2] px-2 py-1 text-xs font-bold text-[#A05A70]">
+                        20倍
                     </dd>
                 </div>
             </dl>
