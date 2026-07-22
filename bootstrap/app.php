@@ -24,6 +24,8 @@ return Application::configure(basePath: dirname(__DIR__))
             'writer.user' => EnsureWriterUser::class,
             'writer.data.writable' =>
                 \App\Http\Middleware\EnsureWriterDataWritable::class,
+            'writer.csv.plus' =>
+                \App\Http\Middleware\EnsureWriterCsvPlusAccess::class,
             'password.changed' => EnsurePasswordChanged::class,
             'security.ip' => \App\Http\Middleware\BlockSuspiciousIp::class,
         ]);
