@@ -97,6 +97,24 @@ class WriterCsvFeatureTest extends TestCase
         ]);
     }
 
+    public function test_canceling_plus_user_can_still_use_csv_until_period_end(): void
+    {
+        $user = $this->plusWriter();
+
+        $user->billingProfile()->update([
+            'status' => 'canceling',
+            'current_period_end' => now()->addWeek(),
+        ]);
+
+        $this->actingAs($user->fresh())
+            ->get(route('writer.csv.export', 'characters'))
+            ->assertOk();
+
+        $this->actingAs($user->fresh())
+            ->get(route('writer.csv.sample', 'characters'))
+            ->assertOk();
+    }
+
     public function test_export_is_limited_to_current_user(): void
     {
         $user = $this->plusWriter();
