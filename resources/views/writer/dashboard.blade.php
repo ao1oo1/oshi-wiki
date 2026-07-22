@@ -54,6 +54,79 @@
         </a>
     </section>
 
+    <section class="rounded-3xl border-2 border-[#FED7E2] bg-[#FFF8FA] p-6 shadow-sm md:hidden">
+        <p class="text-sm font-bold tracking-wide text-[#A05A70]">
+            PLAN
+        </p>
+        <h3 class="mt-2 text-xl font-bold text-[#2D3748]">
+            プラン管理
+        </h3>
+
+        <div class="mt-5 rounded-2xl bg-white p-5 shadow-sm">
+            <p class="text-xs font-bold tracking-wide text-[#A0AEC0]">
+                現在のプラン
+            </p>
+
+            @if ($billingProfile?->isInRetentionPeriod())
+                <div class="mt-2 flex flex-wrap items-center gap-2">
+                    <p class="text-2xl font-bold text-[#2D3748]">
+                        データ保管期間
+                    </p>
+                    <span class="rounded-full bg-amber-100 px-3 py-1 text-xs font-bold text-amber-800">
+                        閲覧のみ
+                    </span>
+                </div>
+                <p class="mt-3 text-sm font-bold leading-7 text-[#4A5568]">
+                    保存中のデータは
+                    {{ $billingProfile->retention_ends_at?->format('Y年n月j日') }}
+                    まで保管されます。
+                </p>
+            @elseif ($hasPlus && $billingProfile?->status === 'canceling')
+                <div class="mt-2 flex flex-wrap items-center gap-2">
+                    <p class="text-2xl font-bold text-[#2D3748]">
+                        Oshi-Wiki Plus
+                    </p>
+                    <span class="rounded-full bg-amber-100 px-3 py-1 text-xs font-bold text-amber-800">
+                        解約予定
+                    </span>
+                </div>
+                <p class="mt-3 text-sm font-bold leading-7 text-[#4A5568]">
+                    {{ $billingProfile->current_period_end?->format('Y年n月j日') }}
+                    まではPlus機能を利用できます。
+                </p>
+            @elseif ($hasPlus)
+                <div class="mt-2 flex flex-wrap items-center gap-2">
+                    <p class="text-2xl font-bold text-[#2D3748]">
+                        Oshi-Wiki Plus
+                    </p>
+                    <span class="rounded-full bg-[#FED7E2] px-3 py-1 text-xs font-bold text-[#2D3748]">
+                        利用中
+                    </span>
+                </div>
+                <p class="mt-3 text-sm font-bold leading-7 text-[#4A5568]">
+                    登録上限の拡張やPlus限定機能を利用できます。
+                </p>
+            @else
+                <div class="mt-2 flex flex-wrap items-center gap-2">
+                    <p class="text-2xl font-bold text-[#2D3748]">
+                        無料プラン
+                    </p>
+                    <span class="rounded-full bg-[#EDF2F7] px-3 py-1 text-xs font-bold text-[#4A5568]">
+                        FREE
+                    </span>
+                </div>
+                <p class="mt-3 text-sm font-bold leading-7 text-[#4A5568]">
+                    Oshi-Wiki Plusに登録すると、登録上限の拡張やCSV機能を利用できます。
+                </p>
+            @endif
+        </div>
+
+        <a href="{{ route('writer.billing.index') }}"
+           class="mt-5 inline-flex min-h-11 w-full items-center justify-center rounded-2xl bg-[#D95F82] px-5 py-3 text-sm font-bold text-white hover:opacity-90">
+            {{ $hasPlus ? '契約内容を確認' : 'Oshi-Wiki Plusに登録' }}
+        </a>
+    </section>
+
     <section class="rounded-3xl border border-[#E2E8F0] bg-white p-6 shadow-sm">
         <p class="text-sm font-bold text-[#A0AEC0]">Request</p>
         <h3 class="mt-2 text-xl font-bold text-[#2D3748]">データ登録リクエスト</h3>

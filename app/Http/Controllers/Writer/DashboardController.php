@@ -14,7 +14,9 @@ class DashboardController extends Controller
 {
     public function __invoke(Request $request): View
     {
-        $user = $request->user();
+        $user = $request->user()->load('billingProfile.plan');
+        $billingProfile = $user->billingProfile;
+        $hasPlus = $user->hasPlusAccess();
 
         $originalCharacterQuery = OriginalCharacter::query()->forUser($user);
         $relationshipQuery = OriginalCharacterRelationship::query()->forUser($user);
@@ -42,6 +44,8 @@ class DashboardController extends Controller
             'originalCharacterLimit' => WritingAssistLimits::originalCharactersPerUser($user),
             'relationshipLimit' => WritingAssistLimits::relationshipsPerUser($user),
             'promptLimit' => WritingAssistLimits::promptsPerUser($user),
+            'billingProfile' => $billingProfile,
+            'hasPlus' => $hasPlus,
         ]);
     }
 }
