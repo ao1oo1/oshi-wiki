@@ -42,13 +42,24 @@ class WriterCsvFeatureTest extends TestCase
             ->assertSee(route('writer.csv.guide'));
     }
 
-    public function test_free_user_can_export_but_cannot_import(): void
+    public function test_free_user_cannot_use_csv_functions(): void
     {
         $user = $this->writer();
 
         $this->actingAs($user)
+            ->get(route('writer.csv.index'))
+            ->assertOk()
+            ->assertSee('CSVインポート/エクスポートはPlus限定です')
+            ->assertSee('CSV機能はOshi-Wiki Plus限定です')
+            ->assertSee('Plusプランを見る');
+
+        $this->actingAs($user)
             ->get(route('writer.csv.export', 'characters'))
-            ->assertOk();
+            ->assertRedirect(route('writer.billing.index'));
+
+        $this->actingAs($user)
+            ->get(route('writer.csv.sample', 'characters'))
+            ->assertRedirect(route('writer.billing.index'));
 
         $file = UploadedFile::fake()->createWithContent(
             'characters.csv',
@@ -60,7 +71,7 @@ class WriterCsvFeatureTest extends TestCase
                 route('writer.csv.import', 'characters'),
                 ['csv_file' => $file]
             )
-            ->assertForbidden();
+            ->assertRedirect(route('writer.billing.index'));
     }
 
     public function test_plus_user_can_import_character_csv(): void
@@ -88,7 +99,7 @@ class WriterCsvFeatureTest extends TestCase
 
     public function test_export_is_limited_to_current_user(): void
     {
-        $user = $this->writer();
+        $user = $this->plusWriter();
         $other = $this->writer();
 
         OriginalCharacter::query()->create([

@@ -64,9 +64,18 @@ Route::middleware([
 
     Route::get('csv', [\App\Http\Controllers\Writer\WriterCsvController::class, 'index'])->name('csv.index');
     Route::get('csv/guide', [\App\Http\Controllers\Writer\WriterCsvController::class, 'guide'])->name('csv.guide');
-    Route::get('csv/{type}/export', [\App\Http\Controllers\Writer\WriterCsvController::class, 'export'])->name('csv.export');
-    Route::get('csv/{type}/sample', [\App\Http\Controllers\Writer\WriterCsvController::class, 'sample'])->name('csv.sample');
-    Route::post('csv/{type}/import', [\App\Http\Controllers\Writer\WriterCsvController::class, 'import'])->name('csv.import');
+    Route::get(
+        'csv/{type}/export',
+        [\App\Http\Controllers\Writer\WriterCsvController::class, 'export']
+    )->middleware('writer.csv.plus')->name('csv.export');
+    Route::get(
+        'csv/{type}/sample',
+        [\App\Http\Controllers\Writer\WriterCsvController::class, 'sample']
+    )->middleware('writer.csv.plus')->name('csv.sample');
+    Route::post(
+        'csv/{type}/import',
+        [\App\Http\Controllers\Writer\WriterCsvController::class, 'import']
+    )->middleware('writer.csv.plus')->name('csv.import');
 
     Route::get(
         'original-characters/{original_character}/image',
