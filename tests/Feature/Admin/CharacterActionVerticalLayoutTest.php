@@ -28,7 +28,7 @@ class CharacterActionVerticalLayoutTest extends TestCase
         );
 
         $this->assertStringContainsString(
-            'px-3 py-3 align-middle admin-index-action-cell',
+            'px-2 py-3 align-middle admin-index-action-cell',
             $view
         );
     }
@@ -40,12 +40,12 @@ class CharacterActionVerticalLayoutTest extends TestCase
         );
 
         $this->assertStringContainsString(
-            'min-w-[1050px] table-fixed',
+            'admin-character-table w-full table-fixed',
             $view
         );
 
         $this->assertStringContainsString(
-            "? 'w-[17%]' : 'w-[15%]'",
+            "? 'w-[19%]' : 'w-[12%]'",
             $view
         );
     }

@@ -22,11 +22,11 @@ class CharacterListColumnLayoutTest extends TestCase
 
         $response
             ->assertOk()
-            ->assertSee('min-w-[1050px] table-fixed', false)
+            ->assertSee('admin-character-table w-full table-fixed', false)
             ->assertSee('<colgroup>', false)
             ->assertSee("w-[18%]", false)
-            ->assertSee("w-[24%]", false)
-            ->assertSee("w-[16%]", false)
+            ->assertSee("w-[22%]", false)
+            ->assertSee("w-[15%]", false)
             ->assertSee('whitespace-nowrap">キャラクター名', false)
             ->assertSee('whitespace-nowrap">作品', false)
             ->assertSee('whitespace-nowrap">所属', false);
