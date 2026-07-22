@@ -22,8 +22,8 @@ class CharacterActionColumnLayoutTest extends TestCase
 
         $response
             ->assertOk()
-            ->assertSee('min-w-[1050px] table-fixed', false)
-            ->assertSee("w-[17%]", false)
+            ->assertSee('admin-character-table w-full table-fixed', false)
+            ->assertSee("w-[19%]", false)
             ->assertSee('admin-index-action-head', false)
             ->assertSee('>操作</th>', false);
     }
@@ -45,7 +45,7 @@ class CharacterActionColumnLayoutTest extends TestCase
         );
 
         $this->assertStringContainsString(
-            "? 'w-[17%]' : 'w-[15%]'",
+            "? 'w-[19%]' : 'w-[12%]'",
             $view
         );
     }

@@ -6971,3 +6971,39 @@ input[type="number"].oshi-input {
         scroll-behavior: smooth;
     }
 }
+
+/* キャラクター一覧：PCで操作列まで横スクロールなしで表示 */
+@media (min-width: 768px) {
+    .admin-character-table {
+        width: 100% !important;
+        min-width: 0 !important;
+        table-layout: fixed !important;
+    }
+
+    .admin-character-table th,
+    .admin-character-table td {
+        min-width: 0 !important;
+    }
+
+    .admin-character-table input[type="checkbox"] {
+        width: 16px !important;
+        min-width: 16px !important;
+        max-width: 16px !important;
+        height: 16px !important;
+        margin: 0 auto !important;
+    }
+
+    .admin-character-table .admin-index-action-cell {
+        overflow: visible !important;
+    }
+
+    .admin-character-table .admin-index-action-cell > div {
+        max-width: 100% !important;
+    }
+
+    .admin-character-table .admin-index-action-cell .oshi-btn {
+        min-width: 76px !important;
+        padding-left: 0.65rem !important;
+        padding-right: 0.65rem !important;
+    }
+}

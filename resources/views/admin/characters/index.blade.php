@@ -164,24 +164,25 @@ $canUseCharacterImports = auth()->user()?->canManageAllAdminFeatures() ?? false;
 
 <div class="staff-mobile-table-shell overflow-hidden rounded-3xl border border-[#E2E8F0] bg-white">
             <div class="overflow-x-auto">
-                    <table class="w-full min-w-[1050px] table-fixed text-left text-sm">
+                    <table class="admin-character-table w-full table-fixed text-left text-sm">
                         <colgroup>
+                            <col class="{{ $canUseCharacterImports ? 'w-[4%]' : 'w-[5%]' }}">
                             @if ($canUseCharacterImports)
-                                <col class="w-[5%]">
+                                <col class="w-[3%]">
                             @endif
                             <col class="{{ $canUseCharacterImports ? 'w-[18%]' : 'w-[20%]' }}">
-                            <col class="{{ $canUseCharacterImports ? 'w-[24%]' : 'w-[27%]' }}">
-                            <col class="{{ $canUseCharacterImports ? 'w-[16%]' : 'w-[17%]' }}">
-                            <col class="w-[11%]">
-                            <col class="w-[9%]">
-                            <col class="{{ $canUseCharacterImports ? 'w-[17%]' : 'w-[15%]' }}">
+                            <col class="{{ $canUseCharacterImports ? 'w-[22%]' : 'w-[26%]' }}">
+                            <col class="{{ $canUseCharacterImports ? 'w-[15%]' : 'w-[17%]' }}">
+                            <col class="{{ $canUseCharacterImports ? 'w-[9%]' : 'w-[10%]' }}">
+                            <col class="{{ $canUseCharacterImports ? 'w-[10%]' : 'w-[10%]' }}">
+                            <col class="{{ $canUseCharacterImports ? 'w-[19%]' : 'w-[12%]' }}">
                         </colgroup>
                         <thead class="bg-[#FFF5F7] text-[#2D3748]">
                             <tr>
-                                <th class="whitespace-nowrap px-3 py-3 text-left text-xs font-semibold"
+                                <th class="whitespace-nowrap px-2 py-3 text-center text-xs font-semibold"
                                     data-admin-id-column>ID</th>
                                 @if ($canUseCharacterImports)
-                                    <th class="px-5 py-4 font-bold">
+                                    <th class="px-1 py-4 text-center font-bold">
                                         <input
                                             type="checkbox"
                                             onclick="document.querySelectorAll('.character-check').forEach(el => el.checked = this.checked)"
@@ -204,10 +205,10 @@ $canUseCharacterImports = auth()->user()?->canManageAllAdminFeatures() ?? false;
                                 @endphp
 
                                 <tr class="border-t border-[#E2E8F0]">
-                                    <td class="whitespace-nowrap px-3 py-3 text-sm font-semibold text-slate-600"
+                                    <td class="whitespace-nowrap px-2 py-3 text-center text-sm font-semibold text-slate-600"
                                         data-admin-id-value>{{ $character->id }}</td>
                                     @if ($canUseCharacterImports)
-                                        <td class="px-5 py-4 align-middle">
+                                        <td class="px-1 py-4 text-center align-middle">
                                             <input
                                                 class="character-check"
                                                 form="character-bulk-form"
@@ -263,7 +264,7 @@ $canUseCharacterImports = auth()->user()?->canManageAllAdminFeatures() ?? false;
                                         {{ $character->review_status ?: '—' }}
                                     </td>
 
-                                    <td class="px-3 py-3 align-middle admin-index-action-cell">
+                                    <td class="px-2 py-3 align-middle admin-index-action-cell">
                                         <div class="mx-auto inline-flex w-fit flex-col items-stretch justify-center gap-2 whitespace-nowrap">
                                             <a href="{{ route('admin.characters.show', $character) }}" class="oshi-btn oshi-btn-sub min-w-[88px] justify-center px-4 py-2">
                                                 詳細
