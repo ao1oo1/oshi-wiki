@@ -84,6 +84,10 @@
                         CSVから新規登録
                     </button>
                 </form>
+
+                @include('writer.csv._format_accordion', [
+                    'type' => $type,
+                ])
             </section>
         @endforeach
     </div>
