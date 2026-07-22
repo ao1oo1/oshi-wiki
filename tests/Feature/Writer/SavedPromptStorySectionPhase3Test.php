@@ -118,8 +118,12 @@ class SavedPromptStorySectionPhase3Test extends TestCase
             'この章までの設定です。',
             $prompt->prompt_body
         );
-        $this->assertStringContainsString(
+        $this->assertStringNotContainsString(
             '重要な出来事',
+            $prompt->prompt_body
+        );
+        $this->assertStringContainsString(
+            '詳細：',
             $prompt->prompt_body
         );
         $this->assertStringContainsString(
