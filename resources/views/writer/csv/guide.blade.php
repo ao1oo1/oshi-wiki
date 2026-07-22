@@ -158,12 +158,16 @@
             </p>
 
             <figure class="mt-4 overflow-hidden rounded-2xl border border-[#E2E8F0] bg-white">
-                <img
-                    src="{ asset('images/writer/csv-guide-import-example.png') }"
-                    alt="CSVサンプルの入力例"
-                    class="block w-full"
-                >
-                <figcaption class="border-t border-[#E2E8F0] bg-[#F8FAFC] px-4 py-3 text-sm font-bold leading-6 text-[#718096]">
+                <div class="flex justify-center bg-[#F8FAFC] px-3 py-4 sm:px-5 sm:py-6">
+                    <img
+                        src="{{ asset('images/writer/csv-guide-import-example.png') }}"
+                        alt="CSVサンプルの入力例"
+                        class="block h-auto max-h-[240px] w-auto max-w-full object-contain sm:max-h-[320px] lg:max-h-[380px] lg:max-w-[760px]"
+                        loading="lazy"
+                    >
+                </div>
+
+                <figcaption class="border-t border-[#E2E8F0] bg-white px-4 py-3 text-sm font-bold leading-6 text-[#718096] sm:px-5">
                     例：1行目の列名は変更せず、2行目以降へキャラクター情報を入力してください。
                 </figcaption>
             </figure>
