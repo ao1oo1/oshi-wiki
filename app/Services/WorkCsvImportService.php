@@ -101,8 +101,8 @@ class WorkCsvImportService
                 $validator = Validator::make(
                     $payload,
                     $this->rules(),
-                    [],
-                    ['title' => '作品名']
+                    $this->validationMessages(),
+                    $this->validationAttributes()
                 );
 
                 if ($validator->fails()) {
@@ -496,6 +496,14 @@ class WorkCsvImportService
                 $value = $this->normalizeBoolean($value);
             }
 
+            if ($key === 'monetization_inheritance') {
+                $value = $this->normalizeMonetizationInheritance($value);
+            }
+
+            if ($key === 'status') {
+                $value = $this->normalizeStatus($value);
+            }
+
             $normalized[$key] = $value;
         }
 
@@ -508,51 +516,142 @@ class WorkCsvImportService
             return null;
         }
 
-        if (is_array($value)) {
-            return collect($value)
-                ->map(fn ($item) => trim((string) $item))
-                ->filter()
-                ->unique()
-                ->values()
-                ->all();
-        }
+        if (is_string($value)) {
+            $trimmed = trim($value);
 
-        $value = trim((string) $value);
-
-        if ($value === '') {
-            return null;
-        }
-
-        if (str_starts_with($value, '[')) {
-            $decoded = json_decode(
-                $value,
-                true,
-                512,
-                JSON_THROW_ON_ERROR
-            );
-
-            if (! is_array($decoded) || ! array_is_list($decoded)) {
-                throw new JsonException(
-                    'media_typesはJSON配列で指定してください。'
-                );
+            if ($trimmed === '') {
+                return null;
             }
 
-            return collect($decoded)
-                ->map(fn ($item) => trim((string) $item))
-                ->filter()
-                ->unique()
-                ->values()
-                ->all();
+            if (
+                str_starts_with($trimmed, '[')
+                && str_ends_with($trimmed, ']')
+            ) {
+                $decoded = json_decode($trimmed, true);
+
+                if (is_array($decoded)) {
+                    $value = $decoded;
+                }
+            }
         }
 
-        return collect(
-            preg_split('/[,、|｜]+/u', $value) ?: []
-        )
+        $items = is_array($value)
+            ? $value
+            : preg_split(
+                '/[,\x{FF0C}\x{3001}\x{FF5C}|\r\n\/]+/u',
+                (string) $value
+            );
+
+        $aliases = [
+            'anime' => 'anime',
+            'アニメ' => 'anime',
+            'manga' => 'manga',
+            '漫画' => 'manga',
+            'マンガ' => 'manga',
+            'コミック' => 'manga',
+            'game' => 'game',
+            'ゲーム' => 'game',
+            'novel' => 'novel',
+            '小説' => 'novel',
+            'ライトノベル' => 'novel',
+            'ラノベ' => 'novel',
+            'goods' => 'goods',
+            'グッズ' => 'goods',
+            '商品' => 'goods',
+            'app' => 'app',
+            'アプリ' => 'app',
+            'other' => 'other',
+            'その他' => 'other',
+        ];
+
+        return collect($items ?: [])
             ->map(fn ($item) => trim((string) $item))
             ->filter()
+            ->map(function (string $item) use ($aliases): string {
+                $lower = mb_strtolower($item);
+
+                return $aliases[$lower]
+                    ?? $aliases[$item]
+                    ?? $lower;
+            })
             ->unique()
             ->values()
             ->all();
+    }
+
+    private function normalizeMonetizationInheritance(
+        mixed $value
+    ): ?string {
+        if ($value === null || trim((string) $value) === '') {
+            return null;
+        }
+
+        $normalized = mb_strtolower(trim((string) $value));
+
+        return match ($normalized) {
+            'self', '個別', 'この作品', '自身' => 'self',
+            'parent', '親', '親作品' => 'parent',
+            'self_then_parent',
+            '個別優先',
+            'この作品を優先',
+            '自身を優先',
+            '個別→親',
+            '個別＞親' => 'self_then_parent',
+            'disabled', '無効', '使用しない', 'なし' => 'disabled',
+            default => $normalized,
+        };
+    }
+
+    private function normalizeStatus(mixed $value): ?string
+    {
+        if ($value === null || trim((string) $value) === '') {
+            return null;
+        }
+
+        $normalized = mb_strtolower(trim((string) $value));
+
+        return match ($normalized) {
+            'draft', '下書き' => 'draft',
+            'published', '公開' => 'published',
+            'private', '非公開' => 'private',
+            default => $normalized,
+        };
+    }
+
+    private function validationMessages(): array
+    {
+        return [
+            'media_types.*.in' =>
+                '媒体種別「:input」は使用できません。'
+                . '使用可能な値：anime、manga、game、novel、'
+                . 'goods、app、other'
+                . '（日本語のアニメ、漫画、ゲーム、小説、'
+                . 'グッズ、アプリ、その他も使用できます）。',
+            'monetization_inheritance.in' =>
+                '収益設定の継承方法「:input」は使用できません。'
+                . '使用可能な値：self、parent、'
+                . 'self_then_parent、disabled。',
+            'status.in' =>
+                '公開状態「:input」は使用できません。'
+                . '使用可能な値：draft、published、private'
+                . '（下書き、公開、非公開も使用できます）。',
+            'monetization_enabled.boolean' =>
+                '収益表示の有効・無効は、'
+                . '1 / 0、true / false、はい / いいえ'
+                . 'のいずれかで入力してください。',
+        ];
+    }
+
+    private function validationAttributes(): array
+    {
+        return [
+            'title' => '作品名',
+            'media_types' => '媒体種別',
+            'media_types.*' => '媒体種別',
+            'monetization_enabled' => '収益表示',
+            'monetization_inheritance' => '収益設定の継承方法',
+            'status' => '公開状態',
+        ];
     }
 
     private function normalizeBoolean(mixed $value): ?bool
