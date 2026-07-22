@@ -148,6 +148,26 @@
                 </p>
             </li>
         </ol>
+
+        <div class="mt-6 rounded-2xl border border-[#E2E8F0] bg-[#FFFDFD] p-4">
+            <p class="text-sm font-bold text-[#2D3748]">
+                入力例
+            </p>
+            <p class="mt-2 text-sm font-bold leading-7 text-[#718096]">
+                サンプルCSVを開くと、1行目に列名、2行目以降に登録したい内容を入力します。
+            </p>
+
+            <figure class="mt-4 overflow-hidden rounded-2xl border border-[#E2E8F0] bg-white">
+                <img
+                    src="{ asset('images/writer/csv-guide-import-example.png') }"
+                    alt="CSVサンプルの入力例"
+                    class="block w-full"
+                >
+                <figcaption class="border-t border-[#E2E8F0] bg-[#F8FAFC] px-4 py-3 text-sm font-bold leading-6 text-[#718096]">
+                    例：1行目の列名は変更せず、2行目以降へキャラクター情報を入力してください。
+                </figcaption>
+            </figure>
+        </div>
     </section>
 </div>
 
