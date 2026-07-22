@@ -987,8 +987,9 @@
     <div class="flex flex-wrap gap-3">
         <button type="button"
                 id="preview-button"
+                aria-controls="prompt-preview"
                 class="inline-flex items-center justify-center rounded-2xl bg-[#FED7E2] px-5 py-3 text-sm font-bold text-[#2D3748] hover:opacity-90">
-            プレビュー生成
+            プレビューを作成
         </button>
 
         <button type="button"
@@ -1178,6 +1179,40 @@
             const formData = new FormData(form);
             formData.delete('_method');
 
+            /*
+             * 非表示・disabledのチェックボックスはFormDataから
+             * 除外されるため、現在の作品で選択中の物語詳細範囲を
+             * 明示的に入れ直す。
+             */
+            formData.delete('selected_story_event_ranges[]');
+
+            const selectedWorkValue =
+                workSelect?.value || 'original';
+
+            const selectedWorkId =
+                selectedWorkValue.startsWith('work:')
+                    ? selectedWorkValue.replace('work:', '')
+                    : '';
+
+            document.querySelectorAll(
+                '.story-event-range-checkbox:checked'
+            ).forEach((checkbox) => {
+                const sectionItem = checkbox.closest(
+                    '.story-section-range-item'
+                );
+
+                if (
+                    selectedWorkId !== ''
+                    && sectionItem?.dataset.workId
+                        === selectedWorkId
+                ) {
+                    formData.append(
+                        'selected_story_event_ranges[]',
+                        checkbox.value
+                    );
+                }
+            });
+
             previewButton.disabled = true;
             previewButton.classList.add('opacity-50');
 
@@ -1193,19 +1228,51 @@
                     body: formData
                 });
 
-                const data = await response.json();
+                const contentType =
+                    response.headers.get('content-type') || '';
+
+                const data = contentType.includes(
+                    'application/json'
+                )
+                    ? await response.json()
+                    : {
+                        message:
+                            'サーバーから正しい応答を受け取れませんでした。',
+                    };
 
                 if (!response.ok) {
-                    previewTextarea.value = '';
-                    showPreviewMessage(data.message || 'プレビュー生成に失敗しました。入力内容を確認してください。');
+                    const validationMessages = Object.values(
+                        data.errors || {}
+                    ).flat();
+
+                    const errorMessage =
+                        validationMessages[0]
+                        || data.detail
+                        || data.message
+                        || 'プレビュー生成に失敗しました。入力内容を確認してください。';
+
+                    showPreviewMessage(errorMessage);
                     return;
                 }
 
-                previewTextarea.value = data.prompt_body || '';
-                showPreviewMessage(`プレビューを生成しました。${data.length || previewTextarea.value.length}文字`);
+                previewTextarea.value =
+                    data.prompt_body || '';
+
+                showPreviewMessage(
+                    `プレビューを生成しました。${
+                        data.length
+                        || previewTextarea.value.length
+                    }文字`
+                );
+
+                previewTextarea.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'center',
+                });
             } catch (error) {
-                previewTextarea.value = '';
-                showPreviewMessage('プレビュー生成に失敗しました。');
+                showPreviewMessage(
+                    '通信エラーが発生しました。ページを再読み込みして、もう一度お試しください。'
+                );
             } finally {
                 previewButton.disabled = false;
                 previewButton.classList.remove('opacity-50');

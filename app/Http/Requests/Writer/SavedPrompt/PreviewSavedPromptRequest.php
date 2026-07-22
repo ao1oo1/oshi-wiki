@@ -9,9 +9,11 @@ class PreviewSavedPromptRequest extends StoreSavedPromptRequest
         $rules = parent::rules();
 
         $rules['title'] = ['nullable', 'string', 'max:255'];
-        $rules['writing_style'] = ['required', 'string', 'max:50'];
-        $rules['genre'] = ['required', 'string', 'max:50'];
 
+        /*
+         * 作風・ジャンル・章・物語詳細などは、
+         * 保存時と同じ選択肢・形式で検証する。
+         */
         return $rules;
     }
 }
