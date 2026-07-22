@@ -54,10 +54,26 @@
             class="oshi-admin-main"
             id="page-top"
         >
-            @include(
-                'partials.page-jump-navigation',
-                ['position' => 'top']
-            )
+            @if (request()->routeIs('admin.*'))
+                <div
+                    class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between"
+                    data-admin-top-navigation
+                >
+                    @include('admin.partials.breadcrumbs')
+
+                    <div class="shrink-0">
+                        @include(
+                            'partials.page-jump-navigation',
+                            ['position' => 'top']
+                        )
+                    </div>
+                </div>
+            @else
+                @include(
+                    'partials.page-jump-navigation',
+                    ['position' => 'top']
+                )
+            @endif
 
             @isset($header)
                 <div class="oshi-admin-title">
