@@ -92,7 +92,10 @@ class WorkStorySectionPromptBuilder
                 'events',
                 'characters',
             ])
-            ->where('status', 'published')
+            ->whereIn(
+                'status',
+                ['draft', 'published']
+            )
             ->whereHas(
                 'work',
                 fn ($query) =>
