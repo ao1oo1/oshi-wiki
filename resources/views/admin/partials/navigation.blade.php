@@ -3,6 +3,10 @@
         ダッシュボード
     </a>
 
+    <a href="{{ route('public.contact.create') }}">
+        お問い合わせフォーム
+    </a>
+
     @if (auth()->user()?->isSuperAdmin())
         <a href="{{ route('admin.review-requests.index') }}" class="{{ request()->routeIs('admin.review-requests.*') ? 'active' : '' }}">
             承認待ち

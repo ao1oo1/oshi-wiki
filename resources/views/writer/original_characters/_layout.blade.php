@@ -22,6 +22,11 @@
                 <a href="{{ route('writer.original-characters.index') }}" class="text-sm font-bold text-[#2D3748]">オリジナルキャラクター</a>
             </div>
 
+
+                <a href="{{ route('public.contact.create') }}" class="block rounded-2xl px-5 py-4 text-[#2D3748] hover:bg-[#FFF1F5]">
+                    お問い合わせフォーム
+                </a>
+
             <form method="POST" action="{{ route('logout') }}">
                 @csrf
                 <button type="submit" class="rounded border border-[#A0AEC0] px-4 py-2 text-sm">
