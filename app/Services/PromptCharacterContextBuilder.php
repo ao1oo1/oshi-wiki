@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Character;
+use App\Models\CharacterRelationship;
 use App\Models\OriginalCharacter;
 use App\Models\OriginalCharacterRelationship;
 use App\Models\User;
@@ -437,6 +438,88 @@ class PromptCharacterContextBuilder
             );
 
             $blocks[] = implode(PHP_EOL, $lines);
+        }
+
+
+        /*
+         * 管理画面のキャラクター関係性も、
+         * 選択された公開キャラクター同士に限って反映する。
+         */
+        if (Schema::hasTable('character_relationships')) {
+            $v1Ids = collect($refKeys)
+                ->filter(
+                    fn ($ref) =>
+                        is_string($ref)
+                        && str_starts_with($ref, 'v1:')
+                )
+                ->map(
+                    fn ($ref) =>
+                        (int) str_replace('v1:', '', $ref)
+                )
+                ->filter()
+                ->unique()
+                ->values()
+                ->all();
+
+            if ($v1Ids !== []) {
+                $officialRelationships =
+                    CharacterRelationship::query()
+                        ->with([
+                            'work',
+                            'fromCharacter',
+                            'toCharacter',
+                        ])
+                        ->where('status', 'published')
+                        ->whereIn('from_character_id', $v1Ids)
+                        ->whereIn('to_character_id', $v1Ids)
+                        ->orderBy('work_id')
+                        ->orderBy('id')
+                        ->get();
+
+                foreach ($officialRelationships as $relationship) {
+                    if (
+                        ! $relationship->fromCharacter
+                        || ! $relationship->toCharacter
+                    ) {
+                        continue;
+                    }
+
+                    $lines = [
+                        '■ '
+                            . $relationship->fromCharacter->name
+                            . ' → '
+                            . $relationship->toCharacter->name,
+                    ];
+
+                    $this->appendIfFilled(
+                        $lines,
+                        '作品',
+                        $relationship->work?->title
+                    );
+                    $this->appendIfFilled(
+                        $lines,
+                        '呼び方',
+                        $relationship->called_name
+                    );
+                    $this->appendIfFilled(
+                        $lines,
+                        '関係性',
+                        $relationship->relationship
+                    );
+                    $this->appendIfFilled(
+                        $lines,
+                        '印象・気持ち',
+                        $relationship->impression
+                    );
+                    $this->appendIfFilled(
+                        $lines,
+                        '備考',
+                        $relationship->notes
+                    );
+
+                    $blocks[] = implode(PHP_EOL, $lines);
+                }
+            }
         }
 
         return implode(
