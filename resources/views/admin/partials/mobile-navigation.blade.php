@@ -54,6 +54,9 @@
 
 <a href="{{ route('admin.staff-profile.edit') }}">プロフィール</a>
 
+            <a href="{{ route('public.contact.create') }}">
+                お問い合わせフォーム
+            </a>
             <form method="POST" action="{{ route('logout') }}">
                 @csrf
                 <button type="submit">ログアウト</button>

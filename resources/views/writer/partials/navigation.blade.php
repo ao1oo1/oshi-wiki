@@ -63,6 +63,12 @@
                 公開サイトを見る
             </a>
 
+            <a
+                href="{{ route('public.contact.create') }}"
+                class="block rounded-2xl px-5 py-4 text-[#2D3748] hover:bg-[#FFF1F5]"
+            >
+                お問い合わせフォーム
+            </a>
             <form method="POST" action="{{ route('logout') }}" class="mt-2">
                 @csrf
                 <button type="submit"
