@@ -159,6 +159,12 @@ class WorkStorySectionPromptBuilder
                 );
                 $this->append(
                     $eventLines,
+                    '登場キャラクター',
+                    $event->appearing_characters,
+                    '  '
+                );
+                $this->append(
+                    $eventLines,
                     '場所',
                     $event->location,
                     '  '

@@ -113,6 +113,8 @@ class WorkStorySectionTextParserService
                 $field = match ($key) {
                     '番号' => 'event_number',
                     'タイミング', '時期' => 'timing',
+                    '登場キャラクター',
+                    '登場人物' => 'appearing_characters',
                     '場所' => 'location',
                     '詳細', '概要' => 'summary',
                     '結果' => 'outcome',

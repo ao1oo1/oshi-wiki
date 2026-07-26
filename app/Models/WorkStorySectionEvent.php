@@ -13,6 +13,7 @@ class WorkStorySectionEvent extends Model
         'title',
         'timing',
         'summary',
+        'appearing_characters',
         'location',
         'outcome',
         'spoiler_level',

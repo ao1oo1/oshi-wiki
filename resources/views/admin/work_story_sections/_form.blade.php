@@ -9,6 +9,7 @@
                 'title' => $event->title,
                 'timing' => $event->timing,
                 'summary' => $event->summary,
+                'appearing_characters' => $event->appearing_characters,
                 'location' => $event->location,
                 'outcome' => $event->outcome,
                 'spoiler_level' => $event->spoiler_level,
@@ -25,6 +26,7 @@
             'title' => '',
             'timing' => '',
             'summary' => '',
+            'appearing_characters' => '',
             'location' => '',
             'outcome' => '',
             'spoiler_level' => 'none',
@@ -201,6 +203,21 @@
                         <div class="md:col-span-2">
                             <label class="oshi-label">詳細</label>
                             <textarea class="oshi-input min-h-32" name="events[{{ $index }}][summary]">{{ $event['summary'] ?? '' }}</textarea>
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="oshi-label">
+                                登場キャラクター
+                            </label>
+                            <input
+                                class="oshi-input"
+                                type="text"
+                                name="events[{{ $index }}][appearing_characters]"
+                                value="{{ $event['appearing_characters'] ?? '' }}"
+                                placeholder="例：監督生・グリム・エース・デュース・クロウリー"
+                            >
+                            <p class="mt-1 text-xs text-gray-500">
+                                キャラクターデータとの連携は行わない自由入力欄です。
+                            </p>
                         </div>
                         <div class="md:col-span-2">
                             <label class="oshi-label">結果</label>

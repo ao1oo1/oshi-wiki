@@ -38,6 +38,7 @@ class WorkStorySectionCsvService
         'title',
         'timing',
         'summary',
+        'appearing_characters',
         'location',
         'outcome',
         'spoiler_level',
@@ -135,6 +136,7 @@ class WorkStorySectionCsvService
                             $event->title,
                             $event->timing,
                             $event->summary,
+                            $event->appearing_characters,
                             $event->location,
                             $event->outcome,
                             $event->spoiler_level,
@@ -245,6 +247,7 @@ class WorkStorySectionCsvService
                     '最初の出来事',
                     '章冒頭',
                     '出来事の詳細',
+                    '監督生・グリム・エース',
                     '学園',
                     '出来事の結果',
                     'minor',
@@ -466,6 +469,11 @@ class WorkStorySectionCsvService
                     'summary' =>
                         $this->text(
                             $data['summary'] ?? null
+                        ),
+                    'appearing_characters' =>
+                        $this->text(
+                            $data['appearing_characters']
+                                ?? null
                         ),
                     'location' =>
                         $this->text(
