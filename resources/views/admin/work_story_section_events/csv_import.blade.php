@@ -173,6 +173,10 @@
                                 ['title', '必須。出来事の名称'],
                                 ['timing', '時期・タイミング'],
                                 ['summary', '出来事の詳しい内容'],
+                                [
+                                    'appearing_characters',
+                                    '登場人物名を自由入力。例：監督生・グリム・エース',
+                                ],
                                 ['location', '場所'],
                                 ['outcome', '出来事の結果'],
                                 ['spoiler_level', 'none / minor / major'],

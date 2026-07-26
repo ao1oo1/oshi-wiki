@@ -217,6 +217,7 @@ class WorkStorySectionTextImportController extends Controller
 タイミング：章冒頭
 場所：学園正門
 詳細：主人公が初めて学園へ足を踏み入れます。
+登場キャラクター：監督生・グリム・エース
 結果：物語の舞台が提示されます。
 
 2. 寮へ案内される

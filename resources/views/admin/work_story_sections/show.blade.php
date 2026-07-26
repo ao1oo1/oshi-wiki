@@ -114,6 +114,14 @@
                         @if ($event->summary)
                             <p class="mt-3 whitespace-pre-wrap">{{ $event->summary }}</p>
                         @endif
+                        @if ($event->appearing_characters)
+                            <div class="mt-3 rounded-lg bg-[#FFF7FA] p-3">
+                                <strong>登場キャラクター</strong>
+                                <p class="mt-1 whitespace-pre-wrap">
+                                    {{ $event->appearing_characters }}
+                                </p>
+                            </div>
+                        @endif
                         @if ($event->outcome)
                             <div class="mt-3 rounded-lg bg-gray-50 p-3">
                                 <strong>結果</strong>

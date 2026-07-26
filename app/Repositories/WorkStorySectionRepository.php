@@ -44,6 +44,9 @@ class WorkStorySectionRepository
                 'title' => $event['title'],
                 'timing' => $event['timing'] ?? null,
                 'summary' => $event['summary'] ?? null,
+                'appearing_characters' =>
+                    $event['appearing_characters']
+                        ?? null,
                 'location' => $event['location'] ?? null,
                 'outcome' => $event['outcome'] ?? null,
                 'spoiler_level' =>

@@ -83,6 +83,11 @@ class StoreWorkStorySectionRequest extends FormRequest
                 'string',
                 'max:30000',
             ],
+            'events.*.appearing_characters' => [
+                'nullable',
+                'string',
+                'max:20000',
+            ],
             'events.*.location' => [
                 'nullable',
                 'string',
