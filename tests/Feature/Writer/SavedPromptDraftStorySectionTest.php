@@ -99,7 +99,7 @@ class SavedPromptDraftStorySectionTest extends TestCase
                     'purpose' => '下書き章の参照確認',
                     'work_ref' => 'work:' . $work->id,
                     'selected_story_event_ranges' => [
-                        $section->id . ':1:20',
+                        $section->id . ':1:5',
                     ],
                     'selected_character_refs' => [],
                     'writing_style' => 'dream_novel',
@@ -134,7 +134,7 @@ class SavedPromptDraftStorySectionTest extends TestCase
             (int) $savedRange['start']
         );
         $this->assertSame(
-            20,
+            5,
             (int) $savedRange['end']
         );
     }

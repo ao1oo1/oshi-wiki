@@ -19,17 +19,57 @@
         'work_story_section_id',
         $prompt?->work_story_section_id ?? 0
     );
+    $storedStoryEventRanges = collect(
+        $prompt?->selected_story_event_ranges ?? []
+    )
+        ->flatMap(function ($range): array {
+            if (! is_array($range)) {
+                return [$range];
+            }
+
+            $sectionId = (int) ($range['section_id'] ?? 0);
+            $start = (int) ($range['start'] ?? 0);
+            $end = (int) ($range['end'] ?? 0);
+
+            if (
+                $sectionId <= 0
+                || $start <= 0
+                || $end < $start
+            ) {
+                return [];
+            }
+
+            /*
+             * 旧20件単位の保存データも、
+             * 5件単位のチェックへ展開して復元する。
+             */
+            $expanded = [];
+
+            for (
+                $rangeStart = $start;
+                $rangeStart <= $end;
+                $rangeStart += 5
+            ) {
+                $rangeEnd = min(
+                    $rangeStart + 4,
+                    $end
+                );
+
+                $expanded[] = $sectionId
+                    . ':' . $rangeStart
+                    . ':' . $rangeEnd;
+            }
+
+            return $expanded;
+        })
+        ->filter()
+        ->unique()
+        ->values()
+        ->all();
+
     $selectedStoryEventRanges = old(
         'selected_story_event_ranges',
-        collect(
-            $prompt?->selected_story_event_ranges ?? []
-        )->map(
-            fn ($range) => is_array($range)
-                ? ($range['section_id'] ?? 0)
-                    . ':' . ($range['start'] ?? 0)
-                    . ':' . ($range['end'] ?? 0)
-                : $range
-        )->all()
+        $storedStoryEventRanges
     );
 
     $selectedCharacterRefs = old(
@@ -208,7 +248,7 @@
             </span>
             <p class="mt-1 text-sm text-[#718096]">
                 章を開き、プロンプトへ挿入する物語詳細を
-                20件単位で選択してください。
+                5件単位で選択してください。
             </p>
         </div>
 
@@ -223,7 +263,7 @@
             @forelse ($publishedStorySections as $storySection)
                 @php
                     $eventCount = (int) $storySection->events_count;
-                    $rangeCount = (int) ceil($eventCount / 20);
+                    $rangeCount = (int) ceil($eventCount / 5);
                     $sectionLabel = (
                         $storySection->parentSection
                             ? $storySection->parentSection->title . ' ＞ '
@@ -257,8 +297,8 @@
                             <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                                 @for ($rangeIndex = 0; $rangeIndex < $rangeCount; $rangeIndex++)
                                     @php
-                                        $start = $rangeIndex * 20 + 1;
-                                        $end = min($start + 19, $eventCount);
+                                        $start = $rangeIndex * 5 + 1;
+                                        $end = min($start + 4, $eventCount);
                                         $rangeRef = $storySection->id
                                             . ':' . $start
                                             . ':' . $end;

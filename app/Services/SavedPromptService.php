@@ -362,12 +362,12 @@ class SavedPromptService
                     $sectionId <= 0
                     || $start <= 0
                     || $end < $start
-                    || $end > $start + 19
-                    || (($start - 1) % 20) !== 0
+                    || $end > $start + 4
+                    || (($start - 1) % 5) !== 0
                 ) {
                     throw ValidationException::withMessages([
                         'selected_story_event_ranges' =>
-                            '物語詳細は20件単位で選択してください。',
+                            '物語詳細は5件単位で選択してください。',
                     ]);
                 }
 

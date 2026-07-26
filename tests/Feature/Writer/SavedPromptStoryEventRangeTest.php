@@ -14,7 +14,7 @@ class SavedPromptStoryEventRangeTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_form_shows_twenty_event_ranges_in_accordion(): void
+    public function test_form_shows_five_event_ranges_in_accordion(): void
     {
         $user = $this->writer();
         [$work, $section] = $this->sectionWithEvents(45);
@@ -23,8 +23,14 @@ class SavedPromptStoryEventRangeTest extends TestCase
             ->get(route('writer.prompts.create'))
             ->assertOk()
             ->assertSee('参照する章・編と物語詳細')
-            ->assertSee('1～20を挿入')
-            ->assertSee('21～40を挿入')
+            ->assertSee('1～5を挿入')
+            ->assertSee('6～10を挿入')
+            ->assertSee('11～15を挿入')
+            ->assertSee('16～20を挿入')
+            ->assertSee('21～25を挿入')
+            ->assertSee('26～30を挿入')
+            ->assertSee('31～35を挿入')
+            ->assertSee('36～40を挿入')
             ->assertSee('41～45を挿入')
             ->assertSee(
                 'story-section-range-item',
@@ -41,7 +47,7 @@ class SavedPromptStoryEventRangeTest extends TestCase
             route('writer.prompts.store'),
             $this->payload(
                 $work,
-                [$section->id . ':21:40']
+                [$section->id . ':6:10']
             )
         );
 
@@ -64,11 +70,11 @@ class SavedPromptStoryEventRangeTest extends TestCase
             (int) $savedRange['section_id']
         );
         $this->assertSame(
-            21,
+            6,
             (int) $savedRange['start']
         );
         $this->assertSame(
-            40,
+            10,
             (int) $savedRange['end']
         );
 
@@ -77,7 +83,7 @@ class SavedPromptStoryEventRangeTest extends TestCase
         );
 
         $this->assertStringContainsString(
-            '参照範囲：物語詳細21～40',
+            '参照範囲：物語詳細6～10',
             $prompt->prompt_body
         );
         $this->assertStringNotContainsString(
@@ -85,7 +91,7 @@ class SavedPromptStoryEventRangeTest extends TestCase
             $prompt->prompt_body
         );
         $this->assertStringContainsString(
-            '詳細：詳細21',
+            '詳細：詳細6',
             $prompt->prompt_body
         );
         $this->assertStringNotContainsString(
@@ -93,15 +99,15 @@ class SavedPromptStoryEventRangeTest extends TestCase
             $prompt->prompt_body
         );
         $this->assertStringContainsString(
-            '詳細：詳細40',
+            '詳細：詳細10',
             $prompt->prompt_body
         );
         $this->assertStringNotContainsString(
-            '詳細：詳細20',
+            '詳細：詳細5',
             $prompt->prompt_body
         );
         $this->assertStringNotContainsString(
-            '詳細：詳細41',
+            '詳細：詳細11',
             $prompt->prompt_body
         );
     }
@@ -118,7 +124,7 @@ class SavedPromptStoryEventRangeTest extends TestCase
                 route('writer.prompts.store'),
                 $this->payload(
                     $work,
-                    [$otherSection->id . ':1:20']
+                    [$otherSection->id . ':1:5']
                 )
             )
             ->assertSessionHasErrors(
@@ -130,7 +136,7 @@ class SavedPromptStoryEventRangeTest extends TestCase
                 route('writer.prompts.store'),
                 $this->payload(
                     $otherWork,
-                    [$otherSection->id . ':2:20']
+                    [$otherSection->id . ':2:5']
                 )
             )
             ->assertSessionHasErrors(
@@ -145,7 +151,7 @@ class SavedPromptStoryEventRangeTest extends TestCase
 
         $payload = $this->payload(
             $work,
-            [$section->id . ':1:20']
+            [$section->id . ':1:5']
         );
         $payload['work_ref'] = 'original';
 
