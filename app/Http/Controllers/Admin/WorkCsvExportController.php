@@ -99,9 +99,36 @@ class WorkCsvExportController extends Controller
                 'term_usages_json' => $this->relationJson($work->termUsages, WorkTermUsage::class),
                 'created_at', 'updated_at', 'published_at', 'deleted_at' =>
                     optional($work->{$header})->format('Y-m-d H:i:s'),
-                default => $work->{$header} ?? '',
+                default => $this->csvValue(
+                    $work->{$header} ?? ''
+                ),
             };
         }, $headers);
+    }
+
+    private function csvValue(mixed $value): string|int|float
+    {
+        if ($value === null) {
+            return '';
+        }
+
+        if (is_bool($value)) {
+            return $value ? '1' : '0';
+        }
+
+        if (is_array($value) || is_object($value)) {
+            return json_encode(
+                $value,
+                JSON_UNESCAPED_UNICODE
+                | JSON_UNESCAPED_SLASHES
+            ) ?: '';
+        }
+
+        if (is_int($value) || is_float($value)) {
+            return $value;
+        }
+
+        return (string) $value;
     }
 
     private function relationJson($models, string $modelClass): string
