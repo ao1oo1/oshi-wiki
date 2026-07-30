@@ -99,4 +99,20 @@ class PublicWorkCharacterFilterUiTest extends TestCase
 
         return substr($contents, $start, $end - $start);
     }
+    public function test_character_cards_hide_spoiler_badge(): void
+    {
+        $contents = $this->characterSection(
+            $this->viewContents()
+        );
+
+        $this->assertStringNotContainsString(
+            'ネタバレ：',
+            $contents
+        );
+        $this->assertStringNotContainsString(
+            'SPOILER_LEVELS',
+            $contents
+        );
+    }
+
 }
