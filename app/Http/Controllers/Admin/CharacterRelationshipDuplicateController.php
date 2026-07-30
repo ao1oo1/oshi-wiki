@@ -39,9 +39,11 @@ class CharacterRelationshipDuplicateController extends Controller
         $this->authorizeSuperAdmin();
 
         try {
-            $result = $this->service->mergeTokens(
-                $request->validated('duplicate_groups')
-            );
+            $result = $request->boolean('merge_all')
+                ? $this->service->mergeAll()
+                : $this->service->mergeTokens(
+                    $request->validated('duplicate_groups')
+                );
 
             $message =
                 $result['merged_groups']

@@ -8,6 +8,19 @@
     <div class="p-6">
         @include('admin.partials.flash')
 
+        @if ($errors->any())
+            <div class="mb-6 rounded-3xl border border-red-200 bg-red-50 p-5 text-red-800">
+                <p class="font-bold">
+                    入力内容を確認してください。
+                </p>
+                <ul class="mt-2 list-disc space-y-1 pl-5 text-sm">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
         <div class="oshi-card">
             <div class="flex flex-wrap items-start justify-between gap-4">
                 <div>
@@ -72,6 +85,12 @@
                     onsubmit="return confirmRelationshipDuplicateMerge(this);"
                 >
                     @csrf
+                    <input
+                        id="relationship-duplicate-merge-all"
+                        type="hidden"
+                        name="merge_all"
+                        value="0"
+                    >
 
                     <div class="mb-5 flex flex-wrap items-center gap-3 rounded-3xl bg-[#FFF5F7] p-5">
                         <label class="inline-flex cursor-pointer items-center gap-2 font-bold">
@@ -288,13 +307,16 @@
         });
 
         function confirmRelationshipDuplicateMerge(form) {
-            const checks = Array.from(
+            const allChecks = Array.from(
                 form.querySelectorAll(
-                    '.duplicate-group-check:checked'
+                    '.duplicate-group-check'
                 )
             );
+            const checkedChecks = allChecks.filter(
+                (check) => check.checked
+            );
 
-            if (checks.length === 0) {
+            if (checkedChecks.length === 0) {
                 alert(
                     '整理する重複グループを選択してください。'
                 );
@@ -302,7 +324,7 @@
                 return false;
             }
 
-            const deleteCount = checks.reduce(
+            const deleteCount = checkedChecks.reduce(
                 (total, check) => {
                     const group = check.closest(
                         '.duplicate-group'
@@ -315,13 +337,47 @@
                 0
             );
 
-            return confirm(
-                `${checks.length}グループを整理し、`
+            const isAllSelected =
+                allChecks.length > 0
+                && checkedChecks.length === allChecks.length;
+
+            const mergeAllInput = form.querySelector(
+                '#relationship-duplicate-merge-all'
+            );
+
+            if (mergeAllInput) {
+                mergeAllInput.value =
+                    isAllSelected ? '1' : '0';
+            }
+
+            allChecks.forEach((check) => {
+                check.disabled = isAllSelected;
+            });
+
+            const confirmed = confirm(
+                `${checkedChecks.length}グループを整理し、`
                 + `${deleteCount}件の重複関係性を`
                 + 'ゴミ箱へ移動します。\n'
                 + '各グループでは最小IDが残ります。\n'
+                + (
+                    isAllSelected
+                        ? '全件整理として実行します。\n'
+                        : ''
+                )
                 + '実行してよろしいですか？'
             );
+
+            if (! confirmed) {
+                allChecks.forEach((check) => {
+                    check.disabled = false;
+                });
+
+                if (mergeAllInput) {
+                    mergeAllInput.value = '0';
+                }
+            }
+
+            return confirmed;
         }
     </script>
 </x-app-layout>

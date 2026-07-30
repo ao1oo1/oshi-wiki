@@ -11,14 +11,25 @@ class MergeCharacterRelationshipDuplicatesRequest extends FormRequest
         return (bool) $this->user()?->canManageAllAdminFeatures();
     }
 
+    protected function prepareForValidation(): void
+    {
+        $this->merge([
+            'merge_all' => $this->boolean('merge_all'),
+        ]);
+    }
+
     public function rules(): array
     {
         return [
-            'duplicate_groups' => [
+            'merge_all' => [
                 'required',
+                'boolean',
+            ],
+            'duplicate_groups' => [
+                'required_if:merge_all,false',
                 'array',
                 'min:1',
-                'max:500',
+                'max:900',
             ],
             'duplicate_groups.*' => [
                 'required',
@@ -31,12 +42,13 @@ class MergeCharacterRelationshipDuplicatesRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'duplicate_groups.required' =>
-                '削除する重複グループを選択してください。',
+            'duplicate_groups.required_if' =>
+                '整理する重複グループを選択してください。',
             'duplicate_groups.min' =>
-                '削除する重複グループを選択してください。',
+                '整理する重複グループを選択してください。',
             'duplicate_groups.max' =>
-                '一度に処理できる重複グループは500件までです。',
+                '個別選択で一度に処理できる重複グループは'
+                . '900件までです。全件整理を利用してください。',
         ];
     }
 }
