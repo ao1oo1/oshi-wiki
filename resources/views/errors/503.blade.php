@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
+    @include('partials.google-analytics')
+
+
     <meta charset="utf-8">
     <meta
         name="viewport"
