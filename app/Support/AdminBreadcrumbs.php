@@ -99,11 +99,18 @@ final class AdminBreadcrumbs
 
             Str::startsWith($name, 'admin.monetization.ad-slots.') =>
                 [
-                    ['label' => '収益管理'],
-                    [
-                        'label' => '広告スロット',
-                        'route' => 'admin.monetization.ad-slots.index',
-                    ],
+                    self::item(
+                        '収益管理',
+                        self::routeUrl(
+                            'admin.monetization.services.index'
+                        )
+                    ),
+                    self::item(
+                        '広告スロット',
+                        self::routeUrl(
+                            'admin.monetization.ad-slots.index'
+                        )
+                    ),
                 ],
 
             Str::startsWith($name, 'admin.monetization.services.') =>
