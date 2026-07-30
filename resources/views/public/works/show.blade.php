@@ -292,13 +292,6 @@
                                 </div>
                             @endif
 
-                            @if (($character->spoiler_level ?? 'none') !== 'none')
-                                <p class="mb-3 rounded-xl bg-amber-50 px-3 py-2 text-xs font-bold text-amber-800">
-                                    ネタバレ：
-                                    {{ \App\Models\Character::SPOILER_LEVELS[$character->spoiler_level] ?? 'あり' }}
-                                </p>
-                            @endif
-
                             <div class="public-work-character-card__action">
                                 <a
                                     href="{{ route(
