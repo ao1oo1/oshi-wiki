@@ -7057,3 +7057,12 @@ input[type="number"].oshi-input {
         display: block;
     }
 }
+
+/*
+ * Public work character cards:
+ * keep content in normal document flow and prevent vertical stretching
+ * from creating a large gap before the introduction text.
+ */
+.public-work-character-card {
+    display: block !important;
+}

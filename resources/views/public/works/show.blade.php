@@ -206,7 +206,7 @@
             @if ($work->characters->count())
                 <div class="oshi-card-grid">
                     @foreach ($work->characters as $character)
-                        <article class="oshi-card">
+                        <article class="oshi-card public-work-character-card">
                             <p class="mb-1 text-sm text-gray-500">
                                 {{ $character->occupation_position ?: $character->affiliation ?: '所属・役職未設定' }}
                             </p>

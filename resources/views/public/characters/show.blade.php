@@ -66,7 +66,7 @@
             ?? '作品未設定';
     @endphp
 
-    <main class="oshi-container">
+    <main class="oshi-container space-y-8">
         <div class="mb-6 flex flex-wrap gap-3">
             <a
                 href="{{ route('public.works.index') }}"
