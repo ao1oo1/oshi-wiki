@@ -15,12 +15,17 @@ class PublicWorkStorySectionAccordionGridTest extends TestCase
         );
     }
 
-    public function test_public_story_sections_use_two_column_desktop_grid(): void
+    public function test_public_story_sections_use_one_column_grid(): void
     {
         $contents = $this->viewContents();
 
         $this->assertStringContainsString(
-            'grid grid-cols-1 gap-4 lg:grid-cols-2 lg:items-start',
+            'grid grid-cols-1 gap-4',
+            $contents
+        );
+
+        $this->assertStringNotContainsString(
+            'lg:grid-cols-2',
             $contents
         );
     }
@@ -83,7 +88,7 @@ class PublicWorkStorySectionAccordionGridTest extends TestCase
 
         $gridPosition = strpos(
             $contents,
-            'grid grid-cols-1 gap-4 lg:grid-cols-2 lg:items-start'
+            'grid grid-cols-1 gap-4'
         );
 
         $foreachPosition = strpos(

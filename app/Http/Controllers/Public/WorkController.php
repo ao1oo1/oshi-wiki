@@ -427,10 +427,7 @@ class WorkController extends Controller
             );
     }
 
-    public function show(
-        Work $work,
-        \App\Services\MonetizationDisplayService $monetizationDisplay
-    ): View {
+    public function show(Work $work): View {
         $work->loadMissing([
             'parentWork',
             'publishedChildWorks',
@@ -451,7 +448,8 @@ class WorkController extends Controller
             'linkedCharacters' => function ($query) {
                 $query->where('characters.status', 'published')
                     ->with('tags')
-                    ->orderBy('characters.name');
+                    ->reorder()
+                    ->orderBy('characters.id');
             },
             'characterRelationships' => function ($query) {
                 $query->where('status', 'published')
@@ -492,7 +490,6 @@ class WorkController extends Controller
 
         return view('public.works.show', [
             'work' => $work,
-            'monetization' => $monetizationDisplay->forWork($work),
         ]);
     }
 }
