@@ -2423,3 +2423,95 @@ document.addEventListener('DOMContentLoaded', () => {
     );
 });
 // /OSHI_WIKI_GLOBAL_RADIO_FIX
+
+/* PUBLIC_WORK_CHARACTER_FILTER_START */
+(function () {
+    function normalize(value) {
+        return String(value || '').trim();
+    }
+
+    function initializeCharacterFilters(root) {
+        if (root.dataset.characterFilterReady === '1') {
+            return;
+        }
+
+        const section = root.closest('#work-characters');
+        const cards = Array.from(
+            section?.querySelectorAll('[data-character-card]') || []
+        );
+        const selects = Array.from(
+            root.querySelectorAll('[data-character-filter]')
+        );
+        const count = root.querySelector('[data-character-filter-count]');
+        const reset = root.querySelector('[data-character-filter-reset]');
+
+        if (!cards.length || !selects.length) {
+            return;
+        }
+
+        const apply = () => {
+            const conditions = {};
+
+            selects.forEach((select) => {
+                conditions[select.dataset.characterFilter] = normalize(
+                    select.value
+                );
+            });
+
+            let visibleCount = 0;
+
+            cards.forEach((card) => {
+                const visible = Object.entries(conditions).every(
+                    ([key, expected]) => {
+                        if (!expected) {
+                            return true;
+                        }
+
+                        return normalize(card.dataset[key]) === expected;
+                    }
+                );
+
+                card.hidden = !visible;
+
+                if (visible) {
+                    visibleCount += 1;
+                }
+            });
+
+            if (count) {
+                count.textContent = String(visibleCount);
+            }
+        };
+
+        selects.forEach((select) => {
+            select.addEventListener('change', apply);
+        });
+
+        reset?.addEventListener('click', () => {
+            selects.forEach((select) => {
+                select.value = '';
+            });
+
+            apply();
+        });
+
+        root.dataset.characterFilterReady = '1';
+        apply();
+    }
+
+    function initializeAllCharacterFilters() {
+        document
+            .querySelectorAll('[data-character-filter-root]')
+            .forEach(initializeCharacterFilters);
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener(
+            'DOMContentLoaded',
+            initializeAllCharacterFilters
+        );
+    } else {
+        initializeAllCharacterFilters();
+    }
+})();
+/* PUBLIC_WORK_CHARACTER_FILTER_END */
