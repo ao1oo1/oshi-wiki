@@ -139,7 +139,7 @@
                     <h2 class="text-2xl font-bold">章・編ごとの物語詳細</h2>
                     <p class="mt-2 text-sm leading-7 text-[#718096]">登録されている章・編、物語の進行、登場キャラクターの時点情報を確認できます。</p>
                 </div>
-                <div class="grid grid-cols-1 gap-4 lg:grid-cols-2 lg:items-start">
+                <div class="grid grid-cols-1 gap-4">
                     @foreach ($work->publishedStorySections as $section)
                         @php($sectionIsMajorSpoiler = ($section->spoiler_level ?? 'none') === 'major')
                         <details class="min-w-0 rounded-2xl border border-[#E2E8F0] bg-white p-4 lg:p-5">
