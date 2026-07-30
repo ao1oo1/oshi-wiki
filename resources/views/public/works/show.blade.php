@@ -393,15 +393,17 @@
             </h2>
 
             @if ($work->characterRelationships->count())
-                <div class="oshi-table-wrap">
-                    <table class="oshi-table">
+                <div class="oshi-table-wrap public-work-relationship-table-wrap">
+                    <table class="oshi-table public-work-relationship-table">
                         <thead>
                             <tr class="border-b bg-gray-50">
                                 <th class="px-4 py-2 text-left">キャラクター</th>
                                 <th class="px-4 py-2 text-left">相手</th>
                                 <th class="px-4 py-2 text-left">呼ばれ方</th>
                                 <th class="px-4 py-2 text-left">関係性</th>
-                                <th class="px-4 py-2 text-left">印象・気持ち等</th>
+                                <th class="public-work-relationship-table__impression px-4 py-2 text-left">
+                                    印象・気持ち等
+                                </th>
                             </tr>
                         </thead>
                         <tbody>
@@ -419,7 +421,7 @@
                                     <td class="px-4 py-2">
                                         {{ $relation->relationship ?: '未設定' }}
                                     </td>
-                                    <td class="px-4 py-2">
+                                    <td class="public-work-relationship-table__impression px-4 py-2">
                                         {{ $relation->impression ?: '未設定' }}
                                     </td>
                                 </tr>
