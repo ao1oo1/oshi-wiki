@@ -12,6 +12,16 @@ class StoreMonetizationServiceRequest extends FormRequest
         return (bool) $this->user()?->canManageAllAdminFeatures();
     }
 
+    protected function prepareForValidation(): void
+    {
+        $this->merge([
+            'revenue_model' => $this->input(
+                'revenue_model',
+                'affiliate_link'
+            ),
+        ]);
+    }
+
     public function rules(): array
     {
         return [
@@ -28,7 +38,32 @@ class StoreMonetizationServiceRequest extends FormRequest
                     MonetizationServiceManagementService::CATEGORIES
                 )),
             ],
+            'revenue_model' => [
+                'required',
+                Rule::in(array_keys(
+                    MonetizationServiceManagementService::REVENUE_MODELS
+                )),
+            ],
             'description' => ['nullable', 'string'],
+            'impression_script' => [
+                'nullable',
+                'required_if:revenue_model,impression',
+                'string',
+                'max:5000',
+            ],
+            'allowed_script_hosts_text' => [
+                'nullable',
+                'required_if:revenue_model,impression',
+                'string',
+                'max:2000',
+            ],
+            'ad_identifier' => [
+                'nullable',
+                'required_if:revenue_model,impression',
+                'string',
+                'max:255',
+                'regex:/^[A-Za-z0-9_-]+$/',
+            ],
             'default_button_label' => ['nullable', 'string', 'max:100'],
             'priority' => ['required', 'integer', 'min:0', 'max:9999'],
             'is_active' => ['required', 'boolean'],
@@ -41,7 +76,11 @@ class StoreMonetizationServiceRequest extends FormRequest
             'name' => 'サービス名',
             'slug' => '識別子',
             'category' => 'カテゴリ',
+            'revenue_model' => '収益方式',
             'description' => '説明',
+            'impression_script' => '広告スクリプト',
+            'allowed_script_hosts_text' => '許可スクリプトホスト',
+            'ad_identifier' => '広告ID',
             'default_button_label' => '標準ボタン文言',
             'priority' => '表示優先順位',
             'is_active' => '利用状態',

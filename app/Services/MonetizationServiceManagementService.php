@@ -18,8 +18,14 @@ class MonetizationServiceManagementService
         'other' => 'その他',
     ];
 
+    public const REVENUE_MODELS = [
+        'affiliate_link' => 'リンク型・成果報酬型',
+        'impression' => 'インプレッション課金型',
+    ];
+
     public function __construct(
-        private readonly MonetizationServiceRepository $repository
+        private readonly MonetizationServiceRepository $repository,
+        private readonly ImpressionAdScriptService $impressionAdScript
     ) {
     }
 
@@ -44,7 +50,9 @@ class MonetizationServiceManagementService
             $data['name']
         );
 
-        return $this->repository->create($data);
+        return $this->repository->create(
+            $this->prepareRevenueData($data)
+        );
     }
 
     public function update(MonetizationService $service, array $data): bool
@@ -55,7 +63,10 @@ class MonetizationServiceManagementService
             $service->id
         );
 
-        return $this->repository->update($service, $data);
+        return $this->repository->update(
+            $service,
+            $this->prepareRevenueData($data)
+        );
     }
 
     public function delete(MonetizationService $service): bool
@@ -73,6 +84,42 @@ class MonetizationServiceManagementService
         }
 
         return $this->repository->delete($service);
+    }
+
+    private function prepareRevenueData(array $data): array
+    {
+        $model = $data['revenue_model'] ?? 'affiliate_link';
+
+        if ($model !== 'impression') {
+            $data['impression_script'] = null;
+            $data['allowed_script_hosts'] = null;
+            $data['ad_identifier'] = null;
+            unset($data['allowed_script_hosts_text']);
+
+            return $data;
+        }
+
+        $hosts = $this->impressionAdScript->normalizeHosts(
+            (string) ($data['allowed_script_hosts_text'] ?? '')
+        );
+
+        if ($hosts === []) {
+            throw ValidationException::withMessages([
+                'allowed_script_hosts_text' =>
+                    '許可スクリプトホストを1件以上入力してください。',
+            ]);
+        }
+
+        $data['impression_script'] =
+            $this->impressionAdScript->validateAndNormalize(
+                (string) ($data['impression_script'] ?? ''),
+                $hosts
+            );
+
+        $data['allowed_script_hosts'] = $hosts;
+        unset($data['allowed_script_hosts_text']);
+
+        return $data;
     }
 
     private function makeUniqueSlug(
@@ -95,7 +142,10 @@ class MonetizationServiceManagementService
 
         while (
             MonetizationService::withTrashed()
-                ->when($ignoreId, fn ($query) => $query->whereKeyNot($ignoreId))
+                ->when(
+                    $ignoreId,
+                    fn ($query) => $query->whereKeyNot($ignoreId)
+                )
                 ->where('slug', $slug)
                 ->exists()
         ) {
