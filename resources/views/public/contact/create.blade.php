@@ -21,6 +21,12 @@
 
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    {{-- Google AdSense site verification --}}
+    <script
+        async
+        src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3916030283806562"
+        crossorigin="anonymous"
+    ></script>
 </head>
 <body>
     @include('public.partials.header')
