@@ -2,6 +2,7 @@
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
     @include('partials.google-analytics')
+    @include('partials.seo-meta', ['forceNoindex' => true])
 
 
     <meta charset="utf-8">

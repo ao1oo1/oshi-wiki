@@ -2,12 +2,12 @@
 <html lang="ja">
 <head>
     @include('partials.google-analytics')
+    @include('partials.seo-meta')
 
 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>小説執筆補助ツールとは？ | Oshi-Wiki</title>
-    <meta name="description" content="Oshi-Wikiの小説執筆補助ツールでできることや使い方を、初めての方向けにわかりやすくご紹介します。">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
