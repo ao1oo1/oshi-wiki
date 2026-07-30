@@ -12,6 +12,14 @@ class ImpressionAdSlotAdminTest extends TestCase
 {
     use RefreshDatabase;
 
+    public function test_super_admin_can_open_ad_slot_index(): void
+    {
+        $this->actingAs($this->superAdmin())
+            ->get(route('admin.monetization.ad-slots.index'))
+            ->assertOk()
+            ->assertSee('インプレッション広告スロット管理');
+    }
+
     public function test_super_admin_can_manage_impression_ad_slots(): void
     {
         $user = $this->superAdmin();
