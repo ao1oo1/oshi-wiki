@@ -32,14 +32,31 @@
     )
 
     <main class="oshi-container space-y-8">
-        <div class="mt-10 mb-6">
+        <nav
+            class="public-work-shortcuts mt-10 mb-6"
+            aria-label="作品詳細ページ内ショートカット"
+        >
             <a
                 href="{{ route('public.works.index') }}"
-                style="display:inline-block;background:#A0AEC0;color:#ffffff;padding:10px 18px;border-radius:8px;font-weight:bold;text-decoration:none;"
+                class="public-work-shortcuts__back"
             >
                 作品一覧へ戻る
             </a>
-        </div>
+
+            <div class="public-work-shortcuts__links">
+                <a href="#work-characters">キャラクター</a>
+
+                @if ($work->publishedStorySections->isNotEmpty())
+                    <a href="#work-story-sections">
+                        章・編ごとの物語詳細
+                    </a>
+                @endif
+
+                <a href="#work-character-relationships">
+                    キャラクター関係性
+                </a>
+            </div>
+        </nav>
 
         <section class="oshi-card">
             <p class="mb-2 text-sm text-gray-500">
@@ -129,15 +146,109 @@
             </section>
         @endif
 
-        <section class="oshi-card">
+        <section
+            id="work-characters"
+            class="oshi-card public-work-anchor-section"
+        >
             <h2 class="mb-4 text-2xl font-bold">
                 キャラクター
             </h2>
 
             @if ($work->characters->count())
-                <div class="oshi-card-grid">
+                @php
+                    $characterAffiliations = $work->characters
+                        ->pluck('affiliation')
+                        ->filter(fn ($value) => filled($value))
+                        ->unique()
+                        ->sort(SORT_NATURAL)
+                        ->values();
+
+                    $characterSchools = $work->characters
+                        ->pluck('school_grade_class')
+                        ->filter(fn ($value) => filled($value))
+                        ->unique()
+                        ->sort(SORT_NATURAL)
+                        ->values();
+
+                    $characterOccupations = $work->characters
+                        ->pluck('occupation_position')
+                        ->filter(fn ($value) => filled($value))
+                        ->unique()
+                        ->sort(SORT_NATURAL)
+                        ->values();
+                @endphp
+
+                <div
+                    class="public-work-character-filters"
+                    data-character-filter-root
+                >
+                    <div class="public-work-character-filters__grid">
+                        <label>
+                            <span>所属</span>
+                            <select data-character-filter="affiliation">
+                                <option value="">すべて</option>
+                                @foreach ($characterAffiliations as $value)
+                                    <option value="{{ $value }}">
+                                        {{ $value }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </label>
+
+                        <label>
+                            <span>学校・学年・クラス</span>
+                            <select data-character-filter="school">
+                                <option value="">すべて</option>
+                                @foreach ($characterSchools as $value)
+                                    <option value="{{ $value }}">
+                                        {{ $value }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </label>
+
+                        <label>
+                            <span>職業・役職</span>
+                            <select data-character-filter="occupation">
+                                <option value="">すべて</option>
+                                @foreach ($characterOccupations as $value)
+                                    <option value="{{ $value }}">
+                                        {{ $value }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </label>
+                    </div>
+
+                    <div class="public-work-character-filters__status">
+                        <p aria-live="polite">
+                            <span data-character-filter-count>
+                                {{ $work->characters->count() }}
+                            </span>
+                            件表示
+                        </p>
+
+                        <button
+                            type="button"
+                            data-character-filter-reset
+                        >
+                            絞り込みを解除
+                        </button>
+                    </div>
+                </div>
+
+                <div
+                    class="oshi-card-grid"
+                    data-character-filter-list
+                >
                     @foreach ($work->characters as $character)
-                        <article class="oshi-card public-work-character-card">
+                        <article
+                            class="oshi-card public-work-character-card"
+                            data-character-card
+                            data-affiliation="{{ $character->affiliation }}"
+                            data-school="{{ $character->school_grade_class }}"
+                            data-occupation="{{ $character->occupation_position }}"
+                        >
                             <p class="mb-1 text-sm text-gray-500">
                                 {{ $character->occupation_position ?: $character->affiliation ?: '所属・役職未設定' }}
                             </p>
@@ -169,9 +280,6 @@
                                     <span>学校・学年・クラス：{{ $character->school_grade_class }}</span>
                                 @endif
 
-                                @if ($character->first_person)
-                                    <span>一人称：{{ $character->first_person }}</span>
-                                @endif
                             </div>
 
                             @if ($character->tags->count())
@@ -184,15 +292,6 @@
                                 </div>
                             @endif
 
-                            <p class="mb-4 line-clamp-3 whitespace-pre-wrap text-gray-700">
-                                {{ $character->personality
-                                    ?: $character->appearance
-                                    ?: $character->abilities
-                                    ?: $character->background
-                                    ?: $character->story_activities
-                                    ?: '説明はまだ登録されていません。' }}
-                            </p>
-
                             @if (($character->spoiler_level ?? 'none') !== 'none')
                                 <p class="mb-3 rounded-xl bg-amber-50 px-3 py-2 text-xs font-bold text-amber-800">
                                     ネタバレ：
@@ -200,12 +299,17 @@
                                 </p>
                             @endif
 
-                            <a
-                                href="{{ route('public.characters.show', $character) }}"
-                                style="display:inline-block;background:#2D3748;color:#ffffff;padding:8px 14px;border-radius:8px;font-weight:bold;text-decoration:none;"
-                            >
-                                キャラクター詳細
-                            </a>
+                            <div class="public-work-character-card__action">
+                                <a
+                                    href="{{ route(
+                                        'public.characters.show',
+                                        $character
+                                    ) }}"
+                                    class="public-work-character-card__detail"
+                                >
+                                    キャラクター詳細
+                                </a>
+                            </div>
                         </article>
                     @endforeach
                 </div>
@@ -217,7 +321,10 @@
         </section>
 
         @if ($work->publishedStorySections->isNotEmpty())
-            <section class="oshi-card">
+            <section
+                id="work-story-sections"
+                class="oshi-card public-work-anchor-section"
+            >
                 <div class="mb-6">
                     <h2 class="text-2xl font-bold">章・編ごとの物語詳細</h2>
                     <p class="mt-2 text-sm leading-7 text-[#718096]">登録されている章・編、物語の進行、登場キャラクターの時点情報を確認できます。</p>
@@ -281,7 +388,10 @@
             </section>
         @endif
 
-        <section class="oshi-card">
+        <section
+            id="work-character-relationships"
+            class="oshi-card public-work-anchor-section"
+        >
             <h2 class="mb-4 text-2xl font-bold">
                 キャラクター関係性
             </h2>

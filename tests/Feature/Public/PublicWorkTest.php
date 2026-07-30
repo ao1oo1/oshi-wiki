@@ -70,15 +70,15 @@ class PublicWorkTest extends TestCase
 
         $characterPosition = strpos(
             $contents,
-            "                キャラクター\n"
+            'id="work-characters"'
         );
         $storyPosition = strpos(
             $contents,
-            '章・編ごとの物語詳細'
+            'id="work-story-sections"'
         );
         $relationshipPosition = strpos(
             $contents,
-            "                キャラクター関係性\n"
+            'id="work-character-relationships"'
         );
 
         $this->assertNotFalse($characterPosition);
