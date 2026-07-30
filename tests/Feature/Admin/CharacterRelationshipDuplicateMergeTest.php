@@ -76,6 +76,7 @@ class CharacterRelationshipDuplicateMergeTest extends TestCase
                     . '.duplicates.merge'
                 ),
                 [
+                    'merge_all' => false,
                     'duplicate_groups' => [
                         $group['token'],
                     ],
@@ -164,6 +165,73 @@ class CharacterRelationshipDuplicateMergeTest extends TestCase
                 'id' => $duplicateB->id,
                 'deleted_at' => null,
             ]
+        );
+    }
+
+    public function test_merge_all_processes_every_duplicate_group(): void
+    {
+        [
+            ,
+            ,
+            ,
+            $keepA,
+            $duplicateA,
+        ] = $this->duplicateRelationships(
+            '全件Aから',
+            '全件Aへ'
+        );
+
+        [
+            ,
+            ,
+            ,
+            $keepB,
+            $duplicateB,
+        ] = $this->duplicateRelationships(
+            '全件Bから',
+            '全件Bへ'
+        );
+
+        $this->actingAs($this->superAdmin())
+            ->post(
+                route(
+                    'admin.character-relationships'
+                    . '.duplicates.merge'
+                ),
+                [
+                    'merge_all' => true,
+                ]
+            )
+            ->assertRedirect(route(
+                'admin.character-relationships'
+                . '.duplicates.index'
+            ))
+            ->assertSessionHas('success');
+
+        $this->assertDatabaseHas(
+            'character_relationships',
+            [
+                'id' => $keepA->id,
+                'deleted_at' => null,
+            ]
+        );
+
+        $this->assertDatabaseHas(
+            'character_relationships',
+            [
+                'id' => $keepB->id,
+                'deleted_at' => null,
+            ]
+        );
+
+        $this->assertSoftDeleted(
+            'character_relationships',
+            ['id' => $duplicateA->id]
+        );
+
+        $this->assertSoftDeleted(
+            'character_relationships',
+            ['id' => $duplicateB->id]
         );
     }
 

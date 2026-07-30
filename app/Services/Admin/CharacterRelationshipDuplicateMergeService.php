@@ -124,64 +124,119 @@ class CharacterRelationshipDuplicateMergeService
             ->values();
     }
 
+    public function mergeAll(): array
+    {
+        return DB::transaction(function (): array {
+            $keys = CharacterRelationship::query()
+                ->select([
+                    'work_id',
+                    'from_character_id',
+                    'to_character_id',
+                ])
+                ->groupBy(
+                    'work_id',
+                    'from_character_id',
+                    'to_character_id'
+                )
+                ->havingRaw('COUNT(*) > 1')
+                ->orderBy('work_id')
+                ->orderBy('from_character_id')
+                ->orderBy('to_character_id')
+                ->get();
+
+            return $this->mergeKeys($keys);
+        }, 3);
+    }
+
     public function mergeTokens(array $tokens): array
     {
         $tokens = array_values(array_unique($tokens));
 
         return DB::transaction(function () use ($tokens): array {
-            $mergedGroups = 0;
-            $deletedRelationships = 0;
-            $skippedGroups = 0;
+            $keys = collect($tokens)->map(
+                function (string $token): array {
+                    [
+                        $workId,
+                        $fromCharacterId,
+                        $toCharacterId,
+                    ] = $this->decodeToken($token);
 
-            foreach ($tokens as $token) {
-                [
-                    $workId,
-                    $fromCharacterId,
-                    $toCharacterId,
-                ] = $this->decodeToken($token);
-
-                $relationships =
-                    CharacterRelationship::query()
-                        ->where('work_id', $workId)
-                        ->where(
-                            'from_character_id',
-                            $fromCharacterId
-                        )
-                        ->where(
-                            'to_character_id',
-                            $toCharacterId
-                        )
-                        ->orderBy('id')
-                        ->lockForUpdate()
-                        ->get();
-
-                if ($relationships->count() < 2) {
-                    $skippedGroups++;
-
-                    continue;
+                    return [
+                        'work_id' => $workId,
+                        'from_character_id' => $fromCharacterId,
+                        'to_character_id' => $toCharacterId,
+                    ];
                 }
+            );
 
-                $relationships
-                    ->slice(1)
-                    ->each(
-                        function (
-                            CharacterRelationship $relationship
-                        ) use (&$deletedRelationships): void {
-                            $relationship->delete();
-                            $deletedRelationships++;
-                        }
-                    );
+            return $this->mergeKeys($keys);
+        }, 3);
+    }
 
-                $mergedGroups++;
+    private function mergeKeys(iterable $keys): array
+    {
+        $mergedGroups = 0;
+        $deletedRelationships = 0;
+        $skippedGroups = 0;
+
+        foreach ($keys as $key) {
+            $workId = (int) (
+                is_array($key)
+                    ? $key['work_id']
+                    : $key->work_id
+            );
+            $fromCharacterId = (int) (
+                is_array($key)
+                    ? $key['from_character_id']
+                    : $key->from_character_id
+            );
+            $toCharacterId = (int) (
+                is_array($key)
+                    ? $key['to_character_id']
+                    : $key->to_character_id
+            );
+
+            $relationships =
+                CharacterRelationship::query()
+                    ->where('work_id', $workId)
+                    ->where(
+                        'from_character_id',
+                        $fromCharacterId
+                    )
+                    ->where(
+                        'to_character_id',
+                        $toCharacterId
+                    )
+                    ->orderBy('id')
+                    ->lockForUpdate()
+                    ->get();
+
+            if ($relationships->count() < 2) {
+                $skippedGroups++;
+
+                continue;
             }
 
-            return [
-                'merged_groups' => $mergedGroups,
-                'deleted_relationships' =>
-                    $deletedRelationships,
-                'skipped_groups' => $skippedGroups,
-            ];
-        }, 3);
+            $relationships
+                ->slice(1)
+                ->each(
+                    function (
+                        CharacterRelationship $relationship
+                    ) use (&$deletedRelationships): void {
+                        $relationship->delete();
+                        $deletedRelationships++;
+                    }
+                );
+
+            $mergedGroups++;
+        }
+
+        return [
+            'merged_groups' => $mergedGroups,
+            'deleted_relationships' =>
+                $deletedRelationships,
+            'skipped_groups' => $skippedGroups,
+        ];
     }
 
     private function key(
