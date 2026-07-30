@@ -312,6 +312,16 @@ Route::middleware(['auth', 'admin.user', 'password.changed'])->prefix('admin')->
     
     Route::get('characters/export/csv', \App\Http\Controllers\Admin\CharacterCsvExportController::class)
         ->name('characters.csv-export');
+
+    Route::get(
+        'characters/duplicates',
+        [\App\Http\Controllers\Admin\CharacterDuplicateController::class, 'index']
+    )->name('characters.duplicates.index');
+
+    Route::post(
+        'characters/duplicates/merge',
+        [\App\Http\Controllers\Admin\CharacterDuplicateController::class, 'merge']
+    )->name('characters.duplicates.merge');
     
     Route::get('characters/import', [\App\Http\Controllers\Admin\CharacterTextImportController::class, 'create'])
         ->name('characters.import.create');

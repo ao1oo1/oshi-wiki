@@ -29,6 +29,10 @@ $canUseCharacterImports = auth()->user()?->canManageAllAdminFeatures() ?? false;
 
                 <div class="flex flex-wrap gap-2 admin-index-actions">
                     @if ($canUseCharacterImports)
+                        <a href="{{ route('admin.characters.duplicates.index') }}" class="oshi-btn oshi-btn-sub">
+                            重複チェック
+                        </a>
+
                         <a href="{{ route('admin.characters.import.create') }}" class="oshi-btn oshi-btn-sub">
                             テキスト取り込み
                         </a>
