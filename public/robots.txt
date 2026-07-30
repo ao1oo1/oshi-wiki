@@ -1,2 +1,11 @@
 User-agent: *
-Disallow:
+Allow: /
+
+Disallow: /admin/
+Disallow: /writer/
+Disallow: /login
+Disallow: /register
+Disallow: /contact
+Disallow: /contributor/
+
+Sitemap: https://oshi-wiki.com/sitemap.xml

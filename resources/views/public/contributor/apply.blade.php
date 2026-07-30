@@ -2,6 +2,7 @@
 <html lang="ja">
 <head>
     @include('partials.google-analytics')
+    @include('partials.seo-meta', ['forceNoindex' => true])
 
 
     <meta charset="UTF-8">

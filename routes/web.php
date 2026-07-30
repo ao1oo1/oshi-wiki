@@ -546,3 +546,8 @@ Route::middleware([
         ]
     )->name('analytics.export');
 });
+
+Route::get(
+    '/sitemap.xml',
+    \App\Http\Controllers\Public\SitemapController::class
+)->name('public.sitemap');
