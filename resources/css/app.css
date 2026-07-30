@@ -7207,3 +7207,63 @@ input[type="number"].oshi-input {
         justify-content: center;
     }
 }
+
+/* Public work relationship table overflow fix */
+.public-work-relationship-table-wrap {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.public-work-relationship-table {
+    width: 100%;
+    min-width: 980px;
+    table-layout: fixed;
+}
+
+.public-work-relationship-table th,
+.public-work-relationship-table td {
+    min-width: 0;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    vertical-align: top;
+}
+
+.public-work-relationship-table th:nth-child(1),
+.public-work-relationship-table td:nth-child(1),
+.public-work-relationship-table th:nth-child(2),
+.public-work-relationship-table td:nth-child(2),
+.public-work-relationship-table th:nth-child(3),
+.public-work-relationship-table td:nth-child(3) {
+    width: 13%;
+}
+
+.public-work-relationship-table th:nth-child(4),
+.public-work-relationship-table td:nth-child(4) {
+    width: 20%;
+}
+
+.public-work-relationship-table th:nth-child(5),
+.public-work-relationship-table td:nth-child(5) {
+    width: 41%;
+}
+
+.public-work-relationship-table__impression {
+    white-space: normal !important;
+    overflow-wrap: anywhere !important;
+    word-break: break-word !important;
+}
+
+@media (min-width: 1280px) {
+    .public-work-relationship-table {
+        min-width: 0;
+    }
+}
+
+@media (max-width: 767px) {
+    .public-work-relationship-table {
+        min-width: 860px;
+    }
+}
