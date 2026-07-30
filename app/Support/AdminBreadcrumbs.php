@@ -97,6 +97,15 @@ final class AdminBreadcrumbs
             Str::startsWith($name, 'admin.trash.') =>
                 [self::item('ゴミ箱', self::routeUrl('admin.trash.index'))],
 
+            Str::startsWith($name, 'admin.monetization.ad-slots.') =>
+                [
+                    ['label' => '収益管理'],
+                    [
+                        'label' => '広告スロット',
+                        'route' => 'admin.monetization.ad-slots.index',
+                    ],
+                ],
+
             Str::startsWith($name, 'admin.monetization.services.') =>
                 self::simpleResourceItems(
                     $name,

@@ -35,4 +35,12 @@ class MonetizationService extends Model
     {
         return $this->hasMany(WorkMonetizationLink::class, 'service_id');
     }
+
+    public function impressionAdSlots(): HasMany
+    {
+        return $this->hasMany(
+            ImpressionAdSlot::class,
+            'monetization_service_id'
+        );
+    }
 }

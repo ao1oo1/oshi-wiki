@@ -29,6 +29,11 @@
     ></script>
 </head>
 <body>
+    @include(
+        'public.partials.impression-ads',
+        ['position' => 'page_top']
+    )
+
     @include('public.partials.header')
 
     <div id="page-top"></div>
@@ -172,5 +177,10 @@
         ['position' => 'bottom']
     )
 @include('public.partials.legal-footer')
+
+    @include(
+        'public.partials.impression-ads',
+        ['position' => 'page_bottom']
+    )
 </body>
 </html>
