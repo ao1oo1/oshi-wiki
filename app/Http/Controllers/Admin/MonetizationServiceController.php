@@ -36,6 +36,7 @@ class MonetizationServiceController extends Controller
             'selectedCategory' => $category,
             'selectedActiveStatus' => $activeStatus,
             'categories' => MonetizationServiceManagementService::CATEGORIES,
+            'revenueModels' => MonetizationServiceManagementService::REVENUE_MODELS,
             'totalCount' => MonetizationService::query()->count(),
         ]);
     }
@@ -58,6 +59,7 @@ class MonetizationServiceController extends Controller
         return view('admin.monetization.services.edit', [
             'service' => $service,
             'categories' => MonetizationServiceManagementService::CATEGORIES,
+            'revenueModels' => MonetizationServiceManagementService::REVENUE_MODELS,
         ]);
     }
 

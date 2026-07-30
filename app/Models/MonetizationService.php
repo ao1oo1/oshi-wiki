@@ -11,13 +11,19 @@ class MonetizationService extends Model
     use SoftDeletes;
 
     protected $fillable = [
-        'name', 'slug', 'category', 'logo_path', 'description',
-        'default_button_label', 'priority', 'is_active',
+        'name', 'slug', 'category', 'revenue_model', 'logo_path',
+        'description', 'impression_script', 'allowed_script_hosts',
+        'ad_identifier', 'default_button_label', 'priority',
+        'is_active',
     ];
 
     protected function casts(): array
     {
-        return ['priority' => 'integer', 'is_active' => 'boolean'];
+        return [
+            'priority' => 'integer',
+            'is_active' => 'boolean',
+            'allowed_script_hosts' => 'array',
+        ];
     }
 
     public function affiliatePrograms(): HasMany

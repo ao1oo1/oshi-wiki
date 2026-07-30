@@ -26,7 +26,7 @@
         <div class="oshi-card admin-index-shell">
             <div class="mb-6">
                 <h1 class="text-2xl font-bold text-[#2D3748]">配信・販売サービス管理</h1>
-                <p class="mt-2 text-sm text-[#718096]">DMM TV、電子書籍ストア、商品販売サイトなどを登録します。アフィリエイトURLやタグは、この画面では登録しません。</p>
+                <p class="mt-2 text-sm text-[#718096]">リンク型サービスと、忍者AdMaxなどのインプレッション課金型広告サービスを登録します。</p>
             </div>
             <form method="POST" action="{{ route('admin.monetization.services.store') }}" class="mb-8 rounded-3xl bg-[#FFF5F7] p-5">
                 @include('admin.monetization.services._form')
@@ -44,20 +44,20 @@
             @include('admin.partials.list-result-count', ['items' => $services, 'totalCount' => $totalCount])
             <div class="overflow-x-auto rounded-3xl border border-[#E2E8F0] bg-white">
                 <table class="w-full min-w-[900px] text-left text-sm">
-                    <thead class="bg-[#FFF5F7] text-[#2D3748]"><tr><th class="px-4 py-3">ID</th><th class="px-4 py-3">サービス名</th><th class="px-4 py-3">カテゴリ</th><th class="px-4 py-3">識別子</th><th class="px-4 py-3 text-center">優先順位</th><th class="px-4 py-3 text-center">状態</th><th class="px-4 py-3 text-center">操作</th></tr></thead>
+                    <thead class="bg-[#FFF5F7] text-[#2D3748]"><tr><th class="px-4 py-3">ID</th><th class="px-4 py-3">サービス名</th><th class="px-4 py-3">カテゴリ</th><th class="px-4 py-3">収益方式</th><th class="px-4 py-3">識別子</th><th class="px-4 py-3 text-center">優先順位</th><th class="px-4 py-3 text-center">状態</th><th class="px-4 py-3 text-center">操作</th></tr></thead>
                     <tbody>
                     @forelse ($services as $service)
                         <tr class="border-t border-[#E2E8F0]">
                             <td class="px-4 py-4 font-semibold text-[#4A5568]">{{ $service->id }}</td>
                             <td class="px-4 py-4"><p class="font-bold text-[#2D3748]">{{ $service->name }}</p>@if ($service->default_button_label)<p class="mt-1 text-xs text-[#718096]">{{ $service->default_button_label }}</p>@endif</td>
-                            <td class="px-4 py-4">{{ $categories[$service->category] ?? $service->category }}</td>
+                            <td class="px-4 py-4">{{ $categories[$service->category] ?? $service->category }}</td><td class="px-4 py-4">{{ $revenueModels[$service->revenue_model] ?? $service->revenue_model }}</td>
                             <td class="px-4 py-4 font-mono text-xs">{{ $service->slug }}</td>
                             <td class="px-4 py-4 text-center">{{ $service->priority }}</td>
                             <td class="px-4 py-4 text-center"><span class="inline-flex rounded-full px-3 py-1 text-xs font-bold {{ $service->is_active ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600' }}">{{ $service->is_active ? '有効' : '無効' }}</span></td>
                             <td class="px-4 py-4"><div class="flex justify-center gap-2"><a href="{{ route('admin.monetization.services.edit', $service) }}" class="oshi-btn oshi-btn-sub">編集</a><form method="POST" action="{{ route('admin.monetization.services.destroy', $service) }}" onsubmit="return confirm('このサービスを削除しますか？');">@csrf @method('DELETE')<button type="submit" class="oshi-btn oshi-btn-danger">削除</button></form></div></td>
                         </tr>
                     @empty
-                        <tr><td colspan="7" class="p-8 text-center text-[#718096]">配信・販売サービスは登録されていません。</td></tr>
+                        <tr><td colspan="8" class="p-8 text-center text-[#718096]">配信・販売サービスは登録されていません。</td></tr>
                     @endforelse
                     </tbody>
                 </table>
