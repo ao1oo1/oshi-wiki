@@ -36,6 +36,10 @@
 
                 <div class="flex flex-wrap gap-2 admin-index-actions">
                     @if ($canManageRelationships)
+                        <a href="{{ route('admin.character-relationships.duplicates.index') }}" class="oshi-btn oshi-btn-sub">
+                            重複チェック
+                        </a>
+
                         <a href="{{ route('admin.character-relationships.csv-import.create') }}" class="oshi-btn oshi-btn-sub">
                             CSV取り込み
                         </a>

@@ -351,6 +351,22 @@ Route::middleware(['auth', 'admin.user', 'password.changed'])->prefix('admin')->
     Route::get('character-relationships/export/csv', \App\Http\Controllers\Admin\CharacterRelationshipCsvExportController::class)
         ->name('character-relationships.csv-export');
 
+    Route::get(
+        'character-relationships/duplicates',
+        [
+            \App\Http\Controllers\Admin\CharacterRelationshipDuplicateController::class,
+            'index',
+        ]
+    )->name('character-relationships.duplicates.index');
+
+    Route::post(
+        'character-relationships/duplicates/merge',
+        [
+            \App\Http\Controllers\Admin\CharacterRelationshipDuplicateController::class,
+            'merge',
+        ]
+    )->name('character-relationships.duplicates.merge');
+
     Route::get('character-relationships/import/csv', [\App\Http\Controllers\Admin\CharacterRelationshipCsvImportController::class, 'create'])
         ->name('character-relationships.csv-import.create');
 
