@@ -61,4 +61,75 @@ class PublicWorkTest extends TestCase
 
         $response->assertStatus(404);
     }
+
+    public function test_public_work_detail_section_order(): void
+    {
+        $contents = file_get_contents(
+            resource_path('views/public/works/show.blade.php')
+        );
+
+        $characterPosition = strpos(
+            $contents,
+            "                キャラクター\n"
+        );
+        $storyPosition = strpos(
+            $contents,
+            '章・編ごとの物語詳細'
+        );
+        $relationshipPosition = strpos(
+            $contents,
+            "                キャラクター関係性\n"
+        );
+
+        $this->assertNotFalse($characterPosition);
+        $this->assertNotFalse($storyPosition);
+        $this->assertNotFalse($relationshipPosition);
+        $this->assertLessThan($storyPosition, $characterPosition);
+        $this->assertLessThan(
+            $relationshipPosition,
+            $storyPosition
+        );
+    }
+
+    public function test_public_work_detail_hides_purchase_section(): void
+    {
+        $contents = file_get_contents(
+            resource_path('views/public/works/show.blade.php')
+        );
+
+        $this->assertStringNotContainsString(
+            "public.works._monetization",
+            $contents
+        );
+        $this->assertStringNotContainsString(
+            '配信・購入情報',
+            $contents
+        );
+    }
+
+    public function test_public_work_characters_are_loaded_by_id(): void
+    {
+        $contents = file_get_contents(
+            app_path('Http/Controllers/Public/WorkController.php')
+        );
+
+        $showPosition = strpos(
+            $contents,
+            'public function show(Work $work): View'
+        );
+
+        $this->assertNotFalse($showPosition);
+
+        $showBlock = substr($contents, $showPosition);
+
+        $this->assertStringContainsString(
+            "->reorder()",
+            $showBlock
+        );
+        $this->assertStringContainsString(
+            "->orderBy('characters.id')",
+            $showBlock
+        );
+    }
+
 }
