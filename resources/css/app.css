@@ -7007,3 +7007,53 @@ input[type="number"].oshi-input {
         padding-right: 0.65rem !important;
     }
 }
+
+/* Public impression advertisements */
+.public-impression-ads {
+    width: min(100% - 2rem, 1200px);
+    margin-inline: auto;
+    display: grid;
+    gap: 1rem;
+}
+
+.public-impression-ads--page_top {
+    margin-top: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.public-impression-ads--page_bottom {
+    margin-top: 2rem;
+    margin-bottom: 1.5rem;
+}
+
+.public-impression-ad {
+    min-height: 1px;
+    overflow: hidden;
+    text-align: center;
+}
+
+.public-impression-ad__label {
+    margin-bottom: 0.35rem;
+    color: #718096;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+}
+
+.public-impression-ad--mobile {
+    display: none;
+}
+
+@media (max-width: 767px) {
+    .public-impression-ads {
+        width: min(100% - 1rem, 1200px);
+    }
+
+    .public-impression-ad--desktop {
+        display: none;
+    }
+
+    .public-impression-ad--mobile {
+        display: block;
+    }
+}

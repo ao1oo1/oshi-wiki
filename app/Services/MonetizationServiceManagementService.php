@@ -83,6 +83,12 @@ class MonetizationServiceManagementService
             ]);
         }
 
+        if ($service->impressionAdSlots()->exists()) {
+            throw ValidationException::withMessages([
+                'service' => '広告スロットへ割り当てられているため削除できません。',
+            ]);
+        }
+
         return $this->repository->delete($service);
     }
 

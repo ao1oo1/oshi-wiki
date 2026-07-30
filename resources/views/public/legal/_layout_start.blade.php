@@ -14,6 +14,11 @@
     ></script>
 </head>
 <body class="bg-[#FFF9FB] text-[#2D3748]">
+    @include(
+        'public.partials.impression-ads',
+        ['position' => 'page_top']
+    )
+
 @include('public.partials.header')
 <main class="mx-auto max-w-4xl px-5 py-10">
     <div class="rounded-3xl border border-[#E2E8F0] bg-white p-6 shadow-sm md:p-10">

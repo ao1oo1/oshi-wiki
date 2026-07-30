@@ -390,6 +390,11 @@ Route::middleware(['auth', 'admin.user', 'password.changed'])->prefix('admin')->
     )->except(['create', 'show'])->names('monetization.services');
 
     Route::resource(
+        'monetization/ad-slots',
+        \App\Http\Controllers\Admin\ImpressionAdSlotController::class
+    )->except(['create', 'show'])->names('monetization.ad-slots');
+
+    Route::resource(
         'monetization/programs',
         \App\Http\Controllers\Admin\AffiliateProgramController::class
     )->except(['create', 'show'])->names('monetization.programs');

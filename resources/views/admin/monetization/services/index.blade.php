@@ -17,6 +17,12 @@
                 提携プログラム
             </a>
             <a
+                href="{{ route('admin.monetization.ad-slots.index') }}"
+                class="oshi-btn oshi-btn-sub"
+            >
+                広告スロット
+            </a>
+            <a
                 href="{{ route('admin.monetization.analytics.index') }}"
                 class="oshi-btn oshi-btn-sub"
             >
