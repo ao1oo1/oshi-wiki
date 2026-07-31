@@ -1,6 +1,17 @@
 @php
     use Illuminate\Support\Str;
 
+    $globalSeoSetting = \App\Support\SeoSettings::get();
+    $globalSiteTitle = trim(
+        (string) ($globalSeoSetting->site_title ?: 'Oshi-Wiki')
+    );
+    $globalSiteDescription = trim(
+        (string) $globalSeoSetting->site_description
+    );
+    $globalSiteKeywords = trim(
+        (string) $globalSeoSetting->site_keywords
+    );
+
     $routeName = request()->route()?->getName();
 
     $privateRoute = request()->routeIs(
@@ -134,4 +145,22 @@
 <meta property="og:title" content="{{ $seoTitleText }}">
 <meta property="og:description" content="{{ $seoDescriptionText }}">
 <meta property="og:url" content="{{ $seoCanonicalUrl }}">
+@if ($globalSiteKeywords !== '')
+    <meta name="keywords" content="{{ $globalSiteKeywords }}">
+@endif
+
+@if ($globalSeoSetting->google_site_verification)
+    <meta
+        name="google-site-verification"
+        content="{{ $globalSeoSetting->google_site_verification }}"
+    >
+@endif
+
+@if ($globalSeoSetting->default_og_image_url)
+    <meta
+        property="og:image"
+        content="{{ $globalSeoSetting->default_og_image_url }}"
+    >
+@endif
+
 <meta name="twitter:card" content="summary">

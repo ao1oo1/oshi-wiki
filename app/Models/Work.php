@@ -20,6 +20,7 @@ class Work extends Model
         'helpful_count',
         'title',
         'title_kana',
+        'search_keywords',
         'slug',
         'genre',
         'original_media',

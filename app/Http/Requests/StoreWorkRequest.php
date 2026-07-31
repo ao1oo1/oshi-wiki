@@ -56,6 +56,7 @@ class StoreWorkRequest extends FormRequest
             ],
             'title' => ['required', 'string', 'max:255'],
             'title_kana' => ['nullable', 'string', 'max:255'],
+            'search_keywords' => ['nullable', 'string', 'max:5000'],
             'genre' => ['nullable', 'string', 'max:255'],
             'original_media' => ['nullable', 'string', 'max:255'],
             'official_url' => ['nullable', 'url', 'max:2048'],

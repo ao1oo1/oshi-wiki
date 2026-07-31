@@ -4,6 +4,9 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Services\Admin\WriterAnalyticsService;
+use App\Models\Character;
+use App\Models\Work;
+use App\Support\SeoSettings;
 use Carbon\CarbonImmutable;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -24,6 +27,33 @@ class WriterAnalyticsController extends Controller
             'analytics' => $analytics->build($start, $end),
             'startDate' => $start->format('Y-m-d'),
             'endDate' => $end->format('Y-m-d'),
+            'seoSetting' => SeoSettings::get(),
+            'seoDiagnostics' => [
+                'published_works' => Work::query()
+                    ->where('status', 'published')
+                    ->count(),
+                'published_characters' => Character::query()
+                    ->where('status', 'published')
+                    ->count(),
+                'works_without_keywords' => Work::query()
+                    ->where('status', 'published')
+                    ->where(function ($query): void {
+                        $query
+                            ->whereNull('search_keywords')
+                            ->orWhere('search_keywords', '');
+                    })
+                    ->count(),
+                'characters_without_keywords' => Character::query()
+                    ->where('status', 'published')
+                    ->where(function ($query): void {
+                        $query
+                            ->whereNull('search_keywords')
+                            ->orWhere('search_keywords', '');
+                    })
+                    ->count(),
+                'sitemap_url' => route('public.sitemap'),
+                'robots_url' => url('/robots.txt'),
+            ],
         ]);
     }
 

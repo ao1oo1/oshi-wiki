@@ -46,6 +46,7 @@ class Character extends Model
         'real_name',
         'aliases',
         'name_english',
+        'search_keywords',
         'gender',
         'age',
         'birthday',

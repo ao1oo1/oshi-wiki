@@ -24,6 +24,7 @@ class StoreCharacterRequest extends FormRequest
             'real_name' => ['nullable', 'string', 'max:255'],
             'aliases' => ['nullable', 'string'],
             'name_english' => ['nullable', 'string', 'max:255'],
+            'search_keywords' => ['nullable', 'string', 'max:5000'],
             'gender' => ['nullable', 'string', 'max:100'],
             'age' => ['nullable', 'string', 'max:255'],
             'birthday' => ['nullable', 'string', 'max:255'],
