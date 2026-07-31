@@ -8,7 +8,6 @@
             <a href="/works" @class(['is-active' => request()->is('works*')])>作品一覧</a>
             <a href="/tags" @class(['is-active' => request()->is('tags*')])>タグ一覧</a>
             <a href="/about" @class(['is-active' => request()->is('about*')])>このサイトについて</a>
-            <a href="/contributor/apply" @class(['is-active' => request()->is('contributor/apply')])>スタッフ申請</a>
             <a href="/writer/login">ログイン</a>
         </nav>
 

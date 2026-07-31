@@ -158,6 +158,17 @@
                 キャラクター
             </h2>
 
+            <p class="mb-5 rounded-2xl border border-[#FED7E2] bg-[#FFF7FA] px-4 py-3 text-sm leading-7 text-[#4A5568]">
+                情報に誤りがある場合は
+                <a
+                    href="{{ route('public.contact.create', ['category' => 'correction']) }}"
+                    class="font-bold text-[#D95F82] underline decoration-2 underline-offset-4 hover:opacity-80"
+                >
+                    お問い合わせフォーム
+                </a>
+                よりご連絡ください。
+            </p>
+
             @if ($work->characters->count())
                 @php
                     $characterAffiliations = $work->characters
