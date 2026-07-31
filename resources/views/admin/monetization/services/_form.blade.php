@@ -177,7 +177,7 @@
             </h3>
             <p class="mt-1 text-sm text-[#718096]">
                 忍者AdMaxなど、表示回数に応じて収益が発生する
-                外部広告スクリプトを登録します。
+                外部広告コードを登録します。
             </p>
         </div>
 
@@ -186,7 +186,7 @@
                 for="impression_script"
                 class="mb-1 block font-bold text-[#2D3748]"
             >
-                広告スクリプト
+                広告コード
             </label>
             <textarea
                 id="impression_script"
@@ -199,6 +199,12 @@
                 'impression_script',
                 $service->impression_script ?? ''
             ) }}</textarea>
+            <p class="mt-2 text-sm leading-6 text-[#718096]">
+                対応形式：外部scriptタグ1個、またはA8.net等の
+                テキストリンク＋1×1計測画像。A8.netの場合、
+                許可広告ホストへ <code>px.a8.net</code> と
+                <code>www10.a8.net</code> を登録してください。
+            </p>
             <p class="mt-1 text-sm text-[#718096]">
                 外部URLを読み込むscriptタグ1個のみ登録できます。
                 インラインJavaScriptは登録できません。
@@ -232,7 +238,7 @@
                     for="allowed_script_hosts_text"
                     class="mb-1 block font-bold text-[#2D3748]"
                 >
-                    許可スクリプトホスト
+                    許可広告ホスト
                 </label>
                 <textarea
                     id="allowed_script_hosts_text"
