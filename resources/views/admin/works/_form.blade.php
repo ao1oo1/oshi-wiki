@@ -197,6 +197,24 @@
             <div class="work-form-field-full lg:col-span-2">
                 <label for="description" class="oshi-label">説明</label>
                 <textarea id="description" name="description" rows="7" class="oshi-input work-description-input">{{ old('description', $work->description ?? '') }}</textarea>
+                <div class="mt-6">
+                    <label for="search_keywords" class="oshi-label">
+                        検索ワード・略称
+                    </label>
+                    <textarea
+                        id="search_keywords"
+                        name="search_keywords"
+                        rows="4"
+                        class="oshi-input"
+                        placeholder="例：ヒロアカ, MHA, My Hero Academia"
+                    >{{ old('search_keywords', $work->search_keywords ?? '') }}</textarea>
+                    <p class="mt-2 text-sm leading-6 text-[#718096]">
+                        作品名に含まれない略称・英語名・旧称などを、
+                        カンマ・改行・スペース区切りで登録できます。
+                        公開トップの検索対象になります。
+                    </p>
+                </div>
+
             </div>
             <div class="md:col-span-2">
                 <p class="oshi-label">作品タグ</p>

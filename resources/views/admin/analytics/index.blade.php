@@ -235,6 +235,8 @@
             </section>
         </div>
 
+        @include('admin.analytics._seo-management')
+
         <section class="rounded-3xl border border-dashed border-[#CBD5E0] bg-[#F8FAFC] p-6">
             <h2 class="text-lg font-bold text-[#2D3748]">次の分析機能</h2>
             <p class="mt-2 text-sm font-bold leading-7 text-[#718096]">

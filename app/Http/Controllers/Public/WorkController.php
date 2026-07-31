@@ -186,6 +186,7 @@ class WorkController extends Controller
         $query
             ->where('title', 'like', $like)
             ->orWhere('title_kana', 'like', $like)
+            ->orWhere('search_keywords', 'like', $like)
             ->orWhere('genre', 'like', $like)
             ->orWhere('original_media', 'like', $like)
             ->orWhere('description', 'like', $like)
@@ -272,6 +273,11 @@ class WorkController extends Controller
                                     )
                                     ->orWhere(
                                         'characters.name_english',
+                                        'like',
+                                        $like
+                                    )
+                                    ->orWhere(
+                                        'characters.search_keywords',
                                         'like',
                                         $like
                                     )

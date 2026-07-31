@@ -152,6 +152,21 @@
     <div class="mt-4">
         <label for="aliases" class="mb-1 block font-bold">別名・愛称</label>
         <textarea id="aliases" name="aliases" rows="3" class="{{ $fieldClass }}">{{ old('aliases', $currentCharacter?->aliases ?? '') }}</textarea>
+        <label for="search_keywords" class="mb-1 block font-bold">
+            検索ワード・略称
+        </label>
+        <textarea
+            id="search_keywords"
+            name="search_keywords"
+            rows="3"
+            class="{{ $fieldClass }}"
+            placeholder="例：デク, 緑谷, Izuku Midoriya"
+        >{{ old('search_keywords', $currentCharacter?->search_keywords ?? '') }}</textarea>
+        <p class="text-sm leading-6 text-[#718096]">
+            名前に含まれない略称・通称・英語名などを登録します。
+            この語で検索した場合も、紐づく公開作品を表示します。
+        </p>
+
     </div>
 
     <div class="mt-4">

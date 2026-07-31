@@ -530,6 +530,14 @@ Route::middleware([
     'admin.user',
     'password.changed',
 ])->prefix('admin')->name('admin.')->group(function (): void {
+    Route::patch(
+        'analytics/seo',
+        [
+            \App\Http\Controllers\Admin\SeoSettingController::class,
+            'update',
+        ]
+    )->name('analytics.seo.update');
+
     Route::get(
         'analytics',
         [
