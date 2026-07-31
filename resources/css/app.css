@@ -7267,3 +7267,127 @@ input[type="number"].oshi-input {
         min-width: 860px;
     }
 }
+
+/* ADMIN_WORKS_COMPACT_TABLE_START */
+@media (min-width: 768px) {
+    .admin-works-table-wrap {
+        width: 100%;
+        max-width: 100%;
+        overflow-x: visible;
+    }
+
+    .admin-works-table {
+        width: 100%;
+        min-width: 0;
+        table-layout: fixed;
+        font-size: 0.78rem;
+    }
+
+    .admin-works-table th,
+    .admin-works-table td {
+        padding: 8px 7px;
+        overflow-wrap: anywhere;
+        word-break: normal;
+    }
+
+    .admin-works-table th {
+        font-size: 0.75rem;
+    }
+
+    .admin-works-col-id { width: 3.5%; }
+    .admin-works-col-check { width: 3%; }
+    .admin-works-col-title { width: 23%; }
+    .admin-works-col-type { width: 12%; }
+    .admin-works-col-genre { width: 15%; }
+    .admin-works-col-media { width: 8%; }
+    .admin-works-col-status { width: 7%; }
+    .admin-works-col-tags { width: 18%; }
+    .admin-works-col-actions { width: 10.5%; }
+
+    .admin-works-tags-cell {
+        vertical-align: middle;
+    }
+
+    .admin-works-tags {
+        display: flex;
+        flex-wrap: wrap;
+        align-content: flex-start;
+        gap: 3px;
+        max-height: 52px;
+        overflow: hidden;
+    }
+
+    .admin-works-tag {
+        display: inline-flex;
+        align-items: center;
+        max-width: 100%;
+        min-height: 20px;
+        padding: 1px 7px;
+        border: 1px solid #F8C8D5;
+        border-radius: 999px;
+        background: #FFF7FA;
+        color: #4A5568;
+        font-size: 0.66rem;
+        font-weight: 700;
+        line-height: 1.25;
+        white-space: nowrap;
+    }
+
+    .admin-works-tag-more {
+        border-color: #CBD5E0;
+        background: #F7FAFC;
+        color: #718096;
+    }
+
+    .admin-works-actions-cell {
+        vertical-align: middle;
+        white-space: nowrap;
+    }
+
+    .admin-works-actions {
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 6px;
+        width: 100%;
+    }
+
+    .admin-works-action-button {
+        display: inline-flex;
+        width: 100%;
+        min-width: 0;
+        min-height: 32px;
+        justify-content: center;
+        align-items: center;
+        padding: 5px 8px;
+        font-size: 0.72rem;
+        line-height: 1;
+        white-space: nowrap;
+    }
+
+    .admin-works-table .admin-index-status-cell {
+        vertical-align: middle;
+    }
+}
+
+@media (min-width: 768px) and (max-width: 1180px) {
+    .admin-works-table {
+        font-size: 0.72rem;
+    }
+
+    .admin-works-table th,
+    .admin-works-table td {
+        padding: 7px 5px;
+    }
+
+    .admin-works-tag {
+        padding: 1px 5px;
+        font-size: 0.61rem;
+    }
+
+    .admin-works-action-button {
+        padding: 4px 5px;
+        font-size: 0.67rem;
+    }
+}
+/* ADMIN_WORKS_COMPACT_TABLE_END */
