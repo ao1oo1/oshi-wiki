@@ -76,6 +76,17 @@
                     ログアウト
                 </button>
             </form>
+
+                @include(
+                    'writer.partials.impression-ads',
+                    ['position' => 'writer_sidebar_1']
+                )
+
+                @include(
+                    'writer.partials.impression-ads',
+                    ['position' => 'writer_sidebar_2']
+                )
+
         </div>
     </div>
 </aside>

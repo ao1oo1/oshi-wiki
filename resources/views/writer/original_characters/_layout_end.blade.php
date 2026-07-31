@@ -1,3 +1,8 @@
+                @include(
+                    'writer.partials.impression-ads',
+                    ['position' => 'writer_page_bottom']
+                )
+
                 <div id="page-bottom"></div>
 
                 @include(
