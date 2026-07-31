@@ -360,12 +360,14 @@
     ></script>
 </head>
 <body class="writing-tool-page-redesign">
+
+
+    @include('public.partials.header')
+
     @include(
         'public.partials.impression-ads',
         ['position' => 'page_top']
     )
-
-    @include('public.partials.header')
 
     <div id="page-top"></div>
 
@@ -543,7 +545,16 @@
         </section>
     </main>
 
-    <footer class="writing-lp-social-footer">
+        @include(
+        'public.partials.impression-ads',
+        ['position' => 'page_middle']
+    )
+
+    @include(
+        'public.partials.impression-ads',
+        ['position' => 'page_bottom']
+    )
+<footer class="writing-lp-social-footer">
         <div class="oshi-container writing-lp-social-inner">
             <a href="https://x.com/Oshi_Wiki"
                target="_blank"
@@ -566,9 +577,5 @@
     )
 @include('public.partials.legal-footer')
 
-    @include(
-        'public.partials.impression-ads',
-        ['position' => 'page_bottom']
-    )
 </body>
 </html>
