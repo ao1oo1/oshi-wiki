@@ -7476,3 +7476,54 @@ input[type="number"].oshi-input {
     }
 }
 /* ADMIN_WORKS_SPACING_ADJUST_END */
+
+.writer-impression-ads {
+    display: grid;
+    gap: 0.75rem;
+    width: 100%;
+}
+
+.writer-impression-ads--writer_sidebar_1,
+.writer-impression-ads--writer_sidebar_2 {
+    margin-top: 1rem;
+}
+
+.writer-impression-ads--writer_page_bottom {
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+}
+
+.writer-impression-ad {
+    overflow-wrap: anywhere;
+    border: 1px solid #E2E8F0;
+    border-radius: 1rem;
+    background: #FFFFFF;
+    padding: 0.75rem;
+    text-align: center;
+}
+
+.writer-impression-ad img,
+.writer-impression-ad iframe {
+    max-width: 100%;
+}
+
+.writer-impression-ad__label {
+    margin-bottom: 0.35rem;
+    color: #A0AEC0;
+    font-size: 0.6875rem;
+    font-weight: 700;
+}
+
+.writer-impression-ad--mobile {
+    display: none;
+}
+
+@media (max-width: 767px) {
+    .writer-impression-ad--desktop {
+        display: none;
+    }
+
+    .writer-impression-ad--mobile {
+        display: block;
+    }
+}

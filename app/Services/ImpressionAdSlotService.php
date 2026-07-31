@@ -19,12 +19,16 @@ class ImpressionAdSlotService
         'tags_index' => 'タグ一覧',
         'writing_tool' => '執筆ツール紹介',
         'static_pages' => 'About・お問い合わせ・規約・スタッフ',
+        'writer_all' => 'Writer画面すべて',
     ];
 
     public const POSITIONS = [
         'page_top' => 'ページ上部（ヘッダー直後）',
         'page_middle' => 'ページ中部',
         'page_bottom' => 'ページ下部（フッター直前）',
+        'writer_sidebar_1' => 'Writer左メニュー下部・1枠目',
+        'writer_sidebar_2' => 'Writer左メニュー下部・2枠目',
+        'writer_page_bottom' => 'Writer各画面・最下部',
     ];
 
     public const DEVICE_TYPES = [
@@ -81,6 +85,42 @@ class ImpressionAdSlotService
             ->currentlyDisplayable()
             ->where('position', $position)
             ->whereIn('page_scope', ['all_public', $scope])
+            ->whereHas('service', function ($query): void {
+                $query
+                    ->where('revenue_model', 'impression')
+                    ->where('is_active', true)
+                    ->whereNotNull('impression_script');
+            })
+            ->orderBy('priority')
+            ->orderBy('id')
+            ->get();
+    }
+
+    public function displayableForWriter(
+        Request $request,
+        string $position
+    ): Collection {
+        $writerPositions = [
+            'writer_sidebar_1',
+            'writer_sidebar_2',
+            'writer_page_bottom',
+        ];
+
+        if (
+            ! in_array($position, $writerPositions, true)
+            || ! str_starts_with(
+                (string) $request->route()?->getName(),
+                'writer.'
+            )
+        ) {
+            return new Collection();
+        }
+
+        return ImpressionAdSlot::query()
+            ->with('service')
+            ->currentlyDisplayable()
+            ->where('position', $position)
+            ->where('page_scope', 'writer_all')
             ->whereHas('service', function ($query): void {
                 $query
                     ->where('revenue_model', 'impression')
