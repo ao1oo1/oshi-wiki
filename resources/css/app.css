@@ -7391,3 +7391,88 @@ input[type="number"].oshi-input {
     }
 }
 /* ADMIN_WORKS_COMPACT_TABLE_END */
+
+/* ADMIN_WORKS_SPACING_ADJUST_START */
+@media (min-width: 768px) {
+    .admin-works-filter-form {
+        margin-top: 28px;
+        margin-bottom: 30px;
+        padding-top: 24px;
+        padding-bottom: 24px;
+    }
+
+    .admin-works-filter-grid {
+        row-gap: 22px;
+        align-items: end;
+    }
+
+    .admin-works-filter-grid .oshi-btn {
+        min-height: 38px;
+        padding: 8px 18px;
+        font-size: 0.78rem;
+        line-height: 1.1;
+    }
+
+    .admin-works-bulk-panel {
+        margin-top: 26px;
+        margin-bottom: 26px;
+        padding-top: 22px;
+        padding-bottom: 22px;
+        row-gap: 18px;
+    }
+
+    .admin-works-bulk-panel .oshi-btn {
+        min-height: 38px;
+        padding: 8px 18px;
+        font-size: 0.78rem;
+        line-height: 1.1;
+    }
+
+    .admin-works-actions-cell {
+        padding-top: 14px !important;
+        padding-bottom: 14px !important;
+    }
+
+    .admin-works-actions {
+        gap: 10px;
+        padding-top: 2px;
+        padding-bottom: 2px;
+    }
+
+    .admin-works-action-button {
+        min-height: 28px;
+        padding: 4px 7px;
+        font-size: 0.68rem;
+        line-height: 1;
+    }
+}
+
+@media (min-width: 768px) and (max-width: 1180px) {
+    .admin-works-filter-form {
+        margin-top: 22px;
+        margin-bottom: 24px;
+        padding-top: 20px;
+        padding-bottom: 20px;
+    }
+
+    .admin-works-bulk-panel {
+        margin-top: 22px;
+        margin-bottom: 22px;
+        padding-top: 18px;
+        padding-bottom: 18px;
+    }
+
+    .admin-works-filter-grid .oshi-btn,
+    .admin-works-bulk-panel .oshi-btn {
+        min-height: 34px;
+        padding: 7px 14px;
+        font-size: 0.72rem;
+    }
+
+    .admin-works-action-button {
+        min-height: 26px;
+        padding: 3px 6px;
+        font-size: 0.64rem;
+    }
+}
+/* ADMIN_WORKS_SPACING_ADJUST_END */
