@@ -22,8 +22,9 @@ class ImpressionAdSlotService
     ];
 
     public const POSITIONS = [
-        'page_top' => 'ページ上部',
-        'page_bottom' => 'ページ下部',
+        'page_top' => 'ページ上部（ヘッダー直後）',
+        'page_middle' => 'ページ中部',
+        'page_bottom' => 'ページ下部（フッター直前）',
     ];
 
     public const DEVICE_TYPES = [

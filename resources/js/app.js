@@ -2515,3 +2515,42 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 })();
 /* PUBLIC_WORK_CHARACTER_FILTER_END */
+
+
+const placeMiddleImpressionAds = () => {
+    const middleAds = document.querySelectorAll(
+        '[data-impression-ad-position="page_middle"]'
+    );
+
+    middleAds.forEach((adContainer) => {
+        const main = document.querySelector('main');
+
+        if (!main) {
+            adContainer.hidden = false;
+            return;
+        }
+
+        const children = Array.from(main.children).filter(
+            (child) =>
+                child !== adContainer
+                && !child.matches(
+                    '[data-impression-ad-position]'
+                )
+        );
+
+        const middleIndex = Math.ceil(children.length / 2);
+        const referenceNode = children[middleIndex] ?? null;
+
+        main.insertBefore(adContainer, referenceNode);
+        adContainer.hidden = false;
+    });
+};
+
+if (document.readyState === 'loading') {
+    document.addEventListener(
+        'DOMContentLoaded',
+        placeMiddleImpressionAds
+    );
+} else {
+    placeMiddleImpressionAds();
+}

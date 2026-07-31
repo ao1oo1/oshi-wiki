@@ -89,6 +89,10 @@
                 </option>
             @endforeach
         </select>
+        <p class="mt-1 text-sm leading-6 text-[#718096]">
+            上部はヘッダー直後、中部はメインコンテンツの中央付近、
+            下部はフッター直前へ表示します。
+        </p>
     </div>
 
     <div>

@@ -19,12 +19,14 @@
     ></script>
 </head>
 <body>
+
+
+    @include('public.partials.header')
+
     @include(
         'public.partials.impression-ads',
         ['position' => 'page_top']
     )
-
-    @include('public.partials.header')
 
     <div id="page-top"></div>
 
@@ -409,11 +411,16 @@
         'partials.page-jump-navigation',
         ['position' => 'bottom']
     )
-@include('public.partials.legal-footer')
+    @include(
+        'public.partials.impression-ads',
+        ['position' => 'page_middle']
+    )
 
     @include(
         'public.partials.impression-ads',
         ['position' => 'page_bottom']
     )
+@include('public.partials.legal-footer')
+
 </body>
 </html>

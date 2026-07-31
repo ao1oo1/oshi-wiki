@@ -11,6 +11,8 @@
     <aside
         class="public-impression-ads public-impression-ads--{{ $position }}"
         aria-label="広告"
+        data-impression-ad-position="{{ $position }}"
+        @if ($position === 'page_middle') hidden @endif
     >
         @foreach ($adSlots as $adSlot)
             <div
