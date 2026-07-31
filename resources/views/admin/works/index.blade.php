@@ -195,8 +195,19 @@
                     ]
                 )
 
-                <div class="staff-work-mobile-table-shell oshi-table-wrap">
-                    <table class="oshi-table">
+                <div class="staff-work-mobile-table-shell oshi-table-wrap admin-works-table-wrap">
+                    <table class="oshi-table admin-works-table">
+                        <colgroup>
+                            <col class="admin-works-col-id">
+                            <col class="admin-works-col-check">
+                            <col class="admin-works-col-title">
+                            <col class="admin-works-col-type">
+                            <col class="admin-works-col-genre">
+                            <col class="admin-works-col-media">
+                            <col class="admin-works-col-status">
+                            <col class="admin-works-col-tags">
+                            <col class="admin-works-col-actions">
+                        </colgroup>
                         <thead>
                             <tr>
                                 <th class="whitespace-nowrap px-3 py-3 text-left text-xs font-semibold"
@@ -247,30 +258,52 @@
                                         @include('admin.partials.status-badge', ['status' => $work->status])
                                     </td>
 
-                                    <td>
+                                    <td class="admin-works-tags-cell">
                                         @if ($work->tags->count())
-                                            @foreach ($work->tags as $tag)
-                                                <span class="oshi-chip">{{ $tag->name }}</span>
-                                            @endforeach
+                                            <div
+                                                class="admin-works-tags"
+                                                title="{{ $work->tags->pluck('name')->join('、') }}"
+                                            >
+                                                @foreach ($work->tags->take(4) as $tag)
+                                                    <span class="admin-works-tag">
+                                                        {{ $tag->name }}
+                                                    </span>
+                                                @endforeach
+
+                                                @if ($work->tags->count() > 4)
+                                                    <span class="admin-works-tag admin-works-tag-more">
+                                                        ＋{{ $work->tags->count() - 4 }}件
+                                                    </span>
+                                                @endif
+                                            </div>
                                         @else
                                             <span class="oshi-muted">未設定</span>
                                         @endif
                                     </td>
 
-                                    <td class="admin-index-action-cell">
-                                        <div class="flex flex-wrap gap-2">
-                                            <a href="{{ route('admin.works.show', $work) }}" class="oshi-btn oshi-btn-sub">詳細</a>
+                                    <td class="admin-index-action-cell admin-works-actions-cell">
+                                        <div class="admin-works-actions">
+                                            <a
+                                                href="{{ route('admin.works.show', $work) }}"
+                                                class="oshi-btn oshi-btn-sub admin-works-action-button"
+                                            >
+                                                詳細
+                                            </a>
+
                                             @if ($canManageWorks)
-
-                                                <a href="{{ route('admin.works.edit', $work) }}" class="oshi-btn oshi-btn-sub">編集</a>
-
+                                                <a
+                                                    href="{{ route('admin.works.edit', $work) }}"
+                                                    class="oshi-btn oshi-btn-sub admin-works-action-button"
+                                                >
+                                                    編集
+                                                </a>
                                             @endif
                                         </div>
                                     </td>
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="8">
+                                    <td colspan="9">
                                         <div class="oshi-empty">作品はまだ登録されていません。</div>
                                     </td>
                                 </tr>
