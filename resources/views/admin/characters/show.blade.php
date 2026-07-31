@@ -12,8 +12,6 @@
 
     <div class="p-6">
         <div class="mx-auto max-w-6xl">
-            @include('admin.partials.navigation')
-
             @if (session('success'))
                 <div class="mb-4 rounded-2xl bg-green-100 px-5 py-4 text-green-800">
                     {{ session('success') }}

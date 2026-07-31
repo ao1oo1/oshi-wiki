@@ -50,9 +50,7 @@
         ];
     @endphp
 
-    <div class="oshi-admin-layout">
-        @include('admin.partials.navigation')
-
+    <div class="p-6">
         <main class="oshi-admin-main">
             @include('admin.partials.flash')
 
