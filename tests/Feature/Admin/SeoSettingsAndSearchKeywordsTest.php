@@ -132,4 +132,103 @@ class SeoSettingsAndSearchKeywordsTest extends TestCase
             ->assertSee('name="keywords"', false)
             ->assertSee('verification-code');
     }
+    public function test_saving_seo_keywords_refreshes_cached_settings(): void
+    {
+        $user = User::factory()->create([
+            'is_super_admin' => true,
+            'status' => 'active',
+        ]);
+
+        \App\Support\SeoSettings::forget();
+
+        $cachedDefaults = \App\Support\SeoSettings::get();
+
+        $this->assertSame(
+            'アニメ,漫画,ゲーム,キャラクター,人物相関図,'
+                .'ストーリー,世界観,創作支援',
+            $cachedDefaults->site_keywords
+        );
+
+        $newKeywords = '推し活,キャラクター設定,創作資料';
+
+        $this->actingAs($user)
+            ->patch(route('admin.analytics.seo.update'), [
+                'site_title' => 'Oshi-Wiki',
+                'site_description' => '創作支援データベース',
+                'site_keywords' => $newKeywords,
+                'google_site_verification' => null,
+                'default_og_image_url' => null,
+            ])
+            ->assertRedirect(
+                route('admin.analytics.index', ['tab' => 'seo'])
+            );
+
+        $this->assertDatabaseHas('seo_settings', [
+            'site_keywords' => $newKeywords,
+        ]);
+
+        $this->assertDatabaseCount('seo_settings', 1);
+
+        $this->assertSame(
+            $newKeywords,
+            \App\Support\SeoSettings::get()->site_keywords
+        );
+
+        $this->actingAs($user)
+            ->get(route('admin.analytics.index', ['tab' => 'seo']))
+            ->assertOk()
+            ->assertSee($newKeywords);
+    }
+
+    public function test_saving_updates_existing_row_and_removes_duplicates(): void
+    {
+        $user = User::factory()->create([
+            'is_super_admin' => true,
+            'status' => 'active',
+        ]);
+
+        SeoSetting::query()->create([
+            'site_title' => '古い設定1',
+            'site_keywords' => '古いワード1',
+        ]);
+
+        SeoSetting::query()->create([
+            'site_title' => '古い設定2',
+            'site_keywords' => '古いワード2',
+        ]);
+
+        \App\Support\SeoSettings::forget();
+
+        $this->assertSame(
+            '古いワード1',
+            \App\Support\SeoSettings::get()->site_keywords
+        );
+
+        $newKeywords = 'アニメ作品,漫画作品,ゲーム作品';
+
+        $this->actingAs($user)
+            ->patch(route('admin.analytics.seo.update'), [
+                'site_title' => 'Oshi-Wiki',
+                'site_description' => '創作支援データベース',
+                'site_keywords' => $newKeywords,
+                'google_site_verification' => null,
+                'default_og_image_url' => null,
+            ])
+            ->assertRedirect(
+                route('admin.analytics.index', ['tab' => 'seo'])
+            );
+
+        $this->assertDatabaseCount('seo_settings', 1);
+
+        $this->assertDatabaseHas('seo_settings', [
+            'site_title' => 'Oshi-Wiki',
+            'site_keywords' => $newKeywords,
+        ]);
+
+        $this->assertSame(
+            $newKeywords,
+            \App\Support\SeoSettings::get()->site_keywords
+        );
+    }
+
 }
