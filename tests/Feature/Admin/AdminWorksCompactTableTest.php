@@ -78,4 +78,33 @@ class AdminWorksCompactTableTest extends TestCase
             $css
         );
     }
+    public function test_filter_bulk_and_action_spacing_classes_exist(): void
+    {
+        $view = file_get_contents(
+            resource_path('views/admin/works/index.blade.php')
+        );
+
+        $css = file_get_contents(resource_path('css/app.css'));
+
+        $this->assertStringContainsString(
+            'admin-works-filter-form',
+            $view
+        );
+
+        $this->assertStringContainsString(
+            'admin-works-bulk-panel',
+            $view
+        );
+
+        $this->assertStringContainsString(
+            'ADMIN_WORKS_SPACING_ADJUST_START',
+            $css
+        );
+
+        $this->assertStringContainsString(
+            '.admin-works-actions-cell',
+            $css
+        );
+    }
+
 }

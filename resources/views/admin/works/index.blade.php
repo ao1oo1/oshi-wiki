@@ -63,8 +63,8 @@
 {{-- /STAFF_HIDE_WORK_CREATE_FORM_FIX --}}
 </div>
 
-            <form method="GET" action="{{ route('admin.works.index') }}" class="admin-index-filter-form">
-                <div class="admin-index-filter-grid">
+            <form method="GET" action="{{ route('admin.works.index') }}" class="admin-index-filter-form admin-works-filter-form">
+                <div class="admin-index-filter-grid admin-works-filter-grid">
                 <div>
                     <label for="keyword" class="mb-1 block font-medium">
                         キーワード
@@ -165,7 +165,7 @@
             <form method="POST" action="{{ route('admin.works.bulk-action') }}" onsubmit="return confirmWorkBulkAction();">
                 @csrf
 
-                <div class="mb-4 flex flex-wrap items-end gap-3 rounded bg-pink-50 p-4">
+                <div class="admin-works-bulk-panel mb-4 flex flex-wrap items-end gap-3 rounded bg-pink-50 p-4">
                     <div>
                         <label for="work_bulk_action" class="mb-1 block font-medium">
                             チェックした作品を一括操作
