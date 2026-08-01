@@ -1,7 +1,5 @@
 <x-app-layout>
     <div class="oshi-admin-layout">
-        @include('admin.partials.navigation')
-
         <main class="oshi-admin-main">
             @include('admin.partials.flash')
 
