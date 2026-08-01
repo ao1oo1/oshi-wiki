@@ -70,6 +70,59 @@ class StoreMonetizationServiceRequest extends FormRequest
         ];
     }
 
+    public function messages(): array
+    {
+        return [
+            'name.required' =>
+                'サービス名を入力してください。',
+            'name.max' =>
+                'サービス名は100文字以内で入力してください。',
+            'slug.regex' =>
+                '識別子は半角英小文字・数字・ハイフンのみで入力し、'
+                . '先頭と末尾にハイフンを使用しないでください。',
+            'slug.max' =>
+                '識別子は100文字以内で入力してください。',
+            'category.required' =>
+                'カテゴリを選択してください。',
+            'category.in' =>
+                'カテゴリの値が正しくありません。',
+            'revenue_model.required' =>
+                '収益方式を選択してください。',
+            'revenue_model.in' =>
+                '収益方式の値が正しくありません。',
+            'impression_script.required_if' =>
+                'インプレッション課金型広告では広告コードが必須です。',
+            'impression_script.max' =>
+                '広告コードは5000文字以内で入力してください。',
+            'allowed_script_hosts_text.required_if' =>
+                'インプレッション課金型広告では'
+                . '許可広告ホストが必須です。',
+            'allowed_script_hosts_text.max' =>
+                '許可広告ホストは2000文字以内で入力してください。',
+            'ad_identifier.required_if' =>
+                'インプレッション課金型広告では広告IDが必須です。',
+            'ad_identifier.regex' =>
+                '広告IDは半角英数字・ハイフン・アンダースコアのみ'
+                . '使用できます。',
+            'ad_identifier.max' =>
+                '広告IDは255文字以内で入力してください。',
+            'default_button_label.max' =>
+                '標準ボタン文言は100文字以内で入力してください。',
+            'priority.required' =>
+                '表示優先順位を入力してください。',
+            'priority.integer' =>
+                '表示優先順位は整数で入力してください。',
+            'priority.min' =>
+                '表示優先順位は0以上で入力してください。',
+            'priority.max' =>
+                '表示優先順位は9999以下で入力してください。',
+            'is_active.required' =>
+                '利用状態を選択してください。',
+            'is_active.boolean' =>
+                '利用状態の値が正しくありません。',
+        ];
+    }
+
     public function attributes(): array
     {
         return [

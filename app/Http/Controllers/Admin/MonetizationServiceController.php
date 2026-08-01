@@ -45,7 +45,14 @@ class MonetizationServiceController extends Controller
         StoreMonetizationServiceRequest $request
     ): RedirectResponse {
         $this->ensureSuperAdmin();
-        $this->service->create($request->validated());
+
+        try {
+            $this->service->create($request->validated());
+        } catch (ValidationException $exception) {
+            return back()
+                ->withErrors($exception->errors())
+                ->withInput();
+        }
 
         return redirect()
             ->route('admin.monetization.services.index')
@@ -68,7 +75,17 @@ class MonetizationServiceController extends Controller
         MonetizationService $service
     ): RedirectResponse {
         $this->ensureSuperAdmin();
-        $this->service->update($service, $request->validated());
+
+        try {
+            $this->service->update(
+                $service,
+                $request->validated()
+            );
+        } catch (ValidationException $exception) {
+            return back()
+                ->withErrors($exception->errors())
+                ->withInput();
+        }
 
         return redirect()
             ->route('admin.monetization.services.index')
