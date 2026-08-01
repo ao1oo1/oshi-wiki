@@ -145,8 +145,17 @@
 <meta property="og:title" content="{{ $seoTitleText }}">
 <meta property="og:description" content="{{ $seoDescriptionText }}">
 <meta property="og:url" content="{{ $seoCanonicalUrl }}">
-@if ($globalSiteKeywords !== '')
-    <meta name="keywords" content="{{ $globalSiteKeywords }}">
+@php
+    $seoKeywordsText = collect([
+        $pageSeoKeywords ?? null,
+        $globalSiteKeywords,
+    ])
+        ->filter()
+        ->implode(',');
+@endphp
+
+@if ($seoKeywordsText !== '')
+    <meta name="keywords" content="{{ $seoKeywordsText }}">
 @endif
 
 @if ($globalSeoSetting->google_site_verification)

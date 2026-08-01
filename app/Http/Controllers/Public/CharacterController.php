@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Public;
 
 use App\Http\Controllers\Controller;
 use App\Models\Character;
+use App\Support\PublicEntitySeo;
 use Illuminate\View\View;
 
 class CharacterController extends Controller
@@ -36,6 +37,7 @@ class CharacterController extends Controller
 
         return view('public.characters.show', [
             'character' => $character,
+            'entitySeo' => PublicEntitySeo::forCharacter($character),
         ]);
     }
 }
