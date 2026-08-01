@@ -69,11 +69,17 @@
                 </h1>
 
                 <div class="mb-8 overflow-hidden rounded-3xl">
-                    <img
+                    <picture class="block w-full">
+                        <source
+                            media="(max-width: 767px)"
+                            srcset="{{ asset('images/top-02.jpg') }}"
+                        >
+                        <img
                         src="{{ asset('images/top_img.jpg') }}"
                         alt="Oshi-Wiki アニメ・漫画・ゲームの創作支援データベース"
                         class="block h-auto w-full"
                     >
+                    </picture>
                 </div>
             @else
                 <h1>作品一覧</h1>
