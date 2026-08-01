@@ -1,8 +1,6 @@
 <x-app-layout>
-    <div class="oshi-admin-layout">
-        @include('admin.partials.navigation')
-
-        <main class="oshi-admin-main">
+    <div class="w-full">
+        <main class="oshi-admin-main w-full max-w-none">
             @include('admin.partials.flash')
 
             <div class="oshi-story-section-page">
