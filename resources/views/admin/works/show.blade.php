@@ -132,7 +132,7 @@
                                 </div>
 
                                 <p class="mt-3 text-sm text-[#718096]">
-                                    登録数：{{ $work->allStorySections->count() }} / 30件
+                                    登録数：{{ $work->allStorySections->count() }} / 100件
                                 </p>
                             </div>
 
