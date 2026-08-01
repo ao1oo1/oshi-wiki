@@ -18,20 +18,72 @@ class SeoSettings
                 return self::defaults();
             }
 
-            return Cache::remember(
+            $attributes = Cache::remember(
                 self::CACHE_KEY,
                 now()->addHour(),
-                fn (): SeoSetting => SeoSetting::query()->first()
-                    ?? self::defaults()
+                fn (): array => self::databaseAttributes()
             );
+
+            return new SeoSetting($attributes);
+        } catch (Throwable) {
+            return self::fresh();
+        }
+    }
+
+    public static function fresh(): SeoSetting
+    {
+        try {
+            if (! Schema::hasTable('seo_settings')) {
+                return self::defaults();
+            }
+
+            return SeoSetting::query()
+                ->orderBy('id')
+                ->first() ?? self::defaults();
         } catch (Throwable) {
             return self::defaults();
         }
     }
 
+    public static function refresh(): SeoSetting
+    {
+        self::forget();
+        $setting = self::fresh();
+
+        if ($setting->exists) {
+            Cache::put(
+                self::CACHE_KEY,
+                self::attributes($setting),
+                now()->addHour()
+            );
+        }
+
+        return $setting;
+    }
+
     public static function forget(): void
     {
         Cache::forget(self::CACHE_KEY);
+    }
+
+    private static function databaseAttributes(): array
+    {
+        $setting = SeoSetting::query()
+            ->orderBy('id')
+            ->first();
+
+        return self::attributes($setting ?? self::defaults());
+    }
+
+    private static function attributes(SeoSetting $setting): array
+    {
+        return [
+            'site_title' => $setting->site_title,
+            'site_description' => $setting->site_description,
+            'site_keywords' => $setting->site_keywords,
+            'google_site_verification' => $setting->google_site_verification,
+            'default_og_image_url' => $setting->default_og_image_url,
+        ];
     }
 
     private static function defaults(): SeoSetting

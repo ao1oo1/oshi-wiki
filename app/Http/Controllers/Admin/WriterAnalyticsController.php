@@ -27,7 +27,7 @@ class WriterAnalyticsController extends Controller
             'analytics' => $analytics->build($start, $end),
             'startDate' => $start->format('Y-m-d'),
             'endDate' => $end->format('Y-m-d'),
-            'seoSetting' => SeoSettings::get(),
+            'seoSetting' => SeoSettings::fresh(),
             'seoDiagnostics' => [
                 'published_works' => Work::query()
                     ->where('status', 'published')

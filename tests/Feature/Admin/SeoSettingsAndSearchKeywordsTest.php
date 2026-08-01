@@ -231,4 +231,80 @@ class SeoSettingsAndSearchKeywordsTest extends TestCase
         );
     }
 
+    public function test_admin_seo_form_reads_database_when_public_cache_is_stale(): void
+    {
+        $user = User::factory()->create([
+            'is_super_admin' => true,
+            'status' => 'active',
+        ]);
+
+        \App\Models\SeoSetting::query()->create([
+            'site_title' => 'Oshi-Wiki',
+            'site_description' => 'DB最新説明',
+            'site_keywords' => 'DB最新ワード,消えないSEO',
+        ]);
+
+        \Illuminate\Support\Facades\Cache::put(
+            \App\Support\SeoSettings::CACHE_KEY,
+            [
+                'site_title' => '古いタイトル',
+                'site_description' => '古い説明',
+                'site_keywords' => '古いキャッシュ',
+                'google_site_verification' => null,
+                'default_og_image_url' => null,
+            ],
+            now()->addHour()
+        );
+
+        $response = $this->actingAs($user)
+            ->get(route('admin.analytics.index', ['tab' => 'seo']));
+
+        $response
+            ->assertOk()
+            ->assertSee('DB最新ワード,消えないSEO');
+
+        $html = $response->getContent();
+
+        $this->assertStringContainsString(
+            '>DB最新ワード,消えないSEO</textarea>',
+            $html
+        );
+
+        $this->assertStringNotContainsString(
+            '>古いキャッシュ</textarea>',
+            $html
+        );
+    }
+
+    public function test_saving_seo_settings_rebuilds_cache_as_plain_array(): void
+    {
+        $user = User::factory()->create([
+            'is_super_admin' => true,
+            'status' => 'active',
+        ]);
+
+        $keywords = '保存後キャッシュ,共通SEOワード';
+
+        $this->actingAs($user)
+            ->patch(route('admin.analytics.seo.update'), [
+                'site_title' => 'Oshi-Wiki',
+                'site_description' => '保存確認',
+                'site_keywords' => $keywords,
+                'google_site_verification' => null,
+                'default_og_image_url' => null,
+            ])
+            ->assertRedirect(route('admin.analytics.index', ['tab' => 'seo']));
+
+        $cached = \Illuminate\Support\Facades\Cache::get(
+            \App\Support\SeoSettings::CACHE_KEY
+        );
+
+        $this->assertIsArray($cached);
+        $this->assertSame($keywords, $cached['site_keywords'] ?? null);
+        $this->assertSame(
+            $keywords,
+            \App\Support\SeoSettings::get()->site_keywords
+        );
+    }
+
 }
