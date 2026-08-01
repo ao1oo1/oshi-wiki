@@ -558,4 +558,8 @@ Route::middleware([
 Route::get(
     '/sitemap.xml',
     \App\Http\Controllers\Public\SitemapController::class
-)->name('public.sitemap');
+)
+    ->withoutMiddleware([
+        \App\Http\Middleware\ScopedMaintenanceMode::class,
+    ])
+    ->name('public.sitemap');

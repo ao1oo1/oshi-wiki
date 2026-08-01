@@ -29,7 +29,7 @@ class SitemapController extends Controller
             ->get(['id', 'updated_at']);
 
         $staticUrls = collect([
-            route('public.home'),
+            rtrim(config('app.url'), '/').'/',
             route('public.works.index'),
             route('public.tags.index'),
             route('public.about.show'),
@@ -53,6 +53,14 @@ class SitemapController extends Controller
             ->header(
                 'Content-Type',
                 'application/xml; charset=UTF-8'
+            )
+            ->header(
+                'Cache-Control',
+                'public, max-age=3600'
+            )
+            ->header(
+                'X-Robots-Tag',
+                'noindex, follow'
             );
     }
 }
