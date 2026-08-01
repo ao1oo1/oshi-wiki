@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Public;
 use App\Http\Controllers\Controller;
 use App\Models\Tag;
 use App\Models\Work;
+use App\Support\PublicEntitySeo;
 use Illuminate\View\View;
 
 class WorkController extends Controller
@@ -496,6 +497,7 @@ class WorkController extends Controller
 
         return view('public.works.show', [
             'work' => $work,
+            'entitySeo' => PublicEntitySeo::forWork($work),
         ]);
     }
 }

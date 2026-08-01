@@ -2,12 +2,16 @@
 <html lang="ja">
 <head>
     @include('partials.google-analytics')
-    @include('partials.seo-meta')
+    @include('partials.seo-meta', [
+        'pageSeoTitle' => $entitySeo['title'] ?? null,
+        'pageSeoDescription' => $entitySeo['description'] ?? null,
+        'pageSeoKeywords' => $entitySeo['keywords'] ?? null,
+    ])
 
 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $work->title }} | Oshi-Wiki</title>
+    <title>{{ $entitySeo['title'] ?? $work->title }} | Oshi-Wiki</title>
 
     <link rel="icon" href="{{ asset('favicon.ico') }}" type="image/x-icon">
     <link rel="shortcut icon" href="{{ asset('favicon.ico') }}" type="image/x-icon">
@@ -19,6 +23,19 @@
         src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3916030283806562"
         crossorigin="anonymous"
     ></script>
+    @if (! empty($entitySeo['jsonLd']))
+        <script type="application/ld+json">
+            {!! json_encode(
+                $entitySeo['jsonLd'],
+                JSON_UNESCAPED_UNICODE
+                    | JSON_UNESCAPED_SLASHES
+                    | JSON_HEX_TAG
+                    | JSON_HEX_AMP
+                    | JSON_HEX_APOS
+                    | JSON_HEX_QUOT
+            ) !!}
+        </script>
+    @endif
 </head>
 <body>
 
@@ -38,6 +55,17 @@
     )
 
     <main class="oshi-container space-y-8">
+        @if (filled($entitySeo['summary'] ?? null))
+            <section
+                class="mb-6 rounded-3xl border border-[#E2E8F0]
+                       bg-white px-5 py-4 text-sm leading-7
+                       text-[#4A5568] shadow-sm"
+                aria-label="ページ概要"
+            >
+                {{ $entitySeo['summary'] }}
+            </section>
+        @endif
+
         <nav
             class="public-work-shortcuts mt-10 mb-6"
             aria-label="作品詳細ページ内ショートカット"
