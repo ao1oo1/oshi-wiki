@@ -530,21 +530,60 @@ class WorkStorySectionCsvService
                     $data
                 );
 
-                $characterId = $this->int(
-                    $data['character_id']
+                $characterId = trim(
+                    (string) ($data['character_id'] ?? '')
                 );
 
-                $character = Character::query()
-                    ->whereKey($characterId)
-                    ->whereHas(
-                        'linkedWorks',
-                        fn ($query) =>
-                            $query->where(
-                                'works.id',
-                                $work->id
-                            )
-                    )
-                    ->firstOrFail();
+                $characterName = trim(
+                    (string) ($data['character_name'] ?? '')
+                );
+
+                $character = null;
+
+                if ($characterId !== '') {
+                    $character = Character::query()
+                        ->whereKey($this->int($characterId))
+                        ->whereHas(
+                            'linkedWorks',
+                            fn ($query) =>
+                                $query->where(
+                                    'works.id',
+                                    $work->id
+                                )
+                        )
+                        ->first();
+                }
+
+                if (
+                    ! $character
+                    && $characterName !== ''
+                ) {
+                    $character = Character::query()
+                        ->whereHas(
+                            'linkedWorks',
+                            fn ($query) =>
+                                $query->where(
+                                    'works.id',
+                                    $work->id
+                                )
+                        )
+                        ->where('name', $characterName)
+                        ->first();
+                }
+
+                if (! $character) {
+                    $displayName = $characterName !== ''
+                        ? $characterName
+                        : '(名前未入力)';
+
+                    throw new \RuntimeException(
+                        "キャラクター「{$displayName}」が"
+                        . "作品ID {$work->id} に"
+                        . '登録されていません。'
+                    );
+                }
+
+                $data['character_id'] = $character->id;
 
                 $exists = DB::table(
                     'character_work_story_section'
