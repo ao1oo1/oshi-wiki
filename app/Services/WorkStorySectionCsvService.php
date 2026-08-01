@@ -331,7 +331,7 @@ class WorkStorySectionCsvService
                         >= WorkStorySectionService::MAX_SECTIONS_PER_WORK
                 ) {
                     throw new \RuntimeException(
-                        '章・編は1作品につき最大30件までです。'
+                        '章・編は1作品につき最大100件までです。'
                     );
                 }
 

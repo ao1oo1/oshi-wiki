@@ -11,7 +11,7 @@ use Illuminate\Validation\ValidationException;
 
 class WorkStorySectionService
 {
-    public const MAX_SECTIONS_PER_WORK = 30;
+    public const MAX_SECTIONS_PER_WORK = 100;
     public const MAX_EVENTS_PER_SECTION = 3000;
 
     public function __construct(
@@ -34,7 +34,7 @@ class WorkStorySectionService
         ) {
             throw ValidationException::withMessages([
                 'section' =>
-                    '章・編は1作品につき最大30件まで登録できます。',
+                    '章・編は1作品につき最大100件まで登録できます。',
             ]);
         }
 

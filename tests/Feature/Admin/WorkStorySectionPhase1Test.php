@@ -93,12 +93,12 @@ class WorkStorySectionPhase1Test extends TestCase
         );
     }
 
-    public function test_section_limit_is_thirty_per_work(): void
+    public function test_section_limit_is_one_hundred_per_work(): void
     {
         $user = $this->superAdmin();
         $work = Work::factory()->create();
 
-        for ($i = 1; $i <= 30; $i++) {
+        for ($i = 1; $i <= 100; $i++) {
             WorkStorySection::query()->create([
                 'work_id' => $work->id,
                 'section_type' => 'chapter',
