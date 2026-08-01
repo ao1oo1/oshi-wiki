@@ -7652,3 +7652,14 @@ input[type="number"].oshi-input {
     }
 }
 /* PUBLIC_RELATIONSHIP_TABLE_MOBILE_CARDS_END */
+
+/* PUBLIC_WORK_MOBILE_RELATIONSHIP_FILTER_FIX_START */
+/*
+ * スマホ用カード表示の display:block / display:grid が
+ * hidden属性を上書きしても、絞り込み対象外の行を確実に隠す。
+ */
+.public-work-relationship-table
+[data-public-work-relationship-row][hidden] {
+    display: none !important;
+}
+/* PUBLIC_WORK_MOBILE_RELATIONSHIP_FILTER_FIX_END */

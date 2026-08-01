@@ -2595,10 +2595,19 @@ document.addEventListener('DOMContentLoaded', () => {
                 const visible = selectedId === ''
                     || characterIds.includes(selectedId);
 
-                row.hidden = !visible;
-
                 if (visible) {
+                    row.hidden = false;
+                    row.removeAttribute('aria-hidden');
+                    row.style.removeProperty('display');
                     visibleCount += 1;
+                } else {
+                    row.hidden = true;
+                    row.setAttribute('aria-hidden', 'true');
+                    row.style.setProperty(
+                        'display',
+                        'none',
+                        'important'
+                    );
                 }
             });
 

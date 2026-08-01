@@ -103,4 +103,45 @@ class PublicWorkRelationshipCharacterFilterTest
         );
     }
 
+    public function test_mobile_relationship_filter_forces_hidden_rows_off_screen(): void
+    {
+        $javascript = file_get_contents(
+            resource_path('js/app.js')
+        );
+
+        $css = file_get_contents(
+            resource_path('css/app.css')
+        );
+
+        $this->assertStringContainsString(
+            "row.style.setProperty(",
+            $javascript
+        );
+
+        $this->assertStringContainsString(
+            "'display',",
+            $javascript
+        );
+
+        $this->assertStringContainsString(
+            "'none',",
+            $javascript
+        );
+
+        $this->assertStringContainsString(
+            "'important'",
+            $javascript
+        );
+
+        $this->assertStringContainsString(
+            '[data-public-work-relationship-row][hidden]',
+            $css
+        );
+
+        $this->assertStringContainsString(
+            'display: none !important;',
+            $css
+        );
+    }
+
 }
