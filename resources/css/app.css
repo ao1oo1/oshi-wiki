@@ -7574,3 +7574,81 @@ input[type="number"].oshi-input {
         line-height: 1;
     }
 }
+
+/* PUBLIC_RELATIONSHIP_TABLE_MOBILE_CARDS_START */
+@media (max-width: 767.98px) {
+    .public-character-relationship-table-wrap,
+    .public-work-relationship-table-wrap {
+        overflow: visible !important;
+        background: transparent !important;
+        border: 0 !important;
+        box-shadow: none !important;
+        padding: 0 !important;
+    }
+
+    .public-character-relationship-table,
+    .public-work-relationship-table {
+        width: 100% !important;
+        min-width: 0 !important;
+        border-collapse: separate !important;
+        border-spacing: 0 12px !important;
+        table-layout: fixed !important;
+    }
+
+    .public-character-relationship-table thead,
+    .public-work-relationship-table thead {
+        display: none !important;
+    }
+
+    .public-character-relationship-table tbody,
+    .public-work-relationship-table tbody,
+    .public-character-relationship-table tr,
+    .public-work-relationship-table tr,
+    .public-character-relationship-table td,
+    .public-work-relationship-table td {
+        display: block !important;
+        width: 100% !important;
+    }
+
+    .public-character-relationship-table tr,
+    .public-work-relationship-table tr {
+        margin-bottom: 14px !important;
+        border: 1px solid #E2E8F0 !important;
+        border-radius: 20px !important;
+        background: #FFFFFF !important;
+        overflow: hidden !important;
+    }
+
+    .public-character-relationship-table tbody tr:last-child,
+    .public-work-relationship-table tbody tr:last-child {
+        margin-bottom: 0 !important;
+    }
+
+    .public-character-relationship-table td,
+    .public-work-relationship-table td {
+        padding: 12px 14px !important;
+        border-bottom: 1px solid #EDF2F7 !important;
+        white-space: normal !important;
+        overflow-wrap: anywhere !important;
+        word-break: break-word !important;
+        box-sizing: border-box !important;
+    }
+
+    .public-character-relationship-table td:last-child,
+    .public-work-relationship-table td:last-child {
+        border-bottom: 0 !important;
+    }
+
+    .public-character-relationship-table td::before,
+    .public-work-relationship-table td::before {
+        content: attr(data-label) !important;
+        display: block !important;
+        margin-bottom: 6px !important;
+        color: #718096 !important;
+        font-size: 12px !important;
+        font-weight: 700 !important;
+        line-height: 1.5 !important;
+        letter-spacing: 0.01em !important;
+    }
+}
+/* PUBLIC_RELATIONSHIP_TABLE_MOBILE_CARDS_END */
