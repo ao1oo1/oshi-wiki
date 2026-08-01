@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
+    @include('partials.favicon')
     @include('partials.google-analytics')
 
 
