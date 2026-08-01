@@ -1,6 +1,6 @@
 <x-app-layout>
-    <div class="oshi-admin-layout">
-        <main class="oshi-admin-main">
+    <div class="w-full">
+        <main class="oshi-admin-main w-full max-w-none">
             @include('admin.partials.flash')
 
             @if ($errors->any())

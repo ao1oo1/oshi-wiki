@@ -30,7 +30,7 @@ class AdminStorySectionsMiddleMenuRemovedTest extends TestCase
         );
 
         $this->assertStringContainsString(
-            '        <main class="oshi-admin-main">',
+            '<main class="oshi-admin-main w-full max-w-none">',
             $view
         );
     }
