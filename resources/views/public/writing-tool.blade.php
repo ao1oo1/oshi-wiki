@@ -377,7 +377,7 @@
     )
 
     <main>
-        <section class="writing-lp-hero">
+<section class="writing-lp-hero">
             <div class="oshi-container writing-lp-hero-inner">
                 <div class="writing-lp-hero-copy">
                     <span class="writing-lp-kicker">創作をもっと整理しやすく</span>
@@ -431,7 +431,20 @@
             </div>
         </section>
 
-        <section class="oshi-container writing-lp-section">
+                <div
+            class="mx-auto mb-10 w-full max-w-5xl px-4 sm:px-6 lg:px-8"
+        >
+            <img
+                src="{{ asset('images/writing-tool/top-01.jpg') }}"
+                alt="Oshi-Wiki Writerで利用できる機能の紹介"
+                class="mx-auto block h-auto w-full rounded-3xl
+                       object-contain shadow-lg"
+                loading="lazy"
+                decoding="async"
+            >
+        </div>
+
+<section class="oshi-container writing-lp-section">
             <div class="writing-lp-section-heading">
                 <span>できること</span>
                 <h2>創作に必要な情報をまとめて管理</h2>
