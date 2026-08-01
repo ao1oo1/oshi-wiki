@@ -7,7 +7,7 @@
 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Oshi-Wikiとは？ | Oshi-Wiki</title>
+    <title>Oshi-Wikiの運営目的・掲載方針 | Oshi-Wiki</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
@@ -43,7 +43,7 @@
     <main class="oshi-container">
         <section class="oshi-hero">
             <h1>
-                Oshi-Wikiとは？
+                Oshi-Wikiの運営目的・掲載方針
             </h1>
 
             <p class="oshi-lead">
@@ -54,7 +54,7 @@
         <section class="oshi-section">
             <div class="oshi-card">
                 <div class="oshi-about-body">
-                    <h2>Oshi-Wikiとは？</h2>
+                    <h2>Oshi-Wikiについて</h2>
 
                     <p>
                         Oshi-Wikiは、創作活動に必要なキャラクター情報や作品情報を、より楽に・わかりやすく確認できるようにすることを目的としたサイトです。
