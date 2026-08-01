@@ -49,6 +49,17 @@ class EntityAllFieldsSeoTest extends TestCase
                 'エース・トラッポラ・誕生日・プロフィール',
                 false
             )
+            ->assertSee(
+                'property="og:title" content="'
+                . 'エース・トラッポラ・誕生日・プロフィール',
+                false
+            )
+            ->assertSee('name="description"', false)
+            ->assertSee('エース・トラッポラは', false)
+            ->assertSee(
+                'property="og:description"',
+                false
+            )
             ->assertSee('エース 誕生日', false)
             ->assertSee('9月23日', false)
             ->assertSee('ハーツラビュル寮', false)
@@ -78,6 +89,21 @@ class EntityAllFieldsSeoTest extends TestCase
             ->assertSee(
                 'ツイステッドワンダーランド｜'
                 . 'キャラクター・世界観・用語・設定',
+                false
+            )
+            ->assertSee(
+                'property="og:title" content="'
+                . 'ツイステッドワンダーランド｜'
+                . 'キャラクター・世界観・用語・設定',
+                false
+            )
+            ->assertSee('name="description"', false)
+            ->assertSee(
+                'ツイステッドワンダーランドの作品情報ページです。',
+                false
+            )
+            ->assertSee(
+                'property="og:description"',
                 false
             )
             ->assertSee('オクタヴィネル スペル', false)
