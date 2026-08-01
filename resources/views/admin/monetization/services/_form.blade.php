@@ -26,6 +26,10 @@
         'revenue_model',
         $service->revenue_model ?? 'affiliate_link'
     );
+    $selectedImpressionAdFormat = old(
+        'impression_ad_format',
+        $service->impression_ad_format ?? 'script'
+    );
     $allowedScriptHosts = old(
         'allowed_script_hosts_text',
         isset($service)
@@ -205,6 +209,43 @@
 
         <div>
             <label
+                for="impression_ad_format"
+                class="mb-1 block font-bold text-[#2D3748]"
+            >
+                広告形式
+            </label>
+            <select
+                id="impression_ad_format"
+                name="impression_ad_format"
+                class="w-full rounded-2xl border border-[#CBD5E0]
+                       px-4 py-3"
+            >
+                <option
+                    value="script"
+                    @selected($selectedImpressionAdFormat === 'script')
+                >
+                    スクリプト広告
+                </option>
+                <option
+                    value="text"
+                    @selected($selectedImpressionAdFormat === 'text')
+                >
+                    テキスト広告
+                </option>
+                <option
+                    value="image"
+                    @selected($selectedImpressionAdFormat === 'image')
+                >
+                    画像広告
+                </option>
+            </select>
+            <p class="mt-1 text-sm text-[#718096]">
+                A8.netのバナー広告は「画像広告」を選択します。
+            </p>
+        </div>
+
+        <div>
+            <label
                 for="impression_script"
                 class="mb-1 block font-bold text-[#2D3748]"
             >
@@ -222,14 +263,16 @@
                 $service->impression_script ?? ''
             ) }}</textarea>
             <p class="mt-2 text-sm leading-6 text-[#718096]">
-                対応形式：外部scriptタグ1個、またはA8.net等の
-                テキストリンク＋1×1計測画像。A8.netの場合、
+                対応形式：外部scriptタグ、A8.net等の
+                テキストリンク広告、またはバナー画像広告。
+                A8.netの場合、
                 許可広告ホストへ <code>px.a8.net</code> と
                 <code>www10.a8.net</code> を登録してください。
             </p>
             <p class="mt-1 text-sm text-[#718096]">
-                外部URLを読み込むscriptタグ1個のみ登録できます。
-                インラインJavaScriptは登録できません。
+                選択した広告形式とコードの構造が一致しているか
+                保存時に検証します。インラインJavaScriptや
+                イベント属性は登録できません。
             </p>
         </div>
 
@@ -274,6 +317,23 @@
                     1行に1件、URLではなくホスト名だけを入力します。
                 </p>
             </div>
+        </div>
+
+        <div
+            id="a8-image-example"
+            class="rounded-2xl border border-[#E2E8F0]
+                   bg-[#F7FAFC] p-4 text-sm text-[#4A5568]"
+        >
+            <p class="font-bold">A8.net画像広告の入力例</p>
+            <pre class="mt-2 whitespace-pre-wrap break-all font-mono text-xs">&lt;a href="https://px.a8.net/..." rel="nofollow"&gt;
+&lt;img border="0" width="320" height="50" alt="" src="https://www22.a8.net/..."&gt;&lt;/a&gt;
+&lt;img border="0" width="1" height="1" src="https://www13.a8.net/..." alt=""&gt;</pre>
+            <p class="mt-2">
+                許可ホスト例：
+                <code>px.a8.net</code>、
+                <code>www22.a8.net</code>、
+                <code>www13.a8.net</code>
+            </p>
         </div>
 
         <div class="rounded-2xl bg-[#FFF5F7] p-4 text-sm text-[#4A5568]">

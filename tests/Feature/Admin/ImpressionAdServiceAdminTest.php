@@ -27,6 +27,7 @@ class ImpressionAdServiceAdminTest extends TestCase
                 'slug' => 'shinobi-admax',
                 'category' => 'other',
                 'revenue_model' => 'impression',
+                'impression_ad_format' => 'script',
                 'impression_script' => $script,
                 'allowed_script_hosts_text' => 'adm.shinobi.jp',
                 'ad_identifier' =>
@@ -62,6 +63,7 @@ class ImpressionAdServiceAdminTest extends TestCase
                 'slug' => 'invalid-ad',
                 'category' => 'other',
                 'revenue_model' => 'impression',
+                'impression_ad_format' => 'script',
                 'impression_script' =>
                     '<script src="https://evil.example/ad.js"></script>',
                 'allowed_script_hosts_text' => 'adm.shinobi.jp',
@@ -91,6 +93,7 @@ class ImpressionAdServiceAdminTest extends TestCase
                 'slug' => 'inline-ad',
                 'category' => 'other',
                 'revenue_model' => 'impression',
+                'impression_ad_format' => 'script',
                 'impression_script' =>
                     '<script>alert("xss")</script>',
                 'allowed_script_hosts_text' => 'adm.shinobi.jp',
