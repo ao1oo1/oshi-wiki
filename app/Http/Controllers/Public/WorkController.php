@@ -32,7 +32,6 @@ class WorkController extends Controller
             ->where('status', 'published')
             ->whereNull('parent_work_id')
             ->latest()
-            ->limit(9)
             ->get();
 
         $worksCount = Work::query()
