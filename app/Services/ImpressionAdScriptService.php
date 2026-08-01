@@ -26,7 +26,11 @@ class ImpressionAdScriptService
         $hosts = array_values(array_unique(array_filter(array_map(
             function (string $host): string {
                 $host = strtolower(trim($host));
-                $host = preg_replace('#^https?://#', '', $host) ?? $host;
+                $host = preg_replace(
+                    '#^https?://#',
+                    '',
+                    $host
+                ) ?? $host;
 
                 return rtrim(explode('/', $host, 2)[0], '.');
             },
@@ -35,12 +39,16 @@ class ImpressionAdScriptService
 
         foreach ($hosts as $host) {
             if (
-                ! filter_var('https://' . $host, FILTER_VALIDATE_URL)
+                ! filter_var(
+                    'https://' . $host,
+                    FILTER_VALIDATE_URL
+                )
                 || str_contains($host, ':')
             ) {
                 throw ValidationException::withMessages([
                     'allowed_script_hosts_text' =>
-                        '許可広告ホストはURLではなく、ホスト名のみを入力してください。',
+                        '許可広告ホストはURLではなく、'
+                        . 'ホスト名のみを入力してください。',
                 ]);
             }
         }
@@ -50,40 +58,126 @@ class ImpressionAdScriptService
 
     public function validateAndNormalize(
         string $script,
-        array $allowedHosts
+        array $allowedHosts,
+        string $format = 'script'
     ): string {
         $script = trim($script);
 
-        if (preg_match(
+        return match ($format) {
+            'script' => $this->validateScriptFormat(
+                $script,
+                $allowedHosts
+            ),
+            'text' => $this->validateTextFormat(
+                $script,
+                $allowedHosts
+            ),
+            'image' => $this->validateImageFormat(
+                $script,
+                $allowedHosts
+            ),
+            default => throw ValidationException::withMessages([
+                'impression_ad_format' =>
+                    '広告形式の値が正しくありません。',
+            ]),
+        };
+    }
+
+    private function validateScriptFormat(
+        string $script,
+        array $allowedHosts
+    ): string {
+        if (! preg_match(
             '#^<script\b([^>]*)>\s*</script>$#is',
             $script,
             $matches
         )) {
-            return $this->validateExternalScript(
-                $script,
-                $matches[1],
-                $allowedHosts
-            );
+            throw ValidationException::withMessages([
+                'impression_script' =>
+                    'スクリプト広告には外部scriptタグ1個を'
+                    . '登録してください。',
+            ]);
         }
 
-        if (preg_match(
-            '#^<a\b([^>]*)>(.*?)</a>\s*<img\b([^>]*)/?>$#is',
+        return $this->validateExternalScript(
+            $script,
+            $matches[1],
+            $allowedHosts
+        );
+    }
+
+    private function validateTextFormat(
+        string $script,
+        array $allowedHosts
+    ): string {
+        if (! preg_match(
+            '#^<a\b([^>]*)>(.*?)</a>\s*'
+            . '<img\b([^>]*)/?>$#is',
             $script,
             $matches
         )) {
-            return $this->validateLinkWithTrackingPixel(
-                $script,
-                $matches[1],
-                $matches[2],
-                $matches[3],
-                $allowedHosts
-            );
+            throw ValidationException::withMessages([
+                'impression_script' =>
+                    'テキスト広告には、テキストリンクと'
+                    . '1×1計測画像の組み合わせを登録してください。',
+            ]);
         }
 
-        throw ValidationException::withMessages([
-            'impression_script' =>
-                '広告コードは、外部scriptタグ1個、またはテキストリンクと1×1計測画像の組み合わせだけ登録できます。',
-        ]);
+        if (
+            trim($matches[2]) === ''
+            || strip_tags($matches[2]) !== $matches[2]
+        ) {
+            throw ValidationException::withMessages([
+                'impression_script' =>
+                    'テキスト広告のリンク内には'
+                    . 'プレーンテキストだけを入力してください。',
+            ]);
+        }
+
+        $this->validateLink(
+            $matches[1],
+            $allowedHosts
+        );
+        $this->validateTrackingPixel(
+            $matches[3],
+            $allowedHosts
+        );
+
+        return $script;
+    }
+
+    private function validateImageFormat(
+        string $script,
+        array $allowedHosts
+    ): string {
+        if (! preg_match(
+            '#^<a\b([^>]*)>\s*'
+            . '<img\b([^>]*)/?>\s*</a>\s*'
+            . '<img\b([^>]*)/?>$#is',
+            $script,
+            $matches
+        )) {
+            throw ValidationException::withMessages([
+                'impression_script' =>
+                    '画像広告には、リンク内のバナー画像と'
+                    . 'リンク外の1×1計測画像を登録してください。',
+            ]);
+        }
+
+        $this->validateLink(
+            $matches[1],
+            $allowedHosts
+        );
+        $this->validateBannerImage(
+            $matches[2],
+            $allowedHosts
+        );
+        $this->validateTrackingPixel(
+            $matches[3],
+            $allowedHosts
+        );
+
+        return $script;
     }
 
     private function validateExternalScript(
@@ -102,48 +196,50 @@ class ImpressionAdScriptService
 
         if ($src === '') {
             throw ValidationException::withMessages([
-                'impression_script' => '広告スクリプトにはsrc属性が必要です。',
+                'impression_script' =>
+                    '広告スクリプトにはsrc属性が必要です。',
             ]);
         }
 
-        $this->validateHttpsUrl($src, $allowedHosts, '広告スクリプトのsrc');
+        $this->validateHttpsUrl(
+            $src,
+            $allowedHosts,
+            '広告スクリプトのsrc'
+        );
 
         return $script;
     }
 
-    private function validateLinkWithTrackingPixel(
-        string $script,
-        string $linkAttributeSource,
-        string $linkText,
-        string $imageAttributeSource,
+    private function validateLink(
+        string $attributeSource,
         array $allowedHosts
-    ): string {
-        if (trim($linkText) === '' || strip_tags($linkText) !== $linkText) {
-            throw ValidationException::withMessages([
-                'impression_script' =>
-                    '広告リンク内にはプレーンテキストだけを入力してください。',
-            ]);
-        }
-
-        $linkAttributes = $this->parseAttributes(
-            $linkAttributeSource,
+    ): void {
+        $attributes = $this->parseAttributes(
+            $attributeSource,
             self::LINK_ATTRIBUTES,
             'a'
         );
 
-        $href = $linkAttributes['href'] ?? '';
+        $href = $attributes['href'] ?? '';
 
         if ($href === '') {
             throw ValidationException::withMessages([
-                'impression_script' => '広告リンクにはhref属性が必要です。',
+                'impression_script' =>
+                    '広告リンクにはhref属性が必要です。',
             ]);
         }
 
-        $this->validateHttpsUrl($href, $allowedHosts, '広告リンクのhref');
+        $this->validateHttpsUrl(
+            $href,
+            $allowedHosts,
+            '広告リンクのhref'
+        );
 
         $rel = preg_split(
             '/\s+/',
-            strtolower(trim((string) ($linkAttributes['rel'] ?? '')))
+            strtolower(trim((string) (
+                $attributes['rel'] ?? ''
+            )))
         ) ?: [];
 
         if (! in_array('nofollow', $rel, true)) {
@@ -154,51 +250,125 @@ class ImpressionAdScriptService
         }
 
         if (
-            isset($linkAttributes['target'])
-            && ! in_array($linkAttributes['target'], ['_blank', '_self'], true)
+            isset($attributes['target'])
+            && ! in_array(
+                $attributes['target'],
+                ['_blank', '_self'],
+                true
+            )
         ) {
             throw ValidationException::withMessages([
                 'impression_script' =>
-                    '広告リンクのtarget属性は_blankまたは_selfだけ使用できます。',
+                    '広告リンクのtarget属性は_blankまたは_self'
+                    . 'だけ使用できます。',
             ]);
         }
+    }
 
-        $imageAttributes = $this->parseAttributes(
-            $imageAttributeSource,
+    private function validateBannerImage(
+        string $attributeSource,
+        array $allowedHosts
+    ): void {
+        $attributes = $this->parseAttributes(
+            $attributeSource,
             self::IMAGE_ATTRIBUTES,
             'img'
         );
 
-        $src = $imageAttributes['src'] ?? '';
+        $src = $attributes['src'] ?? '';
 
         if ($src === '') {
             throw ValidationException::withMessages([
-                'impression_script' => '計測画像にはsrc属性が必要です。',
+                'impression_script' =>
+                    'バナー画像にはsrc属性が必要です。',
             ]);
         }
 
-        $this->validateHttpsUrl($src, $allowedHosts, '計測画像のsrc');
+        $this->validateHttpsUrl(
+            $src,
+            $allowedHosts,
+            'バナー画像のsrc'
+        );
+
+        $width = filter_var(
+            $attributes['width'] ?? null,
+            FILTER_VALIDATE_INT
+        );
+        $height = filter_var(
+            $attributes['height'] ?? null,
+            FILTER_VALIDATE_INT
+        );
 
         if (
-            (string) ($imageAttributes['width'] ?? '') !== '1'
-            || (string) ($imageAttributes['height'] ?? '') !== '1'
+            $width === false
+            || $height === false
+            || $width < 2
+            || $height < 2
+            || $width > 2000
+            || $height > 2000
         ) {
             throw ValidationException::withMessages([
                 'impression_script' =>
-                    '計測画像はwidth="1" height="1"で登録してください。',
+                    'バナー画像のwidthとheightは2〜2000の'
+                    . '整数で指定してください。',
             ]);
         }
+
+        $this->validateBorder($attributes, 'バナー画像');
+    }
+
+    private function validateTrackingPixel(
+        string $attributeSource,
+        array $allowedHosts
+    ): void {
+        $attributes = $this->parseAttributes(
+            $attributeSource,
+            self::IMAGE_ATTRIBUTES,
+            'img'
+        );
+
+        $src = $attributes['src'] ?? '';
+
+        if ($src === '') {
+            throw ValidationException::withMessages([
+                'impression_script' =>
+                    '計測画像にはsrc属性が必要です。',
+            ]);
+        }
+
+        $this->validateHttpsUrl(
+            $src,
+            $allowedHosts,
+            '計測画像のsrc'
+        );
 
         if (
-            isset($imageAttributes['border'])
-            && (string) $imageAttributes['border'] !== '0'
+            (string) ($attributes['width'] ?? '') !== '1'
+            || (string) ($attributes['height'] ?? '') !== '1'
         ) {
             throw ValidationException::withMessages([
-                'impression_script' => '計測画像のborderは0だけ使用できます。',
+                'impression_script' =>
+                    '計測画像はwidth="1" height="1"で'
+                    . '登録してください。',
             ]);
         }
 
-        return $script;
+        $this->validateBorder($attributes, '計測画像');
+    }
+
+    private function validateBorder(
+        array $attributes,
+        string $label
+    ): void {
+        if (
+            isset($attributes['border'])
+            && (string) $attributes['border'] !== '0'
+        ) {
+            throw ValidationException::withMessages([
+                'impression_script' =>
+                    "{$label}のborderは0だけ使用できます。",
+            ]);
+        }
     }
 
     private function validateHttpsUrl(
@@ -210,11 +380,14 @@ class ImpressionAdScriptService
 
         if (
             ! is_array($parts)
-            || strtolower((string) ($parts['scheme'] ?? '')) !== 'https'
+            || strtolower(
+                (string) ($parts['scheme'] ?? '')
+            ) !== 'https'
             || blank($parts['host'] ?? null)
         ) {
             throw ValidationException::withMessages([
-                'impression_script' => "{$label}はhttps URLで入力してください。",
+                'impression_script' =>
+                    "{$label}はhttps URLで入力してください。",
             ]);
         }
 
@@ -223,13 +396,17 @@ class ImpressionAdScriptService
         $allowed = collect($allowedHosts)->contains(
             fn (string $allowedHost): bool =>
                 $host === $allowedHost
-                || str_ends_with($host, '.' . $allowedHost)
+                || str_ends_with(
+                    $host,
+                    '.' . $allowedHost
+                )
         );
 
         if (! $allowed) {
             throw ValidationException::withMessages([
                 'impression_script' =>
-                    "{$label}のホスト「{$host}」が許可広告ホストに含まれていません。",
+                    "{$label}のホスト「{$host}」が"
+                    . '許可広告ホストに含まれていません。',
             ]);
         }
     }
@@ -242,7 +419,8 @@ class ImpressionAdScriptService
     ): array {
         preg_match_all(
             '/([a-zA-Z_:][-a-zA-Z0-9_:.]*)'
-            . '(?:\s*=\s*("[^"]*"|\'[^\']*\'|[^\s"\'>]+))?/',
+            . '(?:\s*=\s*("[^"]*"|\'[^\']*\'|'
+            . '[^\s"\'>]+))?/',
             $source,
             $matches,
             PREG_SET_ORDER
@@ -260,20 +438,26 @@ class ImpressionAdScriptService
             if (
                 str_starts_with($name, 'on')
                 || (
-                    ! in_array($name, $allowedAttributes, true)
+                    ! in_array(
+                        $name,
+                        $allowedAttributes,
+                        true
+                    )
                     && ! $isAllowedDataAttribute
                 )
             ) {
                 throw ValidationException::withMessages([
                     'impression_script' =>
-                        "{$tagName}タグで許可されていない属性です: {$name}",
+                        "{$tagName}タグで許可されていない"
+                        . "属性です: {$name}",
                 ]);
             }
 
             if (array_key_exists($name, $attributes)) {
                 throw ValidationException::withMessages([
                     'impression_script' =>
-                        "{$tagName}タグの{$name}属性が重複しています。",
+                        "{$tagName}タグの{$name}属性が"
+                        . '重複しています。',
                 ]);
             }
 

@@ -45,6 +45,11 @@ class StoreMonetizationServiceRequest extends FormRequest
                 )),
             ],
             'description' => ['nullable', 'string'],
+            'impression_ad_format' => [
+                'nullable',
+                'required_if:revenue_model,impression',
+                Rule::in(['script', 'text', 'image']),
+            ],
             'impression_script' => [
                 'nullable',
                 'required_if:revenue_model,impression',
@@ -90,6 +95,10 @@ class StoreMonetizationServiceRequest extends FormRequest
                 '収益方式を選択してください。',
             'revenue_model.in' =>
                 '収益方式の値が正しくありません。',
+            'impression_ad_format.required_if' =>
+                'インプレッション課金型広告では広告形式を選択してください。',
+            'impression_ad_format.in' =>
+                '広告形式の値が正しくありません。',
             'impression_script.required_if' =>
                 'インプレッション課金型広告では広告コードが必須です。',
             'impression_script.max' =>
@@ -131,6 +140,7 @@ class StoreMonetizationServiceRequest extends FormRequest
             'category' => 'カテゴリ',
             'revenue_model' => '収益方式',
             'description' => '説明',
+            'impression_ad_format' => '広告形式',
             'impression_script' => '広告コード',
             'allowed_script_hosts_text' => '許可広告ホスト',
             'ad_identifier' => '広告ID',

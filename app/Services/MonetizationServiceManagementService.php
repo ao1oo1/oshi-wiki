@@ -97,6 +97,7 @@ class MonetizationServiceManagementService
         $model = $data['revenue_model'] ?? 'affiliate_link';
 
         if ($model !== 'impression') {
+            $data['impression_ad_format'] = null;
             $data['impression_script'] = null;
             $data['allowed_script_hosts'] = null;
             $data['ad_identifier'] = null;
@@ -116,10 +117,15 @@ class MonetizationServiceManagementService
             ]);
         }
 
+        $format = (string) (
+            $data['impression_ad_format'] ?? 'script'
+        );
+
         $data['impression_script'] =
             $this->impressionAdScript->validateAndNormalize(
                 (string) ($data['impression_script'] ?? ''),
-                $hosts
+                $hosts,
+                $format
             );
 
         $data['allowed_script_hosts'] = $hosts;

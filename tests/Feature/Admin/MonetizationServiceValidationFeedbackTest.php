@@ -22,6 +22,7 @@ class MonetizationServiceValidationFeedbackTest extends TestCase
                 'slug' => 'Invalid Slug',
                 'category' => 'other',
                 'revenue_model' => 'impression',
+                'impression_ad_format' => 'script',
                 'impression_script' => '',
                 'allowed_script_hosts_text' => '',
                 'ad_identifier' => 'invalid id!',
@@ -48,6 +49,7 @@ class MonetizationServiceValidationFeedbackTest extends TestCase
                 'slug' => 'Invalid Slug',
                 'category' => 'other',
                 'revenue_model' => 'impression',
+                'impression_ad_format' => 'script',
                 'impression_script' => '',
                 'allowed_script_hosts_text' => '',
                 'ad_identifier' => 'invalid id!',
@@ -88,6 +90,7 @@ class MonetizationServiceValidationFeedbackTest extends TestCase
                 'slug' => 'update-target',
                 'category' => 'other',
                 'revenue_model' => 'impression',
+                'impression_ad_format' => 'script',
                 'impression_script' =>
                     '<script src="https://blocked.example/ad.js"></script>',
                 'allowed_script_hosts_text' => 'allowed.example',
@@ -119,6 +122,7 @@ class MonetizationServiceValidationFeedbackTest extends TestCase
                 'slug' => 'update-target',
                 'category' => 'other',
                 'revenue_model' => 'impression',
+                'impression_ad_format' => 'script',
                 'impression_script' =>
                     '<script src="https://blocked.example/ad.js"></script>',
                 'allowed_script_hosts_text' => 'allowed.example',

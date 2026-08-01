@@ -128,6 +128,7 @@ class A8AffiliateAdCodeTest extends TestCase
             'slug' => 'a8-coconala-fortune',
             'category' => 'other',
             'revenue_model' => 'impression',
+                'impression_ad_format' => 'text',
             'description' => 'A8.netテキスト広告',
             'impression_script' => $code,
             'allowed_script_hosts_text' => "px.a8.net\nwww10.a8.net",

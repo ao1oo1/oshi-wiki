@@ -11,7 +11,7 @@ class MonetizationService extends Model
     use SoftDeletes;
 
     protected $fillable = [
-        'name', 'slug', 'category', 'revenue_model', 'logo_path',
+        'name', 'slug', 'category', 'revenue_model', 'impression_ad_format', 'logo_path',
         'description', 'impression_script', 'allowed_script_hosts',
         'ad_identifier', 'default_button_label', 'priority',
         'is_active',
