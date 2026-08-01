@@ -241,22 +241,6 @@
                         >
                             <option value="">選択してください</option>
 
-                            @foreach ($characters as $character)
-                                @php
-                                    $ref = 'original:' . $character->id;
-                                @endphp
-                                <option
-                                    value="{{ $ref }}"
-                                    data-source="original"
-                                    data-work-refs="original"
-                                    @selected(
-                                        $selector['characterRef'] === $ref
-                                    )
-                                >
-                                    {{ $character->name }}
-                                </option>
-                            @endforeach
-
                         </select>
 
                         <p
@@ -452,81 +436,6 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        function setupRelationshipSelector(side) {
-            const workSelect = document.getElementById(
-                `${side}_work_ref`
-            );
-            const characterSelect = document.getElementById(
-                `${side}_character_ref`
-            );
-            const emptyMessage = document.getElementById(
-                `${side}_character_empty`
-            );
-
-            if (! workSelect || ! characterSelect) {
-                return;
-            }
-
-            const options = Array.from(
-                characterSelect.querySelectorAll(
-                    'option[data-work-refs]'
-                )
-            );
-
-            function refreshCharacters(keepCurrent = true) {
-                const selectedWorkRef = workSelect.value;
-                const currentValue = keepCurrent
-                    ? characterSelect.value
-                    : '';
-
-                let visibleCount = 0;
-                let currentIsVisible = false;
-
-                options.forEach((option) => {
-                    const workRefs = (
-                        option.dataset.workRefs || ''
-                    ).split('|');
-
-                    const isVisible = selectedWorkRef !== ''
-                        && workRefs.includes(selectedWorkRef);
-
-                    option.hidden = ! isVisible;
-                    option.disabled = ! isVisible;
-
-                    if (isVisible) {
-                        visibleCount += 1;
-
-                        if (option.value === currentValue) {
-                            currentIsVisible = true;
-                        }
-                    }
-                });
-
-                if (! currentIsVisible) {
-                    characterSelect.value = '';
-                }
-
-                characterSelect.disabled = selectedWorkRef === ''
-                    || visibleCount === 0;
-
-                if (emptyMessage) {
-                    emptyMessage.classList.toggle(
-                        'hidden',
-                        selectedWorkRef === '' || visibleCount > 0
-                    );
-                }
-            }
-
-            workSelect.addEventListener('change', function () {
-                refreshCharacters(false);
-            });
-
-            refreshCharacters(true);
-        }
-
-        setupRelationshipSelector('from');
-        setupRelationshipSelector('to');
-
         const list = document.getElementById('relationship-timeline-list');
         const addButton = document.getElementById('relationship-timeline-add');
         const countLabel = document.getElementById('relationship-timeline-count');
@@ -653,12 +562,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const empty = document.getElementById(
             `${side}_character_empty`
         );
-        const originalOptions = Array.from(
-            characterSelect.querySelectorAll(
-                'option[data-source="original"]'
-            )
-        ).map((option) => option.cloneNode(true));
-
         let requestToken = 0;
 
         const setMessage = (
@@ -714,23 +617,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
-            if (workRef === 'original') {
-                originalOptions.forEach((option) => {
-                    characterSelect.appendChild(
-                        option.cloneNode(true)
-                    );
-                });
-
-                characterSelect.disabled = false;
-                applySelected(selectedRef);
-                setMessage(
-                    false,
-                    originalOptions.length === 0
-                );
-                return;
-            }
-
-            if (!workRef.startsWith('work:')) {
+            if (
+                workRef !== 'original'
+                && !workRef.startsWith('work:')
+            ) {
                 characterSelect.disabled = true;
                 return;
             }
@@ -742,10 +632,22 @@ document.addEventListener('DOMContentLoaded', () => {
                 endpoint,
                 window.location.origin
             );
-            url.searchParams.set(
-                'work_id',
-                workRef.slice('work:'.length)
-            );
+
+            if (workRef === 'original') {
+                url.searchParams.set(
+                    'source',
+                    'original'
+                );
+            } else {
+                url.searchParams.set(
+                    'source',
+                    'work'
+                );
+                url.searchParams.set(
+                    'work_id',
+                    workRef.slice('work:'.length)
+                );
+            }
 
             try {
                 const response = await fetch(url, {
@@ -779,7 +681,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     const option =
                         document.createElement('option');
 
-                    option.value = `v1:${character.id}`;
+                    option.value = workRef === 'original'
+                        ? `original:${character.id}`
+                        : `v1:${character.id}`;
                     option.textContent = character.name;
                     option.dataset.workRefs = workRef;
                     characterSelect.appendChild(option);

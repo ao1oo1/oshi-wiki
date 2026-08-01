@@ -46,8 +46,11 @@ class WriterRelationshipWorkSelectionTest extends TestCase
             ->assertSee('オリジナルキャラクター')
             ->assertSee('選択対象作品')
             ->assertDontSee('作品登録キャラクター')
-            ->assertSee('自作キャラクター')
-            ->assertSee('data-work-refs="original"', false)
+            ->assertDontSee('自作キャラクター')
+            ->assertDontSee(
+                'data-work-refs="original"',
+                false
+            )
             ->assertSee(
                 route(
                     'writer.original-character-relationships.characters'
@@ -65,6 +68,46 @@ class WriterRelationshipWorkSelectionTest extends TestCase
                 'characters.0.name',
                 '作品登録キャラクター'
             );
+    }
+
+    public function test_original_characters_are_loaded_after_original_work_selection(): void
+    {
+        $user = $this->writerUser();
+
+        OriginalCharacter::forceCreate([
+            'user_id' => $user->id,
+            'name' => '遅延読込OC',
+        ]);
+
+        $this->actingAs($user)
+            ->get(route(
+                'writer.original-character-relationships.create'
+            ))
+            ->assertOk()
+            ->assertDontSee('遅延読込OC');
+
+        $this->actingAs($user)
+            ->getJson(route(
+                'writer.original-character-relationships.characters',
+                ['source' => 'original']
+            ))
+            ->assertOk()
+            ->assertJsonFragment([
+                'name' => '遅延読込OC',
+            ]);
+
+        $form = file_get_contents(
+            resource_path(
+                'views/writer/'
+                . 'original_character_relationships/'
+                . '_form.blade.php'
+            )
+        );
+
+        $this->assertStringContainsString(
+            '? `original:${character.id}`',
+            $form
+        );
     }
 
     public function test_additional_work_is_in_character_work_refs(): void
