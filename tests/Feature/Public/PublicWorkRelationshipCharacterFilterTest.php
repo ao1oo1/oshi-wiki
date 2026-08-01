@@ -71,4 +71,36 @@ class PublicWorkRelationshipCharacterFilterTest
             $javascript
         );
     }
+    public function test_top_generated_intro_before_shortcuts_is_removed(): void
+    {
+        $view = file_get_contents(
+            resource_path(
+                'views/public/works/show.blade.php'
+            )
+        );
+
+        $shortcutPosition = strpos(
+            $view,
+            'public-work-shortcuts'
+        );
+
+        $this->assertNotFalse($shortcutPosition);
+
+        $beforeShortcuts = substr(
+            $view,
+            0,
+            $shortcutPosition
+        );
+
+        $this->assertStringNotContainsString(
+            "\$entitySeo['summary']",
+            $beforeShortcuts
+        );
+
+        $this->assertStringNotContainsString(
+            'aria-label="ページ概要"',
+            $beforeShortcuts
+        );
+    }
+
 }

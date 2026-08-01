@@ -55,17 +55,6 @@
     )
 
     <main class="oshi-container space-y-8">
-        @if (filled($entitySeo['summary'] ?? null))
-            <section
-                class="mb-6 rounded-3xl border border-[#E2E8F0]
-                       bg-white px-5 py-4 text-sm leading-7
-                       text-[#4A5568] shadow-sm"
-                aria-label="ページ概要"
-            >
-                {{ $entitySeo['summary'] }}
-            </section>
-        @endif
-
         <nav
             class="public-work-shortcuts mt-10 mb-6"
             aria-label="作品詳細ページ内ショートカット"
