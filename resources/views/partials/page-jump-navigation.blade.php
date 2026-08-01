@@ -21,10 +21,15 @@
 >
     <a
         href="#{{ $targetId }}"
-        class="page-jump-link"
+        class="page-jump-link {{ $isTop
+            ? 'page-jump-link-bottom'
+            : 'page-jump-link-top' }}"
         data-page-jump
     >
-        <span aria-hidden="true">{{ $arrow }}</span>
-        <span>{{ $label }}</span>
+        <span
+            class="page-jump-icon"
+            aria-hidden="true"
+        >{{ $arrow }}</span>
+        <span class="page-jump-label">{{ $label }}</span>
     </a>
 </nav>
