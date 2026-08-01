@@ -48,7 +48,7 @@ class SeoSettingController extends Controller
                 ->delete();
         });
 
-        SeoSettings::forget();
+        SeoSettings::refresh();
 
         return redirect()
             ->route('admin.analytics.index', ['tab' => 'seo'])
