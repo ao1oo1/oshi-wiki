@@ -387,7 +387,6 @@
                                                 @php($snapshot = collect([$character->pivot->age_at_section ? '年齢：'.$character->pivot->age_at_section : null,$character->pivot->school_grade_at_section ? '学年：'.$character->pivot->school_grade_at_section : null,$character->pivot->class_at_section ? 'クラス：'.$character->pivot->class_at_section : null,$character->pivot->affiliation_at_section ? '所属：'.$character->pivot->affiliation_at_section : null,$character->pivot->position_at_section ? '役職：'.$character->pivot->position_at_section : null])->filter())
                                                 @if ($snapshot->isNotEmpty())<div class="mt-3 flex flex-wrap gap-2 text-sm text-[#4A5568]">@foreach ($snapshot as $item)<span class="rounded-full bg-[#F7FAFC] px-3 py-1">{{ $item }}</span>@endforeach</div>@endif
                                                 @if ($character->pivot->character_state)<p class="mt-3 whitespace-pre-wrap text-sm leading-7 text-[#4A5568]">{{ $character->pivot->character_state }}</p>@endif
-                                                @if ($character->pivot->notes)<p class="mt-3 whitespace-pre-wrap text-xs leading-6 text-[#718096]">備考：{{ $character->pivot->notes }}</p>@endif
                                             </article>
                                         @endforeach
                                     </div></div>
