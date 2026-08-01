@@ -429,13 +429,10 @@ class WorkStorySectionCsvService
 
         foreach ($rows as [$line, $data]) {
             try {
-                $section = WorkStorySection::query()
-                    ->where('work_id', $work->id)
-                    ->findOrFail(
-                        $this->int(
-                            $data['story_section_id']
-                        )
-                    );
+                $section = $this->resolveSection(
+                    $work,
+                    $data
+                );
 
                 $eventId = $this->int(
                     $data['story_event_id'] ?? null
@@ -528,13 +525,10 @@ class WorkStorySectionCsvService
 
         foreach ($rows as [$line, $data]) {
             try {
-                $section = WorkStorySection::query()
-                    ->where('work_id', $work->id)
-                    ->findOrFail(
-                        $this->int(
-                            $data['story_section_id']
-                        )
-                    );
+                $section = $this->resolveSection(
+                    $work,
+                    $data
+                );
 
                 $characterId = $this->int(
                     $data['character_id']
@@ -638,6 +632,50 @@ class WorkStorySectionCsvService
         }
 
         return $result;
+    }
+
+    private function resolveSection(
+        Work $work,
+        array $data
+    ): WorkStorySection {
+        $storySectionId = trim(
+            (string) ($data['story_section_id'] ?? '')
+        );
+
+        if ($storySectionId !== '') {
+            $section = WorkStorySection::query()
+                ->where('work_id', $work->id)
+                ->find($this->int($storySectionId));
+
+            if ($section) {
+                return $section;
+            }
+        }
+
+        $sectionTitle = trim(
+            (string) ($data['section_title'] ?? '')
+        );
+
+        if ($sectionTitle === '') {
+            throw new \RuntimeException(
+                'story_section_idまたはsection_titleを'
+                . '指定してください。'
+            );
+        }
+
+        $matches = WorkStorySection::query()
+            ->where('work_id', $work->id)
+            ->where('title', $sectionTitle)
+            ->get();
+
+        if ($matches->count() !== 1) {
+            throw new \RuntimeException(
+                "章・編「{$sectionTitle}」を"
+                . '一意に特定できません。'
+            );
+        }
+
+        return $matches->first();
     }
 
     private function resolveParentId(
