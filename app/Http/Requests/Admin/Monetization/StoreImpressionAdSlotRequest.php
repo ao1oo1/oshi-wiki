@@ -86,6 +86,52 @@ class StoreImpressionAdSlotRequest extends FormRequest
         ];
     }
 
+    public function messages(): array
+    {
+        return [
+            'monetization_service_id.required' =>
+                '広告サービスを選択してください。',
+            'monetization_service_id.integer' =>
+                '広告サービスの値が正しくありません。',
+            'monetization_service_id.exists' =>
+                '選択した広告サービスは利用できません。',
+            'name.required' =>
+                'スロット名を入力してください。',
+            'name.max' =>
+                'スロット名は120文字以内で入力してください。',
+            'page_scope.required' =>
+                '対象ページを選択してください。',
+            'page_scope.in' =>
+                '対象ページの値が正しくありません。',
+            'position.required' =>
+                '表示位置を選択してください。',
+            'position.in' =>
+                '表示位置の値が正しくありません。',
+            'device_type.required' =>
+                '表示端末を選択してください。',
+            'device_type.in' =>
+                '表示端末の値が正しくありません。',
+            'priority.required' =>
+                '表示順を入力してください。',
+            'priority.integer' =>
+                '表示順は整数で入力してください。',
+            'priority.min' =>
+                '表示順は0以上で入力してください。',
+            'priority.max' =>
+                '表示順は9999以下で入力してください。',
+            'is_active.required' =>
+                '利用状態を選択してください。',
+            'is_active.boolean' =>
+                '利用状態の値が正しくありません。',
+            'starts_at.date' =>
+                '表示開始日時を正しい日時形式で入力してください。',
+            'ends_at.date' =>
+                '表示終了日時を正しい日時形式で入力してください。',
+            'ends_at.after_or_equal' =>
+                '表示終了日時は表示開始日時以降にしてください。',
+        ];
+    }
+
     public function attributes(): array
     {
         return [

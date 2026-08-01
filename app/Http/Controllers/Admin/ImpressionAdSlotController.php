@@ -10,6 +10,7 @@ use App\Models\MonetizationService;
 use App\Services\ImpressionAdSlotService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
+use Illuminate\Validation\ValidationException;
 
 class ImpressionAdSlotController extends Controller
 {
@@ -42,10 +43,16 @@ class ImpressionAdSlotController extends Controller
     ): RedirectResponse {
         $this->ensureSuperAdmin();
 
-        $this->service->create(
-            $request->validated(),
-            auth()->id()
-        );
+        try {
+            $this->service->create(
+                $request->validated(),
+                auth()->id()
+            );
+        } catch (ValidationException $exception) {
+            return back()
+                ->withErrors($exception->errors())
+                ->withInput();
+        }
 
         return redirect()
             ->route('admin.monetization.ad-slots.index')
@@ -71,11 +78,17 @@ class ImpressionAdSlotController extends Controller
     ): RedirectResponse {
         $this->ensureSuperAdmin();
 
-        $this->service->update(
-            $adSlot,
-            $request->validated(),
-            auth()->id()
-        );
+        try {
+            $this->service->update(
+                $adSlot,
+                $request->validated(),
+                auth()->id()
+            );
+        } catch (ValidationException $exception) {
+            return back()
+                ->withErrors($exception->errors())
+                ->withInput();
+        }
 
         return redirect()
             ->route('admin.monetization.ad-slots.index')
