@@ -45,12 +45,25 @@ class WriterRelationshipWorkSelectionTest extends TestCase
             ->assertSee('name="to_work_ref"', false)
             ->assertSee('オリジナルキャラクター')
             ->assertSee('選択対象作品')
-            ->assertSee('作品登録キャラクター')
+            ->assertDontSee('作品登録キャラクター')
             ->assertSee('自作キャラクター')
             ->assertSee('data-work-refs="original"', false)
             ->assertSee(
-                'data-work-refs="work:' . $work->id . '"',
+                route(
+                    'writer.original-character-relationships.characters'
+                ),
                 false
+            );
+
+        $this->actingAs($user)
+            ->getJson(route(
+                'writer.original-character-relationships.characters',
+                ['work_id' => $work->id]
+            ))
+            ->assertOk()
+            ->assertJsonPath(
+                'characters.0.name',
+                '作品登録キャラクター'
             );
     }
 
@@ -85,8 +98,22 @@ class WriterRelationshipWorkSelectionTest extends TestCase
         $response
             ->assertOk()
             ->assertSee('追加作品')
-            ->assertSee('追加作品キャラクター')
-            ->assertSee('work:' . $chapter->id, false);
+            ->assertDontSee('追加作品キャラクター')
+            ->assertSee(
+                'work:' . $chapter->id,
+                false
+            );
+
+        $this->actingAs($user)
+            ->getJson(route(
+                'writer.original-character-relationships.characters',
+                ['work_id' => $chapter->id]
+            ))
+            ->assertOk()
+            ->assertJsonPath(
+                'characters.0.name',
+                '追加作品キャラクター'
+            );
     }
 
     public function test_store_accepts_original_and_work_character(): void

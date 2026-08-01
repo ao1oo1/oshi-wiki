@@ -12,6 +12,7 @@ use App\Services\OriginalCharacterRelationshipService;
 use App\Support\WritingAssistLimits;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
 use Illuminate\View\View;
 
 class OriginalCharacterRelationshipController extends Controller
@@ -39,8 +40,54 @@ class OriginalCharacterRelationshipController extends Controller
 
         return view('writer.original_character_relationships.create', [
             'characters' => $this->characterRepository->allForUser($user),
-            'publishedWorks' => $this->publishedWorks(),
+            'publishedWorks' => $this->publishedWorksWithoutCharacters(),
             'limit' => WritingAssistLimits::relationshipsPerUser($user),
+        ]);
+    }
+
+    public function characters(
+        Request $request
+    ): JsonResponse {
+        $validated = $request->validate([
+            'work_id' => [
+                'required',
+                'integer',
+            ],
+        ]);
+
+        $work = Work::query()
+            ->where('status', 'published')
+            ->findOrFail((int) $validated['work_id']);
+
+        $directCharacters = $work->characters()
+            ->where('characters.status', 'published')
+            ->get([
+                'characters.id',
+                'characters.name',
+            ]);
+
+        $linkedCharacters = $work->linkedCharacters()
+            ->where('characters.status', 'published')
+            ->get([
+                'characters.id',
+                'characters.name',
+            ]);
+
+        $characters = $directCharacters
+            ->merge($linkedCharacters)
+            ->unique('id')
+            ->sortBy([
+                ['name', 'asc'],
+                ['id', 'asc'],
+            ])
+            ->values()
+            ->map(fn ($character) => [
+                'id' => (int) $character->id,
+                'name' => (string) $character->name,
+            ]);
+
+        return response()->json([
+            'characters' => $characters,
         ]);
     }
 
@@ -234,4 +281,20 @@ class OriginalCharacterRelationshipController extends Controller
                 );
             });
     }
+    private function publishedWorksWithoutCharacters()
+    {
+        return Work::query()
+            ->where('status', 'published')
+            ->with([
+                'parentWork:id,title',
+            ])
+            ->orderBy('title')
+            ->orderBy('id')
+            ->get([
+                'id',
+                'title',
+                'parent_work_id',
+            ]);
+    }
+
 }

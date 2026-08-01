@@ -32,11 +32,6 @@
     $characters = $characters ?? collect();
     $publishedWorks = $publishedWorks ?? collect();
 
-    $publishedCharacters = $publishedWorks
-        ->flatMap(fn ($work) => $work->characters)
-        ->unique('id')
-        ->sortBy('name')
-        ->values();
 
     $resolveWorkRef = function (?string $characterRef) use (
         $publishedWorks
@@ -238,6 +233,10 @@
                             name="{{ $selector['side'] }}_character_ref"
                             class="relationship-character-select"
                             data-side="{{ $selector['side'] }}"
+                            data-endpoint="{{ route(
+                                'writer.original-character-relationships.characters'
+                            ) }}"
+                            data-selected-ref="{{ $selector['characterRef'] }}"
                             required
                         >
                             <option value="">選択してください</option>
@@ -248,6 +247,7 @@
                                 @endphp
                                 <option
                                     value="{{ $ref }}"
+                                    data-source="original"
                                     data-work-refs="original"
                                     @selected(
                                         $selector['characterRef'] === $ref
@@ -257,36 +257,15 @@
                                 </option>
                             @endforeach
 
-                            @foreach ($publishedCharacters as $character)
-                                @php
-                                    $ref = 'v1:' . $character->id;
-
-                                    $characterWorkRefs = $publishedWorks
-                                        ->filter(
-                                            fn ($work) =>
-                                                $work->characters->contains(
-                                                    fn ($item) =>
-                                                        (int) $item->id
-                                                            === (int) $character->id
-                                                )
-                                        )
-                                        ->map(
-                                            fn ($work) =>
-                                                'work:' . $work->id
-                                        )
-                                        ->implode('|');
-                                @endphp
-                                <option
-                                    value="{{ $ref }}"
-                                    data-work-refs="{{ $characterWorkRefs }}"
-                                    @selected(
-                                        $selector['characterRef'] === $ref
-                                    )
-                                >
-                                    {{ $character->name }}
-                                </option>
-                            @endforeach
                         </select>
+
+                        <p
+                            id="{{ $selector['side'] }}_character_loading"
+                            class="mt-2 hidden text-xs font-bold leading-6 text-[#A0AEC0]"
+                            aria-live="polite"
+                        >
+                            キャラクターを読み込んでいます…
+                        </p>
 
                         <p
                             id="{{ $selector['side'] }}_character_empty"
@@ -647,3 +626,194 @@
         updateUi();
     });
 </script>
+
+
+{{-- WRITER_RELATIONSHIP_LAZY_CHARACTERS_START --}}
+@once
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll(
+        '.relationship-character-select'
+    ).forEach((characterSelect) => {
+        const side = characterSelect.dataset.side;
+        const workSelect = document.getElementById(
+            `${side}_work_ref`
+        );
+
+        if (!workSelect) {
+            return;
+        }
+
+        const endpoint = characterSelect.dataset.endpoint;
+        const initialSelected =
+            characterSelect.dataset.selectedRef || '';
+        const loading = document.getElementById(
+            `${side}_character_loading`
+        );
+        const empty = document.getElementById(
+            `${side}_character_empty`
+        );
+        const originalOptions = Array.from(
+            characterSelect.querySelectorAll(
+                'option[data-source="original"]'
+            )
+        ).map((option) => option.cloneNode(true));
+
+        let requestToken = 0;
+
+        const setMessage = (
+            loadingVisible,
+            emptyVisible
+        ) => {
+            loading?.classList.toggle(
+                'hidden',
+                !loadingVisible
+            );
+            empty?.classList.toggle(
+                'hidden',
+                !emptyVisible
+            );
+        };
+
+        const resetOptions = () => {
+            characterSelect.replaceChildren();
+
+            const blank = document.createElement('option');
+            blank.value = '';
+            blank.textContent = '選択してください';
+            characterSelect.appendChild(blank);
+        };
+
+        const applySelected = (selectedRef) => {
+            if (!selectedRef) {
+                return;
+            }
+
+            const exists = Array.from(
+                characterSelect.options
+            ).some(
+                (option) => option.value === selectedRef
+            );
+
+            if (exists) {
+                characterSelect.value = selectedRef;
+            }
+        };
+
+        const loadCharacters = async (
+            selectedRef = ''
+        ) => {
+            const token = ++requestToken;
+            const workRef = workSelect.value;
+
+            resetOptions();
+            setMessage(false, false);
+
+            if (!workRef) {
+                characterSelect.disabled = true;
+                return;
+            }
+
+            if (workRef === 'original') {
+                originalOptions.forEach((option) => {
+                    characterSelect.appendChild(
+                        option.cloneNode(true)
+                    );
+                });
+
+                characterSelect.disabled = false;
+                applySelected(selectedRef);
+                setMessage(
+                    false,
+                    originalOptions.length === 0
+                );
+                return;
+            }
+
+            if (!workRef.startsWith('work:')) {
+                characterSelect.disabled = true;
+                return;
+            }
+
+            characterSelect.disabled = true;
+            setMessage(true, false);
+
+            const url = new URL(
+                endpoint,
+                window.location.origin
+            );
+            url.searchParams.set(
+                'work_id',
+                workRef.slice('work:'.length)
+            );
+
+            try {
+                const response = await fetch(url, {
+                    headers: {
+                        Accept: 'application/json',
+                        'X-Requested-With':
+                            'XMLHttpRequest',
+                    },
+                    credentials: 'same-origin',
+                });
+
+                if (!response.ok) {
+                    throw new Error(
+                        `HTTP ${response.status}`
+                    );
+                }
+
+                const payload = await response.json();
+
+                if (token !== requestToken) {
+                    return;
+                }
+
+                const characters = Array.isArray(
+                    payload.characters
+                )
+                    ? payload.characters
+                    : [];
+
+                characters.forEach((character) => {
+                    const option =
+                        document.createElement('option');
+
+                    option.value = `v1:${character.id}`;
+                    option.textContent = character.name;
+                    option.dataset.workRefs = workRef;
+                    characterSelect.appendChild(option);
+                });
+
+                characterSelect.disabled = false;
+                applySelected(selectedRef);
+                setMessage(
+                    false,
+                    characters.length === 0
+                );
+            } catch (error) {
+                if (token !== requestToken) {
+                    return;
+                }
+
+                console.error(
+                    'Character loading failed',
+                    error
+                );
+
+                characterSelect.disabled = false;
+                setMessage(false, true);
+            }
+        };
+
+        workSelect.addEventListener('change', () => {
+            characterSelect.dataset.selectedRef = '';
+            loadCharacters('');
+        });
+
+        loadCharacters(initialSelected);
+    });
+});
+</script>
+@endonce
+{{-- WRITER_RELATIONSHIP_LAZY_CHARACTERS_END --}}

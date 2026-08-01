@@ -170,7 +170,17 @@ class WriterCharacterMultipleWorksTest extends TestCase
             ))
             ->assertOk()
             ->assertSee('関係性対象章')
-            ->assertSee('関係性追加作品キャラ');
+            ->assertDontSee('関係性追加作品キャラ');
+
+        $this->actingAs($user)
+            ->getJson(route(
+                'writer.original-character-relationships.characters',
+                ['work_id' => $chapter->id]
+            ))
+            ->assertOk()
+            ->assertJsonFragment([
+                'name' => '関係性追加作品キャラ',
+            ]);
     }
     private function writerUser(): User
     {
