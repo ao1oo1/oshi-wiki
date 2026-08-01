@@ -83,7 +83,6 @@ class AllPagesJumpNavigationTest extends TestCase
         $paths = [
             'public/about/show.blade.php',
             'public/characters/show.blade.php',
-            'public/coming-soon.blade.php',
             'public/contact/create.blade.php',
             'public/contributor/apply.blade.php',
             'public/staff/show.blade.php',
