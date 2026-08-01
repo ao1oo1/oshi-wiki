@@ -42,13 +42,13 @@
 
     <main class="oshi-container">
         <section class="oshi-hero">
-            <h1>
-                @if ($isHome ?? false)
-                    <span class="block"><span class="oshi-accent">推しの設定、</span></span><span class="block">もう迷わない。</span>
-                @else
-                    作品一覧
-                @endif
-            </h1>
+            <div class="mb-8 overflow-hidden rounded-3xl">
+                <img
+                    src="{{ asset('images/top_img.jpg') }}"
+                    alt="Oshi-Wiki"
+                    class="block h-auto w-full"
+                >
+            </div>
 <form method="GET" action="{{ route('public.works.index') }}" class="oshi-search-box">
                 <input
                     type="text"
