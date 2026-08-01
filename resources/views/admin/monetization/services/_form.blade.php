@@ -1,4 +1,26 @@
 @csrf
+
+@if ($errors->any())
+    <div
+        id="validation-errors"
+        class="mb-6 rounded-2xl border border-red-300 bg-red-50 p-5
+               text-red-800"
+        role="alert"
+        aria-live="assertive"
+    >
+        <p class="font-bold">
+            入力内容をご確認ください。
+        </p>
+        <p class="mt-1 text-sm">
+            登録・更新できなかった理由は以下のとおりです。
+        </p>
+        <ul class="mt-3 list-disc space-y-1 pl-5 text-sm">
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
 @php
     $selectedRevenueModel = old(
         'revenue_model',
