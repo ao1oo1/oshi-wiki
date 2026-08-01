@@ -1,8 +1,6 @@
 <x-app-layout>
-    <div class="oshi-admin-layout">
-        @include('admin.partials.navigation')
-
-        <main class="oshi-admin-main">
+    <div class="w-full">
+        <main class="oshi-admin-main w-full max-w-none">
             <div class="mb-6">
                 <p class="oshi-muted">{{ $work->title }}</p>
                 <h1 class="oshi-admin-title">

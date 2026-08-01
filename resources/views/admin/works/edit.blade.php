@@ -1,8 +1,6 @@
 <x-app-layout>
-    <div class="oshi-admin-layout">
-        @include('admin.partials.navigation')
-
-        <main class="oshi-admin-main work-editor-page">
+    <div class="w-full">
+        <main class="oshi-admin-main work-editor-page w-full max-w-none">
             <div class="mb-6 flex flex-wrap items-center justify-between gap-3">
                 <div>
                     <h1 class="oshi-admin-title">作品編集</h1>
