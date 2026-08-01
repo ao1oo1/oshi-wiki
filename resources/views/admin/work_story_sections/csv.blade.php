@@ -1,8 +1,6 @@
 <x-app-layout>
-    <div class="oshi-admin-layout">
-        @include('admin.partials.navigation')
-
-        <main class="oshi-admin-main">
+    <div class="w-full">
+        <main class="oshi-admin-main w-full max-w-none">
             @include('admin.partials.flash')
 
             <div class="mb-6">
@@ -25,7 +23,7 @@
                 </div>
             @endif
 
-            <div class="grid gap-5 lg:grid-cols-3">
+            <div class="grid grid-cols-1 gap-5">
                 @foreach ([
                     'sections' => [
                         '章・編CSV',
@@ -40,7 +38,7 @@
                         '章時点の年齢・学年・所属など',
                     ],
                 ] as $type => [$label, $description])
-                    <section class="oshi-card">
+                    <section class="oshi-card w-full max-w-none">
                         <h2 class="text-xl font-bold">
                             {{ $label }}
                         </h2>
