@@ -2554,3 +2554,80 @@ if (document.readyState === 'loading') {
 } else {
     placeMiddleImpressionAds();
 }
+
+
+/* PUBLIC_WORK_RELATIONSHIP_CHARACTER_FILTER_START */
+document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll(
+        '[data-public-work-relationship-filter]'
+    ).forEach((filter) => {
+        const select = filter.querySelector(
+            '[data-public-work-relationship-character-select]'
+        );
+        const clearButton = filter.querySelector(
+            '[data-public-work-relationship-filter-clear]'
+        );
+        const count = filter.querySelector(
+            '[data-public-work-relationship-filter-count]'
+        );
+        const section = filter.closest('section');
+        const rows = Array.from(
+            section?.querySelectorAll(
+                '[data-public-work-relationship-row]'
+            ) || []
+        );
+
+        if (!select || rows.length === 0) {
+            return;
+        }
+
+        const update = () => {
+            const selectedId = select.value;
+            let visibleCount = 0;
+
+            rows.forEach((row) => {
+                const characterIds = (
+                    row.dataset.characterIds || ''
+                )
+                    .split(',')
+                    .filter(Boolean);
+
+                const visible = selectedId === ''
+                    || characterIds.includes(selectedId);
+
+                row.hidden = !visible;
+
+                if (visible) {
+                    visibleCount += 1;
+                }
+            });
+
+            if (count) {
+                count.textContent =
+                    `${visibleCount}件表示中`;
+            }
+
+            clearButton?.classList.toggle(
+                'hidden',
+                selectedId === ''
+            );
+        };
+
+        select.addEventListener(
+            'change',
+            update
+        );
+
+        clearButton?.addEventListener(
+            'click',
+            () => {
+                select.value = '';
+                update();
+                select.focus();
+            }
+        );
+
+        update();
+    });
+});
+/* PUBLIC_WORK_RELATIONSHIP_CHARACTER_FILTER_END */
