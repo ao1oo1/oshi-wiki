@@ -451,19 +451,19 @@
                         <tbody>
                             @foreach ($work->characterRelationships as $relation)
                                 <tr class="border-b">
-                                    <td class="px-4 py-2">
+                                    <td class="px-4 py-2" data-label="キャラクター">
                                         {{ $relation->fromCharacter?->name ?: '未設定' }}
                                     </td>
-                                    <td class="px-4 py-2">
+                                    <td class="px-4 py-2" data-label="相手">
                                         {{ $relation->toCharacter?->name ?: '未設定' }}
                                     </td>
-                                    <td class="px-4 py-2">
+                                    <td class="px-4 py-2" data-label="呼ばれ方">
                                         {{ $relation->called_name ?: '未設定' }}
                                     </td>
-                                    <td class="px-4 py-2">
+                                    <td class="px-4 py-2" data-label="関係性">
                                         {{ $relation->relationship ?: '未設定' }}
                                     </td>
-                                    <td class="public-work-relationship-table__impression px-4 py-2">
+                                    <td class="public-work-relationship-table__impression px-4 py-2" data-label="印象・気持ち等">
                                         {{ $relation->impression ?: '未設定' }}
                                     </td>
                                 </tr>

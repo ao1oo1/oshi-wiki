@@ -366,8 +366,8 @@
             </h2>
 
             @if ($character->outgoingRelationships->count())
-                <div class="oshi-table-wrap">
-                    <table class="oshi-table">
+                <div class="oshi-table-wrap public-character-relationship-table-wrap">
+                    <table class="oshi-table public-character-relationship-table">
                         <thead>
                             <tr class="border-b bg-gray-50">
                                 <th class="px-4 py-2 text-left">相手</th>
@@ -379,10 +379,10 @@
                         <tbody>
                             @foreach ($character->outgoingRelationships as $relation)
                                 <tr class="border-b">
-                                    <td class="px-4 py-2">{{ $relation->toCharacter?->name }}</td>
-                                    <td class="px-4 py-2">{{ $relation->called_name ?: '未設定' }}</td>
-                                    <td class="px-4 py-2">{{ $relation->relationship ?: '未設定' }}</td>
-                                    <td class="px-4 py-2">{{ $relation->impression ?: '未設定' }}</td>
+                                    <td class="px-4 py-2" data-label="相手">{{ $relation->toCharacter?->name }}</td>
+                                    <td class="px-4 py-2" data-label="呼ばれ方">{{ $relation->called_name ?: '未設定' }}</td>
+                                    <td class="px-4 py-2" data-label="関係性">{{ $relation->relationship ?: '未設定' }}</td>
+                                    <td class="px-4 py-2" data-label="印象・気持ち等">{{ $relation->impression ?: '未設定' }}</td>
                                 </tr>
                             @endforeach
                         </tbody>
@@ -399,8 +399,8 @@
             </h2>
 
             @if ($character->incomingRelationships->count())
-                <div class="oshi-table-wrap">
-                    <table class="oshi-table">
+                <div class="oshi-table-wrap public-character-relationship-table-wrap">
+                    <table class="oshi-table public-character-relationship-table">
                         <thead>
                             <tr class="border-b bg-gray-50">
                                 <th class="px-4 py-2 text-left">相手</th>
@@ -412,10 +412,10 @@
                         <tbody>
                             @foreach ($character->incomingRelationships as $relation)
                                 <tr class="border-b">
-                                    <td class="px-4 py-2">{{ $relation->fromCharacter?->name }}</td>
-                                    <td class="px-4 py-2">{{ $relation->called_name ?: '未設定' }}</td>
-                                    <td class="px-4 py-2">{{ $relation->relationship ?: '未設定' }}</td>
-                                    <td class="px-4 py-2">{{ $relation->impression ?: '未設定' }}</td>
+                                    <td class="px-4 py-2" data-label="相手">{{ $relation->fromCharacter?->name }}</td>
+                                    <td class="px-4 py-2" data-label="このキャラクターの呼ばれ方">{{ $relation->called_name ?: '未設定' }}</td>
+                                    <td class="px-4 py-2" data-label="関係性">{{ $relation->relationship ?: '未設定' }}</td>
+                                    <td class="px-4 py-2" data-label="印象・気持ち等">{{ $relation->impression ?: '未設定' }}</td>
                                 </tr>
                             @endforeach
                         </tbody>
