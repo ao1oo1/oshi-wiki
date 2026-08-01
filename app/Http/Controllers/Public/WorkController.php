@@ -145,8 +145,7 @@ class WorkController extends Controller
                 }
             )
             ->latest()
-            ->paginate(20)
-            ->withQueryString();
+            ->get();
 
         $tags = Tag::query()
             ->where('status', 'published')
