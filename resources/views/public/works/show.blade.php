@@ -123,9 +123,7 @@
                 </div>
             @endif
 
-            <div class="text-gray-700 leading-relaxed">
-                {!! nl2br(e(trim($work->description ?: '説明はまだ登録されていません。'))) !!}
-            </div>
+
         </section>
 
         @if ($work->parentWork)
@@ -434,7 +432,85 @@
                 キャラクター関係性
             </h2>
 
-            @if ($work->characterRelationships->count())
+            <?php
+                $publicRelationshipRows =
+                    $work->characterRelationships
+                        ->sortBy(function ($relationship) {
+                            $fromId = (int) optional(
+                                $relationship->fromCharacter
+                            )->id;
+
+                            $toId = (int) optional(
+                                $relationship->toCharacter
+                            )->id;
+
+                            return [
+                                min($fromId, $toId),
+                                max($fromId, $toId),
+                                (int) $relationship->id,
+                            ];
+                        })
+                        ->values();
+
+                $publicRelationshipCharacters =
+                    $publicRelationshipRows
+                        ->flatMap(function ($relationship) {
+                            return [
+                                $relationship->fromCharacter,
+                                $relationship->toCharacter,
+                            ];
+                        })
+                        ->filter()
+                        ->unique('id')
+                        ->sortBy('id')
+                        ->values();
+            ?>
+
+            <?php if ($publicRelationshipRows->isNotEmpty()): ?>
+                <div
+                    class="mb-5 rounded-2xl border border-[#E2E8F0] bg-[#F7FAFC] p-4"
+                    data-public-work-relationship-filter
+                >
+                    <label
+                        for="public-work-relationship-character-filter"
+                        class="text-sm font-bold text-[#2D3748]"
+                    >
+                        キャラクターで絞り込む
+                    </label>
+
+                    <div class="mt-3 flex flex-col gap-3 sm:flex-row sm:items-center">
+                        <select
+                            id="public-work-relationship-character-filter"
+                            class="w-full rounded-xl border border-[#CBD5E0] bg-white px-4 py-3 text-sm font-bold text-[#2D3748] sm:max-w-md"
+                            data-public-work-relationship-character-select
+                        >
+                            <option value="">すべてのキャラクター</option>
+
+                            <?php foreach ($publicRelationshipCharacters as $filterCharacter): ?>
+                                <option value="{{ $filterCharacter->id }}">
+                                    {{ $filterCharacter->name }}
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+
+                        <button
+                            type="button"
+                            class="hidden rounded-xl border border-[#CBD5E0] bg-white px-4 py-3 text-sm font-bold text-[#4A5568] hover:bg-[#EDF2F7]"
+                            data-public-work-relationship-filter-clear
+                        >
+                            絞り込みを解除
+                        </button>
+                    </div>
+
+                    <p
+                        class="mt-3 text-xs font-bold text-[#718096]"
+                        data-public-work-relationship-filter-count
+                        aria-live="polite"
+                    >
+                        {{ $publicRelationshipRows->count() }}件表示中
+                    </p>
+                </div>
+
                 <div class="oshi-table-wrap public-work-relationship-table-wrap">
                     <table class="oshi-table public-work-relationship-table">
                         <thead>
@@ -448,9 +524,17 @@
                                 </th>
                             </tr>
                         </thead>
+
                         <tbody>
-                            @foreach ($work->characterRelationships as $relation)
-                                <tr class="border-b">
+                            <?php foreach ($publicRelationshipRows as $relation): ?>
+                                <tr
+                                    class="border-b"
+                                    data-public-work-relationship-row
+                                    data-character-ids="{{ collect([
+                                        $relation->fromCharacter?->id,
+                                        $relation->toCharacter?->id,
+                                    ])->filter()->implode(',') }}"
+                                >
                                     <td class="px-4 py-2" data-label="キャラクター">
                                         {{ $relation->fromCharacter?->name ?: '未設定' }}
                                     </td>
@@ -467,15 +551,15 @@
                                         {{ $relation->impression ?: '未設定' }}
                                     </td>
                                 </tr>
-                            @endforeach
+                            <?php endforeach; ?>
                         </tbody>
                     </table>
                 </div>
-            @else
+            <?php else: ?>
                 <p class="text-gray-600">
                     公開中の関係性はまだ登録されていません。
                 </p>
-            @endif
+            <?php endif; ?>
         </section>
 
         @include('public.partials.helpful-button', [
