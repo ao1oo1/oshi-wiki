@@ -5,6 +5,7 @@ namespace App\Http\Requests\Admin\Monetization;
 use App\Services\ImpressionAdSlotService;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\Validator;
 
 class StoreImpressionAdSlotRequest extends FormRequest
 {
@@ -44,6 +45,44 @@ class StoreImpressionAdSlotRequest extends FormRequest
             'is_active' => ['required', 'boolean'],
             'starts_at' => ['nullable', 'date'],
             'ends_at' => ['nullable', 'date', 'after_or_equal:starts_at'],
+        ];
+    }
+
+
+    public function after(): array
+    {
+        return [
+            function (Validator $validator): void {
+                $writerPositions = [
+                    'writer_sidebar_1',
+                    'writer_sidebar_2',
+                    'writer_page_bottom',
+                ];
+
+                $position = (string) $this->input('position');
+                $pageScope = (string) $this->input('page_scope');
+                $isWriterPosition = in_array(
+                    $position,
+                    $writerPositions,
+                    true
+                );
+
+                if ($isWriterPosition && $pageScope !== 'writer_all') {
+                    $validator->errors()->add(
+                        'page_scope',
+                        'Writer用の表示位置では、対象ページを'
+                        . '「Writer画面すべて」にしてください。'
+                    );
+                }
+
+                if (! $isWriterPosition && $pageScope === 'writer_all') {
+                    $validator->errors()->add(
+                        'position',
+                        '対象ページが「Writer画面すべて」の場合は、'
+                        . 'Writer用の表示位置を選択してください。'
+                    );
+                }
+            },
         ];
     }
 
