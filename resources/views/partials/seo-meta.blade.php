@@ -127,6 +127,29 @@
     );
 @endphp
 
+@php
+    /*
+     * ページ固有SEO値を共通設定より優先
+     */
+    if (filled($pageSeoTitle ?? null)) {
+        $seoTitleText = trim((string) $pageSeoTitle);
+    }
+
+    if (filled($pageSeoDescription ?? null)) {
+        $seoDescriptionText = \Illuminate\Support\Str::limit(
+            trim(
+                preg_replace(
+                    '/\s+/u',
+                    ' ',
+                    strip_tags((string) $pageSeoDescription)
+                )
+            ),
+            160,
+            '…'
+        );
+    }
+@endphp
+
 <meta
     name="description"
     content="{{ $seoDescriptionText }}"
