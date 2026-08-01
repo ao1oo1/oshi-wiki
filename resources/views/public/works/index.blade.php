@@ -2,12 +2,21 @@
 <html lang="ja">
 <head>
     @include('partials.google-analytics')
-    @include('partials.seo-meta')
+    @include('partials.seo-meta', [
+        'pageSeoTitle' => ($isHome ?? false)
+            ? 'Oshi-Wiki｜アニメ・漫画・ゲームの創作支援データベース'
+            : '作品一覧｜Oshi-Wiki',
+        'pageSeoDescription' => ($isHome ?? false)
+            ? 'Oshi-Wikiは、アニメ・漫画・ゲーム・小説のキャラクター、人物関係、ストーリー、世界観、用語、年表を整理した創作支援データベースです。'
+            : 'Oshi-Wikiに登録されたアニメ・漫画・ゲーム・小説作品を検索・閲覧できます。',
+    ])
 
 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ ($isHome ?? false) ? 'Oshi-Wiki' : '作品一覧 | Oshi-Wiki' }}</title>
+    <title>{{ ($isHome ?? false)
+        ? 'Oshi-Wiki｜アニメ・漫画・ゲームの創作支援データベース'
+        : '作品一覧｜Oshi-Wiki' }}</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
@@ -22,6 +31,18 @@
         src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3916030283806562"
         crossorigin="anonymous"
     ></script>
+    @if ($isHome ?? false)
+        <script type="application/ld+json">
+            {!! json_encode([
+                '@context' => 'https://schema.org',
+                '@type' => 'WebSite',
+                'name' => 'Oshi-Wiki',
+                'alternateName' => ['推しウィキ', 'oshi-wiki'],
+                'url' => route('public.home'),
+                'description' => 'アニメ・漫画・ゲーム・小説のキャラクター、人物関係、ストーリー、世界観、用語、年表を整理した創作支援データベースです。',
+            ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) !!}
+        </script>
+    @endif
 </head>
 <body>
 
@@ -42,13 +63,21 @@
 
     <main class="oshi-container">
         <section class="oshi-hero">
-            <div class="mb-8 overflow-hidden rounded-3xl">
-                <img
-                    src="{{ asset('images/top_img.jpg') }}"
-                    alt="Oshi-Wiki"
-                    class="block h-auto w-full"
-                >
-            </div>
+            @if ($isHome ?? false)
+                <h1 class="sr-only">
+                    Oshi-Wiki｜アニメ・漫画・ゲームの創作支援データベース
+                </h1>
+
+                <div class="mb-8 overflow-hidden rounded-3xl">
+                    <img
+                        src="{{ asset('images/top_img.jpg') }}"
+                        alt="Oshi-Wiki アニメ・漫画・ゲームの創作支援データベース"
+                        class="block h-auto w-full"
+                    >
+                </div>
+            @else
+                <h1>作品一覧</h1>
+            @endif
 <form method="GET" action="{{ route('public.works.index') }}" class="oshi-search-box">
                 <input
                     type="text"
