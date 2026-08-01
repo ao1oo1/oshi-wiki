@@ -49,11 +49,34 @@ class OriginalCharacterRelationshipController extends Controller
         Request $request
     ): JsonResponse {
         $validated = $request->validate([
+            'source' => [
+                'nullable',
+                'in:original,work',
+            ],
             'work_id' => [
-                'required',
+                'nullable',
+                'required_if:source,work',
                 'integer',
             ],
         ]);
+
+        if (($validated['source'] ?? null) === 'original') {
+            $characters = $this->characterRepository
+                ->allForUser($request->user())
+                ->sortBy([
+                    ['name', 'asc'],
+                    ['id', 'asc'],
+                ])
+                ->values()
+                ->map(fn ($character) => [
+                    'id' => (int) $character->id,
+                    'name' => (string) $character->name,
+                ]);
+
+            return response()->json([
+                'characters' => $characters,
+            ]);
+        }
 
         $work = Work::query()
             ->where('status', 'published')
