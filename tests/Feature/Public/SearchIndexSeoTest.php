@@ -31,6 +31,27 @@ class SearchIndexSeoTest extends TestCase
             );
     }
 
+    public function test_sitemap_has_public_crawler_headers(): void
+    {
+        $response = $this->get('/sitemap.xml');
+
+        $response->assertOk();
+        $response->assertHeader(
+            'Content-Type',
+            'application/xml; charset=UTF-8'
+        );
+        $response->assertHeader(
+            'X-Robots-Tag',
+            'noindex, follow'
+        );
+        $response->assertSee(
+            '<loc>'
+                .rtrim(config('app.url'), '/')
+                .'/</loc>',
+            false
+        );
+    }
+
     public function test_sitemap_contains_only_published_content(): void
     {
         $publishedWork = Work::factory()->create([
