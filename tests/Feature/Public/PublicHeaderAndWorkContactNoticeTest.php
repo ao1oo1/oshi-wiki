@@ -35,7 +35,7 @@ class PublicHeaderAndWorkContactNoticeTest extends TestCase
         );
     }
 
-    public function test_work_page_shows_contact_notice_above_characters(): void
+    public function test_work_page_shows_contact_notice_between_characters_and_relationships(): void
     {
         $work = Work::factory()->create([
             'status' => 'published',
