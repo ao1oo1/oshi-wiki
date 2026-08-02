@@ -135,6 +135,19 @@
         </section>
 
         <section class="oshi-section">
+            <h2 class="oshi-section-title">媒体から探す</h2>
+            @if (($originalMedia ?? collect())->count())
+                <div class="oshi-card">
+                    <div class="flex flex-wrap gap-2">
+                        @foreach ($originalMedia as $media)
+                            <a href="{{ route('public.works.index', ['original_media' => $media]) }}" class="oshi-chip">{{ $media }}</a>
+                        @endforeach
+                    </div>
+                </div>
+            @endif
+        </section>
+
+        <section class="oshi-section">
             <div class="flex flex-wrap items-center justify-between gap-3">
                 <h2 class="oshi-section-title">
                     タグから探す
