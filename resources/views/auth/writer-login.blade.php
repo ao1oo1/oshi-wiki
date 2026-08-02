@@ -78,4 +78,12 @@
             </a>
         </div>
     </form>
+    <div class="mt-6 text-center">
+        <a
+            href="{{ route('public.home') }}"
+            class="text-sm font-medium text-gray-600 underline underline-offset-4 hover:text-gray-900"
+        >
+            データベースを見る
+        </a>
+    </div>
 </x-guest-layout>
