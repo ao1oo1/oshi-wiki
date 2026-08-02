@@ -63,7 +63,12 @@
             'anime_spoiler' => 'アニメ未視聴者向けのネタバレを含みます。',
         ];
 
-        $sourceUrls = collect(preg_split('/\R/u', (string) $character->source_url))
+        $sourceUrls = collect(
+            preg_split(
+                '/(?:\R|[;；])+/u',
+                (string) $character->source_url
+            )
+        )
             ->map(fn ($url) => trim($url))
             ->filter()
             ->values();
