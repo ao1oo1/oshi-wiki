@@ -404,19 +404,15 @@
                                                     </div>
 
                                                     @if ($event->summary)
-                                                        <div class="mt-3 whitespace-pre-wrap leading-8">
-                                                            {{ $event->summary }}
-                                                        </div>
+                                                        <div class="mt-3 whitespace-pre-line leading-8">{{ trim($event->summary) }}</div>
                                                     @endif
 
                                                     @if ($event->outcome)
-                                                        <div class="mt-3 rounded-xl bg-[#F7FAFC] p-4">
+                                                        <div class="mt-3 rounded-xl bg-[#F7FAFC] p-3">
                                                             <h5 class="font-bold">
                                                                 結果
                                                             </h5>
-                                                            <div class="mt-2 whitespace-pre-wrap leading-8">
-                                                                {{ $event->outcome }}
-                                                            </div>
+                                                            <div class="mt-1 whitespace-pre-line leading-7">{{ trim($event->outcome) }}</div>
                                                         </div>
                                                     @endif
                                                 </article>
@@ -469,9 +465,7 @@
                                                                     </h4>
 
                                                                     @if ($event->summary)
-                                                                        <div class="mt-2 whitespace-pre-wrap leading-8">
-                                                                            {{ $event->summary }}
-                                                                        </div>
+                                                                        <div class="mt-2 whitespace-pre-line leading-8">{{ trim($event->summary) }}</div>
                                                                     @endif
 
                                                                     @if ($event->outcome)
@@ -479,9 +473,7 @@
                                                                             <h5 class="font-bold">
                                                                                 結果
                                                                             </h5>
-                                                                            <div class="mt-2 whitespace-pre-wrap leading-8">
-                                                                                {{ $event->outcome }}
-                                                                            </div>
+                                                                            <div class="mt-1 whitespace-pre-line leading-7">{{ trim($event->outcome) }}</div>
                                                                         </div>
                                                                     @endif
                                                                 </article>
