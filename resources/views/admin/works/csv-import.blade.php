@@ -116,9 +116,13 @@
                     @enderror
                 </div>
 
-                <button type="submit" class="oshi-btn">
-                    CSVから一括登録する
-                </button>
+                @include('admin.works.import._update-options')
+
+                <div class="mt-6">
+                    <button type="submit" class="oshi-btn">
+                        CSVから一括登録する
+                    </button>
+                </div>
             </form>
         </div>
 

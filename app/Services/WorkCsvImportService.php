@@ -7,6 +7,7 @@ use App\Models\Tag;
 use App\Models\Work;
 use App\Models\WorkCanonEvent;
 use App\Models\WorkTermUsage;
+use App\Support\WorkCsvUpdateOptions;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Validator;
@@ -19,8 +20,14 @@ class WorkCsvImportService
     {
     }
 
-    public function import(string $filePath, string $defaultStatus = 'draft'): array
-    {
+    public function import(
+        string $filePath,
+        string $defaultStatus = 'draft',
+        ?WorkCsvUpdateOptions $updateOptions = null
+    ): array {
+        $updateOptions ??=
+            WorkCsvUpdateOptions::legacyImportDefaults();
+
         $handle = fopen($filePath, 'rb');
 
         if ($handle === false) {
@@ -80,6 +87,16 @@ class WorkCsvImportService
                     'linkedCharacters', 'tags', 'canonEvents', 'termUsages',
                 ])->find($workId) : null;
 
+                if ($existingWork && ! $updateOptions->shouldUpdate()) {
+                    $result['skipped']++;
+                    continue;
+                }
+
+                if (! $existingWork && ! $updateOptions->shouldCreate()) {
+                    $result['skipped']++;
+                    continue;
+                }
+
                 $payload = $this->buildPayload(
                     $data,
                     $header,
@@ -90,12 +107,39 @@ class WorkCsvImportService
                 if (
                     in_array('parent_work_title', $header, true)
                     && ! filled($payload['parent_work_id'] ?? null)
+                    && (
+                        ! $existingWork
+                        || $updateOptions->selected('parent_work_id')
+                    )
                 ) {
-                    $payload['parent_work_id'] =
-                        $this->resolveParentWorkIdByTitle(
-                            $data['parent_work_title'] ?? null,
+                    try {
+                        $payload['parent_work_id'] =
+                            $this->resolveParentWorkIdByTitle(
+                                $data['parent_work_title'] ?? null,
+                                $existingWork
+                            );
+                    } catch (\Throwable $exception) {
+                        if (
                             $existingWork
-                        );
+                            && $updateOptions->relationErrorMode
+                                === WorkCsvUpdateOptions::RELATION_ERROR_FIELD
+                        ) {
+                            $payload['parent_work_id'] =
+                                $existingWork->parent_work_id;
+                        } else {
+                            throw $exception;
+                        }
+                    }
+                }
+
+                if ($existingWork) {
+                    $payload = $this->prepareExistingUpdatePayload(
+                        $payload,
+                        $data,
+                        $header,
+                        $existingWork,
+                        $updateOptions
+                    );
                 }
 
                 $validator = Validator::make(
@@ -117,32 +161,62 @@ class WorkCsvImportService
                     in_array('character_ids', $header, true)
                     || in_array('character_names', $header, true);
 
-                $resolvedCharacterIds = $hasCharacterColumns
-                    ? $this->resolveCharacterIds($data)
-                    : null;
+                $shouldProcessCharacters = $hasCharacterColumns
+                    && (
+                        ! $existingWork
+                        || $updateOptions->characterMode
+                            !== WorkCsvUpdateOptions::CHARACTER_IGNORE
+                    );
 
-                $primaryCharacterIds = $existingWork
-                    ? Character::query()
+                $resolvedCharacterIds = null;
+
+                if ($shouldProcessCharacters) {
+                    try {
+                        $resolvedCharacterIds =
+                            $this->resolveCharacterIds($data);
+                    } catch (\Throwable $exception) {
+                        if (
+                            $existingWork
+                            && $updateOptions->relationErrorMode
+                                === WorkCsvUpdateOptions::RELATION_ERROR_FIELD
+                        ) {
+                            $shouldProcessCharacters = false;
+                        } else {
+                            throw $exception;
+                        }
+                    }
+                }
+
+                if (
+                    $existingWork
+                    && $shouldProcessCharacters
+                    && $updateOptions->characterMode
+                        === WorkCsvUpdateOptions::CHARACTER_REPLACE
+                ) {
+                    $primaryCharacterIds = Character::query()
                         ->where('work_id', $existingWork->id)
                         ->pluck('id')
                         ->map(fn ($id) => (int) $id)
-                        ->all()
-                    : [];
+                        ->all();
 
-                if (
-                    $hasCharacterColumns
-                    && array_diff($primaryCharacterIds, $resolvedCharacterIds) !== []
-                ) {
-                    throw new \InvalidArgumentException(
-                        'この作品を主作品にしているキャラクターは解除できません。'
-                    );
+                    if (
+                        array_diff(
+                            $primaryCharacterIds,
+                            $resolvedCharacterIds ?? []
+                        ) !== []
+                    ) {
+                        throw new \InvalidArgumentException(
+                            'この作品を主作品にしているキャラクターは解除できません。'
+                        );
+                    }
                 }
 
                 DB::transaction(function () use (
                     $existingWork,
                     $validated,
-                    $hasCharacterColumns,
+                    $shouldProcessCharacters,
                     $resolvedCharacterIds,
+                    $updateOptions,
                     &$result
                 ): void {
                     if ($existingWork) {
@@ -154,8 +228,14 @@ class WorkCsvImportService
                         $result['created']++;
                     }
 
-                    if ($hasCharacterColumns) {
-                        $this->syncCharacters($work, $resolvedCharacterIds);
+                    if ($shouldProcessCharacters) {
+                        $this->applyCharacterUpdateMode(
+                            $work,
+                            $resolvedCharacterIds ?? [],
+                            $existingWork
+                                ? $updateOptions->characterMode
+                                : WorkCsvUpdateOptions::CHARACTER_REPLACE
+                        );
                     }
                 });
 
@@ -436,6 +516,96 @@ class WorkCsvImportService
         }
 
         return $ids->filter(fn (int $id) => $id > 0)->unique()->values()->all();
+    }
+
+    private function prepareExistingUpdatePayload(
+        array $payload,
+        array $data,
+        array $header,
+        Work $existingWork,
+        WorkCsvUpdateOptions $updateOptions
+    ): array {
+        foreach ($this->importableWorkColumns() as $column) {
+            $selected = $updateOptions->selected($column);
+            $csvHasColumn = in_array($column, $header, true);
+            $csvValue = $data[$column] ?? null;
+            $blankShouldKeep = $updateOptions->blankMode
+                === WorkCsvUpdateOptions::BLANK_KEEP
+                && ($csvValue === null || $csvValue === '');
+
+            if (! $selected || ! $csvHasColumn || $blankShouldKeep) {
+                $payload[$column] = $existingWork->{$column};
+            }
+        }
+
+        if (
+            ! $updateOptions->selected('tag_ids')
+            && ! $updateOptions->selected('tag_names')
+        ) {
+            $payload['tag_ids'] = $existingWork->tags
+                ->pluck('id')
+                ->map(fn ($id) => (int) $id)
+                ->all();
+        }
+
+        if (! $updateOptions->selected('canon_events_json')) {
+            $payload['canon_events'] = $this->existingRelationRows(
+                $existingWork,
+                'canonEvents',
+                WorkCanonEvent::class
+            );
+        }
+
+        if (! $updateOptions->selected('term_usages_json')) {
+            $payload['term_usages'] = $this->existingRelationRows(
+                $existingWork,
+                'termUsages',
+                WorkTermUsage::class
+            );
+        }
+
+        return $payload;
+    }
+
+    private function applyCharacterUpdateMode(
+        Work $work,
+        array $characterIds,
+        string $mode
+    ): void {
+        $existingIds = $work->linkedCharacters()
+            ->pluck('characters.id')
+            ->map(fn ($id) => (int) $id)
+            ->all();
+
+        $targetIds = match ($mode) {
+            WorkCsvUpdateOptions::CHARACTER_APPEND =>
+                array_values(array_unique([
+                    ...$existingIds,
+                    ...$characterIds,
+                ])),
+            WorkCsvUpdateOptions::CHARACTER_DETACH =>
+                array_values(array_diff(
+                    $existingIds,
+                    $characterIds
+                )),
+            WorkCsvUpdateOptions::CHARACTER_IGNORE =>
+                $existingIds,
+            default => $characterIds,
+        };
+
+        $primaryCharacterIds = Character::query()
+            ->where('work_id', $work->id)
+            ->pluck('id')
+            ->map(fn ($id) => (int) $id)
+            ->all();
+
+        if (array_diff($primaryCharacterIds, $targetIds) !== []) {
+            throw new \InvalidArgumentException(
+                'この作品を主作品にしているキャラクターは解除できません。'
+            );
+        }
+
+        $this->syncCharacters($work, $targetIds);
     }
 
     private function syncCharacters(Work $work, array $characterIds): void
