@@ -664,5 +664,7 @@
     )
 @include('public.partials.legal-footer')
 
+    @include('works.partials.character-fuzzy-search')
+
 </body>
 </html>
