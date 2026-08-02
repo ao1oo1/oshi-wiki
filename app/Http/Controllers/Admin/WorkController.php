@@ -21,6 +21,13 @@ class WorkController extends Controller
 
     public function index(): View
     {
+        $allowedPerPage = [30, 50, 100, 500];
+        $perPage = (int) request('per_page', 30);
+
+        if (! in_array($perPage, $allowedPerPage, true)) {
+            $perPage = 30;
+        }
+
         $keyword = trim((string) request('keyword', ''));
         $selectedTagId = request('tag_id');
         $selectedStatus = request('status');
@@ -30,7 +37,7 @@ class WorkController extends Controller
 
         return view('admin.works.index', [
             'works' => $this->service->paginate(
-                20,
+                $perPage,
                 $keyword !== '' ? $keyword : null,
                 $selectedTagId ? (int) $selectedTagId : null,
                 $selectedStatus ?: null,

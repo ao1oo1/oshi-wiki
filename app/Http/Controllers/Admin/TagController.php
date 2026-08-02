@@ -20,6 +20,13 @@ class TagController extends Controller
 
     public function index(): View
     {
+        $allowedPerPage = [30, 50, 100, 500];
+        $perPage = (int) request('per_page', 30);
+
+        if (! in_array($perPage, $allowedPerPage, true)) {
+            $perPage = 30;
+        }
+
         $selectedType = request('type');
         $keyword = trim((string) request('keyword', ''));
         $selectedStatus = request('status');
@@ -55,7 +62,7 @@ class TagController extends Controller
         }
 
         $tags = $query
-            ->paginate(20)
+            ->paginate($perPage)
             ->withQueryString();
 
         $tagTypes = \App\Models\Tag::query()

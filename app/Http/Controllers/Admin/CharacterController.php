@@ -21,6 +21,13 @@ class CharacterController extends Controller
 
     public function index(): View
     {
+        $allowedPerPage = [30, 50, 100, 500];
+        $perPage = (int) request('per_page', 30);
+
+        if (! in_array($perPage, $allowedPerPage, true)) {
+            $perPage = 30;
+        }
+
         $selectedWorkId = request('work_id');
         $keyword = trim((string) request('keyword', ''));
         $selectedTagId = request('tag_id');
@@ -28,7 +35,7 @@ class CharacterController extends Controller
         $exactKeyword = trim((string) request('exact_keyword', ''));
 
         $characters = $this->service->paginate(
-            20,
+            $perPage,
             $selectedWorkId ? (int) $selectedWorkId : null,
             $keyword !== '' ? $keyword : null,
             $selectedTagId ? (int) $selectedTagId : null,
