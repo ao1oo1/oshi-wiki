@@ -53,5 +53,20 @@ class PublicWorkCharacterFuzzySearchTest extends TestCase
             '該当するキャラクターが見つかりませんでした。',
             $partial
         );
+
+        $this->assertStringContainsString(
+            "section.querySelectorAll('[data-character-card]')",
+            $partial
+        );
+
+        $this->assertStringContainsString(
+            'card.style.setProperty',
+            $partial
+        );
+
+        $this->assertStringContainsString(
+            'matchesExistingFilters',
+            $partial
+        );
     }
 }

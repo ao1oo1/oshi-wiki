@@ -61,91 +61,25 @@ document.addEventListener('DOMContentLoaded', () => {
     const template = document.querySelector(
         '[data-work-character-search-template]'
     );
+    const section = document.querySelector('#work-characters');
 
-    if (!template) {
+    if (!template || !section) {
+        template?.remove();
         return;
     }
-
-    const characterLinks = Array.from(
-        document.querySelectorAll(
-            'a[href*="/characters/"], a[href*="characters/"]'
-        )
-    ).filter((link) => {
-        return !link.closest(
-            'header, nav, footer, [data-work-character-search]'
-        );
-    });
-
-    if (characterLinks.length === 0) {
-        template.remove();
-        return;
-    }
-
-    const heading = Array.from(
-        document.querySelectorAll('h2, h3, h4')
-    ).find((element) => {
-        const text = (element.textContent || '').trim();
-        return /キャラクター/.test(text);
-    });
-
-    if (!heading) {
-        template.remove();
-        return;
-    }
-
-    const section = heading.closest('section, article, .oshi-card')
-        || heading.parentElement;
-
-    if (!section) {
-        template.remove();
-        return;
-    }
-
-    const sectionLinks = characterLinks.filter(
-        (link) => section.contains(link)
-    );
-
-    if (sectionLinks.length === 0) {
-        template.remove();
-        return;
-    }
-
-    const findCard = (link) => {
-        const preferred = link.closest(
-            '[data-character-card], article, li, .character-card'
-        );
-
-        if (preferred && section.contains(preferred)) {
-            return preferred;
-        }
-
-        let current = link;
-
-        while (
-            current.parentElement
-            && current.parentElement !== section
-        ) {
-            const parent = current.parentElement;
-            const links = parent.querySelectorAll(
-                'a[href*="/characters/"], a[href*="characters/"]'
-            );
-
-            if (links.length === 1) {
-                current = parent;
-                continue;
-            }
-
-            break;
-        }
-
-        return current;
-    };
 
     const cards = Array.from(
-        new Set(sectionLinks.map(findCard))
-    ).filter(Boolean);
+        section.querySelectorAll('[data-character-card]')
+    );
 
     if (cards.length === 0) {
+        template.remove();
+        return;
+    }
+
+    const heading = section.querySelector('h2');
+
+    if (!heading) {
         template.remove();
         return;
     }
@@ -165,6 +99,22 @@ document.addEventListener('DOMContentLoaded', () => {
     );
     const empty = search.querySelector(
         '[data-work-character-search-empty]'
+    );
+
+    const affiliationFilter = section.querySelector(
+        '[data-character-filter="affiliation"]'
+    );
+    const schoolFilter = section.querySelector(
+        '[data-character-filter="school"]'
+    );
+    const occupationFilter = section.querySelector(
+        '[data-character-filter="occupation"]'
+    );
+    const existingCount = section.querySelector(
+        '[data-character-filter-count]'
+    );
+    const existingReset = section.querySelector(
+        '[data-character-filter-reset]'
     );
 
     const toHiragana = (value) => {
@@ -262,29 +212,13 @@ document.addEventListener('DOMContentLoaded', () => {
             Math.min(3, Math.floor(query.length * 0.3))
         );
 
-        const words = String(text)
-            .split(/[^ぁ-んa-z0-9]+/u)
-            .filter(Boolean);
-
-        if (
-            words.some(
-                (word) => levenshtein(query, word, limit) <= limit
-            )
-        ) {
-            return true;
-        }
-
         const windowMin = Math.max(1, query.length - limit);
         const windowMax = Math.min(
             text.length,
             query.length + limit
         );
 
-        for (
-            let size = windowMin;
-            size <= windowMax;
-            size += 1
-        ) {
+        for (let size = windowMin; size <= windowMax; size += 1) {
             for (
                 let start = 0;
                 start + size <= text.length;
@@ -303,20 +237,56 @@ document.addEventListener('DOMContentLoaded', () => {
         return false;
     };
 
-    const entries = cards.map((card) => {
-        return {
-            card,
-            text: normalize(card.textContent),
-        };
-    });
+    const entries = cards.map((card) => ({
+        card,
+        text: normalize(card.textContent),
+        affiliation: card.dataset.affiliation || '',
+        school: card.dataset.school || '',
+        occupation: card.dataset.occupation || '',
+    }));
+
+    const filterValue = (element) => {
+        return element ? element.value : '';
+    };
+
+    const matchesExistingFilters = (entry) => {
+        const affiliation = filterValue(affiliationFilter);
+        const school = filterValue(schoolFilter);
+        const occupation = filterValue(occupationFilter);
+
+        return (
+            (!affiliation || entry.affiliation === affiliation)
+            && (!school || entry.school === school)
+            && (!occupation || entry.occupation === occupation)
+        );
+    };
+
+    const setCardVisible = (card, visible) => {
+        card.hidden = !visible;
+        card.classList.toggle('hidden', !visible);
+
+        if (visible) {
+            card.style.removeProperty('display');
+        } else {
+            card.style.setProperty(
+                'display',
+                'none',
+                'important'
+            );
+        }
+    };
 
     const render = () => {
         const query = normalize(input.value);
         let visible = 0;
 
-        entries.forEach(({ card, text }) => {
-            const matched = fuzzyMatch(query, text);
-            card.classList.toggle('hidden', !matched);
+        entries.forEach((entry) => {
+            const matched = (
+                matchesExistingFilters(entry)
+                && fuzzyMatch(query, entry.text)
+            );
+
+            setCardVisible(entry.card, matched);
 
             if (matched) {
                 visible += 1;
@@ -324,8 +294,12 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         count.textContent = query === ''
-            ? `${entries.length}人`
+            ? `${visible}人`
             : `${visible} / ${entries.length}人`;
+
+        if (existingCount) {
+            existingCount.textContent = String(visible);
+        }
 
         clear.classList.toggle(
             'hidden',
@@ -344,6 +318,21 @@ document.addEventListener('DOMContentLoaded', () => {
         input.value = '';
         input.focus();
         render();
+    });
+
+    [
+        affiliationFilter,
+        schoolFilter,
+        occupationFilter,
+    ].filter(Boolean).forEach((filter) => {
+        filter.addEventListener('change', () => {
+            window.setTimeout(render, 0);
+        });
+    });
+
+    existingReset?.addEventListener('click', () => {
+        input.value = '';
+        window.setTimeout(render, 0);
     });
 
     search.classList.remove('hidden');
