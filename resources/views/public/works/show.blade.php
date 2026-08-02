@@ -374,7 +374,6 @@
                                             @php($eventIsMajorSpoiler = ($event->spoiler_level ?? 'none') === 'major')
                                             <details class="rounded-xl border border-[#E2E8F0] p-4" @if (! $eventIsMajorSpoiler) open @endif>
                                                 <summary class="cursor-pointer font-bold">{{ $event->title }} @if ($event->timing)<span class="oshi-chip">{{ $event->timing }}</span>@endif @if ($event->location)<span class="oshi-chip">{{ $event->location }}</span>@endif @if ($eventIsMajorSpoiler)<span class="ml-2 text-xs text-amber-700">重大なネタバレ</span>@endif</summary>
-                                                <div class="mt-3 space-y-3">@if ($event->summary)<div class="whitespace-pre-wrap leading-8">{{ $event->summary }}</div>@endif @if ($event->outcome)<div class="rounded-lg bg-[#F7FAFC] p-3"><strong>結果</strong><p class="mt-1 whitespace-pre-wrap leading-8">{{ $event->outcome }}</p></div>@endif @if ($event->notes)<div class="text-sm text-[#718096]"><strong>備考：</strong><span class="whitespace-pre-wrap">{{ $event->notes }}</span></div>@endif</div>
                                             </details>
                                         @endforeach
                                     </div></div>

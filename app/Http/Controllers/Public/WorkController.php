@@ -64,11 +64,22 @@ class WorkController extends Controller
             );
         });
 
+        $originalMedia = Work::query()
+            ->where('status', 'published')
+            ->whereNull('parent_work_id')
+            ->whereNotNull('original_media')
+            ->where('original_media', '!=', '')
+            ->distinct()
+            ->orderBy('original_media')
+            ->pluck('original_media');
+
         return view('public.works.index', [
             'works' => $works,
             'tags' => $tags,
+            'originalMedia' => $originalMedia,
             'keyword' => $keyword,
             'selectedTagId' => $tagId,
+            'selectedOriginalMedia' => null,
             'isHome' => true,
             'worksCount' => $worksCount,
             'tagsCount' => $tagsCount,
@@ -79,6 +90,7 @@ class WorkController extends Controller
     {
         $keyword = trim((string) request('keyword', ''));
         $tagId = request('tag_id');
+        $originalMediaFilter = trim((string) request('original_media', ''));
 
         $keywords = collect(preg_split('/[\s　]+/u', $keyword))
             ->filter()
@@ -96,6 +108,7 @@ class WorkController extends Controller
             ])
             ->where('status', 'published')
             ->whereNull('parent_work_id')
+            ->when($originalMediaFilter !== '', fn ($query) => $query->where('original_media', $originalMediaFilter))
             ->when($tagId, function ($query) use ($tagId) {
                 $query->where(function ($query) use ($tagId): void {
                     $query
@@ -147,6 +160,15 @@ class WorkController extends Controller
             ->latest()
             ->get();
 
+        $originalMedia = Work::query()
+            ->where('status', 'published')
+            ->whereNull('parent_work_id')
+            ->whereNotNull('original_media')
+            ->where('original_media', '!=', '')
+            ->distinct()
+            ->orderBy('original_media')
+            ->pluck('original_media');
+
         $tags = Tag::query()
             ->where('status', 'published')
             ->withCount([
@@ -170,8 +192,10 @@ class WorkController extends Controller
         return view('public.works.index', [
             'works' => $works,
             'tags' => $tags,
+            'originalMedia' => $originalMedia,
             'keyword' => $keyword,
             'selectedTagId' => $tagId,
+            'selectedOriginalMedia' => $originalMediaFilter,
             'isHome' => false,
             'worksCount' => null,
             'tagsCount' => null,
