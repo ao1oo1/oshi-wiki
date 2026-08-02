@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Support\WorkCsvUpdateOptions;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Work\ImportWorkCsvRequest;
 use App\Models\Work;
@@ -34,6 +35,18 @@ class WorkCsvImportController extends Controller
         ImportWorkCsvRequest $request,
         WorkCsvImportService $importService
     ): RedirectResponse {
+        $hasUpdateOptions = $request->hasAny([
+            'update_mode',
+            'update_fields',
+            'blank_value_mode',
+            'character_ids_mode',
+            'relation_error_mode',
+        ]);
+
+        $updateOptions = $hasUpdateOptions
+            ? WorkCsvUpdateOptions::fromRequest($request)
+            : WorkCsvUpdateOptions::legacyImportDefaults();
+
         abort_unless(
             auth()->user()?->canManageAllAdminFeatures(),
             403,
@@ -42,7 +55,8 @@ class WorkCsvImportController extends Controller
 
         $result = $importService->import(
             $request->file('csv_file')->getRealPath(),
-            $request->input('default_status', 'draft')
+            $request->input('default_status', 'draft'),
+            $updateOptions
         );
 
         $message = "CSVから{$result['created']}件を新規登録し、{$result['updated']}件を更新しました。";
