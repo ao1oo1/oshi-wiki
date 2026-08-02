@@ -21,6 +21,13 @@ class CharacterRelationshipController extends Controller
 
     public function index(): View
     {
+        $allowedPerPage = [30, 50, 100, 500];
+        $perPage = (int) request('per_page', 30);
+
+        if (! in_array($perPage, $allowedPerPage, true)) {
+            $perPage = 30;
+        }
+
         $selectedWorkId = request('work_id');
         $keyword = trim((string) request('keyword', ''));
         $selectedStatus = request('status');
@@ -41,7 +48,7 @@ class CharacterRelationshipController extends Controller
 
         return view('admin.character_relationships.index', [
             'characterRelationships' => $this->service->paginate(
-                20,
+                $perPage,
                 $selectedWorkId ? (int) $selectedWorkId : null,
                 $keyword !== '' ? $keyword : null,
                 $selectedStatus ?: null,

@@ -62,7 +62,24 @@
                 @include('admin.partials.list-search-extra')
 
 
-                <button type="submit" class="oshi-btn">
+                            <label class="flex items-center gap-2 text-sm font-bold text-[#4A5568]">
+                <span>表示件数</span>
+                <select
+                    name="per_page"
+                    class="rounded-xl border border-[#CBD5E0] bg-white px-3 py-2 text-sm"
+                    onchange="this.form.submit()"
+                >
+                    @foreach ([30, 50, 100, 500] as $size)
+                        <option
+                            value="{{ $size }}"
+                            @selected((int) request('per_page', 30) === $size)
+                        >
+                            {{ $size }}件
+                        </option>
+                    @endforeach
+                </select>
+            </label>
+<button type="submit" class="oshi-btn">
                     検索・絞り込み
                 </button>
 
