@@ -32,6 +32,7 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $middleware->web(prepend: [
             \App\Http\Middleware\ScopedMaintenanceMode::class,
+            \App\Http\Middleware\ApplyNoindexToPrivatePages::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
