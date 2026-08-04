@@ -662,6 +662,8 @@
         'public.partials.impression-ads',
         ['position' => 'page_bottom']
     )
+@include('public.partials.work-seo-internal-links')
+
 @include('public.partials.legal-footer')
 
     @include('works.partials.character-fuzzy-search')

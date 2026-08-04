@@ -18,3 +18,11 @@ Schedule::command('billing:purge-expired-writer-data')
     ->dailyAt('04:00')
     ->withoutOverlapping()
     ->onOneServer();
+
+Schedule::command('sitemap:generate')
+    ->dailyAt('03:10')
+    ->withoutOverlapping();
+
+Schedule::command('seo:audit --limit=100')
+    ->dailyAt('03:30')
+    ->withoutOverlapping();

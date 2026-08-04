@@ -452,6 +452,8 @@
         'public.partials.impression-ads',
         ['position' => 'page_bottom']
     )
+@include('public.partials.character-seo-internal-links')
+
 @include('public.partials.legal-footer')
 
 </body>
