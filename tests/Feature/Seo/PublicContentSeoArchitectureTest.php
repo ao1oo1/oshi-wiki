@@ -119,6 +119,20 @@ class PublicContentSeoArchitectureTest extends TestCase
             public_path('sitemap.xml')
         );
 
+        $sitemap = file_get_contents(
+            public_path('sitemap.xml')
+        );
+
+        $this->assertStringStartsWith(
+            '<?xml version="1.0" encoding="UTF-8"?>',
+            trim((string) $sitemap)
+        );
+
+        $this->assertStringContainsString(
+            '<urlset',
+            (string) $sitemap
+        );
+
         $this->assertStringContainsString(
             'SEO作品',
             Work::query()->firstOrFail()->seo_title
