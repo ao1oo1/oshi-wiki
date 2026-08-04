@@ -452,9 +452,11 @@
         'public.partials.impression-ads',
         ['position' => 'page_bottom']
     )
-@include('public.partials.character-seo-internal-links')
+    <div class="oshi-container mt-8">
+        @include('public.partials.character-seo-internal-links')
+    </div>
 
-@include('public.partials.legal-footer')
+    @include('public.partials.legal-footer')
 
 </body>
 </html>

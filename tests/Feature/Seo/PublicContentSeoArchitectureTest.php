@@ -162,5 +162,21 @@ class PublicContentSeoArchitectureTest extends TestCase
             'character-seo-internal-links',
             $characterView
         );
+
+        $this->assertStringContainsString(
+            '<div class="oshi-container mt-8">',
+            $characterView
+        );
+
+        $this->assertLessThan(
+            strpos(
+                $characterView,
+                "public.partials.legal-footer"
+            ),
+            strpos(
+                $characterView,
+                "public.partials.character-seo-internal-links"
+            )
+        );
     }
 }
