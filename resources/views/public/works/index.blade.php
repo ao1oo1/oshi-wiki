@@ -134,7 +134,9 @@
             </div>
         </section>
 
-        <section class="oshi-section">
+                @include('public.partials.hot-content')
+
+<section class="oshi-section">
             <h2 class="oshi-section-title">媒体から探す</h2>
             @if (($originalMedia ?? collect())->count())
                 <div class="oshi-card">
