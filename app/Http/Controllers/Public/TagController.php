@@ -21,8 +21,7 @@ class TagController extends Controller
                 },
             ])
             ->orderBy('name')
-            ->paginate(60)
-            ->withQueryString();
+            ->get();
 
         return view('public.tags.index', [
             'tags' => $tags,
