@@ -10,31 +10,30 @@ class HomePublishedParentWorksTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_home_displays_all_published_parent_works_beyond_nine_items(): void
+    public function test_home_displays_only_nine_published_parent_works(): void
     {
-        foreach (range(1, 10) as $index) {
-            Work::factory()->create([
-                'title' => "公開親作品{$index}",
-                'status' => 'published',
-                'parent_work_id' => null,
-                'created_at' => now()->subMinutes($index),
-            ]);
+        $titles = collect(range(1, 10))
+            ->map(function (int $index): string {
+                $title = "公開親作品{$index}";
+
+                Work::factory()->create([
+                    'title' => $title,
+                    'status' => 'published',
+                    'parent_work_id' => null,
+                    'created_at' => now()->subMinutes($index),
+                ]);
+
+                return $title;
+            });
+
+        $response = $this->get(route('public.home'));
+        $response->assertOk();
+
+        foreach ($titles->take(9) as $title) {
+            $response->assertSee($title);
         }
 
-        $olderParent = Work::factory()->create([
-            'title' => '忍たま乱太郎（落第忍者乱太郎）',
-            'status' => 'published',
-            'parent_work_id' => null,
-            'created_at' => now()->subYear(),
-        ]);
-
-        $response = $this->get(
-            route('public.home')
-        );
-
-        $response
-            ->assertOk()
-            ->assertSee($olderParent->title);
+        $response->assertDontSee($titles->last());
     }
 
     public function test_home_excludes_child_and_unpublished_works(): void

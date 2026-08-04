@@ -82,31 +82,37 @@
             @else
                 <h1>作品一覧</h1>
             @endif
-<form method="GET" action="{{ route('public.works.index') }}" class="oshi-search-box">
-                <input
-                    type="text"
-                    name="keyword"
-                    value="{{ $keyword ?? '' }}"
-                    placeholder="例：作品名 キャラ名 タグ"
-                    autocomplete="off"
+            @if ($isHome ?? false)
+                <form
+                    method="GET"
+                    action="{{ route('public.works.index') }}"
+                    class="oshi-search-box"
                 >
+                    <input
+                        type="text"
+                        name="keyword"
+                        value="{{ $keyword ?? '' }}"
+                        placeholder="例：作品名 キャラ名 タグ"
+                        autocomplete="off"
+                    >
 
-                @if (!empty($selectedTagId))
-                    <input type="hidden" name="tag_id" value="{{ $selectedTagId }}">
-                @endif
+                    @if (!empty($selectedTagId))
+                        <input
+                            type="hidden"
+                            name="tag_id"
+                            value="{{ $selectedTagId }}"
+                        >
+                    @endif
 
-                <button type="submit">
-                    検索
-                </button>
-            </form>
-                <p class="oshi-public-hero-search-note">作品名・キャラクター名・タグ・説明文・章名・物語詳細をまとめて検索できます。スペース区切りでAND検索できます。</p>
+                    <button type="submit">
+                        検索
+                    </button>
+                </form>
 
-@if (!empty($keyword) || !empty($selectedTagId))
-                <div style="margin-top:16px;">
-                    <a href="{{ route('public.works.index') }}" class="oshi-btn oshi-btn-sub">
-                        検索条件を解除
-                    </a>
-                </div>
+                <p class="oshi-public-hero-search-note">
+                    作品名・キャラクター名・タグ・説明文・章名・物語詳細をまとめて検索できます。
+                    スペース区切りでAND検索できます。
+                </p>
             @endif
         </section>
 
@@ -136,6 +142,7 @@
 
                 @include('public.partials.hot-content')
 
+        @if ($isHome ?? false)
 <section class="oshi-section">
             <h2 class="oshi-section-title">媒体から探す</h2>
             @if (($originalMedia ?? collect())->count())
@@ -148,8 +155,10 @@
                 </div>
             @endif
         </section>
+        @endif
 
-        <section class="oshi-section">
+                @if ($isHome ?? false)
+<section class="oshi-section">
             <div class="flex flex-wrap items-center justify-between gap-3">
                 <h2 class="oshi-section-title">
                     タグから探す
@@ -195,6 +204,7 @@
                 </div>
             @endif
         </section>
+        @endif
 
         <section class="oshi-section">
             <div class="flex flex-wrap items-center justify-between gap-3">
@@ -211,7 +221,7 @@
 
             @if ($works->count())
                 <div class="oshi-card-grid">
-                    @foreach ($works as $work)
+                    @foreach ((($isHome ?? false) ? $works->take(9) : $works) as $work)
                         <a class="oshi-card" href="{{ route('public.works.show', $work) }}">
                             <h3>{{ $work->title }}</h3>
 

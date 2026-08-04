@@ -67,9 +67,6 @@
                     </div>
                 </div>
 
-                <div style="margin-top:24px;">
-                    {{ $tags->links() }}
-                </div>
             @else
                 <div class="oshi-card">
                     <p class="oshi-muted">
