@@ -2,6 +2,7 @@
 <html lang="ja">
 <head>
     @include('partials.favicon')
+    @include('partials.google-adsense')
     @include('partials.google-analytics')
     @include('partials.seo-meta')
 
@@ -14,12 +15,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
 
 @vite(['resources/css/app.css', 'resources/js/app.js'])
-    {{-- Google AdSense site verification --}}
-    <script
-        async
-        src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3916030283806562"
-        crossorigin="anonymous"
-    ></script>
 </head>
 <body>
 

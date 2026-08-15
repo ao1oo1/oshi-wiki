@@ -2,6 +2,7 @@
 <html lang="ja">
 <head>
     @include('partials.favicon')
+    @include('partials.google-adsense')
     @include('partials.google-analytics')
     @include('partials.seo-meta')
 
@@ -10,12 +11,6 @@
     <title>{{ $staff->public_username ?: $staff->name }}｜スタッフプロフィール｜Oshi-Wiki</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 @vite(['resources/css/app.css', 'resources/js/app.js'])
-    {{-- Google AdSense site verification --}}
-    <script
-        async
-        src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3916030283806562"
-        crossorigin="anonymous"
-    ></script>
 </head>
 <body>
 

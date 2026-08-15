@@ -2,6 +2,7 @@
 <html lang="ja">
 <head>
     @include('partials.favicon')
+    @include('partials.google-adsense')
     @include('partials.google-analytics')
     @include('partials.seo-meta', ['forceNoindex' => true])
 

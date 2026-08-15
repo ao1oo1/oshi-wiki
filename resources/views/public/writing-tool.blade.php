@@ -2,6 +2,7 @@
 <html lang="ja">
 <head>
     @include('partials.favicon')
+    @include('partials.google-adsense')
     @include('partials.google-analytics')
     @include('partials.seo-meta')
 
@@ -352,12 +353,6 @@
             }
         }
     </style>
-    {{-- Google AdSense site verification --}}
-    <script
-        async
-        src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3916030283806562"
-        crossorigin="anonymous"
-    ></script>
 </head>
 <body class="writing-tool-page-redesign">
 

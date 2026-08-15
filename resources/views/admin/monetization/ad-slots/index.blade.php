@@ -26,6 +26,12 @@
                 広告スロット
             </a>
             <a
+                href="{{ route('admin.monetization.adsense.edit') }}"
+                class="oshi-btn oshi-btn-sub"
+            >
+                Google AdSense
+            </a>
+            <a
                 href="{{ route('admin.monetization.analytics.index') }}"
                 class="oshi-btn oshi-btn-sub"
             >
