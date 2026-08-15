@@ -2,6 +2,7 @@
 <html lang="ja">
 <head>
     @include('partials.favicon')
+    @include('partials.google-adsense')
     @include('partials.google-analytics')
     @include('partials.seo-meta', [
         'pageSeoTitle' => $entitySeo['title'] ?? null,
@@ -14,12 +15,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ $entitySeo['title'] ?? $character->name }} | Oshi-Wiki</title>
 @vite(['resources/css/app.css', 'resources/js/app.js'])
-    {{-- Google AdSense site verification --}}
-    <script
-        async
-        src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3916030283806562"
-        crossorigin="anonymous"
-    ></script>
     @if (! empty($entitySeo['jsonLd']))
         <script type="application/ld+json">
             {!! json_encode(

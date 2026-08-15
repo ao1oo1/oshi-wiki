@@ -395,6 +395,16 @@ Route::middleware(['auth', 'admin.user', 'password.changed'])->prefix('admin')->
 });
 
 Route::middleware(['auth', 'admin.user', 'password.changed'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get(
+        'monetization/adsense',
+        [\App\Http\Controllers\Admin\AdsenseSettingController::class, 'edit']
+    )->name('monetization.adsense.edit');
+
+    Route::put(
+        'monetization/adsense',
+        [\App\Http\Controllers\Admin\AdsenseSettingController::class, 'update']
+    )->name('monetization.adsense.update');
+
     Route::resource(
         'monetization/services',
         \App\Http\Controllers\Admin\MonetizationServiceController::class
